@@ -8,12 +8,14 @@ import kotlinx.coroutines.coroutineScope
 import ru.snowadv.contacts_provider.ContactDataSource
 import ru.snowadv.contacts_provider.model.Contact
 
-class CoroutineContactDataSourceImpl: ContactDataSource {
-    override suspend fun getContacts(context: Context): List<Contact> = coroutineScope {
+class CoroutineContactDataSourceImpl(appContext: Context): ContactDataSource {
+
+    private val context = appContext.applicationContext
+    override suspend fun getContacts(): List<Contact> = coroutineScope {
         with(Dispatchers.IO) {
-            val contactsDeferred = async { getEmptyContacts(context) }
-            val contactNumbersDeferred = async { getContactNumbers(context) }
-            val contactEmailsDeferred = async { getContactEmails(context) }
+            val contactsDeferred = async { getEmptyContacts() }
+            val contactNumbersDeferred = async { getContactNumbers() }
+            val contactEmailsDeferred = async { getContactEmails() }
 
             val contactNumbers = contactNumbersDeferred.await()
             val contactEmails = contactEmailsDeferred.await()
@@ -28,7 +30,7 @@ class CoroutineContactDataSourceImpl: ContactDataSource {
     }
 
     /** Returns contacts with no phone numbers/emails ordered by DISPLAY_NAME */
-    private fun getEmptyContacts(context: Context): List<Contact> {
+    private fun getEmptyContacts(): List<Contact> {
         val contacts = mutableListOf<Contact>()
 
         context.contentResolver?.query(
@@ -54,7 +56,7 @@ class CoroutineContactDataSourceImpl: ContactDataSource {
         return contacts
     }
 
-    private fun getContactNumbers(context: Context): Map<Long, List<String>> {
+    private fun getContactNumbers(): Map<Long, List<String>> {
         val contactNumbers = HashMap<Long, MutableList<String>>()
         context.contentResolver?.query(
             ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
@@ -81,7 +83,7 @@ class CoroutineContactDataSourceImpl: ContactDataSource {
         return contactNumbers
     }
 
-    private fun getContactEmails(context: Context): Map<Long, List<String>> {
+    private fun getContactEmails(): Map<Long, List<String>> {
         val contactEmails = HashMap<Long, MutableList<String>>()
         context.contentResolver?.query(
             ContactsContract.CommonDataKinds.Email.CONTENT_URI,

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
@@ -10,7 +11,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.VoiceApp">
         <activity
-            android:name="ru.snowadv.app_contacts.presentation.ContactsActivity"
+            android:name=".presentation.contact_obtainer.ObtainerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.contact_list.ContactsActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -18,5 +22,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service android:name=".presentation.contact_service.ContactService" />
     </application>
+
 </manifest>

@@ -22,7 +22,6 @@ dependencyResolutionManagement {
 rootProject.name = "VoiceApp"
 include(":app")
 include(":app_contacts")
-include(":contacts-provider")
 include(":core")
 include(":libraries:contacts-provider")
 include(":core:contacts-provider")

@@ -7,8 +7,5 @@ import ru.snowadv.contacts_provider.model.Contact
 
 interface ContactDataSource {
     @RequiresPermission("android.permission.READ_CONTACTS")
-    suspend fun getContacts(context: Context): List<Contact>
+    suspend fun getContacts(): List<Contact>
 }
-
-/** Shortcut for default implementation */
-fun ContactDataSource(): ContactDataSource = CoroutineContactDataSourceImpl()
