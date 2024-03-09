@@ -1,6 +1,10 @@
 package ru.snowadv.app_contacts.presentation.contact_list.adapter
 
+import android.content.Context
+import android.content.res.Resources.getSystem
+import android.graphics.Rect
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -31,13 +35,13 @@ class ContactAdapter(contacts: List<Contact>) :
     }
 
     fun setContacts(contacts: List<Contact>) {
-        val contactsCallback = ContactsCallback(this.contacts, contacts)
+        val contactsCallback = Callback(this.contacts, contacts)
         val diffResult = DiffUtil.calculateDiff(contactsCallback)
         this.contacts = contacts
         diffResult.dispatchUpdatesTo(this)
     }
 
-    class ContactsCallback(
+    class Callback(
         private val old: List<Contact>,
         private val new: List<Contact>
     ) : DiffUtil.Callback() {
