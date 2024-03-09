@@ -6,38 +6,45 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.IntentCompat.getParcelableArrayListExtra
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import ru.snowadv.app_contacts.presentation.contact_obtainer.ObtainerActivity
 import ru.snowadv.app_contacts.R
 import ru.snowadv.app_contacts.databinding.ActivityContactsBinding
 import ru.snowadv.app_contacts.domain.model.Contact
-import ru.snowadv.app_contacts.presentation.contact_list.adapter.ContactAdapter
+import ru.snowadv.app_contacts.presentation.contact_list.adapter.ContactsAdapter
+import ru.snowadv.app_contacts.presentation.contact_list.viewmodel.ContactsActivityEvent
+import ru.snowadv.app_contacts.presentation.contact_list.viewmodel.ContactsUiEvent
+import ru.snowadv.app_contacts.presentation.contact_list.viewmodel.ContactsViewModel
 
 class ContactsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityContactsBinding
 
-    private val adapter = ContactAdapter(emptyList())
+    private val adapter = ContactsAdapter(emptyList())
+
+    private val viewModel by viewModels<ContactsViewModel>()
 
     private val requestContactsPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         if (isGranted) {
-            launchObtainerActivity()
+            viewModel.event(ContactsUiEvent.FetchContactsPermissionAllowed)
         } else {
-            showUnableToProceedWithoutPermissionToast()
+            viewModel.event(ContactsUiEvent.FetchContactsPermissionDenied)
         }
     }
 
@@ -46,17 +53,19 @@ class ContactsActivity : AppCompatActivity() {
             when (result.resultCode) {
                 Activity.RESULT_OK -> {
                     result.data?.extras?.let {
-                        adapter.setContacts(
-                            getContactsFromBundle(
-                                it,
-                                "result"
+                        viewModel.event(
+                            ContactsUiEvent.FetchedNewContacts(
+                                contacts = getContactsFromBundle(
+                                    bundle = it,
+                                    key = "result"
+                                )
                             )
                         )
                     }
                 }
 
                 Activity.RESULT_CANCELED -> {
-                    showContactFetchFailedToast()
+                    viewModel.event(ContactsUiEvent.ObtainCancelledOrFailed)
                 }
             }
         }
@@ -76,31 +85,42 @@ class ContactsActivity : AppCompatActivity() {
         }
 
         initListeners()
-        subscribeAndSetData(savedInstanceState)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState) // save view states
-        outState.putParcelableArrayList("contacts", ArrayList(adapter.contacts))
+        subscribeAndSetData()
     }
 
     private fun initListeners() {
         binding.getContactsButton.setOnClickListener {
-            obtainPermissionAndProceed(
-                requestPermissionLauncher = requestContactsPermissionLauncher,
-                permission = Manifest.permission.READ_CONTACTS,
-                rationale = getString(R.string.need_contacts_to_show_list)
-            ) {
-                launchObtainerActivity()
-            }
+            viewModel.event(ContactsUiEvent.FetchContactsButtonClicked)
         }
     }
 
-    private fun subscribeAndSetData(savedInstanceState: Bundle?) {
+    private fun subscribeAndSetData() {
         binding.contactsList.adapter = adapter
-        savedInstanceState?.let {
-            adapter.setContacts(getContactsFromBundle(it, "contacts"))
-        }
+        viewModel.activityEventFlow.onEach {
+            when(it) {
+                is ContactsActivityEvent.OpenObtainerActivity -> {
+                    launchObtainerActivity()
+                }
+                is ContactsActivityEvent.AskContactsPermission -> {
+                    obtainPermissionAndProceed(
+                        requestPermissionLauncher = requestContactsPermissionLauncher,
+                        permission = Manifest.permission.READ_CONTACTS,
+                        rationale = getString(R.string.need_contacts_to_show_list)
+                    ) {
+                        viewModel.event(ContactsUiEvent.FetchContactsPermissionAllowed)
+                    }
+                }
+                is ContactsActivityEvent.ShowNoPermissionToast -> {
+                    showUnableToProceedWithoutPermissionToast()
+                }
+                is ContactsActivityEvent.ShowObtainCancelledToast -> {
+                    showContactsFetchFailedToast()
+                }
+            }
+        }.launchIn(lifecycleScope)
+        viewModel.state.onEach {
+            adapter.setContacts(it.contacts)
+        }.launchIn(lifecycleScope)
     }
 
     private fun getContactsFromBundle(bundle: Bundle, key: String): List<Contact> {
@@ -164,7 +184,7 @@ class ContactsActivity : AppCompatActivity() {
         ).show()
     }
 
-    private fun showContactFetchFailedToast() {
+    private fun showContactsFetchFailedToast() {
         Toast.makeText(this, getString(R.string.error_while_fetching_contacts), Toast.LENGTH_LONG)
             .show()
     }

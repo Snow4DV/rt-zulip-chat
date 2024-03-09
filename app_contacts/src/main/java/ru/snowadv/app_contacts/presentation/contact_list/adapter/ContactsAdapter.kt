@@ -1,21 +1,14 @@
 package ru.snowadv.app_contacts.presentation.contact_list.adapter
 
-import android.content.Context
-import android.content.res.Resources.getSystem
-import android.graphics.Rect
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.snowadv.app_contacts.databinding.ItemContactBinding
 import ru.snowadv.app_contacts.domain.model.Contact
 
-class ContactAdapter(contacts: List<Contact>) :
-    RecyclerView.Adapter<ContactAdapter.ContactViewHolder>() {
-
-    var contacts = contacts
-        private set
+class ContactsAdapter(private var contacts: List<Contact>) :
+    RecyclerView.Adapter<ContactsAdapter.ContactViewHolder>() {
 
     class ContactViewHolder(val binding: ItemContactBinding) : RecyclerView.ViewHolder(binding.root)
 
