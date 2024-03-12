@@ -36,7 +36,6 @@ dependencies {
 
     implementation(libs.androidx.annotation.jvm)
     testImplementation(libs.junit)
-    testImplementation(libs.mockk)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

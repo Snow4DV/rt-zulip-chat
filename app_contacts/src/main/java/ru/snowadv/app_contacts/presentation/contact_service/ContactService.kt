@@ -54,6 +54,7 @@ internal class ContactService: Service() {
         } ?: run {
             localBroadcastManager.sendBroadcast(Intent(CONTACTS_FETCH_FAILED_ACTION))
         }
+        stopSelf()
     }
 
     private fun createContactDataSource(): ContactDataSource {
