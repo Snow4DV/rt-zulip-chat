@@ -3,13 +3,13 @@ package ru.snowadv.app_contacts.presentation.contact_list.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.snowadv.app_contacts.databinding.ItemContactBinding
 import ru.snowadv.app_contacts.presentation.model.Contact
 
-internal class ContactsAdapter(private var contacts: List<Contact>) :
-    RecyclerView.Adapter<ContactsAdapter.ContactViewHolder>() {
-
+internal class ContactsAdapter :
+    ListAdapter<Contact, ContactsAdapter.ContactViewHolder>(DiffCallback) {
     class ContactViewHolder(val binding: ItemContactBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactViewHolder {
@@ -18,41 +18,22 @@ internal class ContactsAdapter(private var contacts: List<Contact>) :
         )
     }
 
-    override fun getItemCount(): Int = contacts.size
-
     override fun onBindViewHolder(holder: ContactViewHolder, position: Int) {
-        holder.binding.contactName.text = contacts[position].name
-        contacts[position].phoneNumbers.firstOrNull()?.let {
-            holder.binding.contactNumber.text = it
+        getItem(position).let { contact ->
+            holder.binding.contactName.text = contact.name
+            contact.phoneNumbers.firstOrNull()?.let { contactNumber ->
+                holder.binding.contactNumber.text = contactNumber
+            }
         }
     }
 
-    fun setContacts(contacts: List<Contact>) {
-        val contactsCallback = Callback(this.contacts, contacts)
-        val diffResult = DiffUtil.calculateDiff(contactsCallback)
-        this.contacts = contacts
-        diffResult.dispatchUpdatesTo(this)
-    }
-
-    class Callback(
-        private val old: List<Contact>,
-        private val new: List<Contact>
-    ) : DiffUtil.Callback() {
-        override fun getOldListSize(): Int {
-            return old.size
+    object DiffCallback : DiffUtil.ItemCallback<Contact>() {
+        override fun areItemsTheSame(oldItem: Contact, newItem: Contact): Boolean {
+            return oldItem.id == newItem.id
         }
 
-        override fun getNewListSize(): Int {
-            return new.size
+        override fun areContentsTheSame(oldItem: Contact, newItem: Contact): Boolean {
+            return oldItem == newItem
         }
-
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return old[oldItemPosition].id == new[newItemPosition].id
-        }
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return old[oldItemPosition] == new[newItemPosition]
-        }
-
     }
 }

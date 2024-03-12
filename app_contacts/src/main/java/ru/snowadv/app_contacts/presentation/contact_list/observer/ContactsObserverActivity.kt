@@ -106,12 +106,12 @@ internal class ContactsObserverActivity : ObserverActivity<ActivityContactsBindi
             }
         }.launchIn(activity.lifecycleScope)
         viewModel.state.onEach {
-            contactsAdapter.setContacts(it.contacts)
+            contactsAdapter.submitList(it.contacts)
         }.launchIn(activity.lifecycleScope)
     }
 
     private fun observeContacts(recyclerView: RecyclerView): ContactsAdapter {
-        ContactsAdapter(emptyList()).apply {
+        ContactsAdapter().apply {
             recyclerView.adapter = this
             return this
         }
