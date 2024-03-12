@@ -17,7 +17,7 @@ internal class ContactRepositoryImpl(
     private val ioDispatcher: CoroutineDispatcher
 ): ContactRepository {
     @RequiresPermission("android.permission.READ_CONTACTS")
-    override suspend fun getContacts(): Result<List<Contact>> = withContext(ioDispatcher) {
+    override suspend fun getContacts(): Result<List<Contact>> = withContext(ioDispatcher + coroutineContext) {
         contactDataSource.getContacts().map { contactList -> contactList.map { it.toDomainContact() } }
     }
 }

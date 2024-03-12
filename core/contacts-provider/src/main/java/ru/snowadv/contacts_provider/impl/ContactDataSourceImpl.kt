@@ -1,14 +1,14 @@
 package ru.snowadv.contacts_provider.impl
 
+import android.content.ContentResolver
 import android.content.Context
 import android.provider.ContactsContract
 import ru.snowadv.contacts_provider.ContactDataSource
 import ru.snowadv.contacts_provider.model.Contact
 import java.lang.IllegalArgumentException
 
-class ContactDataSourceImpl(appContext: Context) : ContactDataSource {
-
-    private val context = appContext.applicationContext
+class ContactDataSourceImpl(private val contentResolver: ContentResolver) : ContactDataSource {
+    constructor(appContext: Context): this(appContext.applicationContext.contentResolver)
     override fun getContacts(): Result<List<Contact>> {
         return try {
             Result.success(getContactsWithPhoneNumbersAndEmails())
@@ -22,7 +22,7 @@ class ContactDataSourceImpl(appContext: Context) : ContactDataSource {
 
         val contacts = LinkedHashMap<Long, Contact>()
 
-        context.contentResolver?.query(
+        contentResolver.query(
             ContactsContract.Data.CONTENT_URI,
             arrayOf(
                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
