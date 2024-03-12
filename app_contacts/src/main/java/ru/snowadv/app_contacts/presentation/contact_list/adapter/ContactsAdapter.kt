@@ -9,7 +9,7 @@ import ru.snowadv.app_contacts.databinding.ItemContactBinding
 import ru.snowadv.app_contacts.presentation.model.Contact
 
 internal class ContactsAdapter :
-    ListAdapter<Contact, ContactsAdapter.ContactViewHolder>(DiffCallback) {
+    ListAdapter<Contact, ContactsAdapter.ContactViewHolder>(StaticDiffCallback) {
     class ContactViewHolder(val binding: ItemContactBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactViewHolder {
@@ -27,13 +27,18 @@ internal class ContactsAdapter :
         }
     }
 
-    object DiffCallback : DiffUtil.ItemCallback<Contact>() {
-        override fun areItemsTheSame(oldItem: Contact, newItem: Contact): Boolean {
-            return oldItem.id == newItem.id
-        }
-
-        override fun areContentsTheSame(oldItem: Contact, newItem: Contact): Boolean {
-            return oldItem == newItem
+    companion object {
+        val StaticDiffCallback by lazy {
+            object : DiffUtil.ItemCallback<Contact>() {
+                override fun areItemsTheSame(oldItem: Contact, newItem: Contact): Boolean {
+                    return oldItem.id == newItem.id
+                }
+                override fun areContentsTheSame(oldItem: Contact, newItem: Contact): Boolean {
+                    return oldItem == newItem
+                }
+            }
         }
     }
+
+
 }
