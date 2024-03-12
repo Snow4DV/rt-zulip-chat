@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class ContactsViewModel: ViewModel() {
+internal class ContactsViewModel: ViewModel() {
     private val _state = MutableStateFlow(ContactsUiState())
     val state = _state.asStateFlow()
 

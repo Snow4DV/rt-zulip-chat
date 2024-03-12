@@ -10,14 +10,12 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import ru.snowadv.app_contacts.data.ContactRepositoryImpl
 import ru.snowadv.app_contacts.domain.model.Contact
-import ru.snowadv.app_contacts.domain.model.RequestResult
 import ru.snowadv.app_contacts.domain.repository.ContactRepository
+import ru.snowadv.app_contacts.presentation.toUiContact
 import ru.snowadv.contacts_provider.ContactDataSource
-import ru.snowadv.contacts_provider.impl.CoroutineContactDataSourceImpl
+import ru.snowadv.contacts_provider.impl.ContactDataSourceImpl
 
-class ContactService: Service() {
-
-    private val contactDataSource: ContactDataSource by lazy { CoroutineContactDataSourceImpl(this.applicationContext) }
+internal class ContactService: Service() {
 
     private val supervisorJob = SupervisorJob()
     private val coroutineScope = CoroutineScope(Dispatchers.IO + supervisorJob)
@@ -29,6 +27,7 @@ class ContactService: Service() {
     companion object {
         const val CONTACTS_RECEIVED_ACTION = "ru.snowadv.app_contacts.presentation.contact_service.CONTACTS_RECEIVED"
         const val CONTACTS_FETCH_FAILED_ACTION= "ru.snowadv.app_contacts.presentation.contact_service.CONTACTS_FETCH_FAILED"
+        const val OBTAINER_RESULT_BUNDLE_KEY = "result"
     }
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -46,25 +45,22 @@ class ContactService: Service() {
         return START_NOT_STICKY
     }
 
-    private fun processResultAndFinish(result: RequestResult<List<Contact>>) {
-        when(result) {
-            is RequestResult.Success -> {
-                Intent(CONTACTS_RECEIVED_ACTION).apply {
-                    putParcelableArrayListExtra("result", ArrayList(result.data))
-                    localBroadcastManager.sendBroadcast(this)
-                }
+    private fun processResultAndFinish(result: Result<List<Contact>>) {
+        result.getOrNull()?.let { contacts ->
+            Intent(CONTACTS_RECEIVED_ACTION).apply {
+                putParcelableArrayListExtra("result", ArrayList(contacts.map { it.toUiContact() }))
+                localBroadcastManager.sendBroadcast(this)
             }
-            else -> {
-                localBroadcastManager.sendBroadcast(Intent(CONTACTS_FETCH_FAILED_ACTION))
-            }
+        } ?: run {
+            localBroadcastManager.sendBroadcast(Intent(CONTACTS_FETCH_FAILED_ACTION))
         }
     }
 
     private fun createContactDataSource(): ContactDataSource {
-        return CoroutineContactDataSourceImpl(this.applicationContext)
+        return ContactDataSourceImpl(this.applicationContext)
     }
 
     private fun createContactRepository(): ContactRepository {
-        return ContactRepositoryImpl(createContactDataSource())
+        return ContactRepositoryImpl(createContactDataSource(), Dispatchers.IO)
     }
 }

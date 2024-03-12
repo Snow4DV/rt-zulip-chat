@@ -9,12 +9,15 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import ru.snowadv.app_contacts.R
-import ru.snowadv.app_contacts.domain.model.Contact
+import ru.snowadv.app_contacts.presentation.model.Contact
 import ru.snowadv.app_contacts.presentation.contact_service.ContactService
 
-class ObtainerActivity : AppCompatActivity() {
+internal class ObtainerActivity : AppCompatActivity() {
 
     private val localBroadcastManager by lazy { LocalBroadcastManager.getInstance(this) }
+    companion object {
+        const val OBTAINER_RESULT_BUNDLE_KEY = ContactService.OBTAINER_RESULT_BUNDLE_KEY
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -56,7 +59,7 @@ class ObtainerActivity : AppCompatActivity() {
 
     private fun finishWithOkResult(contacts: ArrayList<Contact>) {
         Intent().apply {
-            putParcelableArrayListExtra("result", contacts)
+            putParcelableArrayListExtra(OBTAINER_RESULT_BUNDLE_KEY, contacts)
             setResult(RESULT_OK, this)
         }
         finish()

@@ -1,11 +1,11 @@
 package ru.snowadv.app_contacts.data
 
 import ru.snowadv.contacts_provider.model.Contact as DataContact
-import ru.snowadv.app_contacts.domain.model.Contact
+import ru.snowadv.app_contacts.domain.model.Contact as DomainContact
 
 
-fun DataContact.toUiContact(): Contact {
-    return Contact(
+internal fun DataContact.toDomainContact(): DomainContact {
+    return DomainContact(
         id = id,
         name = name,
         phoneNumbers = phoneNumbers,

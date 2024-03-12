@@ -5,9 +5,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.snowadv.app_contacts.databinding.ItemContactBinding
-import ru.snowadv.app_contacts.domain.model.Contact
+import ru.snowadv.app_contacts.presentation.model.Contact
 
-class ContactsAdapter(private var contacts: List<Contact>) :
+internal class ContactsAdapter(private var contacts: List<Contact>) :
     RecyclerView.Adapter<ContactsAdapter.ContactViewHolder>() {
 
     class ContactViewHolder(val binding: ItemContactBinding) : RecyclerView.ViewHolder(binding.root)

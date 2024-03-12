@@ -1,8 +1,9 @@
 package ru.snowadv.app_contacts.presentation.contact_list.viewmodel
 
-import ru.snowadv.app_contacts.domain.model.Contact
+import ru.snowadv.app_contacts.presentation.model.Contact
 
-sealed class ContactsUiEvent {
+
+internal sealed class ContactsUiEvent {
     data object FetchContactsButtonClicked: ContactsUiEvent()
     data object FetchContactsPermissionAllowed: ContactsUiEvent()
     data object FetchContactsPermissionDenied: ContactsUiEvent()

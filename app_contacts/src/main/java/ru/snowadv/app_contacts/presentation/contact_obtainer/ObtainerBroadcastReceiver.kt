@@ -4,10 +4,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import ru.snowadv.app_contacts.domain.model.Contact
 import ru.snowadv.app_contacts.presentation.contact_service.ContactService
+import ru.snowadv.app_contacts.presentation.model.Contact
 
-class ObtainerBroadcastReceiver(
+internal class ObtainerBroadcastReceiver(
     private val onContactsReceived: (result: List<Contact>) -> Unit,
     private val onError: () -> Unit
 ) : BroadcastReceiver() {
