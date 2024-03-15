@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ReactionView">
+        <attr name="emojiCode" format="integer" />
+        <attr name="count" format="integer" />
+        <attr name="isPlus" format="boolean" />
+        <attr name="android:textSize" format="dimension" />
+        <attr name="android:textColor" format="dimension" />
+        <attr name="android:state_selected" format="boolean" />
+    </declare-styleable>
+    <attr name="reactionButtonStyle" format="reference" />
+
+
+    <declare-styleable name="FlexBoxLayout">
+        <attr name="paddingBetweenItems" format="dimension" />
+        <attr name="stretchOnNotLastLines" format="boolean" />
+        <attr name="stretchOnLastLine" format="boolean" />
+        <attr name="mirror" format="boolean" />
+        <attr name="flipInRow" format="boolean" />
+    </declare-styleable>
+    <attr name="flexBoxStyle" format="reference" />
+
+
+    <declare-styleable name="IncomingMessageLayout">
+        <attr name="paddingBetweenReactionsInIncomingMessage" format="dimension" />
+        <attr name="paddingBetweenMessageBoxAndReactionsInIncomingMessage" format="dimension" />
+        <attr name="paddingBetweenAvatarAndMessageBoxInIncomingMessage" format="dimension" />
+        <attr name="avatarInIncomingMessage" format="reference" />
+        <attr name="usernameTextInIncomingMessage" format="string" />
+        <attr name="messageTextInIncomingMessage" format="string" />
+        <attr name="timestampTextInIncomingMessage" format="string" />
+    </declare-styleable>
+    <attr name="incomingMessageLayoutStyle" format="reference" />
+
+    <declare-styleable name="OutgoingMessageLayout">
+        <attr name="paddingBetweenReactionsInOutgoingMessage" format="dimension" />
+        <attr name="paddingBetweenMessageBoxAndReactionsInOutgoingMessage" format="dimension" />
+        <attr name="messageTextInOutgoingMessage" format="string" />
+        <attr name="timestampTextInOutgoingMessage" format="string" />
+    </declare-styleable>
+    <attr name="outgoingMessageLayoutStyle" format="reference" />
+    
+
+</resources>

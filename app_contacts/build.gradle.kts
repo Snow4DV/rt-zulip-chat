@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "ru.snowadv.app_contacts"
-    compileSdk = 34
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     viewBinding {
         enable = true
@@ -14,8 +14,8 @@ android {
 
     defaultConfig {
         applicationId = "ru.snowadv.app_contacts"
-        minSdk = 24
-        targetSdk = 34
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
 
@@ -49,7 +49,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
-    implementation(project(":core:contacts-provider"))
+    implementation(projects.core.contactsProvider)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.fragment.ktx)

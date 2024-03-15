@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="emoji_reacted_bg_color">#3A3A3A</color>
+    <color name="emoji_bg_color">#1C1C1C</color>
+    <color name="ripple">@color/ripple_material_dark</color>
+    <color name="card_text">#EAEAEA</color>
+    <color name="reaction_text">#EAEAEA</color>
+    <color name="received_message_color">#3A3A3A</color>
+    <color name="message_text_color">#EAEAEA</color>
+    <color name="message_timestamp_color">#CECECE</color>
+</resources>
