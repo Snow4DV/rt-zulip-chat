@@ -25,7 +25,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
 
-        app:usernameTextInIncomingMessage="John eprst"
+        app:usernameTextInIncomingMessage="@string/username_sample"
         app:messageTextInIncomingMessage="@string/short_message_text_sample"
         app:timestampTextInIncomingMessage="@string/timestamp_sample"
         />
