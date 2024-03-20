@@ -32,6 +32,8 @@ internal class FlexBoxLayout @JvmOverloads constructor(
 ) :
     ViewGroup(context, attrs, defStyleAttr, defStyleRes) {
 
+    private val layoutResult = MutableRowLayoutResult()
+
     companion object {
         const val DEFAULT_PADDING_BETWEEN_ITEMS_DP = 5
         const val DEFAULT_STRETCH_ON_NOT_LAST_LINE = true
@@ -76,43 +78,55 @@ internal class FlexBoxLayout @JvmOverloads constructor(
         val parentWidth = MeasureSpec.getSize(widthMeasureSpec) - paddingLeft - paddingRight
         val parentHeight = MeasureSpec.getSize(heightMeasureSpec) - paddingTop - paddingBottom
 
+        val containerLeft = paddingLeft
+        val containerRight = MeasureSpec.getSize(widthMeasureSpec) - paddingRight
+        val containerTop = paddingTop
+
         children.filter { it.visibility != GONE }.forEach { child ->
             measureChildWithMargins(child, widthMeasureSpec, 0, heightMeasureSpec, 0)
         }
 
-        var curLineHeight = 0
-        var linesCount = 1
-        var accumulatedWidth = 0
+        var linesCount = 0
+        var firstNotInflatedIndex = 0
+        var maxRowWidth = 0
         var accumulatedHeight = 0
-        var maxLineWidth = 0
-        // Place children in multiple lines and determine how many lines will be needeed
-        children.filter { it.visibility != GONE }.forEachIndexed { index, view ->
-            val viewWidth = view.measuredWidth + view.marginLeft + view.marginRight
-            val viewHeight = view.measuredHeight + view.marginTop + view.marginBottom
-            val childWidthWithPadding = viewWidth + (if (accumulatedWidth != 0) paddingBetweenViewsPx else 0).toInt()
-            if (accumulatedWidth + childWidthWithPadding <= parentWidth) { // If view fits it sits
-                accumulatedWidth += childWidthWithPadding
-                curLineHeight = max(curLineHeight, viewHeight)
-            } else { // Otherwise we go to the next line
-                linesCount++
-                accumulatedWidth = viewWidth
-                accumulatedHeight += curLineHeight
-                curLineHeight = viewHeight
+        // Place children in multiple lines and determine how many lines will be needed
+        while (firstNotInflatedIndex <= childCount - 1) {
+            val rowTopPadding = if (linesCount != 0) paddingBetweenViewsPx.toInt() else 0
+            layoutChildrenInOneRow(
+                left = containerLeft,
+                top = containerTop + accumulatedHeight + rowTopPadding,
+                right = containerRight,
+                paddingBetweenPx = paddingBetweenViewsPx.toInt(),
+                startIndex = firstNotInflatedIndex,
+                endIndex = childCount - 1,
+                mirror = false,
+                flipInRow = false,
+                skipLayout = true,
+                destLayoutResult = layoutResult
+            )
+
+            if(layoutResult.viewsCount == 0) { // Unable to draw any more views
+                break
             }
-            maxLineWidth = max(maxLineWidth, accumulatedWidth)
+
+            firstNotInflatedIndex += layoutResult.viewsCount
+            maxRowWidth = max(maxRowWidth, layoutResult.rowWidth)
+            linesCount++
+            accumulatedHeight += layoutResult.rowHeight + rowTopPadding
         }
 
         // Look at parentWidthStretch settings and find out if we'll take all available width or only max width of lines
         val measuredWidth =
-            if (linesCount == 1 && !stretchOnLastLine || (!stretchOnLastLine && !stretchOnNotLastLines)) {
-                (maxLineWidth + paddingLeft + paddingRight)
+            if (linesCount <= 1 && !stretchOnLastLine || (!stretchOnLastLine && !stretchOnNotLastLines)) {
+                (maxRowWidth + paddingLeft + paddingRight)
             } else {
                 parentWidth
             }
-        // Height is determined by accumulatedHeight param (also accounts paddings using linesCount) and capped by parentHeight
+        // Height is determined by accumulatedHeight param and capped by parentHeight
         val measuredHeight =
             min(
-                accumulatedHeight + curLineHeight + (linesCount - 1) * paddingBetweenViewsPx.toInt() + paddingTop + paddingBottom,
+                accumulatedHeight + paddingTop + paddingBottom,
                 parentHeight
             )
 
@@ -172,8 +186,10 @@ internal class FlexBoxLayout @JvmOverloads constructor(
                     firstNoLayoutIndex,
                     index - 1,
                     mirror,
-                    flipInRow
-                ) + verticalPaddingIfNeeded
+                    flipInRow,
+                    false,
+                    layoutResult
+                ).let { layoutResult.rowHeight } + verticalPaddingIfNeeded
 
                 // Reset values for the next line
                 accumulatedWidth = 0
@@ -206,7 +222,9 @@ internal class FlexBoxLayout @JvmOverloads constructor(
             firstNoLayoutIndex,
             childCount - 1,
             mirror,
-            flipInRow
+            flipInRow,
+            false,
+            layoutResult
         )
 
     }
@@ -223,37 +241,45 @@ internal class FlexBoxLayout @JvmOverloads constructor(
         startIndex: Int,
         endIndex: Int,
         mirror: Boolean,
-        flipInRow: Boolean
-    ): Int {
-        var curLineHeight = 0
+        flipInRow: Boolean,
+        skipLayout: Boolean = false,
+        destLayoutResult: MutableRowLayoutResult
+    ) {
+        var curRowHeight = 0
         var accumulatedWidth = 0
+        var viewsCount = 0
         loopWithDirection(startIndex = startIndex, endIndex = endIndex, isReversed = flipInRow) {
             val view = getChildAt(it)
             val viewWidth = view.measuredWidth + view.marginLeft + view.marginRight
             val viewHeight = view.measuredHeight + view.marginTop + view.marginBottom
 
-            val paddingBetweenViews = if (accumulatedWidth != 0) paddingBetweenPx else 0
+            val paddingBeforeView = if (viewsCount != 0) paddingBetweenPx else 0
 
-            if (mirror) { // Place starting from the right if mirrored
+            if(accumulatedWidth + paddingBeforeView + viewWidth > right) {
+                return@loopWithDirection
+            } else if (mirror && !skipLayout) { // Place starting from the right if mirrored
                 view.layout(
-                    right - viewWidth - accumulatedWidth - paddingBetweenViews,
+                    right - viewWidth - accumulatedWidth - paddingBeforeView,
                     top,
-                    right - accumulatedWidth - paddingBetweenViews,
+                    right - accumulatedWidth - paddingBeforeView,
                     top + viewHeight
                 )
-            } else {
+            } else if (!skipLayout) {
                 view.layout(
-                    left + accumulatedWidth + paddingBetweenViews,
+                    left + accumulatedWidth + paddingBeforeView,
                     top,
-                    left + accumulatedWidth + paddingBetweenViews + viewWidth,
+                    left + accumulatedWidth + paddingBeforeView + viewWidth,
                     top + viewHeight
                 )
             }
-            accumulatedWidth += viewWidth + paddingBetweenViews
-            curLineHeight = max(curLineHeight, viewHeight)
+            viewsCount++
+            accumulatedWidth += viewWidth + paddingBeforeView
+            curRowHeight = max(curRowHeight, viewHeight)
         }
 
-        return curLineHeight
+        destLayoutResult.rowHeight = curRowHeight
+        destLayoutResult.rowWidth = accumulatedWidth
+        destLayoutResult.viewsCount = viewsCount
     }
 
     private fun initAttributes(attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) {
@@ -299,4 +325,9 @@ internal class FlexBoxLayout @JvmOverloads constructor(
             }
         }
     }
+
+    /**
+     * This class describes the result of placing views in single row
+     */
+    private class MutableRowLayoutResult(var viewsCount: Int = 0, var rowHeight: Int = 0, var rowWidth: Int = 0)
 }
