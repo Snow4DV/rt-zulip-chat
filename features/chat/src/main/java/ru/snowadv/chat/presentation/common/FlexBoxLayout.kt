@@ -255,8 +255,11 @@ internal class FlexBoxLayout @JvmOverloads constructor(
 
             val paddingBeforeView = if (viewsCount != 0) paddingBetweenPx else 0
 
-            if(accumulatedWidth + paddingBeforeView + viewWidth > right) {
-                return@loopWithDirection
+            if(accumulatedWidth + paddingBeforeView + viewWidth > right - left) { // Do not place views out of bounds
+                destLayoutResult.rowHeight = curRowHeight
+                destLayoutResult.rowWidth = accumulatedWidth
+                destLayoutResult.viewsCount = viewsCount
+                return
             } else if (mirror && !skipLayout) { // Place starting from the right if mirrored
                 view.layout(
                     right - viewWidth - accumulatedWidth - paddingBeforeView,
