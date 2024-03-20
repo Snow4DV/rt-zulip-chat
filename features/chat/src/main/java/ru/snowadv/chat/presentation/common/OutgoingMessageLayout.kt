@@ -126,17 +126,4 @@ internal class OutgoingMessageLayout @JvmOverloads constructor(
                         ?: DEFAULT_TIMESTAMP_TEXT
             }
     }
-
-
-    /**
-     * @return Returns measured height of view if its' visibility != GONE
-     */
-    private fun View.measuredHeightIfNotGone(): Int {
-        return if (visibility != GONE) {
-            measuredHeight
-        } else {
-            0
-        }
-    }
-
 }

@@ -34,9 +34,6 @@ internal abstract class MessageLayout @JvmOverloads constructor(
     companion object {
         const val DEFAULT_PADDING_BETWEEN_MESSAGE_BOX_AND_REACTIONS_DP = 5
         const val DEFAULT_PADDING_BETWEEN_REACTIONS_DP = 5
-        const val DEFAULT_PADDING_BETWEEN_AVATAR_AND_MESSAGE_BOX_DP = 5
-        const val DEFAULT_IS_INCOMING_MESSAGE = false
-        const val DEFAULT_USERNAME_TEXT = ""
         const val DEFAULT_MESSAGE_TEXT = ""
         const val DEFAULT_TIMESTAMP_TEXT = ""
     }
