@@ -48,7 +48,7 @@ internal class ContactService: Service() {
     private fun processResultAndFinish(result: Result<List<Contact>>) {
         result.getOrNull()?.let { contacts ->
             Intent(CONTACTS_RECEIVED_ACTION).apply {
-                putParcelableArrayListExtra("result", ArrayList(contacts.map { it.toUiContact() }))
+                putParcelableArrayListExtra(OBTAINER_RESULT_BUNDLE_KEY, ArrayList(contacts.map { it.toUiContact() }))
                 localBroadcastManager.sendBroadcast(this)
             }
         } ?: run {

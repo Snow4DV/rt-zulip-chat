@@ -74,14 +74,14 @@ internal class OutgoingMessageLayout @JvmOverloads constructor(
         ).let { messageBackgroundView.bottom + paddingBetweenMessageBoxAndReactionsPx.toInt() }
 
         val messageTimestampTop = messageTextView.layout(
-            containerLeft,
+            containerRight - messageTextView.measuredWidth,
             containerTop,
             containerRight,
             containerTop + messageTextView.measuredHeight
         ).let { messageTextView.bottom }
 
         timestampTextView.layout(
-            containerLeft,
+            containerRight - timestampTextView.measuredWidth,
             messageTimestampTop,
             containerRight,
             messageTimestampTop + timestampTextView.measuredHeight

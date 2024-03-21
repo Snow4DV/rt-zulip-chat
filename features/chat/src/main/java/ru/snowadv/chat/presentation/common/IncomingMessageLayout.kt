@@ -134,11 +134,11 @@ internal class IncomingMessageLayout @JvmOverloads constructor(
             avatar.layout(
                 containerLeft,
                 containerTop,
-                avatar.measuredWidth,
-                avatar.measuredHeight
+                containerLeft + avatar.measuredWidth,
+                containerTop + avatar.measuredHeight
             )
 
-            val messageBoxLeft = avatar.measuredWidth + paddingBetweenAvatarAndMessageBoxPx.toInt()
+            val messageBoxLeft = containerLeft + avatar.measuredWidth + paddingBetweenAvatarAndMessageBoxPx.toInt()
 
             val reactionsContainerTop = messageBackground.layout(
                 messageBoxLeft,
@@ -167,7 +167,7 @@ internal class IncomingMessageLayout @JvmOverloads constructor(
             ).let { messageText.bottom }
 
             messageTimestamp.layout(
-                messageBoxLeft,
+                containerRight - messageTimestamp.measuredWidth,
                 messageTimestampTop,
                 containerRight,
                 messageTimestampTop + messageTimestamp.measuredHeight

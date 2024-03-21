@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ to<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -9,22 +9,22 @@
 
     <ru.snowadv.chat.presentation.common.OutgoingMessageLayout
     android:id="@+id/outgoing_chat_message"
-    android:layout_width="match_parent"
+    android:layout_width="0dp"
     android:layout_height="wrap_content"
     app:layout_constraintTop_toBottomOf="@id/incoming_chat_message"
-    app:layout_constraintStart_toStartOf="parent"
-
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintWidth_percent="@fraction/width_of_message"
     app:messageTextInOutgoingMessage="@string/short_message_text_sample"
     app:timestampTextInOutgoingMessage="@string/timestamp_sample"
     />
     <ru.snowadv.chat.presentation.common.IncomingMessageLayout
         android:id="@+id/incoming_chat_message"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:paddingBottom="@dimen/common_padding"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-
+        app:layout_constraintWidth_percent="@fraction/width_of_message"
         app:usernameTextInIncomingMessage="@string/username_sample"
         app:messageTextInIncomingMessage="@string/short_message_text_sample"
         app:timestampTextInIncomingMessage="@string/timestamp_sample"
