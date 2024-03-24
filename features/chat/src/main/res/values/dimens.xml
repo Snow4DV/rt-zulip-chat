@@ -10,5 +10,13 @@
     <dimen name="message_box_timestamp_size">12sp</dimen>
     <dimen name="emoji_view_corner_radius">10dp</dimen>
     <dimen name="emoji_button_text_size">14sp</dimen>
-    <fraction name="width_of_message">0.9</fraction>
+    <item name="message_side_padding" format="float" type="dimen">0.1</item>
+    <dimen name="message_edit_text_horizontal_padding">20dp</dimen>
+    <dimen name="message_edit_text_vertical_padding">15dp</dimen>
+    <dimen name="message_edit_text_text_size">16sp</dimen>
+    <dimen name="topic_name_text_size">20sp</dimen>
+    <dimen name="topic_name_padding">10dp</dimen>
+    <dimen name="date_splitter_text_size">14sp</dimen>
+    <dimen name="date_splitter_horizontal_padding">10dp</dimen>
+    <dimen name="date_splitter_vertical_padding">2dp</dimen>
 </resources>

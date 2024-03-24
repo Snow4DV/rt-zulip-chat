@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="timestamp_format">dd.MM.yyyy HH:mm</string>
+    <string name="sample_topic_name">#general</string>
+    <string name="back_button_description">Кнопка назад</string>
+</resources>

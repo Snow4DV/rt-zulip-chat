@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Feature theme. -->
-    <style name="Base.Theme.VoiceApp.Chat" parent="Base.Theme.VoiceApp">
+    <style name="Theme.ZulipChat.Chat" parent="Base.Theme.ZulipChat">
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>

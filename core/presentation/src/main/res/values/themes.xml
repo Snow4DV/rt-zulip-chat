@@ -1,9 +1,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.VoiceApp" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    <style name="Base.Theme.ZulipChat" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primaryDark</item>
+        <item name="android:statusBarColor">@color/primaryDark</item>
     </style>
 
-    <style name="Theme.VoiceApp" parent="Base.Theme.VoiceApp" />
+    <style name="Theme.ZulipChat" parent="Base.Theme.ZulipChat" />
 </resources>

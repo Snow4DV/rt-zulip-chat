@@ -1,23 +1,38 @@
 package ru.snowadv.chat.presentation.chat
 
-import android.graphics.drawable.Drawable
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.res.ResourcesCompat
-import ru.snowadv.chat.R
+import android.widget.Toast
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import ru.snowadv.chat.databinding.FragmentChatBinding
-import ru.snowadv.chat.domain.model.emojiMap
+import ru.snowadv.chat.presentation.adapter.OutgoingMessageAdapterDelegate
+import ru.snowadv.chat.presentation.chat.view_model.ChatViewModel
+import ru.snowadv.presentation.adapter.AdapterDelegate
+import ru.snowadv.presentation.adapter.DelegateItem
+import ru.snowadv.presentation.adapter.impl.AdapterDelegatesManager
+import ru.snowadv.presentation.adapter.impl.DiffDelegationAdapter
+import ru.snowadv.presentation.adapter.util.PaddingItemDecorator
+import ru.snowadv.presentation.util.DateFormatter
+import ru.snowadv.presentation.util.DateTimeFormatter
+import ru.snowadv.presentation.util.FragmentDataObserver
+import ru.snowadv.presentation.util.impl.DayDateFormatter
+import ru.snowadv.presentation.util.impl.LocalizedDateTimeFormatter
+import java.time.LocalDateTime
 
-class ChatFragment : Fragment() {
+class ChatFragment : Fragment(),
+    FragmentDataObserver<FragmentChatBinding, ChatViewModel> by ChatFragmentDataObserver() {
 
     companion object {
         fun newInstance() = ChatFragment()
     }
 
     private lateinit var binding: FragmentChatBinding
+    private val viewModel: ChatViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,52 +42,6 @@ class ChatFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        initializeIncomingMessage()
-        initializeOutgoingMessage()
-        initializeButtons()
-    }
-
-    private fun initializeIncomingMessage() {
-        binding.incomingChatMessage.onReactionClickListener = { count, emojiCode, userReacted ->
-            binding.incomingChatMessage.addUpdateReaction(emojiCode, count + 1, (count + 1) % 2 == 0)
-        }
-        binding.incomingChatMessage.onAddReactionClickListener = {
-            binding.incomingChatMessage.addUpdateReaction(emojiMap.values.random().code, 1, false)
-        }
-
-    }
-
-    private fun initializeOutgoingMessage() {
-        binding.outgoingChatMessage.onReactionClickListener = { count, emojiCode, userReacted ->
-            binding.outgoingChatMessage.addUpdateReaction(emojiCode, count + 1, (count + 1) % 2 == 0)
-        }
-    }
-
-    private fun initializeButtons() {
-        with(binding) {
-            setAvatarButton.setOnClickListener {
-                incomingChatMessage.avatar = getNewAvatar()
-            }
-            setMessageTextButton.setOnClickListener {
-                incomingChatMessage.messageText = getString(R.string.long_message_text_sample)
-                outgoingChatMessage.messageText = getString(R.string.long_message_text_sample)
-            }
-            setName.setOnClickListener {
-                incomingChatMessage.usernameText = getString(R.string.username_sample_russian)
-            }
-            addRandomReactionButton.setOnClickListener {
-                incomingChatMessage.addUpdateReaction(emojiMap.values.random().code, 1, false)
-                outgoingChatMessage.addUpdateReaction(emojiMap.values.random().code, 1, false)
-            }
-        }
-    }
-
-
-    private fun getNewAvatar(): Drawable {
-        return ResourcesCompat.getDrawable(
-            resources,
-            R.drawable.test_avatar,
-            context?.theme
-        ) ?: error("Missing new avatar resource")
+        registerObservingFragment(binding, viewModel, this)
     }
 }

@@ -9,5 +9,7 @@
     <string name="set_name">Set name</string>
     <string name="timestamp_sample">01.01.1980 21:46</string>
     <string name="set_message_text">Set message text</string>
-
+    <string name="message_edit_text_hint">Написать...</string>
+    <string name="send_message_button_description">Отправить сообщение</string>
+    <string name="sample_topic_name">Topic: #testing</string>
 </resources>
