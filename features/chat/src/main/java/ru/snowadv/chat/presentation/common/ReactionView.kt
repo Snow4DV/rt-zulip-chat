@@ -66,13 +66,13 @@ internal class ReactionView @JvmOverloads constructor(
 
     var textSizePx by ViewInvalidatingProperty(
         value = dimToPx(DEFAULT_TEXT_AND_EMOJI_SIZE_SP, TypedValue.COMPLEX_UNIT_SP),
-        whenChanged = {
+        onChange = {
             textPaint.textSize = it
         }
     )
     var textColor by ViewInvalidatingProperty(
         value = DEFAULT_TEXT_COLOR,
-        whenChanged = {
+        onChange = {
             textPaint.color = it
         }
     )
