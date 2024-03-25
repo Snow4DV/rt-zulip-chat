@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import ru.snowadv.app_contacts.presentation.contact_service.ContactService
+import ru.snowadv.app_contacts.presentation.contact_service.ContactService.Companion.OBTAINER_RESULT_BUNDLE_KEY
 import ru.snowadv.app_contacts.presentation.model.Contact
 
 internal class ObtainerBroadcastReceiver(
@@ -16,10 +17,10 @@ internal class ObtainerBroadcastReceiver(
             ContactService.CONTACTS_RECEIVED_ACTION -> {
                 intent.apply {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        getParcelableArrayListExtra("result", Contact::class.java)
+                        getParcelableArrayListExtra(OBTAINER_RESULT_BUNDLE_KEY, Contact::class.java)
                     } else {
                         @Suppress("DEPRECATION")
-                        getParcelableArrayListExtra<Contact>("result")?.filterIsInstance<Contact>()
+                        getParcelableArrayListExtra<Contact>(OBTAINER_RESULT_BUNDLE_KEY)?.filterIsInstance<Contact>()
                     }?.let {
                         onContactsReceived(it)
                     }

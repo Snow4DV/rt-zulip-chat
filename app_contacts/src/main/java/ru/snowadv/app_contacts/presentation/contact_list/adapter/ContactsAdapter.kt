@@ -18,6 +18,7 @@ internal class ContactsAdapter :
         )
     }
 
+
     override fun onBindViewHolder(holder: ContactViewHolder, position: Int) {
         getItem(position).let { contact ->
             holder.binding.contactName.text = contact.name

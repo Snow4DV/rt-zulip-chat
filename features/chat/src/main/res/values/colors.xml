@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="emoji_reacted_bg_color">#F2EFF4</color>
+    <color name="emoji_bg_color">#D8D4DA</color>
+    <color name="ripple">@color/ripple_material_light</color>
+    <color name="reaction_text">#1C1C1C</color>
+    <color name="card_text">#D8D4DA</color>
+    <color name="received_message_color">#CFCBD1</color>
+    <color name="incoming_message_user_name_color">#2A9D8F</color>
+    <color name="message_text_color">#2A2A2A</color>
+    <color name="message_text_color_outgoing">#FFFFFF</color>
+    <color name="message_timestamp_color">#747474</color>
+    <color name="message_timestamp_color_outgoing">#CECECE</color>
+
+
+
+</resources>

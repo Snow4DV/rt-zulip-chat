@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Feature theme. -->
+    <style name="Base.Theme.VoiceApp.Chat" parent="Base.Theme.VoiceApp">
+        <!-- Customize your dark theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+</resources>

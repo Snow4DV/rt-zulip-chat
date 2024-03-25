@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="DefaultReactionButtonStyle">
+        <item name="android:state_selected">false</item>
+        <item name="android:background">@drawable/emoji_bg</item>
+        <item name="android:paddingLeft">13.5dp</item>
+        <item name="android:paddingRight">13.5dp</item>
+        <item name="android:paddingTop">7.5dp</item>
+        <item name="android:paddingBottom">7.5dp</item>
+        <item name="android:textColor">@color/reaction_text</item>
+        <item name="android:textSize">@dimen/emoji_button_text_size</item>
+
+    </style>
+    
+    <style name="GlobalReactionButtonStyle" parent="DefaultReactionButtonStyle">
+        <item name="android:textColor">@color/card_text</item>
+        <item name="android:textSize">@dimen/emoji_button_text_size</item>
+        <item name="android:paddingLeft">@dimen/reaction_horizontal_padding</item>
+        <item name="android:paddingRight">@dimen/reaction_horizontal_padding</item>
+        <item name="android:paddingTop">@dimen/reaction_vertical_padding</item>
+        <item name="android:paddingBottom">@dimen/reaction_vertical_padding</item>
+    </style>
+
+    <!-- Feature theme. -->
+    <style name="Base.Theme.VoiceApp.Chat" parent="Theme.VoiceApp">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="reactionButtonStyle">@style/GlobalReactionButtonStyle</item>
+    </style>
+
+
+    <style name="RoundedAvatar">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+</resources>

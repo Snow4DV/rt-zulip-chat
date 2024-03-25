@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="add_random_reaction">Add random reaction</string>
+    <string name="username_sample">John Doe</string>
+    <string name="username_sample_russian">Ivan Ivanov</string>
+    <string name="long_message_text_sample">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</string>
+    <string name="short_message_text_sample">Quick brown fox jumped over the lazy dog.</string>
+    <string name="set_avatar">Set avatar</string>
+    <string name="set_name">Set name</string>
+    <string name="timestamp_sample">01.01.1980 21:46</string>
+    <string name="set_message_text">Set message text</string>
+
+</resources>
