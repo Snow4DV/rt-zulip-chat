@@ -11,6 +11,7 @@ import ru.snowadv.chat.presentation.view.OutgoingMessageLayout
 import ru.snowadv.chat.domain.model.ChatReaction
 import ru.snowadv.chat.presentation.model.ChatMessage
 import ru.snowadv.chat.presentation.model.ChatMessageType
+import ru.snowadv.chat.presentation.util.toUiChatEmoji
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.presentation.adapter.DelegationItemAdapterDelegate
 import ru.snowadv.presentation.util.DateTimeFormatter
@@ -38,7 +39,7 @@ internal class OutgoingMessageAdapterDelegate(
                     getItemAtPosition(items, holder.adapterPosition)?.let { message ->
                         onReactionClick?.invoke(
                             ChatReaction(
-                                emojiMap[emojiCode] ?: error("No such emoji with code $emojiCode"),
+                                emojiMap[emojiCode]?.toUiChatEmoji() ?: error("No such emoji with code $emojiCode"),
                                 count,
                                 userReacted
                             ),
@@ -93,10 +94,10 @@ internal class OutgoingMessageAdapterDelegate(
     private fun getNewOutgoingMessageLayout(parent: ViewGroup): OutgoingMessageLayout {
         return OutgoingMessageLayout(parent.context).apply {
             layoutParams = RecyclerView.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            setPadding(getMessageLeftPaddingInPx(parent.context, parent.measuredWidth), 0, 0, 0)
+            this.maxWidthOfParent = 0.9f
         }
     }
 

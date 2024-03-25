@@ -14,7 +14,6 @@ import ru.snowadv.presentation.util.ViewInvalidatingProperty
 import ru.snowadv.presentation.util.dimToPx
 import kotlin.math.max
 
-typealias OnAddReactionClickListener = () -> Unit
 
 /**
  * This view draws message with name, text, timestamp, avatar and emojis flexbox for incoming
@@ -32,7 +31,6 @@ internal class IncomingMessageLayout @JvmOverloads constructor(
         ItemMessageViewIncomingBinding.inflate(layoutInflater, this)
 
     override val messageBackgroundView: View = binding.messageBackground
-
     override val reactionsContainer: FlexBoxLayout = binding.reactionsContainer
     override val messageTextView: TextView = binding.messageText
     override val timestampTextView: TextView = binding.messageTimestamp
@@ -71,11 +69,10 @@ internal class IncomingMessageLayout @JvmOverloads constructor(
             binding.avatar.setImageDrawable(value)
             requestLayout()
         }
-    var onAddReactionClickListener: OnAddReactionClickListener? = null
 
     init {
         initAttributes(attrs, defStyleAttr, defStyleRes)
-        initListenerForAddReactionButton()
+        initLongClickListener()
     }
 
 
@@ -88,8 +85,8 @@ internal class IncomingMessageLayout @JvmOverloads constructor(
         val avatarAndPaddingWidth =
             binding.avatar.measuredWidth + paddingBetweenAvatarAndMessageBoxPx.toInt()
 
-        val messageItemsWidth =
-            MeasureSpec.getSize(widthMeasureSpec) - paddingLeft - paddingRight - avatarAndPaddingWidth
+        val messageItemsWidth = (MeasureSpec.getSize(widthMeasureSpec) * maxWidthOfParent).toInt() -
+                    paddingLeft - paddingRight - avatarAndPaddingWidth
         val messageBoxWidthMeasureSpec =
             MeasureSpec.makeMeasureSpec(messageItemsWidth, MeasureSpec.getMode(widthMeasureSpec))
         for (child in children) {
@@ -193,47 +190,47 @@ internal class IncomingMessageLayout @JvmOverloads constructor(
         )
             .use { styledAttributes ->
                 paddingBetweenReactionsPx = styledAttributes.getDimensionPixelSize(
-                    R.styleable.IncomingMessageLayout_paddingBetweenReactionsInIncomingMessage,
+                    R.styleable.IncomingMessageLayout_paddingBetweenReactions,
                     dimToPx(
                         DEFAULT_PADDING_BETWEEN_REACTIONS_DP,
                         TypedValue.COMPLEX_UNIT_DIP
                     ).toInt()
                 ).toFloat()
                 paddingBetweenMessageBoxAndReactionsPx = styledAttributes.getDimensionPixelSize(
-                    R.styleable.IncomingMessageLayout_paddingBetweenMessageBoxAndReactionsInIncomingMessage,
+                    R.styleable.IncomingMessageLayout_paddingBetweenMessageBoxAndReactions,
                     dimToPx(
                         DEFAULT_PADDING_BETWEEN_MESSAGE_BOX_AND_REACTIONS_DP,
                         TypedValue.COMPLEX_UNIT_DIP
                     ).toInt()
                 ).toFloat()
                 paddingBetweenAvatarAndMessageBoxPx = styledAttributes.getDimensionPixelSize(
-                    R.styleable.IncomingMessageLayout_paddingBetweenAvatarAndMessageBoxInIncomingMessage,
+                    R.styleable.IncomingMessageLayout_paddingBetweenAvatarAndMessageBox,
                     dimToPx(
                         DEFAULT_PADDING_BETWEEN_AVATAR_AND_MESSAGE_BOX_DP,
                         TypedValue.COMPLEX_UNIT_DIP
                     ).toInt()
                 ).toFloat()
                 avatar =
-                    styledAttributes.getDrawable(R.styleable.IncomingMessageLayout_avatarInIncomingMessage)
+                    styledAttributes.getDrawable(R.styleable.IncomingMessageLayout_avatar)
                 usernameText =
-                    styledAttributes.getString(R.styleable.IncomingMessageLayout_usernameTextInIncomingMessage)
+                    styledAttributes.getString(R.styleable.IncomingMessageLayout_usernameText)
                         ?: DEFAULT_USERNAME_TEXT
                 messageText =
-                    styledAttributes.getString(R.styleable.IncomingMessageLayout_messageTextInIncomingMessage)
+                    styledAttributes.getString(R.styleable.IncomingMessageLayout_messageText)
                         ?: DEFAULT_MESSAGE_TEXT
                 timeText =
-                    styledAttributes.getString(R.styleable.IncomingMessageLayout_timestampTextInIncomingMessage)
+                    styledAttributes.getString(R.styleable.IncomingMessageLayout_timestampText)
                         ?: DEFAULT_TIMESTAMP_TEXT
                 avatar =
-                    styledAttributes.getDrawable(R.styleable.IncomingMessageLayout_avatarInIncomingMessage)
+                    styledAttributes.getDrawable(R.styleable.IncomingMessageLayout_avatar)
                         ?: getDefaultAvatar()
+                maxWidthOfParent = styledAttributes.getFraction(
+                    R.styleable.IncomingMessageLayout_maxWidthOfParent,
+                    1,
+                    1,
+                    DEFAULT_MAX_WIDTH_OF_PARENT
+                )
             }
-    }
-
-    private fun initListenerForAddReactionButton() {
-        binding.addReactionButton.setOnClickListener {
-            onAddReactionClickListener?.invoke()
-        }
     }
 
     private fun getDefaultAvatar(): Drawable {
@@ -242,6 +239,12 @@ internal class IncomingMessageLayout @JvmOverloads constructor(
             ru.snowadv.presentation.R.drawable.ic_user_avatar,
             context.theme
         ) ?: error("Missing default avatar resource")
+    }
+
+    private fun initLongClickListener() {
+        messageBackgroundView.setOnClickListener {
+            onMessageLongClickListener?.invoke()
+        }
     }
 
 }

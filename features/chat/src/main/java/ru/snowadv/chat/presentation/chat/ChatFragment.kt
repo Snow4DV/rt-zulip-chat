@@ -10,8 +10,11 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import ru.snowadv.chat.databinding.FragmentChatBinding
+import ru.snowadv.chat.domain.model.emojiMap
 import ru.snowadv.chat.presentation.adapter.OutgoingMessageAdapterDelegate
 import ru.snowadv.chat.presentation.chat.view_model.ChatViewModel
+import ru.snowadv.chat.presentation.emoji_chooser.EmojiChooserBottomSheetDialog
+import ru.snowadv.chat.presentation.util.toUiChatEmoji
 import ru.snowadv.presentation.adapter.AdapterDelegate
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.presentation.adapter.impl.AdapterDelegatesManager
@@ -31,17 +34,30 @@ class ChatFragment : Fragment(),
         fun newInstance() = ChatFragment()
     }
 
-    private lateinit var binding: FragmentChatBinding
+    private var _binding: FragmentChatBinding? = null
+    private val binding get() = _binding!!
     private val viewModel: ChatViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return FragmentChatBinding.inflate(layoutInflater).also { binding = it }.root
+        return FragmentChatBinding.inflate(layoutInflater).also { _binding = it }.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         registerObservingFragment(binding, viewModel, this)
+        openEmojiChooser()
+    }
+
+    private fun openEmojiChooser() {
+        val dialog =
+            EmojiChooserBottomSheetDialog.newInstance(emojiMap.values.map { it.toUiChatEmoji() })
+        dialog.show(childFragmentManager, "test")
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

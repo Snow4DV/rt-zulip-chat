@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:gravity="center"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/emoji_chooser_padding_between_items"
+    android:textSize="@dimen/emoji_size_chooser"
+    tools:text="😁" />

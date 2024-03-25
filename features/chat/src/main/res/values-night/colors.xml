@@ -15,4 +15,5 @@
     <color name="on_surface_box_text_color">#CCCCCC</color>
     <color name="date_splitter_bg_color">#070707</color>
     <color name="date_splitter_text_color">#999999</color>
+    <color name="sheet_puller_color">#555555</color>
 </resources>

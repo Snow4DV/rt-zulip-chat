@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import ru.snowadv.chat.domain.model.ChatMessage
 import ru.snowadv.chat.domain.repository.MessageRepository
@@ -16,6 +17,15 @@ import java.time.ZonedDateTime
 internal class StubMessageRepository : MessageRepository {
 
     private val messages = MutableStateFlow(emptyList<ChatMessage>())
+    private val randomMessages = listOf(
+        "Hi",
+        "Hello",
+        "How are you?",
+        "Test message",
+        "Guys, psst, how much are you getting paid?",
+        "Guys i accidentally deleted prod db. Where do i get a backup? Do we really have backups or i should bail out?",
+    )
+
     override fun getMessages(): Flow<Resource<List<ChatMessage>>> {
         return messages
             .onStart {
@@ -40,6 +50,7 @@ internal class StubMessageRepository : MessageRepository {
             senderAvatarUrl = null,
             reactions = emptyList()
         )
+        addRandomAnswerMessage()
     }
 
     override fun addReaction(
@@ -62,6 +73,19 @@ internal class StubMessageRepository : MessageRepository {
         delay(100) // Simulate server delay
         action()
         emit(Resource.Success(Unit))
+    }
+
+    private fun addRandomAnswerMessage() {
+        val lastMessageId = messages.value.lastOrNull()?.id ?: 0
+        messages.value += ChatMessage(
+            id = lastMessageId + 1,
+            content = randomMessages.random(),
+            sentAt = ZonedDateTime.now(),
+            senderId = 2,
+            senderName = "Petr Petrov",
+            senderAvatarUrl = null,
+            reactions = emptyList()
+        )
     }
 
 

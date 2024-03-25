@@ -15,6 +15,7 @@ import ru.snowadv.presentation.util.dimToPx
 
 typealias OnReactionClickListener = (count: Int, emojiCode: Int, userReacted: Boolean) -> Unit
 typealias OnMessageLongClickListener = () -> Unit
+typealias OnAddReactionClickListener = () -> Unit
 
 internal abstract class MessageLayout @JvmOverloads constructor(
     context: Context,
@@ -37,6 +38,7 @@ internal abstract class MessageLayout @JvmOverloads constructor(
         const val DEFAULT_PADDING_BETWEEN_REACTIONS_DP = 5
         const val DEFAULT_MESSAGE_TEXT = ""
         const val DEFAULT_TIMESTAMP_TEXT = ""
+        const val DEFAULT_MAX_WIDTH_OF_PARENT = 1.0f
     }
 
     var onMessageLongClickListener: OnMessageLongClickListener? = null
@@ -47,6 +49,10 @@ internal abstract class MessageLayout @JvmOverloads constructor(
             TypedValue.COMPLEX_UNIT_DIP
         ),
         requestLayout = true,
+    )
+    var maxWidthOfParent: Float by ViewInvalidatingProperty(
+        value = DEFAULT_MAX_WIDTH_OF_PARENT,
+        requestLayout = true
     )
     var messageText: CharSequence
         get() = messageTextView.text
@@ -174,7 +180,9 @@ internal abstract class MessageLayout @JvmOverloads constructor(
 
         // Add plus at the end if reactionsSet is not empty
         if (reactionsSet.isNotEmpty()) {
-            reactionsContainer.addView(getAddReactionButtonView())
+            reactionsContainer.addView(getAddReactionButtonView().also {  plusView ->
+                plusView.setOnClickListener {  }
+            })
         }
     }
 

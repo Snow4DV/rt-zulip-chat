@@ -21,24 +21,32 @@
     <attr name="flexBoxStyle" format="reference" />
 
 
+    <attr name="paddingBetweenReactions" format="dimension" />
+    <attr name="paddingBetweenMessageBoxAndReactions" format="dimension" />
+    <attr name="messageText" format="string" />
+    <attr name="timestampText" format="string" />
+    <attr name="maxWidthOfParent" />
+
     <declare-styleable name="IncomingMessageLayout">
-        <attr name="paddingBetweenReactionsInIncomingMessage" format="dimension" />
-        <attr name="paddingBetweenMessageBoxAndReactionsInIncomingMessage" format="dimension" />
-        <attr name="paddingBetweenAvatarAndMessageBoxInIncomingMessage" format="dimension" />
-        <attr name="avatarInIncomingMessage" format="reference" />
-        <attr name="usernameTextInIncomingMessage" format="string" />
-        <attr name="messageTextInIncomingMessage" format="string" />
-        <attr name="timestampTextInIncomingMessage" format="string" />
+        <attr name="paddingBetweenReactions" />
+        <attr name="paddingBetweenMessageBoxAndReactions" />
+        <attr name="paddingBetweenAvatarAndMessageBox" format="dimension" />
+        <attr name="avatar" format="reference" />
+        <attr name="usernameText" format="string" />
+        <attr name="messageText" />
+        <attr name="timestampText" />
+        <attr name="maxWidthOfParent" />
     </declare-styleable>
     <attr name="incomingMessageLayoutStyle" format="reference" />
 
     <declare-styleable name="OutgoingMessageLayout">
-        <attr name="paddingBetweenReactionsInOutgoingMessage" format="dimension" />
-        <attr name="paddingBetweenMessageBoxAndReactionsInOutgoingMessage" format="dimension" />
-        <attr name="messageTextInOutgoingMessage" format="string" />
-        <attr name="timestampTextInOutgoingMessage" format="string" />
+        <attr name="paddingBetweenMessageBoxAndReactions" />
+        <attr name="paddingBetweenReactions" />
+        <attr name="messageText" />
+        <attr name="timestampText" />
+        <attr name="maxWidthOfParent" />
     </declare-styleable>
     <attr name="outgoingMessageLayoutStyle" format="reference" />
-    
+
 
 </resources>

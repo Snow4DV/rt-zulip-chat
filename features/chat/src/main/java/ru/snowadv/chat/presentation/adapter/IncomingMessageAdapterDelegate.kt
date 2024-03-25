@@ -9,6 +9,7 @@ import ru.snowadv.chat.presentation.view.IncomingMessageLayout
 import ru.snowadv.chat.domain.model.ChatReaction
 import ru.snowadv.chat.presentation.model.ChatMessage
 import ru.snowadv.chat.presentation.model.ChatMessageType
+import ru.snowadv.chat.presentation.util.toUiChatEmoji
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.presentation.adapter.DelegationItemAdapterDelegate
 import ru.snowadv.presentation.util.DateTimeFormatter
@@ -37,7 +38,7 @@ internal class IncomingMessageAdapterDelegate(
                     getItemAtPosition(items, holder.adapterPosition)?.let { message ->
                         onReactionClick?.invoke(
                             ChatReaction(
-                                emojiMap[emojiCode] ?: error("No such emoji with code $emojiCode"),
+                                emojiMap[emojiCode]?.toUiChatEmoji() ?: error("No such emoji with code $emojiCode"),
                                 count,
                                 userReacted
                             ),
@@ -52,9 +53,11 @@ internal class IncomingMessageAdapterDelegate(
             usernameText = message.senderName
             messageText = message.text
             timestampText = timestampFormatter.format(message.sentAt)
-            avatarImageView.load(message.senderAvatarUrl) {
-                crossfade(true)
-                placeholder(ru.snowadv.presentation.R.drawable.ic_user_avatar)
+            message.senderAvatarUrl?.let { url ->
+                avatarImageView.load(url) {
+                    crossfade(true)
+                    placeholder(ru.snowadv.presentation.R.drawable.ic_user_avatar)
+                }
             }
             bindReactions(message.reactions)
         }
@@ -97,7 +100,7 @@ internal class IncomingMessageAdapterDelegate(
     private fun getNewIncomingMessageLayout(parent: ViewGroup): IncomingMessageLayout {
         return IncomingMessageLayout(parent.context).apply {
             layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
         }

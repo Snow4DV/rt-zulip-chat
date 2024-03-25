@@ -73,11 +73,11 @@ internal class ChatViewModel(
             }
 
             is ChatScreenEvent.AddChosenReaction -> {
-                addReaction(event.messageId, event.reaction)
+                //addReaction(event.messageId, event.reaction)
             }
 
             is ChatScreenEvent.RemoveReaction -> {
-                removeReaction(event.messageId, event.reaction)
+                //removeReaction(event.messageId, event.reaction)
             }
         }
     }
