@@ -17,19 +17,25 @@ class ChatFragment : Fragment() {
         fun newInstance() = ChatFragment()
     }
 
-    private lateinit var binding: FragmentChatBinding
+    private var _binding: FragmentChatBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return FragmentChatBinding.inflate(layoutInflater).also { binding = it }.root
+        return FragmentChatBinding.inflate(layoutInflater).also { _binding = it }.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initializeIncomingMessage()
         initializeOutgoingMessage()
         initializeButtons()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun initializeIncomingMessage() {
