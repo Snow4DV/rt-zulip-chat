@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import ru.snowadv.chat.databinding.FragmentEmojiChooserBinding
 import ru.snowadv.chat.presentation.adapter.EmojiAdapterDelegate
@@ -21,6 +22,7 @@ class EmojiChooserBottomSheetDialog private constructor(
 ) : BottomSheetDialogFragment() {
 
     companion object {
+        const val TAG = "emoji_chooser_dialog"
         fun newInstance(emojis: List<ChatEmoji>, listener: OnEmojiClickListener? = null) =
             EmojiChooserBottomSheetDialog(emojis, listener)
     }
@@ -42,6 +44,13 @@ class EmojiChooserBottomSheetDialog private constructor(
         binding.emojisRecycler.adapter = adapter
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    fun show(fragmentManager: FragmentManager) = show(fragmentManager, TAG)
+
     private fun initDelegationAdapter(): DiffDelegationAdapter {
         return DiffDelegationAdapter(initDelegatesManager())
     }
@@ -55,11 +64,5 @@ class EmojiChooserBottomSheetDialog private constructor(
                 }
             )
         )
-    }
-
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

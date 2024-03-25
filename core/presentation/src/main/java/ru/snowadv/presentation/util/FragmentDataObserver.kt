@@ -5,5 +5,5 @@ import androidx.lifecycle.ViewModel
 import androidx.viewbinding.ViewBinding
 
 interface FragmentDataObserver<B: ViewBinding, VM: ViewModel> {
-    fun registerObservingFragment(binding: B, viewModel: VM, fragment: Fragment)
+    fun Fragment.registerObservingFragment(binding: B, viewModel: VM)
 }

@@ -15,12 +15,15 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import ru.snowadv.chat.R
 import ru.snowadv.chat.databinding.FragmentChatBinding
+import ru.snowadv.chat.domain.model.emojiMap
 import ru.snowadv.chat.presentation.adapter.DateSplitterAdapterDelegate
 import ru.snowadv.chat.presentation.adapter.IncomingMessageAdapterDelegate
 import ru.snowadv.chat.presentation.adapter.OutgoingMessageAdapterDelegate
 import ru.snowadv.chat.presentation.chat.event.ChatScreenEvent
 import ru.snowadv.chat.presentation.chat.state.ChatScreenState
 import ru.snowadv.chat.presentation.chat.view_model.ChatViewModel
+import ru.snowadv.chat.presentation.emoji_chooser.EmojiChooserBottomSheetDialog
+import ru.snowadv.chat.presentation.util.toUiChatEmoji
 import ru.snowadv.presentation.adapter.AdapterDelegate
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.presentation.adapter.impl.AdapterDelegatesManager
@@ -37,20 +40,19 @@ internal class ChatFragmentDataObserver : FragmentDataObserver<FragmentChatBindi
     private lateinit var splitterDateFormatter: DateFormatter
     private lateinit var dateTimeFormatter: DateTimeFormatter
 
-    override fun registerObservingFragment(
+    override fun Fragment.registerObservingFragment(
         binding: FragmentChatBinding,
         viewModel: ChatViewModel,
-        fragment: Fragment
     ) {
-        initDateTimeFormatters(fragment.requireContext())
+        initDateTimeFormatters(requireContext())
         adapter = initDelegateAdapter(viewModel).also {
             setAdapterToRecyclerViewWithLinearLayoutManager(
-                fragment.requireContext(),
+                requireContext(),
                 binding.messagesRecycler,
                 it
             )
         }
-        subscribeToState(binding, viewModel, fragment)
+        subscribeToState(binding, viewModel, this)
         initListeners(binding, viewModel)
     }
 
@@ -78,8 +80,10 @@ internal class ChatFragmentDataObserver : FragmentDataObserver<FragmentChatBindi
         viewModel: ChatViewModel,
     ) {
         binding.bottomBar.messageEditText.addTextChangedListener {
-            it?.toString()?.let {
-                viewModel.event(ChatScreenEvent.TextFieldMessageChanged(it))
+            it?.toString()?.let { currentMessage ->
+                if(viewModel.state.value.messageField != currentMessage) {
+                    viewModel.event(ChatScreenEvent.TextFieldMessageChanged(currentMessage))
+                }
             }
         }
         binding.bottomBar.sendOrAddAttachmentButton.setOnClickListener {
@@ -103,6 +107,11 @@ internal class ChatFragmentDataObserver : FragmentDataObserver<FragmentChatBindi
         )
         adapter.submitList(state.messagesAndDates)
         binding.loadingBar.visibility = if (state.loading) View.VISIBLE else View.GONE
+        with(binding.bottomBar.messageEditText.text.toString()) {
+            if (state.messageField != this) {
+                binding.bottomBar.messageEditText.setText(state.messageField)
+            }
+        }
     }
 
 
@@ -155,6 +164,17 @@ internal class ChatFragmentDataObserver : FragmentDataObserver<FragmentChatBindi
             initIncomingMessagesDelegate(viewModel),
             initOutgoingMessagesDelegate(viewModel)
         )
+    }
+
+    private fun openEmojiChooser(messageId: Long, fragment: Fragment, viewModel: ChatViewModel) {
+        val dialog =
+            EmojiChooserBottomSheetDialog.newInstance(
+                emojis = emojiMap.values.map { it.toUiChatEmoji() },
+                listener = { chosenEmoji ->
+                    viewModel.event(ChatScreenEvent.AddChosenReaction(messageId, chosenEmoji))
+                }
+            )
+        dialog.show(fragment.childFragmentManager)
     }
 
     private fun initDelegateAdapter(viewModel: ChatViewModel): DiffDelegationAdapter {
