@@ -1,7 +1,6 @@
 package ru.snowadv.chat.presentation.chat.view_model
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,6 +10,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import ru.snowadv.chat.data.StubMessageRepository
+import ru.snowadv.chat.domain.model.ChatMessage
 import ru.snowadv.chat.domain.model.Emoji
 import ru.snowadv.chat.domain.repository.MessageRepository
 import ru.snowadv.chat.presentation.chat.event.ChatScreenEvent
@@ -30,13 +30,22 @@ internal class ChatViewModel(
     val fragmentEventFlow = _fragmentEventFlow.asSharedFlow()
 
     init {
-        repository.getMessages().onEach {
-            it.data?.let {
+        repository.getMessages()
+            .onEach(::processMessagesListResource)
+            .launchIn(viewModelScope) // TODO: NOT LIFECYCLE AWARE, FIX! DONE FOR TESTING ONLY
+    }
+
+    private fun processMessagesListResource(res: Resource<List<ChatMessage>>) {
+        when (res) {
+            is Resource.Success -> {
                 _state.value = state.value.copy(
-                    messagesAndDates = it.mapToAdapterMessagesAndDates(1)
+                    messagesAndDates = res.data.mapToAdapterMessagesAndDates(1)
                 )
             }
-        }.launchIn(viewModelScope) // TODO: NOT LIFECYCLE AWARE, FIX! DONE FOR TESTING ONLY
+            else -> {
+                // TODO: Restart flow here
+            }
+        }
     }
 
     private fun createDefaultState(): ChatScreenState {

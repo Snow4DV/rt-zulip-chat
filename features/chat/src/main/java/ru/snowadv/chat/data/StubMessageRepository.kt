@@ -3,11 +3,8 @@ package ru.snowadv.chat.data
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import ru.snowadv.chat.domain.model.ChatMessage
 import ru.snowadv.chat.domain.repository.MessageRepository
@@ -29,7 +26,7 @@ internal class StubMessageRepository : MessageRepository {
     override fun getMessages(): Flow<Resource<List<ChatMessage>>> {
         return messages
             .onStart {
-                Resource.Loading(null) // Simulate connection to the server
+                Resource.Loading // Simulate connection to the server
                 delay(100)
             }
             .map { Resource.Success(it) }
@@ -69,7 +66,7 @@ internal class StubMessageRepository : MessageRepository {
     }
 
     private fun constructCompletableFlowWithDelay(action: () -> Unit) = flow {
-        emit(Resource.Loading())
+        emit(Resource.Loading)
         delay(100) // Simulate server delay
         action()
         emit(Resource.Success(Unit))

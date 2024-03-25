@@ -10,9 +10,6 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
 import ru.snowadv.chat.R
-import ru.snowadv.chat.domain.model.Emoji
-import ru.snowadv.chat.domain.model.emojiMap
-import ru.snowadv.chat.domain.model.ChatReaction
 import ru.snowadv.presentation.util.ViewInvalidatingProperty
 import ru.snowadv.presentation.util.dimToPx
 import kotlin.math.max
@@ -66,13 +63,13 @@ internal class ReactionView @JvmOverloads constructor(
 
     var textSizePx by ViewInvalidatingProperty(
         value = dimToPx(DEFAULT_TEXT_AND_EMOJI_SIZE_SP, TypedValue.COMPLEX_UNIT_SP),
-        whenChanged = {
+        onChange = {
             textPaint.textSize = it
         }
     )
     var textColor by ViewInvalidatingProperty(
         value = DEFAULT_TEXT_COLOR,
-        whenChanged = {
+        onChange = {
             textPaint.color = it
         }
     )

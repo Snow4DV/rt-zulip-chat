@@ -72,6 +72,7 @@ internal abstract class MessageLayout @JvmOverloads constructor(
             reactionsContainer.paddingBetweenViewsPx = value
             requestLayout()
         }
+    var addReactionClickListener: OnAddReactionClickListener? = null
 
     /**
      * This function changes info about reaction in container layout
@@ -79,7 +80,7 @@ internal abstract class MessageLayout @JvmOverloads constructor(
      * It updates view if count of votes >= 1
      * It removes view if count < 1
      */
-    fun addUpdateRemoveReaction(reaction: ChatReaction) {
+    private fun addUpdateRemoveReaction(reaction: ChatReaction) {
         addUpdateRemoveReaction(
             reaction.emoji.code,
             reaction.count,
@@ -93,7 +94,7 @@ internal abstract class MessageLayout @JvmOverloads constructor(
      * It updates view if count of votes >= 1
      * It removes view if count < 1
      */
-    fun addUpdateRemoveReaction(
+    private fun addUpdateRemoveReaction(
         emojiCode: Int,
         count: Int,
         userReacted: Boolean
@@ -139,12 +140,7 @@ internal abstract class MessageLayout @JvmOverloads constructor(
 
     fun clearReactions() {
         reactions.clear()
-        reactionsContainer.children
-            .filterIsInstance(ReactionView::class.java)
-            .filter { !it.isPlus }
-            .toList().forEach {
-                reactionsContainer.removeView(it)
-            }
+        reactionsContainer.removeAllViews()
         requestLayout()
     }
 
@@ -181,7 +177,9 @@ internal abstract class MessageLayout @JvmOverloads constructor(
         // Add plus at the end if reactionsSet is not empty
         if (reactionsSet.isNotEmpty()) {
             reactionsContainer.addView(getAddReactionButtonView().also {  plusView ->
-                plusView.setOnClickListener {  }
+                plusView.setOnClickListener {
+
+                }
             })
         }
     }
