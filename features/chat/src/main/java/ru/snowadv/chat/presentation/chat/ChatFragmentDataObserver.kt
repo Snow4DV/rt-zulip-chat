@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -37,11 +38,16 @@ internal class ChatFragmentDataObserver :
     private lateinit var splitterDateFormatter: DateFormatter
     private lateinit var dateTimeFormatter: DateTimeFormatter
 
+    companion object {
+        const val EMOJI_CHOOSER_REQUEST_KEY = "emoji_chooser_request"
+    }
+
     override fun ChatFragment.registerObservingFragment(
         binding: FragmentChatBinding,
         viewModel: ChatViewModel,
     ) {
         initDateTimeFormatters(requireContext())
+        initEmojiChooserResultListener(this, viewModel)
         adapter = initDelegateAdapter(viewModel).also {
             setAdapterToRecyclerViewWithLinearLayoutManager(
                 requireContext(),
@@ -74,7 +80,11 @@ internal class ChatFragmentDataObserver :
             .launchIn(fragment.viewLifecycleOwner.lifecycleScope)
     }
 
-    private fun observeEventFlow(viewModel: ChatViewModel, fragment: Fragment, binding: FragmentChatBinding) {
+    private fun observeEventFlow(
+        viewModel: ChatViewModel,
+        fragment: Fragment,
+        binding: FragmentChatBinding
+    ) {
         viewModel.fragmentEventFlow
             .onEach {
                 handleFragmentEventFlow(it, fragment, viewModel, binding)
@@ -117,11 +127,11 @@ internal class ChatFragmentDataObserver :
             is ChatScreenFragmentEvent.ExplainError -> {
                 showErrorToast(fragment, R.string.unexpected_error)
             }
-            
+
             is ChatScreenFragmentEvent.ExplainNotImplemented -> {
                 showErrorToast(fragment, R.string.not_supported)
             }
-            
+
             is ChatScreenFragmentEvent.ExplainReactionAlreadyExists -> {
                 showErrorToast(fragment, R.string.reaction_already_exists)
             }
@@ -148,7 +158,8 @@ internal class ChatFragmentDataObserver :
             }
         }
         binding.loadingBar.visibility = if (state.loading) View.VISIBLE else View.GONE
-        binding.actionProgressBar.visibility = if (state.actionInProcess) View.VISIBLE else View.GONE
+        binding.actionProgressBar.visibility =
+            if (state.actionInProcess) View.VISIBLE else View.GONE
     }
 
 
@@ -204,12 +215,7 @@ internal class ChatFragmentDataObserver :
     }
 
     private fun openReactionChooser(messageId: Long, fragment: Fragment, viewModel: ChatViewModel) {
-        val dialog =
-            EmojiChooserBottomSheetDialog.newInstance(
-                listener = { chosenEmoji ->
-                    viewModel.event(ChatScreenEvent.AddChosenReaction(messageId, chosenEmoji.name))
-                }
-            )
+        val dialog = EmojiChooserBottomSheetDialog.newInstance(EMOJI_CHOOSER_REQUEST_KEY, messageId)
         dialog.show(fragment.childFragmentManager)
     }
 
@@ -225,5 +231,21 @@ internal class ChatFragmentDataObserver :
     private fun initDateTimeFormatters(context: Context) { // TODO: Replace with DI
         dateTimeFormatter = LocalizedDateTimeFormatter(context)
         splitterDateFormatter = DayDateFormatter(context)
+    }
+
+    private fun initEmojiChooserResultListener(fragment: Fragment, viewModel: ChatViewModel) {
+        fragment.childFragmentManager.setFragmentResultListener(EMOJI_CHOOSER_REQUEST_KEY, fragment.viewLifecycleOwner) { key, bundle ->
+            val chosenReaction =
+                bundle.getString(EmojiChooserBottomSheetDialog.BUNDLE_CHOSEN_REACTION_NAME)
+                    ?: error("No reaction came as result from EmojiChooserBottomSheetDialog")
+            val messageId = bundle.getLong(
+                EmojiChooserBottomSheetDialog.BUNDLE_MESSAGE_ID_KEY,
+                EmojiChooserBottomSheetDialog.DEFAULT_ARG_MESSAGE_ID
+            )
+            if (messageId == EmojiChooserBottomSheetDialog.DEFAULT_ARG_MESSAGE_ID) {
+                error("Missing messageId in result bundle from emoji chooser")
+            }
+            viewModel.event(ChatScreenEvent.AddChosenReaction(messageId, chosenReaction))
+        }
     }
 }
