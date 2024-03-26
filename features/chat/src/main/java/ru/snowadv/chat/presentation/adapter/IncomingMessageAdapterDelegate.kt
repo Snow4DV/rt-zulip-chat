@@ -4,46 +4,46 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import coil.load
-import ru.snowadv.chat.domain.model.emojiMap
 import ru.snowadv.chat.presentation.view.IncomingMessageLayout
 import ru.snowadv.chat.domain.model.ChatReaction
 import ru.snowadv.chat.presentation.model.ChatMessage
 import ru.snowadv.chat.presentation.model.ChatMessageType
-import ru.snowadv.chat.presentation.util.toUiChatEmoji
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.presentation.adapter.DelegationItemAdapterDelegate
 import ru.snowadv.presentation.util.DateTimeFormatter
 
 internal class IncomingMessageAdapterDelegate(
-    private val onLongMessageClick: ((ChatMessage) -> Unit)? = null,
-    private val onReactionClick: ((reaction: ChatReaction, message: ChatMessage) -> Unit)? = null,
-    private val onAddReactionClick: ((ChatMessage) -> Unit)? = null,
+    private val onLongMessageClickListener: ((ChatMessage) -> Unit)? = null,
+    private val onReactionClickListener: ((reaction: ChatReaction, message: ChatMessage) -> Unit)? = null,
+    private val onAddReactionClickListener: ((ChatMessage) -> Unit)? = null,
     private val timestampFormatter: DateTimeFormatter
 ) :
-    DelegationItemAdapterDelegate<ChatMessage, IncomingMessageAdapterDelegate.IncomingMessageViewHolder, IncomingMessageAdapterDelegate.IncomingMessagePayload>() {
+    DelegationItemAdapterDelegate<ChatMessage, IncomingMessageAdapterDelegate.IncomingMessageViewHolder, ChatMessage.Payload>() {
 
     internal inner class IncomingMessageViewHolder(val messageLayout: IncomingMessageLayout) :
         ViewHolder(messageLayout.rootView) {
 
-        fun initClickListeners(holder: ViewHolder, items: List<DelegateItem>) {
+        fun initClickListeners(holder: ViewHolder, getCurrentList: () -> List<DelegateItem>) {
             messageLayout.onMessageLongClickListener = {
                 if (holder.adapterPosition != RecyclerView.NO_POSITION) {
-                    getItemAtPosition(items, holder.adapterPosition)?.let {
-                        onLongMessageClick?.invoke(it)
+                    getItemAtPosition(getCurrentList(), holder.adapterPosition)?.let {
+                        onLongMessageClickListener?.invoke(it)
                     }
                 }
             }
             messageLayout.onReactionClickListener = { count, emojiCode, userReacted ->
                 if (holder.adapterPosition != RecyclerView.NO_POSITION) {
-                    getItemAtPosition(items, holder.adapterPosition)?.let { message ->
-                        onReactionClick?.invoke(
-                            ChatReaction(
-                                emojiMap[emojiCode]?.toUiChatEmoji() ?: error("No such emoji with code $emojiCode"),
-                                count,
-                                userReacted
-                            ),
-                            message
-                        )
+                    getItemAtPosition(getCurrentList(), holder.adapterPosition)?.let { message ->
+                        message.reactions.firstOrNull { it.code == emojiCode }?.let {
+                            onReactionClickListener?.invoke(it, message)
+                        }
+                    }
+                }
+            }
+            messageLayout.onAddReactionClickListener = {
+                if (holder.adapterPosition != RecyclerView.NO_POSITION) {
+                    getItemAtPosition(getCurrentList(), holder.adapterPosition)?.let { message ->
+                        onAddReactionClickListener?.invoke(message)
                     }
                 }
             }
@@ -58,13 +58,15 @@ internal class IncomingMessageAdapterDelegate(
                     crossfade(true)
                     placeholder(ru.snowadv.presentation.R.drawable.ic_user_avatar)
                 }
+            } ?: run {
+                avatarImageView.setImageResource(ru.snowadv.presentation.R.drawable.ic_user_avatar)
             }
             bindReactions(message.reactions)
         }
 
-        fun handlePayload(payload: IncomingMessagePayload) {
+        fun handlePayload(payload: ChatMessage.Payload) {
             when (payload) {
-                is IncomingMessagePayload.ReactionsChanged -> {
+                is ChatMessage.Payload.ReactionsChanged -> {
                     bindReactions(payload.reactions)
                 }
             }
@@ -79,16 +81,19 @@ internal class IncomingMessageAdapterDelegate(
         return (item as? ChatMessage)?.messageType == ChatMessageType.INCOMING
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, items: List<DelegateItem>): ViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        getCurrentList: () -> List<DelegateItem>
+    ): ViewHolder {
         val holder = IncomingMessageViewHolder(getNewIncomingMessageLayout(parent))
-        holder.initClickListeners(holder, items)
+        holder.initClickListeners(holder, getCurrentList)
         return holder
     }
 
     override fun onBindViewHolder(
         item: ChatMessage,
         holder: IncomingMessageViewHolder,
-        payloads: List<IncomingMessagePayload>
+        payloads: List<ChatMessage.Payload>
     ) {
         if (payloads.isEmpty()) {
             holder.bind(item)
@@ -104,10 +109,6 @@ internal class IncomingMessageAdapterDelegate(
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
         }
-    }
-
-    sealed class IncomingMessagePayload {
-        class ReactionsChanged(val reactions: List<ChatReaction>) : IncomingMessagePayload()
     }
 
 

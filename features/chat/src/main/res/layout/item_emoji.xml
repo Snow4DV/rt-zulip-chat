@@ -6,4 +6,5 @@
     android:layout_height="wrap_content"
     android:padding="@dimen/emoji_chooser_padding_between_items"
     android:textSize="@dimen/emoji_size_chooser"
+    android:background="?attr/selectableItemBackground"
     tools:text="😁" />

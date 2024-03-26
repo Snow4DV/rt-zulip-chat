@@ -7,4 +7,5 @@
     <style name="Theme.ZulipChat.ActionBarImageButton" parent="Widget.AppCompat.ImageButton">
         <item name="android:background">?attr/actionBarItemBackground</item>
     </style>
+
 </resources>

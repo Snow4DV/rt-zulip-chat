@@ -22,10 +22,10 @@ internal class EmojiAdapterDelegate(private val listener: OnEmojiItemClickListen
             root.text = emoji.getCodeString()
         }
 
-        fun initClickListeners(items: List<DelegateItem>) {
+        fun initClickListeners(getCurrentList: () -> List<DelegateItem>) {
             binding.root.setOnClickListener {
                 if (adapterPosition != RecyclerView.NO_POSITION) {
-                    getItemAtPosition(items, adapterPosition)?.let {
+                    getItemAtPosition(getCurrentList(), adapterPosition)?.let {
                         listener?.invoke(it)
                     }
                 }
@@ -37,14 +37,17 @@ internal class EmojiAdapterDelegate(private val listener: OnEmojiItemClickListen
         return item is ChatEmoji
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, items: List<DelegateItem>): ViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        getCurrentList: () -> List<DelegateItem>
+    ): ViewHolder {
         return ChatEmojiViewHolder(
             ItemEmojiBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
             )
-        ).also { it.initClickListeners(items) }
+        ).also { it.initClickListeners(getCurrentList) }
     }
 
     override fun onBindViewHolder(

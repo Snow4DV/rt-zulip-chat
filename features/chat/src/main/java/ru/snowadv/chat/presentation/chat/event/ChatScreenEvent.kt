@@ -8,6 +8,6 @@ internal sealed class ChatScreenEvent {
     class SendButtonClicked(val currentMessageFieldText: String): ChatScreenEvent()
     data object AddAttachmentButtonClicked: ChatScreenEvent()
     data class AddReactionClicked(val messageId: Long): ChatScreenEvent()
-    data class AddChosenReaction(val messageId: Long, val reaction: ChatEmoji): ChatScreenEvent()
-    data class RemoveReaction(val messageId: Long, val reaction: ChatEmoji): ChatScreenEvent()
+    data class AddChosenReaction(val messageId: Long, val reactionName: String): ChatScreenEvent()
+    data class RemoveReaction(val messageId: Long, val reactionName: String): ChatScreenEvent()
 }

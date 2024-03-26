@@ -32,7 +32,7 @@ abstract class GenericAdapterDelegate<I : T, T, VH : ViewHolder, P> : AdapterDel
 
     @Suppress("UNCHECKED_CAST")
     fun getItemAtPosition(items: List<T>, position: Int): I? {
-        return if (isForViewType(items[position])) {
+        return if (position in items.indices && isForViewType(items[position])) {
             items[position] as I
         } else {
             null

@@ -5,30 +5,28 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import ru.snowadv.chat.databinding.FragmentEmojiChooserBinding
-import ru.snowadv.chat.presentation.adapter.EmojiAdapterDelegate
-import ru.snowadv.chat.presentation.chat.ChatFragment
+import ru.snowadv.chat.presentation.emoji_chooser.view_model.EmojiChooserViewModel
 import ru.snowadv.chat.presentation.model.ChatEmoji
-import ru.snowadv.presentation.adapter.DelegateItem
-import ru.snowadv.presentation.adapter.impl.AdapterDelegatesManager
-import ru.snowadv.presentation.adapter.impl.DiffDelegationAdapter
+import ru.snowadv.presentation.util.FragmentDataObserver
 
 typealias OnEmojiClickListener = (ChatEmoji) -> Unit
 
 class EmojiChooserBottomSheetDialog private constructor(
-    private val emojis: List<ChatEmoji>,
     private val listener: OnEmojiClickListener? = null
-) : BottomSheetDialogFragment() {
+) : BottomSheetDialogFragment(),
+    FragmentDataObserver<FragmentEmojiChooserBinding, EmojiChooserViewModel, EmojiChooserBottomSheetDialog> by EmojiChooserDataObserver() {
 
     companion object {
         const val TAG = "emoji_chooser_dialog"
-        fun newInstance(emojis: List<ChatEmoji>, listener: OnEmojiClickListener? = null) =
-            EmojiChooserBottomSheetDialog(emojis, listener)
+        fun newInstance(listener: OnEmojiClickListener? = null) =
+            EmojiChooserBottomSheetDialog(listener)
     }
 
-    private val adapter = initDelegationAdapter().also { it.submitList(emojis) }
     private var _binding: FragmentEmojiChooserBinding? = null
+    private val viewModel: EmojiChooserViewModel by viewModels()
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -41,7 +39,7 @@ class EmojiChooserBottomSheetDialog private constructor(
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.emojisRecycler.adapter = adapter
+        registerObservingFragment(binding, viewModel)
     }
 
     override fun onDestroyView() {
@@ -51,18 +49,8 @@ class EmojiChooserBottomSheetDialog private constructor(
 
     fun show(fragmentManager: FragmentManager) = show(fragmentManager, TAG)
 
-    private fun initDelegationAdapter(): DiffDelegationAdapter {
-        return DiffDelegationAdapter(initDelegatesManager())
-    }
-
-    private fun initDelegatesManager(): AdapterDelegatesManager<DelegateItem> {
-        return AdapterDelegatesManager(
-            EmojiAdapterDelegate(
-                listener = {
-                    this.listener?.invoke(it)
-                    this.dismiss()
-                }
-            )
-        )
+    fun finishWithEmoji(emoji: ChatEmoji) {
+        this.listener?.invoke(emoji)
+        this.dismiss()
     }
 }

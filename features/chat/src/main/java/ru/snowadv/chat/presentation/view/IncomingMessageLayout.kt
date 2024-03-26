@@ -13,6 +13,7 @@ import ru.snowadv.chat.databinding.ItemMessageViewIncomingBinding
 import ru.snowadv.presentation.util.ViewInvalidatingProperty
 import ru.snowadv.presentation.util.dimToPx
 import kotlin.math.max
+import kotlin.math.min
 
 
 /**
@@ -85,8 +86,8 @@ internal class IncomingMessageLayout @JvmOverloads constructor(
         val avatarAndPaddingWidth =
             binding.avatar.measuredWidth + paddingBetweenAvatarAndMessageBoxPx.toInt()
 
-        val messageItemsWidth = (MeasureSpec.getSize(widthMeasureSpec) * maxWidthOfParent).toInt() -
-                    paddingLeft - paddingRight - avatarAndPaddingWidth
+        val messageItemsWidth = ((MeasureSpec.getSize(widthMeasureSpec) -
+                paddingLeft - paddingRight - avatarAndPaddingWidth) * maxWidthOfParent).toInt()
         val messageBoxWidthMeasureSpec =
             MeasureSpec.makeMeasureSpec(messageItemsWidth, MeasureSpec.getMode(widthMeasureSpec))
         for (child in children) {
@@ -100,7 +101,8 @@ internal class IncomingMessageLayout @JvmOverloads constructor(
             avatar.measuredWidth + maxOf(
                 messageUserName.measuredWidth,
                 messageText.measuredWidth,
-                messageTimestamp.measuredWidth
+                messageTimestamp.measuredWidth,
+                reactionsContainer.measuredWidth
             ) + paddingBetweenAvatarAndMessageBoxPx + paddingLeft + paddingRight
         }.toInt()
         val heightPx = with(binding) {
@@ -138,10 +140,18 @@ internal class IncomingMessageLayout @JvmOverloads constructor(
             val messageBoxLeft =
                 containerLeft + avatar.measuredWidth + paddingBetweenAvatarAndMessageBoxPx.toInt()
 
+            val messageBoxMeasuredWidth = maxOf(
+                messageTextView.measuredWidth,
+                timestampTextView.measuredWidth,
+                messageUserName.measuredWidth,
+            )
+
+            val messageBoxRight = min(messageBoxLeft + messageBoxMeasuredWidth, containerRight)
+
             val reactionsContainerTop = messageBackground.layout(
                 messageBoxLeft,
                 containerTop,
-                containerRight,
+                messageBoxRight,
                 containerTop + messageUserName.measuredHeight + messageText.measuredHeight + messageTimestamp.measuredHeight
             ).let { messageBackground.bottom + paddingBetweenMessageBoxAndReactionsPx.toInt() }
 
@@ -149,7 +159,7 @@ internal class IncomingMessageLayout @JvmOverloads constructor(
                 messageUserName.layout(
                     messageBoxLeft,
                     containerTop,
-                    containerRight,
+                    messageBoxRight,
                     containerTop + messageUserName.measuredHeight,
                 )
                 containerTop + messageUserName.measuredHeight
@@ -160,14 +170,14 @@ internal class IncomingMessageLayout @JvmOverloads constructor(
             val messageTimestampTop = messageText.layout(
                 messageBoxLeft,
                 messageTextTop,
-                containerRight,
+                messageBoxRight,
                 messageTextTop + messageText.measuredHeight
             ).let { messageText.bottom }
 
             messageTimestamp.layout(
-                containerRight - messageTimestamp.measuredWidth,
+                messageBoxRight - messageTimestamp.measuredWidth,
                 messageTimestampTop,
-                containerRight,
+                messageBoxRight,
                 messageTimestampTop + messageTimestamp.measuredHeight
 
             )

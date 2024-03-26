@@ -35,8 +35,8 @@ internal class FlexBoxLayout @JvmOverloads constructor(
 
     companion object {
         const val DEFAULT_PADDING_BETWEEN_ITEMS_DP = 5
-        const val DEFAULT_STRETCH_ON_NOT_LAST_LINE = true
-        const val DEFAULT_STRETCH_ON_LAST_LINE = true
+        const val DEFAULT_STRETCH_ON_NOT_LAST_LINE = false
+        const val DEFAULT_STRETCH_ON_LAST_LINE = false
         const val DEFAULT_MIRROR = false
         const val DEFAULT_FLIP_IN_ROW = false
     }

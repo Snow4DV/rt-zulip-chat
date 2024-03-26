@@ -13,4 +13,26 @@ internal data class ChatMessage(
     val senderAvatarUrl: String?,
     val reactions: List<ChatReaction>,
     val messageType: ChatMessageType
-): DelegateItem
+) : DelegateItem {
+    override fun getPayload(old: DelegateItem): Any? {
+        return if (old is ChatMessage && checkIfOnlyReactionsChanged(old)) {
+            Payload.ReactionsChanged(reactions)
+        } else {
+            null
+        }
+    }
+
+    sealed class Payload {
+        class ReactionsChanged(val reactions: List<ChatReaction>) : Payload()
+    }
+
+    private fun checkIfOnlyReactionsChanged(other: ChatMessage): Boolean {
+        return this.id == other.id && this.text == other.text && this.sentAt == other.sentAt
+                && this.senderId == other.senderId && this.senderName == other.senderName
+                && this.senderAvatarUrl == other.senderAvatarUrl && this.messageType == other.messageType
+                && this.reactions != other.reactions
+    }
+
+}
+
+

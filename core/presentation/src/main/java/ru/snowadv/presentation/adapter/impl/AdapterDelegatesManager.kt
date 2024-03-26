@@ -24,8 +24,8 @@ class AdapterDelegatesManager<T>(vararg delegates: AdapterDelegate<T>) {
         }
     }
 
-    fun onCreateViewHolder(parent: ViewGroup, viewType: Int, items: List<T>): ViewHolder {
-        return getDelegateForViewTypeOrThrow(viewType).onCreateViewHolder(parent, items)
+    fun onCreateViewHolder(parent: ViewGroup, viewType: Int, getCurrentList: () -> List<T>): ViewHolder {
+        return getDelegateForViewTypeOrThrow(viewType).onCreateViewHolder(parent, getCurrentList)
     }
 
     fun onBindViewHolder(items: List<T>, position: Int, holder: ViewHolder, payloads: List<Any>) {

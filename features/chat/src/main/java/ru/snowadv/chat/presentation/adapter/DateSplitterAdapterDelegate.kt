@@ -24,7 +24,10 @@ internal class DateSplitterAdapterDelegate(
         return item is ChatDate
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, items: List<DelegateItem>): ViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        getCurrentList: () -> List<DelegateItem>
+    ): ViewHolder {
         return ChatDateViewHolder(
             ItemChatDateSplitterBinding.inflate(
                 LayoutInflater.from(parent.context),

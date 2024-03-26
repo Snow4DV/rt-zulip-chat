@@ -4,6 +4,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.viewbinding.ViewBinding
 
-interface FragmentDataObserver<B: ViewBinding, VM: ViewModel> {
-    fun Fragment.registerObservingFragment(binding: B, viewModel: VM)
+interface FragmentDataObserver<B: ViewBinding, VM: ViewModel, F: Fragment> {
+    fun F.registerObservingFragment(binding: B, viewModel: VM)
 }

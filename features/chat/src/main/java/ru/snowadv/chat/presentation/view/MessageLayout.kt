@@ -38,11 +38,12 @@ internal abstract class MessageLayout @JvmOverloads constructor(
         const val DEFAULT_PADDING_BETWEEN_REACTIONS_DP = 5
         const val DEFAULT_MESSAGE_TEXT = ""
         const val DEFAULT_TIMESTAMP_TEXT = ""
-        const val DEFAULT_MAX_WIDTH_OF_PARENT = 1.0f
+        const val DEFAULT_MAX_WIDTH_OF_PARENT = 0.85f
     }
 
     var onMessageLongClickListener: OnMessageLongClickListener? = null
     var onReactionClickListener: OnReactionClickListener? = null
+    var onAddReactionClickListener: OnAddReactionClickListener? = null
     var paddingBetweenMessageBoxAndReactionsPx by ViewInvalidatingProperty(
         value = dimToPx(
             DEFAULT_PADDING_BETWEEN_MESSAGE_BOX_AND_REACTIONS_DP,
@@ -72,7 +73,6 @@ internal abstract class MessageLayout @JvmOverloads constructor(
             reactionsContainer.paddingBetweenViewsPx = value
             requestLayout()
         }
-    var addReactionClickListener: OnAddReactionClickListener? = null
 
     /**
      * This function changes info about reaction in container layout
@@ -82,7 +82,7 @@ internal abstract class MessageLayout @JvmOverloads constructor(
      */
     private fun addUpdateRemoveReaction(reaction: ChatReaction) {
         addUpdateRemoveReaction(
-            reaction.emoji.code,
+            reaction.code,
             reaction.count,
             reaction.userReacted
         )
@@ -104,7 +104,7 @@ internal abstract class MessageLayout @JvmOverloads constructor(
 
     private fun addUpdateRemoveReaction(reaction: ChatReaction, requestLayout: Boolean) {
         addUpdateRemoveReaction(
-            reaction.emoji.code,
+            reaction.code,
             reaction.count,
             reaction.userReacted,
             requestLayout
@@ -150,7 +150,8 @@ internal abstract class MessageLayout @JvmOverloads constructor(
      */
     fun replaceReactions(reactions: List<ChatReaction>) {
         // Update views to match new reactions list
-        val reactionsSet = reactions.asSequence().filter { it.count > 0 }.map { it.emoji.code }.toSet()
+        val reactionsSet =
+            reactions.asSequence().filter { it.count > 0 }.map { it.code }.toSet()
 
         this.reactions.keys.filter { it !in reactionsSet }.forEach {
             removeReactionView(it, false)
@@ -161,7 +162,7 @@ internal abstract class MessageLayout @JvmOverloads constructor(
         }
 
         // Reorder views
-        val viewsMap = children
+        val viewsMap = reactionsContainer.children
             .mapNotNull { it as? ReactionView }
             .filter { !it.isPlus && it.visibility != GONE }
             .associateBy { it.emojiCode }
@@ -169,34 +170,35 @@ internal abstract class MessageLayout @JvmOverloads constructor(
         reactionsContainer.removeAllViews()
 
         reactions.forEach {
-            viewsMap[it.emoji.code]?.let {reactionView ->
+            viewsMap[it.code]?.let { reactionView ->
                 reactionsContainer.addView(reactionView)
             }
         }
 
         // Add plus at the end if reactionsSet is not empty
         if (reactionsSet.isNotEmpty()) {
-            reactionsContainer.addView(getAddReactionButtonView().also {  plusView ->
+            reactionsContainer.addView(getAddReactionButtonView().also { plusView ->
                 plusView.setOnClickListener {
-
+                    onAddReactionClickListener?.invoke()
                 }
             })
         }
     }
 
     private fun removeReactionView(reaction: ChatReaction, requestLayout: Boolean = true) {
-        removeReactionView(reaction.emoji.code, requestLayout)
+        removeReactionView(reaction.code, requestLayout)
     }
 
     private fun removeReactionView(emojiCode: Int, requestLayout: Boolean = true) {
         reactions[emojiCode]?.let {
             reactionsContainer.removeView(it)
+            reactions.remove(it.emojiCode)
         }
         if (requestLayout) requestLayout()
     }
 
     private fun updateReactionView(view: ReactionView, reaction: ChatReaction): ReactionView {
-        return updateReactionView(view, reaction.emoji.code, reaction.count, reaction.userReacted)
+        return updateReactionView(view, reaction.code, reaction.count, reaction.userReacted)
     }
 
     private fun updateReactionView(

@@ -20,5 +20,8 @@ class DiffDelegationAdapter(
             return oldItem == newItem
         }
 
+        override fun getChangePayload(oldItem: DelegateItem, newItem: DelegateItem): Any? {
+            return newItem.getPayload(oldItem)
+        }
     }
 }

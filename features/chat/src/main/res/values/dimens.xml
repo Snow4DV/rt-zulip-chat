@@ -26,4 +26,6 @@
     <dimen name="puller_width">60dp</dimen>
     <dimen name="puller_height">8dp</dimen>
     <dimen name="emoji_container_margin_top">30dp</dimen>
+    <dimen name="error_icon_size">40dp</dimen>
+    <dimen name="horizontal_progress_bar_height">8dp</dimen>
 </resources>

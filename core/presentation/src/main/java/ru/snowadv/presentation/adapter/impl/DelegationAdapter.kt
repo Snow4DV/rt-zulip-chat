@@ -11,7 +11,7 @@ sealed class DelegationAdapter<T>(
 ) : ListAdapter<T, RecyclerView.ViewHolder>(diffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return delegatesManager.onCreateViewHolder(parent, viewType, currentList)
+        return delegatesManager.onCreateViewHolder(parent, viewType, ::getCurrentList)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
