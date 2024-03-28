@@ -1,6 +1,5 @@
 package ru.snowadv.chat.presentation.chat
 
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -41,6 +40,7 @@ class ChatFragment : Fragment(),
 
     override fun onDestroyView() {
         super.onDestroyView()
+        onViewDestroyedToObserver()
         _binding = null
     }
 

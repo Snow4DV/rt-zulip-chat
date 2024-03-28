@@ -6,4 +6,8 @@ import androidx.viewbinding.ViewBinding
 
 interface FragmentDataObserver<B: ViewBinding, VM: ViewModel, F: Fragment> {
     fun F.registerObservingFragment(binding: B, viewModel: VM)
+
+    fun F.onViewDestroyedToObserver() {
+
+    }
 }

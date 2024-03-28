@@ -5,7 +5,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,9 +33,13 @@ import ru.snowadv.presentation.util.impl.LocalizedDateTimeFormatter
 internal class ChatFragmentDataObserver :
     FragmentDataObserver<FragmentChatBinding, ChatViewModel, ChatFragment> {
 
-    private lateinit var adapter: DiffDelegationAdapter
-    private lateinit var splitterDateFormatter: DateFormatter
-    private lateinit var dateTimeFormatter: DateTimeFormatter
+    private var _adapter: DiffDelegationAdapter? = null
+    private var _splitterDateFormatter: DateFormatter? = null
+    private var _dateTimeFormatter: DateTimeFormatter? = null
+
+    private val adapter get() = _adapter!!
+    private val splitterDateFormatter get() = _splitterDateFormatter!!
+    private val dateTimeFormatter get() = _dateTimeFormatter!!
 
     companion object {
         const val EMOJI_CHOOSER_REQUEST_KEY = "emoji_chooser_request"
@@ -48,7 +51,7 @@ internal class ChatFragmentDataObserver :
     ) {
         initDateTimeFormatters(requireContext())
         initEmojiChooserResultListener(this, viewModel)
-        adapter = initDelegateAdapter(viewModel).also {
+        _adapter = initDelegateAdapter(viewModel).also {
             setAdapterToRecyclerViewWithLinearLayoutManager(
                 requireContext(),
                 binding.messagesRecycler,
@@ -229,8 +232,8 @@ internal class ChatFragmentDataObserver :
     }
 
     private fun initDateTimeFormatters(context: Context) { // TODO: Replace with DI
-        dateTimeFormatter = LocalizedDateTimeFormatter(context)
-        splitterDateFormatter = DayDateFormatter(context)
+        _dateTimeFormatter = LocalizedDateTimeFormatter(context)
+        _splitterDateFormatter = DayDateFormatter(context)
     }
 
     private fun initEmojiChooserResultListener(fragment: Fragment, viewModel: ChatViewModel) {
@@ -247,5 +250,11 @@ internal class ChatFragmentDataObserver :
             }
             viewModel.event(ChatScreenEvent.AddChosenReaction(messageId, chosenReaction))
         }
+    }
+
+    override fun ChatFragment.onViewDestroyedToObserver() {
+        _adapter = null
+        _dateTimeFormatter = null
+        _splitterDateFormatter = null
     }
 }
