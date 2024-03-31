@@ -10,8 +10,8 @@ import android.widget.TextView
 import androidx.core.view.children
 import ru.snowadv.chat.databinding.ItemReactionBinding
 import ru.snowadv.chat.domain.model.ChatReaction
-import ru.snowadv.presentation.util.ViewInvalidatingProperty
-import ru.snowadv.presentation.util.dimToPx
+import ru.snowadv.presentation.view.ViewInvalidatingProperty
+import ru.snowadv.presentation.view.dimToPx
 
 typealias OnReactionClickListener = (count: Int, emojiCode: Int, userReacted: Boolean) -> Unit
 typealias OnMessageLongClickListener = () -> Unit

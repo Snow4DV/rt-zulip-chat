@@ -1,4 +1,4 @@
-package ru.snowadv.presentation.util
+package ru.snowadv.presentation.view
 
 import android.view.View
 import kotlin.reflect.KProperty

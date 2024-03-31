@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:theme="@style/Theme.ZulipChat.Home"
+    tools:context=".presentation.stream_list.StreamListFragment">
+
+
+    <include
+        android:id="@+id/search_bar"
+        layout="@layout/item_search_bar" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabs_stream_types"
+        style="@style/Theme.ZulipChat.StreamTypesTabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/tabs_layout_height"
+        android:contentDescription="@string/channels_tabs"
+
+        android:textAllCaps="false"
+        app:layout_constraintTop_toBottomOf="@id/search_bar"
+        app:tabTextAppearance="@style/Theme.ZulipChat.StreamTypesTabsTextAppearance" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/stream_types_pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tabs_stream_types" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

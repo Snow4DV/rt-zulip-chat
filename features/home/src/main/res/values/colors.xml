@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="stream_selected_arrow_color">@color/gray</color>
+    <color name="stream_not_selected_arrow_color">@color/black</color>
+
+
+    <color name="search_line_color">@color/black_2</color>
+
+    <color name="online">#4AB54D</color>
+    <color name="offline">#f44336</color>
+    <color name="idle">#FF9800</color>
+
+
+</resources>

@@ -32,10 +32,10 @@ class PaddingItemDecorator(
         val childLayoutPosition = parent.getChildLayoutPosition(view)
 
         if (childLayoutPosition == 0) {
-            outRect.top = horizontalSpacingPx
+            outRect.top = verticalSpacingPx
         }
-        outRect.bottom = horizontalSpacingPx
-        outRect.right = verticalSpacingPx
-        outRect.left =  verticalSpacingPx
+        outRect.bottom = verticalSpacingPx
+        outRect.right = horizontalSpacingPx
+        outRect.left =  horizontalSpacingPx
     }
 }

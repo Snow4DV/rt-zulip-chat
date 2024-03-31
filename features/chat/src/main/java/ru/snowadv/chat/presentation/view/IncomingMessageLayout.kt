@@ -10,8 +10,8 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.children
 import ru.snowadv.chat.R
 import ru.snowadv.chat.databinding.ItemMessageViewIncomingBinding
-import ru.snowadv.presentation.util.ViewInvalidatingProperty
-import ru.snowadv.presentation.util.dimToPx
+import ru.snowadv.presentation.view.ViewInvalidatingProperty
+import ru.snowadv.presentation.view.dimToPx
 import kotlin.math.max
 import kotlin.math.min
 

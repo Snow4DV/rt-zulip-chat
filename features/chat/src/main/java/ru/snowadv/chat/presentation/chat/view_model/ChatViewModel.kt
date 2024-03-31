@@ -20,11 +20,15 @@ import ru.snowadv.chat.domain.repository.MessageRepository
 import ru.snowadv.chat.presentation.chat.event.ChatScreenEvent
 import ru.snowadv.chat.presentation.chat.event.ChatScreenFragmentEvent
 import ru.snowadv.chat.presentation.chat.state.ChatScreenState
+import ru.snowadv.chat.presentation.navigation.ChatRouter
 import ru.snowadv.chat.presentation.util.mapToAdapterMessagesAndDates
 import ru.snowadv.domain.model.Resource
 
 internal class ChatViewModel(
-    private val repository: MessageRepository = StubMessageRepository() // remove after adding DI
+    private val repository: MessageRepository = StubMessageRepository(), // remove after adding DI
+    private val router: ChatRouter,
+    private val streamId: Long,
+    private val topicName: String,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(createDefaultState())
@@ -38,7 +42,7 @@ internal class ChatViewModel(
 
     private fun startCollectingMessages() {
         messageCollectorJob?.cancel()
-        messageCollectorJob = repository.getMessages()
+        messageCollectorJob = repository.getMessages(streamId, topicName)
             .onEach(::processMessagesListResource)
             .launchIn(viewModelScope)
     }
@@ -115,6 +119,13 @@ internal class ChatViewModel(
 
             is ChatScreenEvent.RemoveReaction -> {
                 removeReaction(event.messageId, event.reactionName)
+            }
+
+            is ChatScreenEvent.GoBackClicked -> {
+                router.goBack()
+            }
+            is ChatScreenEvent.GoToProfileClicked -> {
+                router.openProfile(event.profileId)
             }
         }
     }

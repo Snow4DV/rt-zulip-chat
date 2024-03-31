@@ -26,7 +26,8 @@ import ru.snowadv.presentation.adapter.impl.AdapterDelegatesManager
 import ru.snowadv.presentation.adapter.impl.DiffDelegationAdapter
 import ru.snowadv.presentation.util.DateFormatter
 import ru.snowadv.presentation.util.DateTimeFormatter
-import ru.snowadv.presentation.util.FragmentDataObserver
+import ru.snowadv.presentation.fragment.FragmentDataObserver
+import ru.snowadv.presentation.fragment.setTopBarText
 import ru.snowadv.presentation.util.impl.DayDateFormatter
 import ru.snowadv.presentation.util.impl.LocalizedDateTimeFormatter
 
@@ -114,6 +115,9 @@ internal class ChatFragmentDataObserver :
                 viewModel.event(ChatScreenEvent.SendButtonClicked(binding.bottomBar.messageEditText.text.toString()))
             }
         }
+        binding.topBackButtonBar.backButton.setOnClickListener {
+            viewModel.event(ChatScreenEvent.GoBackClicked)
+        }
     }
 
     private fun handleFragmentEventFlow(
@@ -150,7 +154,7 @@ internal class ChatFragmentDataObserver :
         binding: FragmentChatBinding
     ) {
         binding.topicName.text = state.topic
-        binding.topBar.barTitle.text = state.stream
+        binding.topBackButtonBar.setTopBarText(state.stream)
         binding.bottomBar.sendOrAddAttachmentButton.setImageResource(
             if (state.messageField.isEmpty()) R.drawable.ic_add_attachment else R.drawable.ic_send
         )

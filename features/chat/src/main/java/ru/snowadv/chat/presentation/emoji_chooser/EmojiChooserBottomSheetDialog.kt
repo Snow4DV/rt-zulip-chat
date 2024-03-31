@@ -12,7 +12,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import ru.snowadv.chat.databinding.FragmentEmojiChooserBinding
 import ru.snowadv.chat.presentation.emoji_chooser.view_model.EmojiChooserViewModel
 import ru.snowadv.chat.presentation.model.ChatEmoji
-import ru.snowadv.presentation.util.FragmentDataObserver
+import ru.snowadv.presentation.fragment.FragmentDataObserver
 
 typealias OnEmojiClickListener = (ChatEmoji) -> Unit
 

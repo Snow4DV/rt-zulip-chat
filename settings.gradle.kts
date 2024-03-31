@@ -31,3 +31,6 @@ include(":core:domain")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(":core:presentation")
+include(":features:home")
+include(":core:utils")
+include(":navigation")

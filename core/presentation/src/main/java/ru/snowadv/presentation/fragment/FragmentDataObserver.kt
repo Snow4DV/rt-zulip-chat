@@ -1,4 +1,4 @@
-package ru.snowadv.presentation.util
+package ru.snowadv.presentation.fragment
 
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel

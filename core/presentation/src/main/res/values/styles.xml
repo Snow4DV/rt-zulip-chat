@@ -8,4 +8,15 @@
         <item name="android:background">?attr/actionBarItemBackground</item>
     </style>
 
+    <style name="RoundedImageView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="Theme.ZulipChat.IndeterminateProgressBar" parent="Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:indeterminate">true</item>
+        <item name="android:indeterminateTint">@color/primary</item>
+        <item name="android:indeterminateTintMode">src_in</item>
+    </style>
+
 </resources>

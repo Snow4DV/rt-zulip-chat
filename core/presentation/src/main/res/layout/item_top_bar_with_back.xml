@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/primary"
-    android:padding="@dimen/top_bar_padding">
+    android:padding="@dimen/top_bar_padding_horizontal">
 
     <ImageButton
         android:id="@+id/back_button"

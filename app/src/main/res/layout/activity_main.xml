@@ -6,8 +6,8 @@
     android:fitsSystemWindows="true">
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/chat_fragment"
-        android:name="ru.snowadv.chat.presentation.chat.ChatFragment"
+        android:id="@+id/fragment_container"
+        android:name="ru.snowadv.home.presentation.channel_list.ChannelListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:tag="chat_fragment" />

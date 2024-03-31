@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="stream_selected_arrow_color">#ffffff</color>
+    <color name="stream_not_selected_arrow_color">#919191</color>
+
+    <color name="search_line_color">@color/black_5</color>
+
+</resources>

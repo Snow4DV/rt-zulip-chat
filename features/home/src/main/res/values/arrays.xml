@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="topics_colors">
+        <item>@color/smokey_sage</item>
+        <item>@color/vintage_gold</item>
+        <item>@color/dusty_rose</item>
+        <item>@color/muted_lavander</item>
+        <item>@color/vintage_green</item>
+        <item>@color/warm_taupe</item>
+        <item>@color/faded_coral</item>
+        <item>@color/moody_lilac</item>
+        <item>@color/teal</item>
+        <item>@color/rustic_brick</item>
+        <item>@color/midnight_plum</item>
+        <item>@color/pale_yellow</item>
+        <item>@color/earthy_olive</item>
+    </array>
+</resources>

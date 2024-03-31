@@ -15,10 +15,13 @@
             <option value="$PROJECT_DIR$/core/contacts-provider" />
             <option value="$PROJECT_DIR$/core/domain" />
             <option value="$PROJECT_DIR$/core/presentation" />
+            <option value="$PROJECT_DIR$/core/utils" />
             <option value="$PROJECT_DIR$/features" />
             <option value="$PROJECT_DIR$/features/chat" />
+            <option value="$PROJECT_DIR$/features/home" />
             <option value="$PROJECT_DIR$/libraries" />
             <option value="$PROJECT_DIR$/libraries/contacts-provider" />
+            <option value="$PROJECT_DIR$/navigation" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

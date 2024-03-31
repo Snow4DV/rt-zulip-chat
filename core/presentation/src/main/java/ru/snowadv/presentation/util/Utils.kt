@@ -1,21 +1,36 @@
 package ru.snowadv.presentation.util
 
-import android.util.TypedValue
-import android.view.View
-import androidx.core.util.TypedValueCompat
+import ru.snowadv.domain.model.Resource
+import ru.snowadv.presentation.model.ScreenState
 
-fun View.dimToPx(dimension: Int, @TypedValueCompat.ComplexDimensionUnit unitTypedValue: Int): Float {
-    return TypedValue.applyDimension(
-        unitTypedValue,
-        dimension.toFloat(),
-        resources.displayMetrics
-    )
+fun <T> Array<T>.mapInPlace(transform: (T) -> T): Array<T> {
+    for (i in this.indices) {
+        this[i] = transform(this[i])
+    }
+    return this
 }
 
-fun View.dimToPx(dimension: Float, @TypedValueCompat.ComplexDimensionUnit unitTypedValue: Int): Float {
-    return TypedValue.applyDimension(
-        unitTypedValue,
-        dimension,
-        resources.displayMetrics
-    )
+fun IntArray.mapInPlace(transform: (Int) -> Int): IntArray {
+    for (i in this.indices) {
+        this[i] = transform(this[i])
+    }
+    return this
+}
+
+fun <T, E> Resource<T>.toScreenState(mapper: (T) -> E, isEmptyChecker: ((T) -> Boolean)? = null): ScreenState<E> {
+    return when(this) {
+        is Resource.Error -> {
+            ScreenState.Error(this.throwable)
+        }
+        is Resource.Loading -> {
+            ScreenState.Loading
+        }
+        is Resource.Success -> {
+            if (isEmptyChecker?.invoke(this.data) == true) {
+                ScreenState.Empty
+            } else {
+                ScreenState.Success(mapper(this.data))
+            }
+        }
+    }
 }

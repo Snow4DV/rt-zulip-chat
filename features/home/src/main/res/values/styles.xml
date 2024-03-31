@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.ZulipChat.SearchEditText" parent="Widget.AppCompat.EditText">
+        <item name="android:backgroundTint">@color/search_line_color</item>
+        <item name="android:textColor">@color/text</item>
+        <item name="android:textColorHint">@color/text</item>
+        <item name="android:textSize">@dimen/search_text_size</item>
+        <item name="android:inputType">text</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:paddingLeft">@dimen/search_padding_left</item>
+    </style>
+
+
+    <style name="Theme.ZulipChat.StreamTypesTabLayout" parent="Widget.MaterialComponents.TabLayout">
+        <item name="android:background">@color/top_bar_bw</item>
+        <item name="android:textColor">@color/text</item>
+        <item name="android:textSize">@dimen/tabs_layout_text_size</item>
+    </style>
+
+    <style name="Theme.ZulipChat.StreamTypesTabsTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="textAllCaps">false</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="RoundCornersImageView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">7%</item>
+    </style>
+
+</resources>

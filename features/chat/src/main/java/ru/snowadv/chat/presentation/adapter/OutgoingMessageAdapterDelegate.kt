@@ -24,17 +24,17 @@ internal class OutgoingMessageAdapterDelegate(
     internal inner class OutgoingMessageViewHolder(val messageLayout: OutgoingMessageLayout) :
         ViewHolder(messageLayout.rootView) {
 
-        fun initClickListeners(holder: ViewHolder, getCurrentList: () -> List<DelegateItem>) {
+        fun initClickListeners(getCurrentList: () -> List<DelegateItem>) {
             messageLayout.onMessageLongClickListener = {
-                if (holder.adapterPosition != RecyclerView.NO_POSITION) {
-                    getItemAtPosition(getCurrentList(), holder.adapterPosition)?.let {
+                if (adapterPosition != RecyclerView.NO_POSITION) {
+                    getItemAtPosition(getCurrentList(), adapterPosition)?.let {
                         onLongMessageClickListener?.invoke(it)
                     }
                 }
             }
             messageLayout.onReactionClickListener = { count, emojiCode, userReacted ->
-                if (holder.adapterPosition != RecyclerView.NO_POSITION) {
-                    getItemAtPosition(getCurrentList(), holder.adapterPosition)?.let { message ->
+                if (adapterPosition != RecyclerView.NO_POSITION) {
+                    getItemAtPosition(getCurrentList(), adapterPosition)?.let { message ->
                         message.reactions.firstOrNull { it.code == emojiCode }?.let {  reaction ->
                             onReactionClickListener?.invoke(reaction, message)
                         }
@@ -42,8 +42,8 @@ internal class OutgoingMessageAdapterDelegate(
                 }
             }
             messageLayout.onAddReactionClickListener = {
-                if (holder.adapterPosition != RecyclerView.NO_POSITION) {
-                    getItemAtPosition(getCurrentList(), holder.adapterPosition)?.let { message ->
+                if (adapterPosition != RecyclerView.NO_POSITION) {
+                    getItemAtPosition(getCurrentList(), adapterPosition)?.let { message ->
                         onAddReactionClickListener?.invoke(message)
                     }
                 }
@@ -78,7 +78,7 @@ internal class OutgoingMessageAdapterDelegate(
         getCurrentList: () -> List<DelegateItem>
     ): ViewHolder {
         val holder = OutgoingMessageViewHolder(getNewOutgoingMessageLayout(parent))
-        holder.initClickListeners(holder, getCurrentList)
+        holder.initClickListeners(getCurrentList)
         return holder
     }
 

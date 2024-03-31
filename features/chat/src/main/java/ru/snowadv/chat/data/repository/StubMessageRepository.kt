@@ -28,7 +28,7 @@ internal class StubMessageRepository : MessageRepository {
     // Server also knows about emojis. Will be removed when I replace stubs with real repositories
     private val emojiMapByName = emojiMap.values.associateBy { it.name }
 
-    override fun getMessages(): Flow<Resource<List<ChatMessage>>> {
+    override fun getMessages(streamId: Long, topicName: String): Flow<Resource<List<ChatMessage>>> {
         return messages.onStart {
             Resource.Loading // Simulate connection to the server
             delay(100)

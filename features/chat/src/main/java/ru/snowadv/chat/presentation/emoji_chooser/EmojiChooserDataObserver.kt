@@ -19,7 +19,7 @@ import ru.snowadv.chat.presentation.model.ChatEmoji
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.presentation.adapter.impl.AdapterDelegatesManager
 import ru.snowadv.presentation.adapter.impl.DiffDelegationAdapter
-import ru.snowadv.presentation.util.FragmentDataObserver
+import ru.snowadv.presentation.fragment.FragmentDataObserver
 
 internal class EmojiChooserDataObserver :
     FragmentDataObserver<FragmentEmojiChooserBinding, EmojiChooserViewModel, EmojiChooserBottomSheetDialog> {
