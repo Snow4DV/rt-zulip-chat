@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:layout_height="match_parent"
+    tools:layout_width="match_parent">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/avatar"
+        android:layout_width="@dimen/chat_avatar_size"
+        android:layout_height="@dimen/chat_avatar_size"
+        android:src="@drawable/ic_user_avatar"
+        app:shapeAppearanceOverlay="@style/RoundedAvatar" />
+
+    <View
+        android:id="@+id/messageBackground"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_received_message"
+        android:paddingLeft="@dimen/common_padding"
+        tools:layout_height="96sp"
+        tools:layout_marginLeft="70dp"
+        tools:text="hiada" />
+
+    <TextView
+        android:id="@+id/message_user_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:maxLines="1"
+        android:paddingHorizontal="@dimen/message_box_horizontal_padding"
+        android:paddingTop="@dimen/message_box_vertical_padding"
+        android:textColor="@color/incoming_message_user_name_color"
+        android:textSize="@dimen/message_box_user_name_text_size"
+        tools:layout_marginLeft="70dp"
+        tools:text="John Smith" />
+
+    <TextView
+        android:id="@+id/message_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:paddingHorizontal="@dimen/message_box_horizontal_padding"
+        android:paddingVertical="@dimen/message_box_vertical_padding"
+        android:textColor="@color/message_text_color"
+        android:textSize="@dimen/message_box_text_size"
+        tools:layout_marginLeft="70dp"
+        tools:layout_marginTop="24sp"
+        tools:text="Quick brown fox jumped over the lazy dog. Lorem ipsum dolor sit amet." />
+
+    <TextView
+        android:id="@+id/message_timestamp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:gravity="right"
+        android:maxLines="1"
+        android:paddingHorizontal="@dimen/message_box_horizontal_padding"
+        android:paddingBottom="@dimen/message_box_vertical_padding"
+        android:textColor="@color/message_timestamp_color"
+        android:textSize="@dimen/message_box_timestamp_size"
+        tools:layout_marginLeft="70dp"
+        tools:layout_marginTop="74sp"
+        tools:text="02:46 12.04.2012" />
+
+    <ru.snowadv.chat.presentation.view.FlexBoxLayout
+        android:id="@+id/reactions_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:stretchOnLastLine="false"
+        tools:layout_marginLeft="70dp"
+        tools:layout_marginTop="95sp"
+        tools:paddingTop="5dp"/>
+
+</merge>

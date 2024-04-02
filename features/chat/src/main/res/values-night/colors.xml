@@ -8,4 +8,12 @@
     <color name="received_message_color">#3A3A3A</color>
     <color name="message_text_color">#EAEAEA</color>
     <color name="message_timestamp_color">#CECECE</color>
+    <color name="message_edit_text_color">#282828</color>
+    <color name="on_surface_box_color">#1C1C1C</color>
+    <color name="message_edit_text_text_color">@color/white</color>
+    <color name="message_edit_text_hint_color">#BFBFBF</color>
+    <color name="on_surface_box_text_color">#CCCCCC</color>
+    <color name="date_splitter_bg_color">#070707</color>
+    <color name="date_splitter_text_color">#999999</color>
+    <color name="sheet_puller_color">#555555</color>
 </resources>

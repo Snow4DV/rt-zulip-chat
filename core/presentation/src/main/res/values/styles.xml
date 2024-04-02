@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.ZulipChat.ImageButton" parent="Widget.AppCompat.ImageButton">
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+    </style>
+
+    <style name="Theme.ZulipChat.ActionBarImageButton" parent="Widget.AppCompat.ImageButton">
+        <item name="android:background">?attr/actionBarItemBackground</item>
+    </style>
+
+</resources>
