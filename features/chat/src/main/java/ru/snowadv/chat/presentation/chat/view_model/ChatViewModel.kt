@@ -3,11 +3,13 @@ package ru.snowadv.chat.presentation.chat.view_model
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -28,42 +30,25 @@ internal class ChatViewModel(
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(createDefaultState())
-    val state: StateFlow<ChatScreenState> = getStateWithMessageCollector()
+    val state: StateFlow<ChatScreenState> get() =  _state.combine(repository.getMessages()) { state, messages ->
+        processMessagesListResource(state, messages)
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, _state.value)
 
 
     private val _fragmentEventFlow = MutableSharedFlow<ChatScreenFragmentEvent>()
     val fragmentEventFlow = _fragmentEventFlow.asSharedFlow()
 
-    private var messageCollectorJob: Job? = null
-
-    private fun startCollectingMessages() {
-        messageCollectorJob?.cancel()
-        messageCollectorJob = repository.getMessages()
-            .onEach(::processMessagesListResource)
-            .launchIn(viewModelScope)
-    }
-
-    private fun getStateWithMessageCollector(): StateFlow<ChatScreenState> {
-        return _state
-            .onStart { startCollectingMessages() }.onCompletion { stopCollectingMessages() }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), _state.value)
-    }
-
-    private fun stopCollectingMessages() {
-        messageCollectorJob?.cancel()
-    }
-
-    private fun processMessagesListResource(res: Resource<List<ChatMessage>>) {
-        when (res) {
+    private fun processMessagesListResource(state: ChatScreenState, res: Resource<List<ChatMessage>>): ChatScreenState {
+        return when (res) {
             is Resource.Success -> {
-                _state.value = state.value.copy(
+                state.copy(
                     messagesAndDates = res.data.mapToAdapterMessagesAndDates(1),
                     loading = false
                 )
             }
 
             is Resource.Loading -> {
-                _state.value = state.value.copy(
+                state.copy(
                     loading = true // TODO: separate loading bar for actions & for messages
                 )
             }
@@ -72,6 +57,7 @@ internal class ChatViewModel(
                 viewModelScope.launch {
                     _fragmentEventFlow.emit(ChatScreenFragmentEvent.ExplainError) // TODO: improve error handling
                 }
+                state
             }
         }
     }
