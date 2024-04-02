@@ -1,5 +1,6 @@
 package ru.snowadv.chat.presentation.adapter
 
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -20,7 +21,7 @@ internal class IncomingMessageAdapterDelegate(
 ) :
     DelegationItemAdapterDelegate<ChatMessage, IncomingMessageAdapterDelegate.IncomingMessageViewHolder, ChatMessage.Payload>() {
 
-    internal inner class IncomingMessageViewHolder(val messageLayout: IncomingMessageLayout) :
+    internal inner class IncomingMessageViewHolder(private val messageLayout: IncomingMessageLayout) :
         ViewHolder(messageLayout.rootView) {
 
         fun initClickListeners(getCurrentList: () -> List<DelegateItem>) {

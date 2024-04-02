@@ -3,14 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="?android:colorBackground"
     android:padding="@dimen/common_padding"
     android:theme="@style/Theme.ZulipChat">
 
     <ProgressBar
         android:id="@+id/loading_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/progress_bar_size"
+        android:layout_height="@dimen/progress_bar_size"
         android:indeterminateTint="@color/primary"
         android:indeterminateTintMode="src_in"
         app:layout_constraintBottom_toBottomOf="parent"

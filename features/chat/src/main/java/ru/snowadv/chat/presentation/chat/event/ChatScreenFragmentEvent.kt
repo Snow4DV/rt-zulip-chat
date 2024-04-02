@@ -6,4 +6,5 @@ internal sealed class ChatScreenFragmentEvent {
     data object ExplainNotImplemented: ChatScreenFragmentEvent()
     data object ExplainReactionAlreadyExists: ChatScreenFragmentEvent()
     data object ScrollRecyclerToTheEnd: ChatScreenFragmentEvent()
+    class OpenMessageActionsChooser(val messageId: Long, val userId: Long): ChatScreenFragmentEvent()
 }

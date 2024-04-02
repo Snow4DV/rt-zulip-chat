@@ -1,10 +1,13 @@
 package ru.snowadv.chat.presentation.chat
 
+import android.content.DialogInterface
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
@@ -12,6 +15,7 @@ import ru.snowadv.chat.databinding.FragmentChatBinding
 import ru.snowadv.chat.di.ChatGraph
 import ru.snowadv.chat.presentation.chat.view_model.ChatViewModel
 import ru.snowadv.chat.presentation.chat.view_model.ChatViewModelFactory
+import ru.snowadv.chat.presentation.model.ChatAction
 import ru.snowadv.presentation.R
 import ru.snowadv.presentation.adapter.util.PaddingItemDecorator
 import ru.snowadv.presentation.fragment.FragmentDataObserver
@@ -23,12 +27,12 @@ class ChatFragment : Fragment(),
     FragmentDataObserver<FragmentChatBinding, ChatViewModel, ChatFragment> by ChatFragmentDataObserver(){
 
     companion object {
-        const val ARG_STREAM_ID_KEY = "stream_id"
+        const val ARG_STREAM_NAME_KEY = "stream_name"
         const val ARG_TOPIC_NAME_KEY = "topic_name"
         const val DEFAULT_ARG_STREAM_ID = -1L
-        fun newInstance(streamId: Long, topicName: String): Fragment = ChatFragment().apply {
+        fun newInstance(streamName: String, topicName: String): Fragment = ChatFragment().apply {
             arguments = bundleOf(
-                ARG_STREAM_ID_KEY to streamId,
+                ARG_STREAM_NAME_KEY to streamName,
                 ARG_TOPIC_NAME_KEY to topicName,
             )
         }
@@ -36,11 +40,8 @@ class ChatFragment : Fragment(),
 
     private var _binding: FragmentChatBinding? = null
     private val binding get() = _binding!!
-    private val streamId: Long by lazy {
-        requireArguments().getLong(ARG_STREAM_ID_KEY, DEFAULT_ARG_STREAM_ID)
-            .also {
-                if (it == DEFAULT_ARG_STREAM_ID) error("Missing stream id argument")
-            }
+    private val streamName: String by lazy {
+        requireArguments().getString(ARG_STREAM_NAME_KEY) ?: error("Missing stream name argument")
     }
     private val topicName: String by lazy {
         requireArguments().getString(ARG_TOPIC_NAME_KEY) ?: error("Missing topic name argument")
@@ -48,7 +49,7 @@ class ChatFragment : Fragment(),
     private val viewModel: ChatViewModel by viewModels {
         ChatViewModelFactory(
             router = ChatGraph.router,
-            streamId = streamId,
+            streamName = streamName,
             topicName = topicName,
         )
     }
@@ -85,5 +86,13 @@ class ChatFragment : Fragment(),
             R.dimen.small_common_padding,
             R.dimen.small_common_padding
         )
+    }
+
+    fun openActionsDialog(actions: List<ChatAction>, onResult: (ChatAction) -> Unit) {
+        AlertDialog.Builder(requireContext())
+            .setItems(actions.map { getString(it.titleResId) }.toTypedArray()) { dialog, which ->
+                onResult(actions[which])
+            }
+            .create().show()
     }
 }

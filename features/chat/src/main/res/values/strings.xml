@@ -9,11 +9,14 @@
     <string name="set_name">Set name</string>
     <string name="timestamp_sample">01.01.1980 21:46</string>
     <string name="set_message_text">Set message text</string>
-    <string name="message_edit_text_hint">Написать...</string>
-    <string name="send_message_button_description">Отправить сообщение</string>
+    <string name="message_edit_text_hint">Write message here…</string>
+    <string name="send_message_button_description">Send message</string>
     <string name="sample_topic_name">Topic: #testing</string>
-    <string name="unexpected_error">Произошла непредвиденная ошибка</string>
-    <string name="error_while_loading_emojis">Ошибка загрузки эмоджи</string>
-    <string name="not_supported">Функция пока не поддерживается</string>
-    <string name="reaction_already_exists">Такая реакция уже добавлена</string>
+    <string name="unexpected_error">Unexpected error occurred</string>
+    <string name="error_while_loading_emojis">Error when uploading emoji</string>
+    <string name="not_supported">Function is not supported yet</string>
+    <string name="reaction_already_exists">That reaction already exists</string>
+    <string name="add_reaction_action">Add reaction</string>
+    <string name="open_profile_action">Open profile</string>
+
 </resources>

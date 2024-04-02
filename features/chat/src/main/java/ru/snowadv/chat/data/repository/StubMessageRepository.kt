@@ -12,7 +12,7 @@ import ru.snowadv.chat.domain.repository.MessageRepository
 import ru.snowadv.domain.model.Resource
 import java.time.ZonedDateTime
 
-internal class StubMessageRepository : MessageRepository {
+internal object StubMessageRepository : MessageRepository {
 
     // Like websocket subscription to the chat. Will be replaced with Zulip's events system later.
     private val messages = MutableStateFlow(emptyList<ChatMessage>())
@@ -28,10 +28,10 @@ internal class StubMessageRepository : MessageRepository {
     // Server also knows about emojis. Will be removed when I replace stubs with real repositories
     private val emojiMapByName = emojiMap.values.associateBy { it.name }
 
-    override fun getMessages(streamId: Long, topicName: String): Flow<Resource<List<ChatMessage>>> {
+    override fun getMessages(streamName: String, topicName: String): Flow<Resource<List<ChatMessage>>> {
         return messages.onStart {
             Resource.Loading // Simulate connection to the server
-            delay(100)
+            delay(200)
         }.map { Resource.Success(it) }
     }
 
@@ -44,7 +44,7 @@ internal class StubMessageRepository : MessageRepository {
             content = text,
             sentAt = ZonedDateTime.now(),
             senderId = 1,
-            senderName = "Ivan Ivanov",
+            senderName = "Anastasia Petrova",
             senderAvatarUrl = null,
             reactions = emptyList()
         )
@@ -86,7 +86,7 @@ internal class StubMessageRepository : MessageRepository {
             content = randomMessages.random(),
             sentAt = ZonedDateTime.now(),
             senderId = 2,
-            senderName = "Petr Petrov",
+            senderName = "Anastasia Petrova",
             senderAvatarUrl = null,
             reactions = emptyList()
         )

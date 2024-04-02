@@ -7,10 +7,10 @@ import ru.snowadv.chat.domain.model.Emoji
 import ru.snowadv.chat.domain.repository.EmojiRepository
 import ru.snowadv.domain.model.Resource
 
-internal class StubEmojiRepository : EmojiRepository {
+internal object StubEmojiRepository : EmojiRepository {
     override suspend fun getAvailableEmojis(): Flow<Resource<List<Emoji>>> = flow{
         emit(Resource.Loading)
-        delay(50) // Simulate internet delay
+        delay(500) // Simulate internet delay
         emit(Resource.Success(emojiMap.values.toList()))
     }
 

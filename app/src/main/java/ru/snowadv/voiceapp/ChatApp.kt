@@ -10,6 +10,6 @@ internal class ChatApp: Application(), NavigationHolder by AppNavigationHolder()
     override fun onCreate() {
         super.onCreate()
         Graph.init(router)
-        router.navigateTo(Screens.Profile(1, false))
+        router.navigateTo(Screens.Home())
     }
 }

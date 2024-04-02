@@ -1,6 +1,6 @@
 package ru.snowadv.chat.di
 
-import ru.snowadv.chat.presentation.navigation.ChatRouter
+import ru.snowadv.chat.domain.navigation.ChatRouter
 
 object ChatGraph {
     internal lateinit var router: ChatRouter

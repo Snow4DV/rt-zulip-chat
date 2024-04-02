@@ -9,7 +9,7 @@ internal interface MessageRepository {
      * Returns flow that emits new state of dialog each time it updates. Shoul
      */
     fun getMessages(
-        streamId: Long,
+        streamName: String,
         topicName: String,
     ): Flow<Resource<List<ChatMessage>>>
     fun sendMessage(

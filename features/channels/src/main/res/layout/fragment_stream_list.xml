@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:theme="@style/Theme.ZulipChat.Channels"
+    tools:context="ru.snowadv.channels.presentation.stream_list.StreamListFragment">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/streams_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_stream" />
+
+    <include
+        android:id="@+id/action_loading_box"
+        layout="@layout/item_action_loading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        tools:visibility="visible" />
+
+    <include
+        android:id="@+id/state_box"
+        layout="@layout/item_state_box"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</FrameLayout>

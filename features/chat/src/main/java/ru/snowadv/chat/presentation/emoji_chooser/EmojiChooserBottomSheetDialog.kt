@@ -1,5 +1,6 @@
 package ru.snowadv.chat.presentation.emoji_chooser
 
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import ru.snowadv.chat.R
 import ru.snowadv.chat.databinding.FragmentEmojiChooserBinding
 import ru.snowadv.chat.presentation.emoji_chooser.view_model.EmojiChooserViewModel
 import ru.snowadv.chat.presentation.model.ChatEmoji
@@ -66,6 +68,7 @@ class EmojiChooserBottomSheetDialog private constructor() : BottomSheetDialogFra
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         registerObservingFragment(binding, viewModel)
+        setStateBoxBackgroundColor()
     }
 
     override fun onDestroyView() {
@@ -83,5 +86,9 @@ class EmojiChooserBottomSheetDialog private constructor() : BottomSheetDialogFra
             )
         )
         this.dismissAllowingStateLoss()
+    }
+
+    private fun setStateBoxBackgroundColor() {
+        binding.stateBox.root.background = ColorDrawable(requireContext().getColor(R.color.on_surface_box_color))
     }
 }

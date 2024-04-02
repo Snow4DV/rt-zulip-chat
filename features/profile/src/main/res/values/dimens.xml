@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="user_name_profile_text_size">32sp</dimen>
+    <dimen name="user_email_profile_text_size">20sp</dimen>
+    <dimen name="user_profile_name_top_margin">30dp</dimen>
+    <dimen name="logout_button_width">150dp</dimen>
+
+</resources>

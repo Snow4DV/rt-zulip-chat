@@ -1,7 +1,7 @@
 package ru.snowadv.voiceapp.navigation.impl
 
 import com.github.terrakok.cicerone.Router
-import ru.snowadv.chat.presentation.navigation.ChatRouter
+import ru.snowadv.chat.domain.navigation.ChatRouter
 import ru.snowadv.voiceapp.navigation.Screens
 
 class ChatRouterImpl(private val ciceroneRouter: Router): ChatRouter {

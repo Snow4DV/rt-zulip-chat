@@ -12,14 +12,15 @@ import ru.snowadv.chat.databinding.FragmentEmojiChooserBinding
 import ru.snowadv.chat.presentation.adapter.EmojiAdapterDelegate
 import ru.snowadv.chat.presentation.emoji_chooser.event.EmojiChooserEvent
 import ru.snowadv.chat.presentation.emoji_chooser.event.EmojiChooserFragmentEvent
-import ru.snowadv.chat.presentation.emoji_chooser.state.ChooserScreenStatus
-import ru.snowadv.chat.presentation.emoji_chooser.state.EmojiChooserState
 import ru.snowadv.chat.presentation.emoji_chooser.view_model.EmojiChooserViewModel
 import ru.snowadv.chat.presentation.model.ChatEmoji
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.presentation.adapter.impl.AdapterDelegatesManager
 import ru.snowadv.presentation.adapter.impl.DiffDelegationAdapter
 import ru.snowadv.presentation.fragment.FragmentDataObserver
+import ru.snowadv.presentation.fragment.setNewState
+import ru.snowadv.presentation.fragment.setOnRetryClickListener
+import ru.snowadv.presentation.model.ScreenState
 
 internal class EmojiChooserDataObserver :
     FragmentDataObserver<FragmentEmojiChooserBinding, EmojiChooserViewModel, EmojiChooserBottomSheetDialog> {
@@ -30,6 +31,7 @@ internal class EmojiChooserDataObserver :
     ) {
         observeEvents(viewModel, this)
         observeState(binding, viewModel, this)
+        initClickListeners(binding, viewModel)
     }
 
     private fun observeEvents(
@@ -61,7 +63,7 @@ internal class EmojiChooserDataObserver :
         val recyclerAdapter = setupAdapter(
             binding = binding,
             listener = {
-                viewModel.event(EmojiChooserEvent.OnEmojiChosen(it))
+                viewModel.handleEvent(EmojiChooserEvent.OnEmojiChosen(it))
             }
         )
         viewModel.state
@@ -71,25 +73,12 @@ internal class EmojiChooserDataObserver :
     }
 
     private fun bindState(
-        state: EmojiChooserState,
+        state: ScreenState<List<ChatEmoji>>,
         binding: FragmentEmojiChooserBinding,
         recyclerAdapter: DiffDelegationAdapter
     ) {
-        when (state.status) {
-            ChooserScreenStatus.LOADING -> {
-                binding.setVisibleView(binding.loadingBar)
-            }
-
-            ChooserScreenStatus.OK -> {
-                recyclerAdapter.submitList(state.emojis)
-                binding.setVisibleView(binding.emojisRecycler)
-            }
-
-            ChooserScreenStatus.ERROR -> {
-                binding.setVisibleView(binding.errorIcon)
-            }
-        }
-
+        binding.stateBox.setNewState(state)
+        recyclerAdapter.submitList(state.getCurrentData())
     }
 
     private fun FragmentEmojiChooserBinding.setVisibleView(visibleView: View) {
@@ -119,6 +108,12 @@ internal class EmojiChooserDataObserver :
         return AdapterDelegatesManager(
             EmojiAdapterDelegate(listener)
         )
+    }
+
+    private fun initClickListeners(binding: FragmentEmojiChooserBinding, viewModel: EmojiChooserViewModel) {
+        binding.stateBox.setOnRetryClickListener {
+            viewModel.handleEvent(EmojiChooserEvent.OnRetryClicked)
+        }
     }
 
 }

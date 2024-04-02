@@ -21,12 +21,15 @@ import ru.snowadv.chat.presentation.chat.event.ChatScreenFragmentEvent
 import ru.snowadv.chat.presentation.chat.state.ChatScreenState
 import ru.snowadv.chat.presentation.chat.view_model.ChatViewModel
 import ru.snowadv.chat.presentation.emoji_chooser.EmojiChooserBottomSheetDialog
+import ru.snowadv.chat.presentation.model.ChatAction
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.presentation.adapter.impl.AdapterDelegatesManager
 import ru.snowadv.presentation.adapter.impl.DiffDelegationAdapter
 import ru.snowadv.presentation.util.DateFormatter
 import ru.snowadv.presentation.util.DateTimeFormatter
 import ru.snowadv.presentation.fragment.FragmentDataObserver
+import ru.snowadv.presentation.fragment.setNewState
+import ru.snowadv.presentation.fragment.setOnRetryClickListener
 import ru.snowadv.presentation.fragment.setTopBarText
 import ru.snowadv.presentation.util.impl.DayDateFormatter
 import ru.snowadv.presentation.util.impl.LocalizedDateTimeFormatter
@@ -73,7 +76,7 @@ internal class ChatFragmentDataObserver :
         recyclerView.layoutManager = LinearLayoutManager(context)
     }
 
-    private fun observeState(
+    private fun Fragment.observeState(
         binding: FragmentChatBinding,
         viewModel: ChatViewModel,
         fragment: Fragment
@@ -86,7 +89,7 @@ internal class ChatFragmentDataObserver :
 
     private fun observeEventFlow(
         viewModel: ChatViewModel,
-        fragment: Fragment,
+        fragment: ChatFragment,
         binding: FragmentChatBinding
     ) {
         viewModel.fragmentEventFlow
@@ -104,25 +107,28 @@ internal class ChatFragmentDataObserver :
         binding.bottomBar.messageEditText.addTextChangedListener {
             it?.toString()?.let { currentMessage ->
                 if (viewModel.state.value.messageField != currentMessage) {
-                    viewModel.event(ChatScreenEvent.TextFieldMessageChanged(currentMessage))
+                    viewModel.handleEvent(ChatScreenEvent.TextFieldMessageChanged(currentMessage))
                 }
             }
         }
         binding.bottomBar.sendOrAddAttachmentButton.setOnClickListener {
             if (viewModel.state.value.messageField.isEmpty()) {
-                viewModel.event(ChatScreenEvent.AddAttachmentButtonClicked)
+                viewModel.handleEvent(ChatScreenEvent.AddAttachmentButtonClicked)
             } else {
-                viewModel.event(ChatScreenEvent.SendButtonClicked(binding.bottomBar.messageEditText.text.toString()))
+                viewModel.handleEvent(ChatScreenEvent.SendButtonClicked(binding.bottomBar.messageEditText.text.toString()))
             }
         }
         binding.topBackButtonBar.backButton.setOnClickListener {
-            viewModel.event(ChatScreenEvent.GoBackClicked)
+            viewModel.handleEvent(ChatScreenEvent.GoBackClicked)
+        }
+        binding.stateBox.setOnRetryClickListener {
+            viewModel.handleEvent(ChatScreenEvent.ReloadClicked)
         }
     }
 
     private fun handleFragmentEventFlow(
         event: ChatScreenFragmentEvent,
-        fragment: Fragment,
+        fragment: ChatFragment,
         viewModel: ChatViewModel,
         binding: FragmentChatBinding
     ) {
@@ -144,27 +150,36 @@ internal class ChatFragmentDataObserver :
             }
 
             is ChatScreenFragmentEvent.ScrollRecyclerToTheEnd -> {
-                binding.messagesRecycler.scrollToPosition(adapter.itemCount - 1) // TODO: implement smooth scroll
+                binding.messagesRecycler.smoothScrollToPosition(adapter.itemCount - 1)
+            }
+
+            is ChatScreenFragmentEvent.OpenMessageActionsChooser -> {
+                fragment.openActionsDialog(ChatAction.createActionsForMessage(event.messageId, event.userId)) {
+                    when(it) {
+                        is ChatAction.AddReaction -> viewModel.handleEvent(ChatScreenEvent.AddReactionClicked(event.messageId))
+                        is ChatAction.OpenProfile -> viewModel.handleEvent(ChatScreenEvent.GoToProfileClicked(event.userId))
+                    }
+                }
             }
         }
     }
 
-    private fun bindState(
+    private fun Fragment.bindState(
         state: ChatScreenState,
         binding: FragmentChatBinding
     ) {
-        binding.topicName.text = state.topic
-        binding.topBackButtonBar.setTopBarText(state.stream)
+        binding.topicName.text = getString(ru.snowadv.presentation.R.string.topic_title, state.topic)
+        binding.topBackButtonBar.setTopBarText(getString(ru.snowadv.presentation.R.string.stream_title, state.stream))
         binding.bottomBar.sendOrAddAttachmentButton.setImageResource(
             if (state.messageField.isEmpty()) R.drawable.ic_add_attachment else R.drawable.ic_send
         )
-        adapter.submitList(state.messagesAndDates)
+        adapter.submitList(state.screenState.getCurrentData())
         with(binding.bottomBar.messageEditText.text.toString()) {
             if (state.messageField != this) {
                 binding.bottomBar.messageEditText.setText(state.messageField)
             }
         }
-        binding.loadingBar.visibility = if (state.loading) View.VISIBLE else View.GONE
+        binding.stateBox.setNewState(state.screenState)
         binding.actionProgressBar.visibility =
             if (state.actionInProcess) View.VISIBLE else View.GONE
     }
@@ -173,17 +188,17 @@ internal class ChatFragmentDataObserver :
     private fun initOutgoingMessagesDelegate(viewModel: ChatViewModel): OutgoingMessageAdapterDelegate {
         return OutgoingMessageAdapterDelegate(
             onLongMessageClickListener = {
-                viewModel.event(ChatScreenEvent.AddReactionClicked(it.id))
+                viewModel.handleEvent(ChatScreenEvent.AddReactionClicked(it.id))
             },
             onReactionClickListener = { reaction, message ->
                 if (reaction.userReacted) {
-                    viewModel.event(ChatScreenEvent.RemoveReaction(message.id, reaction.name))
+                    viewModel.handleEvent(ChatScreenEvent.RemoveReaction(message.id, reaction.name))
                 } else {
-                    viewModel.event(ChatScreenEvent.AddChosenReaction(message.id, reaction.name))
+                    viewModel.handleEvent(ChatScreenEvent.AddChosenReaction(message.id, reaction.name))
                 }
             },
             onAddReactionClickListener = {
-                viewModel.event(ChatScreenEvent.AddReactionClicked(it.id))
+                viewModel.handleEvent(ChatScreenEvent.AddReactionClicked(it.id))
             },
             timestampFormatter = dateTimeFormatter,
         )
@@ -192,18 +207,18 @@ internal class ChatFragmentDataObserver :
     private fun initIncomingMessagesDelegate(viewModel: ChatViewModel): IncomingMessageAdapterDelegate {
         return IncomingMessageAdapterDelegate(
             onLongMessageClickListener = {
-                viewModel.event(ChatScreenEvent.AddReactionClicked(it.id))
+                viewModel.handleEvent(ChatScreenEvent.MessageLongClicked(it.id, it.senderId))
             },
             onReactionClickListener = { reaction, message ->
                 if (reaction.userReacted) {
-                    viewModel.event(ChatScreenEvent.RemoveReaction(message.id, reaction.name))
+                    viewModel.handleEvent(ChatScreenEvent.RemoveReaction(message.id, reaction.name))
                 } else {
-                    viewModel.event(ChatScreenEvent.AddChosenReaction(message.id, reaction.name))
+                    viewModel.handleEvent(ChatScreenEvent.AddChosenReaction(message.id, reaction.name))
                 }
             },
             timestampFormatter = dateTimeFormatter,
             onAddReactionClickListener = {
-                viewModel.event(ChatScreenEvent.AddReactionClicked(it.id))
+                viewModel.handleEvent(ChatScreenEvent.AddReactionClicked(it.id))
             },
         )
     }
@@ -252,7 +267,7 @@ internal class ChatFragmentDataObserver :
             if (messageId == EmojiChooserBottomSheetDialog.DEFAULT_ARG_MESSAGE_ID) {
                 error("Missing messageId in result bundle from emoji chooser")
             }
-            viewModel.event(ChatScreenEvent.AddChosenReaction(messageId, chosenReaction))
+            viewModel.handleEvent(ChatScreenEvent.AddChosenReaction(messageId, chosenReaction))
         }
     }
 

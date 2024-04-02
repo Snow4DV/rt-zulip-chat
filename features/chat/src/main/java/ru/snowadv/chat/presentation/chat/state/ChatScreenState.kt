@@ -1,12 +1,12 @@
 package ru.snowadv.chat.presentation.chat.state
 
 import ru.snowadv.presentation.adapter.DelegateItem
+import ru.snowadv.presentation.model.ScreenState
 
 data class ChatScreenState(
-    val loading: Boolean = true,
     val actionInProcess: Boolean = false,
     val stream: String,
     val topic: String,
-    val messagesAndDates: List<DelegateItem> = emptyList(),
+    val screenState: ScreenState<List<DelegateItem>> = ScreenState.Loading,
     val messageField: String = "",
 )

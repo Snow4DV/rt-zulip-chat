@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <!-- Feature theme. -->
-    <style name="Theme.ZulipChat.Home" parent="Base.Theme.ZulipChat" />
+    <style name="Theme.ZulipChat.Home"/>
+
 
 </resources>

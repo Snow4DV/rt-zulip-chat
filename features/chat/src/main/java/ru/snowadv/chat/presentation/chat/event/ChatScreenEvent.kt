@@ -7,9 +7,11 @@ internal sealed class ChatScreenEvent {
     class TextFieldMessageChanged(val text: String): ChatScreenEvent()
     class SendButtonClicked(val currentMessageFieldText: String): ChatScreenEvent()
     data object AddAttachmentButtonClicked: ChatScreenEvent()
+    class MessageLongClicked(val messageId: Long, val userId: Long): ChatScreenEvent()
     class AddReactionClicked(val messageId: Long): ChatScreenEvent()
     class AddChosenReaction(val messageId: Long, val reactionName: String): ChatScreenEvent()
     class RemoveReaction(val messageId: Long, val reactionName: String): ChatScreenEvent()
     class GoToProfileClicked(val profileId: Long): ChatScreenEvent()
-    object GoBackClicked: ChatScreenEvent()
+    data object GoBackClicked: ChatScreenEvent()
+    data object ReloadClicked: ChatScreenEvent()
 }

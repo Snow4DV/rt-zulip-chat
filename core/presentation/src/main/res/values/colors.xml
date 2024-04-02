@@ -42,4 +42,8 @@
 
     <color name="top_bar_bw">@color/light_gray_4</color>
     <color name="on_surface">@color/light_gray_5</color>
+
+    <color name="online">#4AB54D</color>
+    <color name="offline">#f44336</color>
+    <color name="idle">#FF9800</color>
 </resources>

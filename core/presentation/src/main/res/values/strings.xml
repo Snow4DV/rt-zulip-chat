@@ -2,11 +2,13 @@
 <resources>
     <string name="timestamp_format">dd.MM.yyyy HH:mm</string>
     <string name="sample_topic_name">#general</string>
-    <string name="back_button_description">Кнопка назад</string>
-    <string name="internet_error">Ошибка во время загрузки. Проверьте подключение к интернету.</string>
-    <string name="action_internet_error">Ошибка при выполнении действия. Проверьте подключение к интернету.</string>
-    <string name="retry">Повторить</string>
-    <string name="try_again_error_button">Попробовать еще раз</string>
-    <string name="empty_here">Тут пусто</string>
+    <string name="back_button_description">Back button</string>
+    <string name="internet_error">Error occurred while loading content. Check your internet connection.</string>
+    <string name="action_internet_error">Error occurred when processing action. Check your internet connection.</string>
+    <string name="retry">Retry</string>
+    <string name="try_again_error_button">Try again</string>
+    <string name="empty_here">Nothing here</string>
     <string name="idk_emoji">🤷</string>
+    <string name="stream_title">#%1$s</string>
+    <string name="topic_title">Topic: #%1$s</string>
 </resources>

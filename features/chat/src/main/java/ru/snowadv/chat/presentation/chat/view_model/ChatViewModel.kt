@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.snowadv.chat.data.repository.StubMessageRepository
 import ru.snowadv.chat.domain.model.ChatMessage
@@ -20,18 +21,19 @@ import ru.snowadv.chat.domain.repository.MessageRepository
 import ru.snowadv.chat.presentation.chat.event.ChatScreenEvent
 import ru.snowadv.chat.presentation.chat.event.ChatScreenFragmentEvent
 import ru.snowadv.chat.presentation.chat.state.ChatScreenState
-import ru.snowadv.chat.presentation.navigation.ChatRouter
-import ru.snowadv.chat.presentation.util.mapToAdapterMessagesAndDates
+import ru.snowadv.chat.domain.navigation.ChatRouter
+import ru.snowadv.chat.presentation.util.toUiChatMessage
 import ru.snowadv.domain.model.Resource
+import ru.snowadv.presentation.util.toScreenState
 
 internal class ChatViewModel(
-    private val repository: MessageRepository = StubMessageRepository(), // remove after adding DI
+    private val repository: MessageRepository = StubMessageRepository, // remove after adding DI
     private val router: ChatRouter,
-    private val streamId: Long,
+    private val streamName: String,
     private val topicName: String,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(createDefaultState())
+    private val _state = MutableStateFlow(createInitialState())
     val state: StateFlow<ChatScreenState> = getStateWithMessageCollector()
 
 
@@ -42,7 +44,7 @@ internal class ChatViewModel(
 
     private fun startCollectingMessages() {
         messageCollectorJob?.cancel()
-        messageCollectorJob = repository.getMessages(streamId, topicName)
+        messageCollectorJob = repository.getMessages(streamName, topicName)
             .onEach(::processMessagesListResource)
             .launchIn(viewModelScope)
     }
@@ -58,36 +60,28 @@ internal class ChatViewModel(
     }
 
     private fun processMessagesListResource(res: Resource<List<ChatMessage>>) {
-        when (res) {
-            is Resource.Success -> {
-                _state.value = state.value.copy(
-                    messagesAndDates = res.data.mapToAdapterMessagesAndDates(1),
-                    loading = false
+        _state.update { oldState ->
+            oldState.copy(
+                screenState = res.toScreenState(
+                    mapper = { messages ->
+                        messages.map { message -> message.toUiChatMessage(1) }
+                    },
+                    isEmptyChecker = { messages ->
+                        messages.isEmpty()
+                    },
                 )
-            }
-
-            is Resource.Loading -> {
-                _state.value = state.value.copy(
-                    loading = true // TODO: separate loading bar for actions & for messages
-                )
-            }
-
-            is Resource.Error -> {
-                viewModelScope.launch {
-                    _fragmentEventFlow.emit(ChatScreenFragmentEvent.ExplainError) // TODO: improve error handling
-                }
-            }
+            )
         }
     }
 
-    private fun createDefaultState(): ChatScreenState {
+    private fun createInitialState(): ChatScreenState {
         return ChatScreenState(
-            stream = "#general", topic = "#default", loading = false
-        ) // Hardcore names at this point
+            stream = streamName, topic = topicName
+        )
     }
 
 
-    fun event(event: ChatScreenEvent) {
+    fun handleEvent(event: ChatScreenEvent) {
         when (event) {
             is ChatScreenEvent.TextFieldMessageChanged -> {
                 _state.value = state.value.copy(
@@ -124,8 +118,24 @@ internal class ChatViewModel(
             is ChatScreenEvent.GoBackClicked -> {
                 router.goBack()
             }
+
             is ChatScreenEvent.GoToProfileClicked -> {
                 router.openProfile(event.profileId)
+            }
+
+            ChatScreenEvent.ReloadClicked -> {
+                startCollectingMessages()
+            }
+
+            is ChatScreenEvent.MessageLongClicked -> {
+                viewModelScope.launch {
+                    _fragmentEventFlow.emit(
+                        ChatScreenFragmentEvent.OpenMessageActionsChooser(
+                            event.messageId,
+                            event.userId
+                        )
+                    )
+                }
             }
         }
     }
