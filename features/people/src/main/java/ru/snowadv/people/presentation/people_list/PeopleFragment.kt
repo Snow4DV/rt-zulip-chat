@@ -22,7 +22,7 @@ class PeopleFragment : Fragment(),
     }
 
     private var _binding: FragmentPeopleBinding? = null
-    private val binding get() = _binding!!
+    private val binding get() = requireNotNull(_binding) {"Binding wasn't initialized"}
 
     private val viewModel: PeopleListViewModel by viewModels { PeopleListViewModelFactory(PeopleGraph.router) }
 

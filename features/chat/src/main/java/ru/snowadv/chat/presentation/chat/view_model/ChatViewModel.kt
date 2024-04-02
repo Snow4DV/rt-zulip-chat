@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -24,6 +25,7 @@ import ru.snowadv.chat.presentation.chat.state.ChatScreenState
 import ru.snowadv.chat.domain.navigation.ChatRouter
 import ru.snowadv.chat.presentation.util.toUiChatMessage
 import ru.snowadv.domain.model.Resource
+import ru.snowadv.presentation.model.ScreenState
 import ru.snowadv.presentation.util.toScreenState
 
 internal class ChatViewModel(
@@ -34,44 +36,26 @@ internal class ChatViewModel(
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(createInitialState())
-    val state: StateFlow<ChatScreenState> = getStateWithMessageCollector()
+    val state: StateFlow<ChatScreenState> = _state
+        .combine(repository.getMessages(streamName, topicName)) { state, messages ->
+            state.copy(
+                screenState = processMessagesListResource(state, messages)
+            )
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, _state.value)
 
 
     private val _fragmentEventFlow = MutableSharedFlow<ChatScreenFragmentEvent>()
     val fragmentEventFlow = _fragmentEventFlow.asSharedFlow()
 
-    private var messageCollectorJob: Job? = null
-
-    private fun startCollectingMessages() {
-        messageCollectorJob?.cancel()
-        messageCollectorJob = repository.getMessages(streamName, topicName)
-            .onEach(::processMessagesListResource)
-            .launchIn(viewModelScope)
-    }
-
-    private fun getStateWithMessageCollector(): StateFlow<ChatScreenState> {
-        return _state
-            .onStart { startCollectingMessages() }.onCompletion { stopCollectingMessages() }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), _state.value)
-    }
-
-    private fun stopCollectingMessages() {
-        messageCollectorJob?.cancel()
-    }
-
-    private fun processMessagesListResource(res: Resource<List<ChatMessage>>) {
-        _state.update { oldState ->
-            oldState.copy(
-                screenState = res.toScreenState(
-                    mapper = { messages ->
-                        messages.map { message -> message.toUiChatMessage(1) }
-                    },
-                    isEmptyChecker = { messages ->
-                        messages.isEmpty()
-                    },
-                )
-            )
-        }
+    private fun processMessagesListResource(state: ChatScreenState, res: Resource<List<ChatMessage>>): ScreenState<List<ru.snowadv.chat.presentation.model.ChatMessage>> {
+        return res.toScreenState(
+            mapper = { messages ->
+                messages.map { message -> message.toUiChatMessage(1) }
+            },
+            isEmptyChecker = { messages ->
+                messages.isEmpty()
+            },
+        )
     }
 
     private fun createInitialState(): ChatScreenState {
@@ -124,7 +108,7 @@ internal class ChatViewModel(
             }
 
             ChatScreenEvent.ReloadClicked -> {
-                startCollectingMessages()
+                // TODO: implement restart logic in future
             }
 
             is ChatScreenEvent.MessageLongClicked -> {

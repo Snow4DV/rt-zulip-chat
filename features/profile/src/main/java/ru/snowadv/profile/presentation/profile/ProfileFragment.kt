@@ -34,7 +34,7 @@ class ProfileFragment : Fragment(),
     }
 
     private var _binding: FragmentProfileBinding? = null
-    private val binding get() = _binding!!
+    private val binding get() = requireNotNull(_binding) {"Binding wasn't initialized"}
 
     private val viewModel: ProfileViewModel by viewModels {
         ProfileViewModelFactory(

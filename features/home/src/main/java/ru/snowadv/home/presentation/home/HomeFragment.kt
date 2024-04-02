@@ -29,7 +29,7 @@ class HomeFragment : Fragment(),
     private val factory by lazy { HomeGraph.homeScreenFactory }
 
     private var _binding: FragmentHomeBinding? = null
-    private val binding get() = _binding!!
+    private val binding get() = requireNotNull(_binding) {"Binding wasn't initialized"}
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

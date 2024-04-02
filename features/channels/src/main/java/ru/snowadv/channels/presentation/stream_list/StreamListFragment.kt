@@ -29,7 +29,7 @@ class StreamListFragment : Fragment(), ErrorHandlingFragment by SnackbarErrorHan
     }
 
     private var _binding: FragmentStreamListBinding? = null
-    private val binding get() = _binding!!
+    private val binding get() = requireNotNull(_binding) {"Binding wasn't initialized"}
     private val chanelListSharedViewModel: ru.snowadv.channels.presentation.channel_list.view_model.ChannelListSharedViewModel by viewModels(
         ownerProducer = { requireParentFragment() },
     )

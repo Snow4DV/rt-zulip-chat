@@ -55,7 +55,7 @@ class EmojiChooserBottomSheetDialog private constructor() : BottomSheetDialogFra
     }
     private var _binding: FragmentEmojiChooserBinding? = null
     private val viewModel: EmojiChooserViewModel by viewModels()
-    private val binding get() = _binding!!
+    private val binding get() = requireNotNull(_binding) {"Binding wasn't initialized"}
 
     override fun onCreateView(
         inflater: LayoutInflater,

@@ -41,9 +41,9 @@ internal class ChatFragmentDataObserver :
     private var _splitterDateFormatter: DateFormatter? = null
     private var _dateTimeFormatter: DateTimeFormatter? = null
 
-    private val adapter get() = _adapter!!
-    private val splitterDateFormatter get() = _splitterDateFormatter!!
-    private val dateTimeFormatter get() = _dateTimeFormatter!!
+    private val adapter get() = requireNotNull(_adapter) {"Adapter wasn't initialized"}
+    private val splitterDateFormatter get() = requireNotNull(_splitterDateFormatter) {"Splitter date formatter wasnt initialized"}
+    private val dateTimeFormatter get() = requireNotNull(_dateTimeFormatter) {"Date time formatter wasn't initialized"}
 
     companion object {
         const val EMOJI_CHOOSER_REQUEST_KEY = "emoji_chooser_request"

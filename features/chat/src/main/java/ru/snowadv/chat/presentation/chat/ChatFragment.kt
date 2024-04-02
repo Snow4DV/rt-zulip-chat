@@ -29,7 +29,6 @@ class ChatFragment : Fragment(),
     companion object {
         const val ARG_STREAM_NAME_KEY = "stream_name"
         const val ARG_TOPIC_NAME_KEY = "topic_name"
-        const val DEFAULT_ARG_STREAM_ID = -1L
         fun newInstance(streamName: String, topicName: String): Fragment = ChatFragment().apply {
             arguments = bundleOf(
                 ARG_STREAM_NAME_KEY to streamName,
@@ -39,7 +38,7 @@ class ChatFragment : Fragment(),
     }
 
     private var _binding: FragmentChatBinding? = null
-    private val binding get() = _binding!!
+    private val binding get() = requireNotNull(_binding) {"Binding wasn't initialized"}
     private val streamName: String by lazy {
         requireArguments().getString(ARG_STREAM_NAME_KEY) ?: error("Missing stream name argument")
     }
