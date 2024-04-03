@@ -29,13 +29,12 @@ class PaddingItemDecorator(
         state: RecyclerView.State
     ) {
         super.getItemOffsets(outRect, view, parent, state)
-        val childLayoutPosition = parent.getChildLayoutPosition(view)
 
-        if (childLayoutPosition == 0) {
+        if (parent.getChildViewHolder(view).adapterPosition == 0) {
             outRect.top = verticalSpacingPx
         }
         outRect.bottom = verticalSpacingPx
         outRect.right = horizontalSpacingPx
-        outRect.left =  horizontalSpacingPx
+        outRect.left = horizontalSpacingPx
     }
 }
