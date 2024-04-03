@@ -6,19 +6,14 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.snowadv.chat.data.repository.StubMessageRepository
-import ru.snowadv.chat.domain.model.ChatMessage
 import ru.snowadv.chat.domain.repository.MessageRepository
 import ru.snowadv.chat.presentation.chat.event.ChatScreenEvent
 import ru.snowadv.chat.presentation.chat.event.ChatScreenFragmentEvent
@@ -26,7 +21,6 @@ import ru.snowadv.chat.presentation.chat.state.ChatScreenState
 import ru.snowadv.chat.domain.navigation.ChatRouter
 import ru.snowadv.chat.presentation.util.toUiChatMessage
 import ru.snowadv.domain.model.Resource
-import ru.snowadv.presentation.model.ScreenState
 import ru.snowadv.presentation.util.toScreenState
 
 internal class ChatViewModel(
@@ -36,28 +30,14 @@ internal class ChatViewModel(
     private val topicName: String,
 ) : ViewModel() {
 
+    private var messageCollectorJob: Job? = null
+
     private val _state = MutableStateFlow(createInitialState())
-    val state: StateFlow<ChatScreenState> = _state
-        .combine(repository.getMessages(streamName, topicName)) { state, messages ->
-            state.copy(
-                screenState = processMessagesListResource(state, messages)
-            )
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, _state.value)
-
-
+    val state: Flow<ChatScreenState> = _state
+        .onStart { startCollectingMessages() }
+        .onCompletion { stopCollectingMessages() }
     private val _fragmentEventFlow = MutableSharedFlow<ChatScreenFragmentEvent>()
     val fragmentEventFlow = _fragmentEventFlow.asSharedFlow()
-
-    private fun processMessagesListResource(state: ChatScreenState, res: Resource<List<ChatMessage>>): ScreenState<List<ru.snowadv.chat.presentation.model.ChatMessage>> {
-        return res.toScreenState(
-            mapper = { messages ->
-                messages.map { message -> message.toUiChatMessage(1) }
-            },
-            isEmptyChecker = { messages ->
-                messages.isEmpty()
-            },
-        )
-    }
 
     private fun createInitialState(): ChatScreenState {
         return ChatScreenState(
@@ -69,17 +49,21 @@ internal class ChatViewModel(
     fun handleEvent(event: ChatScreenEvent) {
         when (event) {
             is ChatScreenEvent.TextFieldMessageChanged -> {
-                _state.value = state.value.copy(
-                    messageField = event.text
-                )
+                if (event.text != _state.value.messageField) {
+                    _state.update {  state ->
+                        state.copy(
+                            messageField = event.text
+                        )
+                    }
+                }
             }
 
-            is ChatScreenEvent.SendButtonClicked -> {
-                sendMessage(event.currentMessageFieldText)
-            }
-
-            is ChatScreenEvent.AddAttachmentButtonClicked -> {
-                viewModelScope.launch { _fragmentEventFlow.emit(ChatScreenFragmentEvent.ExplainNotImplemented) }
+            is ChatScreenEvent.SendMessageAddAttachmentButtonClicked -> {
+                if (_state.value.messageField.isEmpty()) {
+                    viewModelScope.launch { _fragmentEventFlow.emit(ChatScreenFragmentEvent.ExplainNotImplemented) }
+                } else {
+                    sendMessage(_state.value.messageField)
+                }
             }
 
             is ChatScreenEvent.AddReactionClicked -> {
@@ -109,7 +93,7 @@ internal class ChatViewModel(
             }
 
             ChatScreenEvent.ReloadClicked -> {
-                // TODO: implement restart logic in future
+                startCollectingMessages()
             }
 
             is ChatScreenEvent.MessageLongClicked -> {
@@ -128,7 +112,7 @@ internal class ChatViewModel(
     private fun sendMessage(text: String) {
 
         repository.sendMessage(
-            streamName = state.value.stream, topicName = state.value.topic, text = text
+            streamName = _state.value.stream, topicName = _state.value.topic, text = text
         ).onEach(::processCompletableResource)
             .onCompletion {
                 if (it == null) clearMessageFieldAndScrollToTheEnd()
@@ -139,7 +123,7 @@ internal class ChatViewModel(
     private fun clearMessageFieldAndScrollToTheEnd() {
         viewModelScope.launch {
             _fragmentEventFlow.emit(ChatScreenFragmentEvent.ScrollRecyclerToTheEnd)
-            _state.value = state.value.copy(
+            _state.value = _state.value.copy(
                 messageField = ""
             )
         }
@@ -167,19 +151,19 @@ internal class ChatViewModel(
     ) {
         when (resource) {
             is Resource.Loading -> {
-                _state.value = state.value.copy(
+                _state.value = _state.value.copy(
                     actionInProcess = true,
                 )
             }
 
             is Resource.Success -> {
-                _state.value = state.value.copy(
+                _state.value = _state.value.copy(
                     actionInProcess = false
                 )
             }
 
             is Resource.Error -> {
-                _state.value = state.value.copy(
+                _state.value = _state.value.copy(
                     actionInProcess = false
                 )
                 viewModelScope.launch {
@@ -187,5 +171,27 @@ internal class ChatViewModel(
                 }
             }
         }
+    }
+
+    private fun startCollectingMessages() {
+        messageCollectorJob?.cancel()
+        messageCollectorJob = repository.getMessages(streamName, topicName).onEach { messagesRes ->
+            _state.update { state ->
+                state.copy(
+                    screenState = messagesRes.toScreenState(
+                        mapper = { messageList ->
+                            messageList.map { message -> message.toUiChatMessage(1) }
+                        },
+                        isEmptyChecker = { messageList ->
+                            messageList.isEmpty()
+                        },
+                    )
+                )
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun stopCollectingMessages() {
+        messageCollectorJob?.cancel()
     }
 }

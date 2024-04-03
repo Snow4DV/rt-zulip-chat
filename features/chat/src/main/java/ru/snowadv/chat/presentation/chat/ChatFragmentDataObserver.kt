@@ -106,17 +106,11 @@ internal class ChatFragmentDataObserver :
     ) {
         binding.bottomBar.messageEditText.addTextChangedListener {
             it?.toString()?.let { currentMessage ->
-                if (viewModel.state.value.messageField != currentMessage) {
-                    viewModel.handleEvent(ChatScreenEvent.TextFieldMessageChanged(currentMessage))
-                }
+                viewModel.handleEvent(ChatScreenEvent.TextFieldMessageChanged(currentMessage))
             }
         }
         binding.bottomBar.sendOrAddAttachmentButton.setOnClickListener {
-            if (viewModel.state.value.messageField.isEmpty()) {
-                viewModel.handleEvent(ChatScreenEvent.AddAttachmentButtonClicked)
-            } else {
-                viewModel.handleEvent(ChatScreenEvent.SendButtonClicked(binding.bottomBar.messageEditText.text.toString()))
-            }
+            viewModel.handleEvent(ChatScreenEvent.SendMessageAddAttachmentButtonClicked)
         }
         binding.topBackButtonBar.backButton.setOnClickListener {
             viewModel.handleEvent(ChatScreenEvent.GoBackClicked)
@@ -188,7 +182,7 @@ internal class ChatFragmentDataObserver :
     private fun initOutgoingMessagesDelegate(viewModel: ChatViewModel): OutgoingMessageAdapterDelegate {
         return OutgoingMessageAdapterDelegate(
             onLongMessageClickListener = {
-                viewModel.handleEvent(ChatScreenEvent.AddReactionClicked(it.id))
+                viewModel.handleEvent(ChatScreenEvent.MessageLongClicked(it.id, it.senderId))
             },
             onReactionClickListener = { reaction, message ->
                 if (reaction.userReacted) {
