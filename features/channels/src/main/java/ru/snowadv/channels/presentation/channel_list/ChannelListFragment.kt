@@ -7,19 +7,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.coroutines.flow.Flow
 import ru.snowadv.channels.databinding.FragmentChannelListBinding
-import ru.snowadv.channels.di.ChannelsGraph
 import ru.snowadv.channels.domain.model.StreamType
+import ru.snowadv.channels.presentation.channel_list.api.SearchHolder
 import ru.snowadv.channels.presentation.channel_list.pager_adapter.StreamsAdapter
-import ru.snowadv.channels.presentation.channel_list.view_model.ChannelListSharedViewModel
-import ru.snowadv.channels.presentation.channel_list.view_model.ChannelListViewModelFactory
+import ru.snowadv.channels.presentation.channel_list.view_model.ChannelListViewModel
 import ru.snowadv.channels.presentation.util.toLocalizedString
 import ru.snowadv.presentation.fragment.ErrorHandlingFragment
 import ru.snowadv.presentation.fragment.FragmentDataObserver
 import ru.snowadv.presentation.fragment.impl.SnackbarErrorHandlingFragment
 
 class ChannelListFragment : Fragment(), ErrorHandlingFragment by SnackbarErrorHandlingFragment(),
-    FragmentDataObserver<FragmentChannelListBinding, ChannelListSharedViewModel, ChannelListFragment> by ChannelListFragmentDataObserver() {
+    FragmentDataObserver<FragmentChannelListBinding, ChannelListViewModel, ChannelListFragment> by ChannelListFragmentDataObserver(),
+    SearchHolder {
+
+
 
     companion object {
         fun newInstance(): Fragment = ChannelListFragment()
@@ -27,11 +30,7 @@ class ChannelListFragment : Fragment(), ErrorHandlingFragment by SnackbarErrorHa
 
     private var _binding: FragmentChannelListBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: ChannelListSharedViewModel by viewModels(
-        factoryProducer = {
-            ChannelListViewModelFactory(ChannelsGraph.router)
-        }
-    )
+    private val viewModel: ChannelListViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,4 +60,7 @@ class ChannelListFragment : Fragment(), ErrorHandlingFragment by SnackbarErrorHa
             tab.text = StreamType.entries[position].toLocalizedString(requireContext())
         }.attach()
     }
+
+    override val searchQuery: Flow<String>
+        get() = viewModel.searchQuery
 }

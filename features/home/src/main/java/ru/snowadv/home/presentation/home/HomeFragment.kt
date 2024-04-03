@@ -20,7 +20,6 @@ class HomeFragment : Fragment(),
     private val currentTabFragment: Fragment?
         get() = childFragmentManager.fragments.firstOrNull { !it.isHidden }
 
-
     companion object {
         fun newInstance(): Fragment = HomeFragment()
     }
@@ -65,6 +64,4 @@ class HomeFragment : Fragment(),
             }
         }.commit()
     }
-
-
 }

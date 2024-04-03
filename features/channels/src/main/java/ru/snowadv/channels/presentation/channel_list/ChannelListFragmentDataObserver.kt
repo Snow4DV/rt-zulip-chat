@@ -1,6 +1,5 @@
 package ru.snowadv.channels.presentation.channel_list
 
-import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -9,15 +8,15 @@ import kotlinx.coroutines.flow.onEach
 import ru.snowadv.channels.databinding.FragmentChannelListBinding
 import ru.snowadv.channels.presentation.channel_list.event.ChannelListEvent
 import ru.snowadv.channels.presentation.channel_list.state.ChannelListScreenState
-import ru.snowadv.channels.presentation.channel_list.view_model.ChannelListSharedViewModel
+import ru.snowadv.channels.presentation.channel_list.view_model.ChannelListViewModel
 import ru.snowadv.presentation.fragment.FragmentDataObserver
 
 internal class ChannelListFragmentDataObserver :
-    FragmentDataObserver<FragmentChannelListBinding, ChannelListSharedViewModel, ChannelListFragment> {
+    FragmentDataObserver<FragmentChannelListBinding, ChannelListViewModel, ChannelListFragment> {
 
     override fun ChannelListFragment.registerObservingFragment(
         binding: FragmentChannelListBinding,
-        viewModel: ChannelListSharedViewModel
+        viewModel: ChannelListViewModel
     ) {
         observeState(binding, viewModel)
         initListeners(binding, viewModel)
@@ -25,7 +24,7 @@ internal class ChannelListFragmentDataObserver :
 
     private fun ChannelListFragment.observeState(
         binding: FragmentChannelListBinding,
-        viewModel: ChannelListSharedViewModel,
+        viewModel: ChannelListViewModel,
     ) {
         viewModel.state.onEach {
             bindState(binding, it)
@@ -43,7 +42,7 @@ internal class ChannelListFragmentDataObserver :
 
     private fun initListeners(
         binding: FragmentChannelListBinding,
-        viewModel: ChannelListSharedViewModel,
+        viewModel: ChannelListViewModel,
     ) {
         binding.searchBar.searchEditText.addTextChangedListener { editable ->
             editable?.toString()?.let {  text ->
