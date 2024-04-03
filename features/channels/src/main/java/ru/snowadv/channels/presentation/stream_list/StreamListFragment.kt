@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import ru.snowadv.channels.databinding.FragmentStreamListBinding
 import ru.snowadv.channels.domain.model.StreamType
+import ru.snowadv.channels.presentation.channel_list.view_model.ChannelListSharedViewModel
 import ru.snowadv.channels.presentation.stream_list.view_model.StreamListViewModel
 import ru.snowadv.channels.presentation.stream_list.view_model.StreamListViewModelFactory
 import ru.snowadv.presentation.fragment.ErrorHandlingFragment
@@ -30,7 +31,7 @@ class StreamListFragment : Fragment(), ErrorHandlingFragment by SnackbarErrorHan
 
     private var _binding: FragmentStreamListBinding? = null
     private val binding get() = requireNotNull(_binding) {"Binding wasn't initialized"}
-    private val chanelListSharedViewModel: ru.snowadv.channels.presentation.channel_list.view_model.ChannelListSharedViewModel by viewModels(
+    private val chanelListSharedViewModel: ChannelListSharedViewModel by viewModels(
         ownerProducer = { requireParentFragment() },
     )
 
