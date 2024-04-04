@@ -43,7 +43,7 @@ class HomeFragment : Fragment(),
     }
 
     fun selectTab(screen: HomeScreen) {
-        requireActivity().hideKeyboard()
+        activity?.hideKeyboard()
         val currentFragment = currentTabFragment
         val newFragment = childFragmentManager.findFragmentByTag(screen.tag)
 

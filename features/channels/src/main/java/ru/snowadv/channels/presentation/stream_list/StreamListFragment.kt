@@ -52,7 +52,6 @@ class StreamListFragment : Fragment(), ErrorHandlingFragment by SnackbarErrorHan
         )
     }
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

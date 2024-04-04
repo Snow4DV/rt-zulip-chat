@@ -14,6 +14,7 @@ import ru.snowadv.channels.presentation.channel_list.api.SearchHolder
 import ru.snowadv.channels.presentation.channel_list.pager_adapter.StreamsAdapter
 import ru.snowadv.channels.presentation.channel_list.view_model.ChannelListViewModel
 import ru.snowadv.channels.presentation.util.toLocalizedString
+import ru.snowadv.presentation.activity.showKeyboard
 import ru.snowadv.presentation.fragment.ErrorHandlingFragment
 import ru.snowadv.presentation.fragment.FragmentDataObserver
 import ru.snowadv.presentation.fragment.impl.SnackbarErrorHandlingFragment
@@ -31,6 +32,9 @@ class ChannelListFragment : Fragment(), ErrorHandlingFragment by SnackbarErrorHa
     private var _binding: FragmentChannelListBinding? = null
     private val binding get() = _binding!!
     private val viewModel: ChannelListViewModel by viewModels()
+
+    override val searchQuery: Flow<String>
+        get() = viewModel.searchQuery
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,6 +55,11 @@ class ChannelListFragment : Fragment(), ErrorHandlingFragment by SnackbarErrorHa
         super.onDestroyView()
     }
 
+    fun showKeyboardAndFocusOnSearchField() {
+        binding.searchBar.searchEditText.requestFocus()
+        activity?.showKeyboard(binding.searchBar.searchEditText)
+    }
+
     private fun setupPagerAdapter() {
         binding.streamTypesPager.adapter = StreamsAdapter(childFragmentManager, lifecycle)
     }
@@ -60,7 +69,4 @@ class ChannelListFragment : Fragment(), ErrorHandlingFragment by SnackbarErrorHa
             tab.text = StreamType.entries[position].toLocalizedString(requireContext())
         }.attach()
     }
-
-    override val searchQuery: Flow<String>
-        get() = viewModel.searchQuery
 }
