@@ -11,14 +11,14 @@ import ru.snowadv.domain.model.Resource
 internal object StubStreamRepository: StreamRepository {
     override fun getStreams(): Flow<Resource<List<Stream>>> = flow {
         emit(Resource.Loading)
-        delay(500)
+        delay(2000)
 
         emit(Resource.Success(StubData.streams))
     }
 
     override fun getSubscribedStreams(): Flow<Resource<List<Stream>>> = flow {
         emit(Resource.Loading)
-        delay(200)
+        delay(2000)
         emit(Resource.Success(StubData.streams.filter { it.id in StubData.subscribedStreamsIds }))
     }
 

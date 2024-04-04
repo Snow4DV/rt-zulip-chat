@@ -12,6 +12,7 @@ import ru.snowadv.home.databinding.FragmentHomeBinding
 import ru.snowadv.home.di.HomeGraph
 import ru.snowadv.home.presentation.home.view_model.HomeViewModel
 import ru.snowadv.home.presentation.local_navigation.HomeScreen
+import ru.snowadv.presentation.activity.hideKeyboard
 import ru.snowadv.presentation.fragment.FragmentDataObserver
 
 class HomeFragment : Fragment(),
@@ -42,6 +43,7 @@ class HomeFragment : Fragment(),
     }
 
     fun selectTab(screen: HomeScreen) {
+        requireActivity().hideKeyboard()
         val currentFragment = currentTabFragment
         val newFragment = childFragmentManager.findFragmentByTag(screen.tag)
 
@@ -62,6 +64,6 @@ class HomeFragment : Fragment(),
                 show(fragment)
                 setMaxLifecycle(fragment, Lifecycle.State.RESUMED)
             }
-        }.commit()
+        }.commitAllowingStateLoss()
     }
 }

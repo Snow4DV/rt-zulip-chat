@@ -28,6 +28,7 @@ mockk = "1.13.9"
 desugarJdkLibs = "2.0.4"
 coil = "2.6.0"
 cicerone = "7.1"
+facebookShimmer = "0.5.0"
 
 
 [libraries]
@@ -50,6 +51,7 @@ desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", ver
 coil = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 cicerone = { group = "com.github.terrakok", name = "cicerone", version.ref = "cicerone" }
+facebook-shimmer = { group="com.facebook.shimmer", name = "shimmer", version.ref="facebookShimmer" }
 
 
 [plugins]

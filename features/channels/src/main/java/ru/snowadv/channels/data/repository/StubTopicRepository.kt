@@ -11,7 +11,7 @@ import ru.snowadv.domain.model.Resource
 internal object StubTopicRepository: TopicRepository {
     override fun getTopics(streamId: Long): Flow<Resource<List<Topic>>> = flow {
         emit(Resource.Loading)
-        delay(150)
+        delay(2000)
 
         StubData.topicsMap[streamId]?.let {
             emit(Resource.Success(it))

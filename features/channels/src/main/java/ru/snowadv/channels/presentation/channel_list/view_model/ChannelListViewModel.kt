@@ -17,8 +17,7 @@ internal class ChannelListViewModel : ViewModel() {
     private val _state = MutableStateFlow(ChannelListScreenState())
     val state = _state.asStateFlow()
 
-    @OptIn(FlowPreview::class)
-    val searchQuery = state.map { it.searchQuery }.debounce(200)
+    val searchQuery = state.map { it.searchQuery }
 
     fun handleEvent(event: ChannelListEvent) {
         when (event) {

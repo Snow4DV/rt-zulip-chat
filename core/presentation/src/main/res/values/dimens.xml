@@ -12,5 +12,8 @@
     <dimen name="error_text_size">18sp</dimen>
     <dimen name="action_progress_bar_height">8dp</dimen>
     <dimen name="progress_bar_size">50dp</dimen>
-    <dimen name="state_box_elevation">5dp</dimen>
+    <dimen name="state_box_elevation">1dp</dimen>
+    <dimen name="shimmer_elevation">2dp</dimen>
+    <dimen name="shimmer_text_bg_padding_top">6dp</dimen>
+    <dimen name="shimmer_text_bg_padding_bottom">2dp</dimen>
 </resources>
