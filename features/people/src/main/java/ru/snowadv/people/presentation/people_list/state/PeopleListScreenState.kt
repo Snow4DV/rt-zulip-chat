@@ -5,11 +5,17 @@ import ru.snowadv.presentation.model.ScreenState
 import ru.snowadv.presentation.model.ScreenState.Loading.filtered
 
 internal data class PeopleListScreenState(
-    val searchQuery: String = "",
     val screenState: ScreenState<List<Person>> = ScreenState.Loading,
 ) {
 
-    fun filteredScreenState(): ScreenState<List<Person>> {
-        return screenState.filtered { it.fullName.contains(other = searchQuery, ignoreCase = true) }
+    fun filterBySearchQuery(searchQuery: String): PeopleListScreenState {
+        return copy(
+            screenState = screenState.filtered {
+                it.fullName.contains(
+                    other = searchQuery,
+                    ignoreCase = true
+                )
+            }
+        )
     }
 }

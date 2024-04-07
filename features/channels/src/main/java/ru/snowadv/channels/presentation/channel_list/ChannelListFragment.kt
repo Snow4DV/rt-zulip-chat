@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import ru.snowadv.channels.databinding.FragmentChannelListBinding
 import ru.snowadv.channels.domain.model.StreamType
 import ru.snowadv.channels.presentation.channel_list.api.SearchHolder
@@ -33,8 +34,8 @@ class ChannelListFragment : Fragment(), ErrorHandlingFragment by SnackbarErrorHa
     private val binding get() = _binding!!
     private val viewModel: ChannelListViewModel by viewModels()
 
-    override val searchQuery: Flow<String>
-        get() = viewModel.searchQuery
+    override val searchQuery: StateFlow<String>
+        get() = viewModel.searchQueryPublisher
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

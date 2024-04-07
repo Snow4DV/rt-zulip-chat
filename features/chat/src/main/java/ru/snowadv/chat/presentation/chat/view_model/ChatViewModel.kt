@@ -19,25 +19,36 @@ import ru.snowadv.chat.presentation.chat.event.ChatScreenEvent
 import ru.snowadv.chat.presentation.chat.event.ChatScreenFragmentEvent
 import ru.snowadv.chat.presentation.chat.state.ChatScreenState
 import ru.snowadv.chat.domain.navigation.ChatRouter
+import ru.snowadv.chat.domain.use_case.AddReactionUseCase
+import ru.snowadv.chat.domain.use_case.GetMessagesUseCase
+import ru.snowadv.chat.domain.use_case.RemoveReactionUseCase
+import ru.snowadv.chat.domain.use_case.SendMessageUseCase
+import ru.snowadv.chat.presentation.util.mapToAdapterMessagesAndDates
 import ru.snowadv.chat.presentation.util.toUiChatMessage
 import ru.snowadv.domain.model.Resource
 import ru.snowadv.presentation.util.toScreenState
 
 internal class ChatViewModel(
-    private val repository: MessageRepository = StubMessageRepository, // remove after adding DI
     private val router: ChatRouter,
     private val streamName: String,
     private val topicName: String,
+    private val addReactionUseCase: AddReactionUseCase = AddReactionUseCase(),
+    private val removeReactionUseCase: RemoveReactionUseCase = RemoveReactionUseCase(),
+    private val sendMessageUseCase: SendMessageUseCase = SendMessageUseCase(),
+    private val getMessagesUseCase: GetMessagesUseCase = GetMessagesUseCase(),
 ) : ViewModel() {
 
     private var messageCollectorJob: Job? = null
+    private var changeReactionJob: Job? = null
+    private var sendMessageJob: Job? = null
 
     private val _state = MutableStateFlow(createInitialState())
     val state: Flow<ChatScreenState> = _state
         .onStart { startCollectingMessages() }
         .onCompletion { stopCollectingMessages() }
-    private val _fragmentEventFlow = MutableSharedFlow<ChatScreenFragmentEvent>()
-    val fragmentEventFlow = _fragmentEventFlow.asSharedFlow()
+
+    private val _eventFlow = MutableSharedFlow<ChatScreenFragmentEvent>(extraBufferCapacity = 1)
+    val eventFlow = _eventFlow.asSharedFlow()
 
     private fun createInitialState(): ChatScreenState {
         return ChatScreenState(
@@ -45,22 +56,11 @@ internal class ChatViewModel(
         )
     }
 
-
     fun handleEvent(event: ChatScreenEvent) {
         when (event) {
-            is ChatScreenEvent.TextFieldMessageChanged -> {
-                if (event.text != _state.value.messageField) {
-                    _state.update {  state ->
-                        state.copy(
-                            messageField = event.text
-                        )
-                    }
-                }
-            }
-
             is ChatScreenEvent.SendMessageAddAttachmentButtonClicked -> {
                 if (_state.value.messageField.isEmpty()) {
-                    viewModelScope.launch { _fragmentEventFlow.emit(ChatScreenFragmentEvent.ExplainNotImplemented) }
+                    viewModelScope.launch { _eventFlow.emit(ChatScreenFragmentEvent.ExplainNotImplemented) }
                 } else {
                     sendMessage(_state.value.messageField)
                 }
@@ -68,7 +68,7 @@ internal class ChatViewModel(
 
             is ChatScreenEvent.AddReactionClicked -> {
                 viewModelScope.launch {
-                    _fragmentEventFlow.emit(
+                    _eventFlow.emit(
                         ChatScreenFragmentEvent.OpenReactionChooser(
                             event.messageId
                         )
@@ -98,7 +98,7 @@ internal class ChatViewModel(
 
             is ChatScreenEvent.MessageLongClicked -> {
                 viewModelScope.launch {
-                    _fragmentEventFlow.emit(
+                    _eventFlow.emit(
                         ChatScreenFragmentEvent.OpenMessageActionsChooser(
                             event.messageId,
                             event.userId
@@ -106,81 +106,127 @@ internal class ChatViewModel(
                     )
                 }
             }
+
+            is ChatScreenEvent.MessageFieldChanged -> {
+                _state.update {
+                    it.copy(
+                        messageField = event.text,
+                        actionButtonType = if (event.text.isEmpty()) {
+                            ChatScreenState.ActionButtonType.ADD_ATTACHMENT
+                        } else {
+                            ChatScreenState.ActionButtonType.SEND_MESSAGE
+                        }
+                    )
+                }
+            }
         }
     }
 
     private fun sendMessage(text: String) {
-
-        repository.sendMessage(
+        sendMessageJob?.cancel()
+        sendMessageJob = sendMessageUseCase(
             streamName = _state.value.stream, topicName = _state.value.topic, text = text
-        ).onEach(::processCompletableResource)
-            .onCompletion {
-                if (it == null) clearMessageFieldAndScrollToTheEnd()
+        ).onEach { resource ->
+            when (resource) {
+                is Resource.Loading -> {
+                    _state.update {
+                        it.copy(
+                            sendingMessage = true
+                        )
+                    }
+                }
+
+                is Resource.Success -> {
+                    _state.update {
+                        it.copy(
+                            sendingMessage = false,
+                            messageField = "",
+                        )
+                    }
+                    _eventFlow.tryEmit(ChatScreenFragmentEvent.ScrollRecyclerToTheEnd)
+                }
+
+                is Resource.Error -> {
+                    _state.update {
+                        it.copy(
+                            sendingMessage = false
+                        )
+                    }
+                    _eventFlow.tryEmit(ChatScreenFragmentEvent.ShowInternetErrorWithRetry {
+                        handleEvent(
+                            ChatScreenEvent.SendMessageAddAttachmentButtonClicked
+                        )
+                    })
+                }
             }
+        }
             .launchIn(viewModelScope)
     }
 
-    private fun clearMessageFieldAndScrollToTheEnd() {
-        viewModelScope.launch {
-            _fragmentEventFlow.emit(ChatScreenFragmentEvent.ScrollRecyclerToTheEnd)
-            _state.value = _state.value.copy(
-                messageField = ""
-            )
-        }
-    }
-
     private fun addReaction(messageId: Long, reactionName: String) {
-        repository.addReaction(messageId, reactionName)
+        changeReactionJob?.cancel()
+        changeReactionJob = addReactionUseCase(messageId, reactionName)
             .onEach {
-                processCompletableResource(
+                processReactionResource(
                     it,
-                    ChatScreenFragmentEvent.ExplainReactionAlreadyExists
+                    ChatScreenEvent.AddChosenReaction(messageId, reactionName)
                 )
             }
             .launchIn(viewModelScope)
     }
 
     private fun removeReaction(messageId: Long, reactionName: String) {
-        repository.removeReaction(messageId, reactionName).onEach(::processCompletableResource)
+        changeReactionJob?.cancel()
+        changeReactionJob = removeReactionUseCase(messageId, reactionName).onEach {
+            processReactionResource(it, ChatScreenEvent.RemoveReaction(messageId, reactionName))
+        }
             .launchIn(viewModelScope)
     }
 
-    private fun processCompletableResource(
+    private fun processReactionResource(
         resource: Resource<Unit>,
-        errorChatScreenFragmentEvent: ChatScreenFragmentEvent = ChatScreenFragmentEvent.ExplainError,
+        retryEvent: ChatScreenEvent
     ) {
         when (resource) {
             is Resource.Loading -> {
-                _state.value = _state.value.copy(
-                    actionInProcess = true,
-                )
+                _state.update {
+                    it.copy(
+                        changingReaction = true
+                    )
+                }
             }
 
             is Resource.Success -> {
-                _state.value = _state.value.copy(
-                    actionInProcess = false
-                )
+                _state.update {
+                    it.copy(
+                        changingReaction = false
+                    )
+                }
             }
 
             is Resource.Error -> {
-                _state.value = _state.value.copy(
-                    actionInProcess = false
-                )
-                viewModelScope.launch {
-                    _fragmentEventFlow.emit(errorChatScreenFragmentEvent)
+                _state.update {
+                    it.copy(
+                        changingReaction = false
+                    )
                 }
+                _eventFlow.tryEmit(ChatScreenFragmentEvent.ShowInternetErrorWithRetry {
+                    handleEvent(
+                        retryEvent
+                    )
+                })
             }
         }
     }
 
     private fun startCollectingMessages() {
         messageCollectorJob?.cancel()
-        messageCollectorJob = repository.getMessages(streamName, topicName).onEach { messagesRes ->
+        messageCollectorJob = getMessagesUseCase(streamName, topicName).onEach { messagesRes ->
             _state.update { state ->
                 state.copy(
                     screenState = messagesRes.toScreenState(
                         mapper = { messageList ->
-                            messageList.map { message -> message.toUiChatMessage(1) }
+                            messageList.mapToAdapterMessagesAndDates(1)
                         },
                         isEmptyChecker = { messageList ->
                             messageList.isEmpty()

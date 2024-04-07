@@ -3,6 +3,7 @@ package ru.snowadv.channels.presentation.stream_list.view_model
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import ru.snowadv.channels.domain.model.StreamType
 import ru.snowadv.channels.domain.navigation.ChannelsRouter
 import ru.snowadv.channels.presentation.channel_list.view_model.ChannelListViewModel
@@ -10,7 +11,7 @@ import ru.snowadv.channels.presentation.channel_list.view_model.ChannelListViewM
 internal class StreamListViewModelFactory(
     private val streamType: StreamType,
     private val router: ChannelsRouter,
-    private val searchQueryFlow: Flow<String>,
+    private val searchQueryFlow: StateFlow<String>,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

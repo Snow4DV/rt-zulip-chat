@@ -1,7 +1,6 @@
 package ru.snowadv.channels.presentation.channel_list
 
 import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.launchIn
@@ -9,7 +8,6 @@ import kotlinx.coroutines.flow.onEach
 import ru.snowadv.channels.databinding.FragmentChannelListBinding
 import ru.snowadv.channels.presentation.channel_list.event.ChannelListEvent
 import ru.snowadv.channels.presentation.channel_list.event.ChannelListFragmentEvent
-import ru.snowadv.channels.presentation.channel_list.state.ChannelListScreenState
 import ru.snowadv.channels.presentation.channel_list.view_model.ChannelListViewModel
 import ru.snowadv.presentation.fragment.FragmentDataObserver
 
@@ -44,19 +42,18 @@ internal class ChannelListFragmentDataObserver :
         binding: FragmentChannelListBinding,
         viewModel: ChannelListViewModel,
     ) {
-        viewModel.state.onEach {
-            bindState(binding, it)
+        viewModel.searchQueryPublisher.onEach {
+            render(binding, it)
         }.flowWithLifecycle(viewLifecycleOwner.lifecycle).launchIn(lifecycleScope)
     }
 
-    private fun bindState(
+    private fun render(
         binding: FragmentChannelListBinding,
-        state: ChannelListScreenState,
+        query: String,
     ) = with(binding) {
-        if (searchBar.searchEditText.text.toString() != state.searchQuery) {
-            searchBar.searchEditText.setText(state.searchQuery)
+        if (searchBar.searchEditText.text.toString() != query) {
+            searchBar.searchEditText.setText(query)
         }
-
     }
 
     private fun initListeners(
@@ -65,9 +62,7 @@ internal class ChannelListFragmentDataObserver :
     ) {
         binding.searchBar.searchEditText.addTextChangedListener { editable ->
             editable?.toString()?.let { text ->
-                if (viewModel.state.value.searchQuery != text) {
-                    viewModel.handleEvent(ChannelListEvent.SearchQueryChanged(text))
-                }
+                viewModel.searchQueryPublisher.tryEmit(text)
             }
         }
         binding.searchBar.searchIcon.setOnClickListener {

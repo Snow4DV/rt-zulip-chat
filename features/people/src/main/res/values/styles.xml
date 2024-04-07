@@ -6,6 +6,6 @@
         <item name="android:textSize">@dimen/search_text_size</item>
         <item name="android:inputType">text</item>
         <item name="android:maxLines">1</item>
-        <item name="android:paddingLeft">@dimen/search_padding_left</item>
+        <item name="android:paddingLeft">@dimen/search_margin_right</item>
     </style>
 </resources>

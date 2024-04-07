@@ -31,7 +31,7 @@ internal object StubMessageRepository : MessageRepository {
     override fun getMessages(streamName: String, topicName: String): Flow<Resource<List<ChatMessage>>> {
         return messages.onStart {
             Resource.Loading // Simulate connection to the server
-            delay(200)
+            delay(10000)
         }.map { Resource.Success(it) }
     }
 

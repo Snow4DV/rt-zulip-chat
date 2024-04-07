@@ -28,4 +28,5 @@
     <dimen name="emoji_container_margin_top">30dp</dimen>
     <dimen name="error_icon_size">40dp</dimen>
     <dimen name="horizontal_progress_bar_height">8dp</dimen>
+    <dimen name="date_splitter_shimmer_width">60dp</dimen>
 </resources>

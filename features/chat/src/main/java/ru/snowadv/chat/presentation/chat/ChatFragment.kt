@@ -18,13 +18,16 @@ import ru.snowadv.chat.presentation.chat.view_model.ChatViewModelFactory
 import ru.snowadv.chat.presentation.model.ChatAction
 import ru.snowadv.presentation.R
 import ru.snowadv.presentation.adapter.util.PaddingItemDecorator
+import ru.snowadv.presentation.fragment.ErrorHandlingFragment
 import ru.snowadv.presentation.fragment.FragmentDataObserver
+import ru.snowadv.presentation.fragment.impl.SnackbarErrorHandlingFragment
 import ru.snowadv.presentation.fragment.setColorAndText
 import ru.snowadv.presentation.fragment.setStatusBarColor
 import ru.snowadv.presentation.fragment.setTopBarColor
 
 class ChatFragment : Fragment(),
-    FragmentDataObserver<FragmentChatBinding, ChatViewModel, ChatFragment> by ChatFragmentDataObserver(){
+    FragmentDataObserver<FragmentChatBinding, ChatViewModel, ChatFragment> by ChatFragmentDataObserver(),
+    ErrorHandlingFragment by SnackbarErrorHandlingFragment() {
 
     companion object {
         const val ARG_STREAM_NAME_KEY = "stream_name"
@@ -38,7 +41,7 @@ class ChatFragment : Fragment(),
     }
 
     private var _binding: FragmentChatBinding? = null
-    private val binding get() = requireNotNull(_binding) {"Binding wasn't initialized"}
+    private val binding get() = requireNotNull(_binding) { "Binding wasn't initialized" }
     private val streamName: String by lazy {
         requireArguments().getString(ARG_STREAM_NAME_KEY) ?: error("Missing stream name argument")
     }

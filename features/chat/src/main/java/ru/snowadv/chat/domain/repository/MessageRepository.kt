@@ -6,7 +6,7 @@ import ru.snowadv.domain.model.Resource
 
 internal interface MessageRepository {
     /**
-     * Returns flow that emits new state of dialog each time it updates. Shoul
+     * Returns flow that emits new state of dialog each time it updates. я
      */
     fun getMessages(
         streamName: String,

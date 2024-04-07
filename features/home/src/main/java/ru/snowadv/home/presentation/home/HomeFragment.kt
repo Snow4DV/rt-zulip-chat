@@ -64,6 +64,6 @@ class HomeFragment : Fragment(),
                 show(fragment)
                 setMaxLifecycle(fragment, Lifecycle.State.RESUMED)
             }
-        }.commitAllowingStateLoss()
+        }.commitNow()
     }
 }

@@ -12,7 +12,7 @@ internal object StubPeopleRepository: ProfileRepository {
 
     override fun getPerson(id: Long): Flow<Resource<Person>> = flow{
         emit(Resource.Loading)
-        delay(500)
+        delay(10000)
         StubData.people.firstOrNull { it.id == id }?.let { emit(Resource.Success(it)) } ?: run {
             emit(Resource.Error(IllegalArgumentException("No user with id $id")))
         }
