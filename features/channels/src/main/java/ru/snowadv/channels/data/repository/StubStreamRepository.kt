@@ -11,6 +11,7 @@ import java.io.IOException
 
 internal object StubStreamRepository: StreamRepository {
     private var loadCounter = 0
+
     override fun getStreams(): Flow<Resource<List<Stream>>> = flow {
         emit(Resource.Loading)
         delay(2000)

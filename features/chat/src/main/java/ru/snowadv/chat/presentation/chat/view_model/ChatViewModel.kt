@@ -153,9 +153,7 @@ internal class ChatViewModel(
                         )
                     }
                     _eventFlow.tryEmit(ChatScreenFragmentEvent.ShowInternetErrorWithRetry {
-                        handleEvent(
-                            ChatScreenEvent.SendMessageAddAttachmentButtonClicked
-                        )
+                        sendMessage(text)
                     })
                 }
             }
