@@ -6,7 +6,6 @@ import ru.snowadv.chat.presentation.chat.ChatFragment
 import ru.snowadv.home.presentation.home.HomeFragment
 import ru.snowadv.people.presentation.people_list.PeopleFragment
 import ru.snowadv.profile.presentation.profile.ProfileFragment
-import ru.snowadv.voiceapp.di.Graph
 
 object Screens {
     fun Channels() = FragmentScreen { ChannelListFragment.newInstance() }

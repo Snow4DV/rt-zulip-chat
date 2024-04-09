@@ -13,9 +13,16 @@
             <option value="$PROJECT_DIR$/app_contacts" />
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/core/contacts-provider" />
-            <option value="$PROJECT_DIR$/core/domain" />
+            <option value="$PROJECT_DIR$/core/data" />
+            <option value="$PROJECT_DIR$/core/network" />
             <option value="$PROJECT_DIR$/core/presentation" />
             <option value="$PROJECT_DIR$/core/utils" />
+            <option value="$PROJECT_DIR$/data" />
+            <option value="$PROJECT_DIR$/data/channels_data" />
+            <option value="$PROJECT_DIR$/data/emojis_data" />
+            <option value="$PROJECT_DIR$/data/events_data" />
+            <option value="$PROJECT_DIR$/data/messages_data" />
+            <option value="$PROJECT_DIR$/data/users_data" />
             <option value="$PROJECT_DIR$/features" />
             <option value="$PROJECT_DIR$/features/channels" />
             <option value="$PROJECT_DIR$/features/chat" />

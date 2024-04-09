@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,17 +16,13 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.snowadv.channels.data.repository.StubStreamRepository
-import ru.snowadv.channels.data.repository.StubTopicRepository
+import ru.snowadv.channels.di.ChannelsGraph
 import ru.snowadv.channels.domain.model.StreamType
 import ru.snowadv.channels.domain.navigation.ChannelsRouter
-import ru.snowadv.channels.domain.repository.StreamRepository
-import ru.snowadv.channels.domain.repository.TopicRepository
 import ru.snowadv.channels.domain.use_case.GetStreamsUseCase
 import ru.snowadv.channels.domain.use_case.GetTopicsUseCase
 import ru.snowadv.channels.presentation.model.ShimmerTopic
-import ru.snowadv.domain.model.Resource
-import ru.snowadv.channels.domain.model.Stream as DomainStream
+import ru.snowadv.model.Resource
 import ru.snowadv.channels.presentation.stream_list.event.StreamListEvent
 import ru.snowadv.channels.presentation.stream_list.event.StreamListFragmentEvent
 import ru.snowadv.channels.presentation.stream_list.state.StreamListScreenState
@@ -38,8 +33,8 @@ import ru.snowadv.presentation.view_model.ViewModelConst
 internal class StreamListViewModel(
     private val type: StreamType,
     private val router: ChannelsRouter,
-    private val getStreamsUseCase: GetStreamsUseCase = GetStreamsUseCase(),
-    private val getTopicsUseCase: GetTopicsUseCase = GetTopicsUseCase(),
+    private val getStreamsUseCase: GetStreamsUseCase,
+    private val getTopicsUseCase: GetTopicsUseCase,
     searchQueryFlow: StateFlow<String>,
 ) : ViewModel() {
 

@@ -13,29 +13,27 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.snowadv.chat.data.repository.StubMessageRepository
-import ru.snowadv.chat.domain.repository.MessageRepository
 import ru.snowadv.chat.presentation.chat.event.ChatScreenEvent
 import ru.snowadv.chat.presentation.chat.event.ChatScreenFragmentEvent
 import ru.snowadv.chat.presentation.chat.state.ChatScreenState
 import ru.snowadv.chat.domain.navigation.ChatRouter
 import ru.snowadv.chat.domain.use_case.AddReactionUseCase
-import ru.snowadv.chat.domain.use_case.GetMessagesUseCase
+import ru.snowadv.chat.domain.use_case.GetCurrentMessagesUseCase
+import ru.snowadv.chat.domain.use_case.ListenToMessagesUseCase
 import ru.snowadv.chat.domain.use_case.RemoveReactionUseCase
 import ru.snowadv.chat.domain.use_case.SendMessageUseCase
 import ru.snowadv.chat.presentation.util.mapToAdapterMessagesAndDates
-import ru.snowadv.chat.presentation.util.toUiChatMessage
-import ru.snowadv.domain.model.Resource
 import ru.snowadv.presentation.util.toScreenState
 
 internal class ChatViewModel(
     private val router: ChatRouter,
     private val streamName: String,
     private val topicName: String,
-    private val addReactionUseCase: AddReactionUseCase = AddReactionUseCase(),
-    private val removeReactionUseCase: RemoveReactionUseCase = RemoveReactionUseCase(),
-    private val sendMessageUseCase: SendMessageUseCase = SendMessageUseCase(),
-    private val getMessagesUseCase: GetMessagesUseCase = GetMessagesUseCase(),
+    private val addReactionUseCase: AddReactionUseCase,
+    private val removeReactionUseCase: RemoveReactionUseCase,
+    private val sendMessageUseCase: SendMessageUseCase,
+    private val getMessagesUseCase: GetCurrentMessagesUseCase,
+    private val listenToMessagesUseCase: ListenToMessagesUseCase,
 ) : ViewModel() {
 
     private var messageCollectorJob: Job? = null
@@ -128,7 +126,7 @@ internal class ChatViewModel(
             streamName = _state.value.stream, topicName = _state.value.topic, text = text
         ).onEach { resource ->
             when (resource) {
-                is Resource.Loading -> {
+                is ru.snowadv.model.Resource.Loading -> {
                     _state.update {
                         it.copy(
                             sendingMessage = true
@@ -136,7 +134,7 @@ internal class ChatViewModel(
                     }
                 }
 
-                is Resource.Success -> {
+                is ru.snowadv.model.Resource.Success -> {
                     _state.update {
                         it.copy(
                             sendingMessage = false,
@@ -146,7 +144,7 @@ internal class ChatViewModel(
                     _eventFlow.tryEmit(ChatScreenFragmentEvent.ScrollRecyclerToTheEnd)
                 }
 
-                is Resource.Error -> {
+                is ru.snowadv.model.Resource.Error -> {
                     _state.update {
                         it.copy(
                             sendingMessage = false
@@ -182,11 +180,11 @@ internal class ChatViewModel(
     }
 
     private fun processReactionResource(
-        resource: Resource<Unit>,
+        resource: ru.snowadv.model.Resource<Unit>,
         retryEvent: ChatScreenEvent
     ) {
         when (resource) {
-            is Resource.Loading -> {
+            is ru.snowadv.model.Resource.Loading -> {
                 _state.update {
                     it.copy(
                         changingReaction = true
@@ -194,7 +192,7 @@ internal class ChatViewModel(
                 }
             }
 
-            is Resource.Success -> {
+            is ru.snowadv.model.Resource.Success -> {
                 _state.update {
                     it.copy(
                         changingReaction = false
@@ -202,7 +200,7 @@ internal class ChatViewModel(
                 }
             }
 
-            is Resource.Error -> {
+            is ru.snowadv.model.Resource.Error -> {
                 _state.update {
                     it.copy(
                         changingReaction = false

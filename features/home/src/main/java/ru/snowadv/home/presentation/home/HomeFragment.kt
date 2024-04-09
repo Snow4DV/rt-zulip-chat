@@ -26,7 +26,7 @@ class HomeFragment : Fragment(),
     }
 
     private val viewModel: HomeViewModel by viewModels()
-    private val factory by lazy { HomeGraph.homeScreenFactory }
+    private val factory by lazy { HomeGraph.deps.homeScreenFactory }
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = requireNotNull(_binding) {"Binding wasn't initialized"}

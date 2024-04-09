@@ -2,7 +2,7 @@ package ru.snowadv.chat.domain.model
 
 import java.time.ZonedDateTime
 
-internal data class ChatMessage(
+data class ChatMessage(
     val id: Long,
     val content: String,
     val sentAt: ZonedDateTime,

@@ -38,7 +38,7 @@ class StreamListFragment : Fragment(), ErrorHandlingFragment by SnackbarErrorHan
     private val viewModel: StreamListViewModel by viewModels {
         StreamListViewModelFactory(
             streamType = streamsType,
-            router = ChannelsGraph.router,
+            router = ChannelsGraph.deps.router,
             searchQueryFlow = parentSearchQueryFlow,
         )
     }

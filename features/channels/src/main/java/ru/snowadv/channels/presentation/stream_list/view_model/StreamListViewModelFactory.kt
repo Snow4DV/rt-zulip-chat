@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import ru.snowadv.channels.di.ChannelsGraph
 import ru.snowadv.channels.domain.model.StreamType
 import ru.snowadv.channels.domain.navigation.ChannelsRouter
 import ru.snowadv.channels.presentation.channel_list.view_model.ChannelListViewModel
@@ -19,7 +20,9 @@ internal class StreamListViewModelFactory(
             return StreamListViewModel(
                 type = streamType,
                 router = router,
-                searchQueryFlow = searchQueryFlow
+                searchQueryFlow = searchQueryFlow,
+                getStreamsUseCase = ChannelsGraph.getStreamsUseCase,
+                getTopicsUseCase =  ChannelsGraph.getTopicsUseCase,
             ) as T
         }
         throw IllegalArgumentException("Unknown VM class")

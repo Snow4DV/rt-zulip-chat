@@ -3,7 +3,7 @@ package ru.snowadv.profile.presentation.model
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.profile.R
 
-internal data class Person(
+data class Person(
     override val id: Long,
     val fullName: String,
     val email: String,

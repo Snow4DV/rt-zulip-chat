@@ -1,14 +1,13 @@
 package ru.snowadv.channels.domain.use_case
 
 import kotlinx.coroutines.flow.Flow
-import ru.snowadv.channels.data.repository.StubStreamRepository
 import ru.snowadv.channels.domain.model.Stream
 import ru.snowadv.channels.domain.model.StreamType
 import ru.snowadv.channels.domain.repository.StreamRepository
-import ru.snowadv.domain.model.Resource
+import ru.snowadv.model.Resource
 
 internal class GetStreamsUseCase(
-    private val streamsRepo: StreamRepository = StubStreamRepository
+    private val streamsRepo: StreamRepository,
 ) {
     operator fun invoke(type: StreamType): Flow<Resource<List<Stream>>> {
         return when(type) {

@@ -41,12 +41,19 @@ android {
 }
 
 dependencies {
+    implementation(projects.data.channelsData)
+    implementation(projects.data.eventsData)
+    implementation(projects.data.messagesData)
+    implementation(projects.data.usersData)
+    implementation(projects.data.emojisData)
 
     implementation(projects.features.channels)
     implementation(projects.features.chat)
     implementation(projects.features.home)
     implementation(projects.features.people)
     implementation(projects.features.profile)
+
+    implementation(projects.core.utils)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

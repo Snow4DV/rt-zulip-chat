@@ -12,7 +12,9 @@ import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import ru.snowadv.chat.R
 import ru.snowadv.chat.databinding.FragmentEmojiChooserBinding
+import ru.snowadv.chat.di.ChatGraph
 import ru.snowadv.chat.presentation.emoji_chooser.view_model.EmojiChooserViewModel
+import ru.snowadv.chat.presentation.emoji_chooser.view_model.EmojiChooserViewModelFactory
 import ru.snowadv.chat.presentation.model.ChatEmoji
 import ru.snowadv.presentation.fragment.FragmentDataObserver
 
@@ -54,8 +56,10 @@ class EmojiChooserBottomSheetDialog private constructor() : BottomSheetDialogFra
             }
     }
     private var _binding: FragmentEmojiChooserBinding? = null
-    private val viewModel: EmojiChooserViewModel by viewModels()
-    private val binding get() = requireNotNull(_binding) {"Binding wasn't initialized"}
+    private val viewModel: EmojiChooserViewModel by viewModels(
+        factoryProducer = { EmojiChooserViewModelFactory(ChatGraph.getEmojisUseCase) }
+    )
+    private val binding get() = requireNotNull(_binding) { "Binding wasn't initialized" }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -89,6 +93,7 @@ class EmojiChooserBottomSheetDialog private constructor() : BottomSheetDialogFra
     }
 
     private fun setStateBoxBackgroundColor() {
-        binding.stateBox.root.background = ColorDrawable(requireContext().getColor(R.color.on_surface_box_color))
+        binding.stateBox.root.background =
+            ColorDrawable(requireContext().getColor(R.color.on_surface_box_color))
     }
 }

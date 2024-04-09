@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.snowadv.people.data.repository.StubPeopleRepository
 import ru.snowadv.people.domain.navigation.PeopleRouter
 import ru.snowadv.people.domain.repository.PeopleRepository
 import ru.snowadv.people.presentation.people_list.event.PeopleListEvent
@@ -27,7 +26,7 @@ import ru.snowadv.presentation.view_model.ViewModelConst
 
 internal class PeopleListViewModel(
     private val router: PeopleRouter,
-    private val peopleRepo: PeopleRepository = StubPeopleRepository,
+    private val peopleRepo: PeopleRepository,
 ) : ViewModel() {
 
     val searchPublisher = MutableStateFlow("")

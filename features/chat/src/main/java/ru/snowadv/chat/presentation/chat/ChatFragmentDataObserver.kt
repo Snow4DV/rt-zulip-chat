@@ -37,6 +37,7 @@ import ru.snowadv.presentation.fragment.setTopBarText
 import ru.snowadv.presentation.util.impl.DayDateFormatter
 import ru.snowadv.presentation.util.impl.LocalizedDateTimeFormatter
 import ru.snowadv.presentation.view.setTextIfChanged
+import kotlin.math.abs
 
 internal class ChatFragmentDataObserver :
     FragmentDataObserver<FragmentChatBinding, ChatViewModel, ChatFragment> {
@@ -143,7 +144,7 @@ internal class ChatFragmentDataObserver :
             }
 
             is ChatScreenFragmentEvent.ScrollRecyclerToTheEnd -> {
-                binding.messagesRecycler.smoothScrollToPosition(adapter.itemCount - 1)
+                binding.messagesRecycler.smoothScrollToPosition(abs(adapter.itemCount - 1))
             }
 
             is ChatScreenFragmentEvent.OpenMessageActionsChooser -> {

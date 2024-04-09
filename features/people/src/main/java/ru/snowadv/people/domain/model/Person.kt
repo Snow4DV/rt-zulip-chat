@@ -1,6 +1,6 @@
 package ru.snowadv.people.domain.model
 
-internal data class Person(
+data class Person(
     val id: Long,
     val fullName: String,
     val email: String,
