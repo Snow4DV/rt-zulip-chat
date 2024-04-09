@@ -4,6 +4,8 @@ sealed class Resource<out T> {
     data object Loading: Resource<Nothing>()
     class Error(val throwable: Throwable? = null): Resource<Nothing>()
     class Success<T>(val data: T): Resource<T>()
+
+    fun getDataOrNull(): T? = if (this is Success) this.data else null
 }
 
 fun <T1, T2> Resource<T1>.combine(other: Resource<T2>): Resource<Pair<T1, T2>> {

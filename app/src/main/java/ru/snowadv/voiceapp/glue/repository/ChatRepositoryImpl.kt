@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import ru.snowadv.chat.domain.model.ChatMessage
 import ru.snowadv.chat.domain.model.ChatEmoji
 import ru.snowadv.chat.domain.repository.EmojiRepository

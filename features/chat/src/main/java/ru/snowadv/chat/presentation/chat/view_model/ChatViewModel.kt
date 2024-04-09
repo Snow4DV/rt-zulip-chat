@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -23,6 +24,9 @@ import ru.snowadv.chat.domain.use_case.ListenToMessagesUseCase
 import ru.snowadv.chat.domain.use_case.RemoveReactionUseCase
 import ru.snowadv.chat.domain.use_case.SendMessageUseCase
 import ru.snowadv.chat.presentation.util.mapToAdapterMessagesAndDates
+import ru.snowadv.chat.presentation.util.toUiChatMessage
+import ru.snowadv.model.Resource
+import ru.snowadv.presentation.model.ScreenState
 import ru.snowadv.presentation.util.toScreenState
 
 internal class ChatViewModel(
@@ -47,6 +51,10 @@ internal class ChatViewModel(
 
     private val _eventFlow = MutableSharedFlow<ChatScreenFragmentEvent>(extraBufferCapacity = 1)
     val eventFlow = _eventFlow.asSharedFlow()
+
+    init {
+        getInitMessages()
+    }
 
     private fun createInitialState(): ChatScreenState {
         return ChatScreenState(
@@ -91,7 +99,7 @@ internal class ChatViewModel(
             }
 
             ChatScreenEvent.ReloadClicked -> {
-                startCollectingMessages()
+                getInitMessages()
             }
 
             is ChatScreenEvent.MessageLongClicked -> {
@@ -126,7 +134,7 @@ internal class ChatViewModel(
             streamName = _state.value.stream, topicName = _state.value.topic, text = text
         ).onEach { resource ->
             when (resource) {
-                is ru.snowadv.model.Resource.Loading -> {
+                is Resource.Loading -> {
                     _state.update {
                         it.copy(
                             sendingMessage = true
@@ -134,7 +142,7 @@ internal class ChatViewModel(
                     }
                 }
 
-                is ru.snowadv.model.Resource.Success -> {
+                is Resource.Success -> {
                     _state.update {
                         it.copy(
                             sendingMessage = false,
@@ -144,7 +152,7 @@ internal class ChatViewModel(
                     _eventFlow.tryEmit(ChatScreenFragmentEvent.ScrollRecyclerToTheEnd)
                 }
 
-                is ru.snowadv.model.Resource.Error -> {
+                is Resource.Error -> {
                     _state.update {
                         it.copy(
                             sendingMessage = false
@@ -180,11 +188,11 @@ internal class ChatViewModel(
     }
 
     private fun processReactionResource(
-        resource: ru.snowadv.model.Resource<Unit>,
+        resource: Resource<Unit>,
         retryEvent: ChatScreenEvent
     ) {
         when (resource) {
-            is ru.snowadv.model.Resource.Loading -> {
+            is Resource.Loading -> {
                 _state.update {
                     it.copy(
                         changingReaction = true
@@ -192,7 +200,7 @@ internal class ChatViewModel(
                 }
             }
 
-            is ru.snowadv.model.Resource.Success -> {
+            is Resource.Success -> {
                 _state.update {
                     it.copy(
                         changingReaction = false
@@ -200,7 +208,7 @@ internal class ChatViewModel(
                 }
             }
 
-            is ru.snowadv.model.Resource.Error -> {
+            is Resource.Error -> {
                 _state.update {
                     it.copy(
                         changingReaction = false
@@ -215,9 +223,8 @@ internal class ChatViewModel(
         }
     }
 
-    private fun startCollectingMessages() {
-        messageCollectorJob?.cancel()
-        messageCollectorJob = getMessagesUseCase(streamName, topicName).onEach { messagesRes ->
+    private fun getInitMessages() {
+        getMessagesUseCase(streamName, topicName).onEach { messagesRes ->
             _state.update { state ->
                 state.copy(
                     screenState = messagesRes.toScreenState(
@@ -227,10 +234,27 @@ internal class ChatViewModel(
                         isEmptyChecker = { messageList ->
                             messageList.isEmpty()
                         },
-                    )
+                    ),
+                    messages = messagesRes.getDataOrNull()?.map { it.toUiChatMessage(1) }
+                        ?: emptyList()
                 )
             }
         }.launchIn(viewModelScope)
+    }
+
+    private fun startCollectingMessages() {
+        messageCollectorJob?.cancel()
+        messageCollectorJob = listenToMessagesUseCase(streamName, topicName)
+            // Wait for successful initial fetch before starting
+            //.onStart { _state.first { it.screenState is ScreenState.Success } }
+            .onEach { messagesRes ->
+                if (messagesRes is Resource.Success) {
+                    _state.update {  currentState ->
+                        currentState.replaceOrAddMessages(messagesRes.data.map { it.toUiChatMessage(1) })
+                    }
+                }
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun stopCollectingMessages() {
