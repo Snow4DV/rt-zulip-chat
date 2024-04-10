@@ -4,6 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/common_padding"
+    android:background="?android:colorBackground"
+    android:elevation="@dimen/state_box_elevation"
     android:theme="@style/Theme.ZulipChat">
 
     <TextView

@@ -28,7 +28,7 @@ import ru.snowadv.presentation.adapter.impl.DiffDelegationAdapter
 import ru.snowadv.presentation.util.DateFormatter
 import ru.snowadv.presentation.util.DateTimeFormatter
 import ru.snowadv.presentation.fragment.FragmentDataObserver
-import ru.snowadv.presentation.fragment.setNewState
+import ru.snowadv.presentation.fragment.inflateState
 import ru.snowadv.presentation.fragment.setOnRetryClickListener
 import ru.snowadv.presentation.fragment.setTopBarText
 import ru.snowadv.presentation.util.impl.DayDateFormatter
@@ -173,7 +173,7 @@ internal class ChatFragmentDataObserver :
                 binding.bottomBar.messageEditText.setText(state.messageField)
             }
         }
-        binding.stateBox.setNewState(state.screenState)
+        binding.stateBox.inflateState(state.screenState)
         binding.actionProgressBar.visibility =
             if (state.actionInProcess) View.VISIBLE else View.GONE
     }

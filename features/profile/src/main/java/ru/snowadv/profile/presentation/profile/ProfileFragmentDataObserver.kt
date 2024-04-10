@@ -13,7 +13,7 @@ import ru.snowadv.profile.presentation.profile.event.ProfileEvent
 import ru.snowadv.profile.presentation.profile.state.ProfileScreenState
 import ru.snowadv.profile.presentation.profile.view_model.ProfileViewModel
 import ru.snowadv.presentation.fragment.FragmentDataObserver
-import ru.snowadv.presentation.fragment.setNewState
+import ru.snowadv.presentation.fragment.inflateState
 import ru.snowadv.presentation.fragment.setOnRetryClickListener
 
 internal class ProfileFragmentDataObserver :
@@ -55,7 +55,7 @@ internal class ProfileFragmentDataObserver :
         binding: FragmentProfileBinding,
         state: ProfileScreenState,
     ) = with(binding) {
-        stateBox.setNewState(state.screenState)
+        stateBox.inflateState(state.screenState)
         topBar.root.visibility = if (state.isOwner) View.GONE else View.VISIBLE
         buttonLogout.visibility = if (state.isOwner) View.VISIBLE else View.GONE
         state.screenState.getCurrentData()?.let {  person ->

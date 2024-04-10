@@ -16,7 +16,7 @@ import ru.snowadv.presentation.adapter.impl.DiffDelegationAdapter
 import ru.snowadv.presentation.adapter.setupDiffDelegatesAdapter
 import ru.snowadv.presentation.adapter.updateAnimationDurations
 import ru.snowadv.presentation.fragment.FragmentDataObserver
-import ru.snowadv.presentation.fragment.setNewState
+import ru.snowadv.presentation.fragment.inflateState
 import ru.snowadv.presentation.fragment.setOnRetryClickListener
 import ru.snowadv.presentation.recycler.setupDefaultDecorator
 import ru.snowadv.presentation.view.setVisibility
@@ -79,7 +79,7 @@ internal class StreamListFragmentDataObserver :
     ) = with(binding) {
         actionLoadingBox.root.setVisibility(state.actionInProgress)
         val filteredState = state.filteredScreenState()
-        stateBox.setNewState(filteredState)
+        stateBox.inflateState(state.screenState)
         adapter.submitList(filteredState.getCurrentData() ?: emptyList())
     }
 

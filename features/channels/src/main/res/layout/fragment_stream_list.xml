@@ -22,10 +22,6 @@
         android:clickable="false"
         tools:visibility="visible" />
 
-    <include
-        android:id="@+id/state_box"
-        layout="@layout/item_state_box"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+    <include android:id="@+id/state_box" layout="@layout/item_state_box"/>
 
 </FrameLayout>

@@ -1,40 +1,51 @@
 package ru.snowadv.presentation.fragment
 
-import android.content.Context
 import android.graphics.drawable.ColorDrawable
+import android.view.LayoutInflater
 import android.view.View
-import androidx.core.view.children
+import android.view.ViewGroup
+import android.widget.FrameLayout
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import ru.snowadv.presentation.databinding.ItemActionLoadingBinding
+import ru.snowadv.presentation.databinding.ItemEmptyBoxBinding
+import ru.snowadv.presentation.databinding.ItemErrorBoxBinding
+import ru.snowadv.presentation.databinding.ItemLoadingBoxBinding
 import ru.snowadv.presentation.databinding.ItemStateBoxBinding
 import ru.snowadv.presentation.databinding.ItemTopBarWithBackBinding
 import ru.snowadv.presentation.model.ScreenState
-import ru.snowadv.presentation.view.setVisibility
 
-fun ItemStateBoxBinding.setNewState(screenState: ScreenState<*>, customLoading: Boolean = false) {
+fun ItemStateBoxBinding.inflateState(screenState: ScreenState<*>, shimmerLayout: Int? = null) = with(root) {
     when(screenState) {
         is ScreenState.Empty -> {
-            setVisibleView(emptyBox.root)
+            removeChildViewsAndSetVisibility(visibility = true)
+            ItemEmptyBoxBinding.inflate(LayoutInflater.from(context), this, true)
         }
         is ScreenState.Error -> {
-            setVisibleView(errorBox.root)
+            removeChildViewsAndSetVisibility(visibility = true)
+            ItemErrorBoxBinding.inflate(LayoutInflater.from(context), this, true).also {
+                it.retryErrorButton.setOnClickListener { callOnClick() }
+            }
         }
         is ScreenState.Loading -> {
-            // Loading screen can be replaced in screen with custom one (for example, with shimmer-based)
-            setVisibleView(if (!customLoading) loadingBox.root else null)
+            removeChildViewsAndSetVisibility(visibility = true)
+            shimmerLayout?.let { LayoutInflater.from(context).inflate(shimmerLayout, this) } ?: run {
+                ItemLoadingBoxBinding.inflate(LayoutInflater.from(context), this, true)
+            }
         }
         is ScreenState.Success -> {
-            setVisibleView(null)
+            removeChildViewsAndSetVisibility(visibility = false)
         }
     }
 }
 
-fun ItemActionLoadingBinding.setNewState(actionInProgress: Boolean) {
-    root.visibility = if (actionInProgress) View.VISIBLE else View.GONE
+fun ItemStateBoxBinding.setOnRetryClickListener(listener: ((View) -> Unit)?) {
+    root.setOnClickListener(listener)
 }
 
-fun ItemStateBoxBinding.setOnRetryClickListener(listener: ((View) -> Unit)?) {
-    errorBox.retryErrorButton.setOnClickListener(listener)
+fun ItemStateBoxBinding.removeChildViewsAndSetVisibility(visibility: Boolean) {
+    root.removeAllViews()
+    root.isVisible = visibility
 }
 
 fun ItemTopBarWithBackBinding.setTopBarColor(colorResId: Int) {
@@ -61,11 +72,4 @@ fun ItemTopBarWithBackBinding.setColorAndText(colorResId: Int, text: String) {
 
 fun Fragment.setStatusBarColor(colorResId: Int) {
     requireActivity().window.statusBarColor = requireContext().getColor(colorResId)
-}
-
-private fun ItemStateBoxBinding.setVisibleView(view: View?) {
-    root.children.forEach {
-        it.visibility = if (it === view) View.VISIBLE else View.GONE
-    }
-    this.root.setVisibility(view != null)
 }

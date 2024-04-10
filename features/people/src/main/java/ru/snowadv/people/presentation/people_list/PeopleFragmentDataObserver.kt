@@ -14,7 +14,7 @@ import ru.snowadv.people.presentation.people_list.view_model.PeopleListViewModel
 import ru.snowadv.presentation.adapter.impl.DiffDelegationAdapter
 import ru.snowadv.presentation.adapter.setupDiffDelegatesAdapter
 import ru.snowadv.presentation.fragment.FragmentDataObserver
-import ru.snowadv.presentation.fragment.setNewState
+import ru.snowadv.presentation.fragment.inflateState
 import ru.snowadv.presentation.fragment.setOnRetryClickListener
 import ru.snowadv.presentation.model.ScreenState.Loading.filtered
 import ru.snowadv.presentation.recycler.setupDecorator
@@ -68,7 +68,7 @@ internal class PeopleFragmentDataObserver :
         state: PeopleListScreenState,
         adapter: DiffDelegationAdapter,
     ) = with(binding) {
-        stateBox.setNewState(state.filteredScreenState())
+        stateBox.inflateState(state.filteredScreenState())
         if (state.searchQuery != searchBar.searchEditText.text.toString()) {
             searchBar.searchEditText.setText(state.searchQuery)
         }

@@ -85,14 +85,10 @@
 
     <include
         android:id="@+id/state_box"
-        layout="@layout/item_state_box"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/top_bar"
-        tools:visibility="gone" />
-
+        app:layout_constraintBottom_toBottomOf="parent"
+        layout="@layout/item_state_box" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

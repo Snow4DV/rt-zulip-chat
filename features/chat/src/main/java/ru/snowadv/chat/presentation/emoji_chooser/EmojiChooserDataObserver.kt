@@ -18,7 +18,7 @@ import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.presentation.adapter.impl.AdapterDelegatesManager
 import ru.snowadv.presentation.adapter.impl.DiffDelegationAdapter
 import ru.snowadv.presentation.fragment.FragmentDataObserver
-import ru.snowadv.presentation.fragment.setNewState
+import ru.snowadv.presentation.fragment.inflateState
 import ru.snowadv.presentation.fragment.setOnRetryClickListener
 import ru.snowadv.presentation.model.ScreenState
 
@@ -77,7 +77,7 @@ internal class EmojiChooserDataObserver :
         binding: FragmentEmojiChooserBinding,
         recyclerAdapter: DiffDelegationAdapter
     ) {
-        binding.stateBox.setNewState(state)
+        binding.stateBox.inflateState(state)
         recyclerAdapter.submitList(state.getCurrentData())
     }
 
