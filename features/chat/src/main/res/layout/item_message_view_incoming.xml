@@ -10,7 +10,7 @@
         android:layout_width="@dimen/chat_avatar_size"
         android:layout_height="@dimen/chat_avatar_size"
         android:src="@drawable/ic_user_avatar"
-        app:shapeAppearanceOverlay="@style/RoundedAvatar" />
+        app:shapeAppearanceOverlay="@style/RoundedImageView" />
 
     <View
         android:id="@+id/messageBackground"

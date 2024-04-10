@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="expand_topic">Expand topic</string>
+    <string name="search_hint">Search…</string>
+    <string name="people_search_hint">Users…</string>
+    <string name="search_icon">Search icon</string>
+    <string name="channels_tabs">Channels tabs</string>
+    <string name="subscribed">Subscribed</string>
+    <string name="all_streams">All streams</string>
+</resources>

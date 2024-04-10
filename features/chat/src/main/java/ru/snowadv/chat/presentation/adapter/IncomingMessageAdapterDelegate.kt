@@ -1,5 +1,6 @@
 package ru.snowadv.chat.presentation.adapter
 
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -20,20 +21,20 @@ internal class IncomingMessageAdapterDelegate(
 ) :
     DelegationItemAdapterDelegate<ChatMessage, IncomingMessageAdapterDelegate.IncomingMessageViewHolder, ChatMessage.Payload>() {
 
-    internal inner class IncomingMessageViewHolder(val messageLayout: IncomingMessageLayout) :
+    internal inner class IncomingMessageViewHolder(private val messageLayout: IncomingMessageLayout) :
         ViewHolder(messageLayout.rootView) {
 
-        fun initClickListeners(holder: ViewHolder, getCurrentList: () -> List<DelegateItem>) {
+        fun initClickListeners(getCurrentList: () -> List<DelegateItem>) {
             messageLayout.onMessageLongClickListener = {
-                if (holder.adapterPosition != RecyclerView.NO_POSITION) {
-                    getItemAtPosition(getCurrentList(), holder.adapterPosition)?.let {
+                if (adapterPosition != RecyclerView.NO_POSITION) {
+                    getItemAtPosition(getCurrentList(), adapterPosition)?.let {
                         onLongMessageClickListener?.invoke(it)
                     }
                 }
             }
             messageLayout.onReactionClickListener = { count, emojiCode, userReacted ->
-                if (holder.adapterPosition != RecyclerView.NO_POSITION) {
-                    getItemAtPosition(getCurrentList(), holder.adapterPosition)?.let { message ->
+                if (adapterPosition != RecyclerView.NO_POSITION) {
+                    getItemAtPosition(getCurrentList(), adapterPosition)?.let { message ->
                         message.reactions.firstOrNull { it.code == emojiCode }?.let {
                             onReactionClickListener?.invoke(it, message)
                         }
@@ -41,8 +42,8 @@ internal class IncomingMessageAdapterDelegate(
                 }
             }
             messageLayout.onAddReactionClickListener = {
-                if (holder.adapterPosition != RecyclerView.NO_POSITION) {
-                    getItemAtPosition(getCurrentList(), holder.adapterPosition)?.let { message ->
+                if (adapterPosition != RecyclerView.NO_POSITION) {
+                    getItemAtPosition(getCurrentList(), adapterPosition)?.let { message ->
                         onAddReactionClickListener?.invoke(message)
                     }
                 }
@@ -86,7 +87,7 @@ internal class IncomingMessageAdapterDelegate(
         getCurrentList: () -> List<DelegateItem>
     ): ViewHolder {
         val holder = IncomingMessageViewHolder(getNewIncomingMessageLayout(parent))
-        holder.initClickListeners(holder, getCurrentList)
+        holder.initClickListeners(getCurrentList)
         return holder
     }
 

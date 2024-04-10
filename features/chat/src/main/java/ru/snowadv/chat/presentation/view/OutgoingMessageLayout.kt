@@ -7,8 +7,7 @@ import android.view.View
 import android.widget.TextView
 import ru.snowadv.chat.R
 import ru.snowadv.chat.databinding.ItemMessageViewOutgoingBinding
-import ru.snowadv.presentation.util.ViewInvalidatingProperty
-import ru.snowadv.presentation.util.dimToPx
+import ru.snowadv.presentation.view.dimToPx
 import kotlin.math.max
 
 /**

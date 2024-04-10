@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="RoundedAvatar">
+    <style name="RoundedImageView">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
@@ -48,7 +48,14 @@
         <item name="android:textColor">@color/on_surface_box_text_color</item>
         <item name="android:padding">@dimen/topic_name_padding</item>
     </style>
-    
+
+    <style name="Theme.ZulipChat.IndeterminateProgressBar" parent="Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:indeterminate">true</item>
+        <item name="android:indeterminateTint">@color/primary</item>
+        <item name="android:indeterminateTintMode">src_in</item>
+    </style>
+
+
     <style name="Theme.ZulipChat.DateSplitterTextView" parent="Widget.MaterialComponents.TextView">
         <item name="android:background">@drawable/bg_date_splitter</item>
         <item name="android:textColor">@color/date_splitter_text_color</item>
@@ -60,11 +67,6 @@
     </style>
 
 
-    <style name="Theme.ZulipChat.IndeterminateProgressBar" parent="Widget.AppCompat.ProgressBar.Horizontal">
-        <item name="android:indeterminate">true</item>
-        <item name="android:indeterminateTint">@color/primary</item>
-        <item name="android:indeterminateTintMode">src_in</item>
-    </style>
 
 
 </resources>

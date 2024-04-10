@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:theme="@style/Theme.ZulipChat.Profile">
+
+    <include
+        android:id="@+id/top_bar"
+        layout="@layout/item_top_bar_with_back" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/user_avatar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_user_avatar"
+        app:layout_constraintBottom_toTopOf="@id/user_name"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/top_bar"
+        app:layout_constraintVertical_bias="0.3"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintWidth_percent="0.5"
+        app:shapeAppearanceOverlay="@style/RoundCornersImageView"
+        tools:src="@drawable/avatar" />
+
+
+    <TextView
+        android:id="@+id/user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/user_profile_name_top_margin"
+        android:textColor="@color/text"
+        android:textSize="@dimen/user_name_profile_text_size"
+        app:layout_constraintBottom_toTopOf="@id/user_email"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/user_avatar"
+        tools:text="Darrell Steward" />
+
+    <TextView
+        android:id="@+id/user_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/common_margin"
+        android:textColor="@color/secondary_text"
+        android:textSize="@dimen/user_email_profile_text_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/user_status"
+        app:layout_constraintTop_toBottomOf="@id/user_name"
+        tools:text="example@email.com" />
+
+    <TextView
+        android:id="@+id/user_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/common_margin"
+        android:layout_marginTop="30dp"
+        android:textColor="@color/secondary_text"
+        android:textSize="18sp"
+
+        app:layout_constraintBottom_toBottomOf="@id/user_email"
+        app:layout_constraintLeft_toRightOf="@id/user_email"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:text="online"
+        tools:textColor="@color/online" />
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_logout"
+        android:layout_width="@dimen/logout_button_width"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/common_margin"
+        android:backgroundTint="@color/on_surface"
+        android:text="@string/log_out"
+        android:textColor="@color/text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/user_email"
+        app:layout_constraintVertical_bias="0.8" />
+
+    <include
+        android:id="@+id/state_box"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/top_bar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        layout="@layout/item_state_box" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

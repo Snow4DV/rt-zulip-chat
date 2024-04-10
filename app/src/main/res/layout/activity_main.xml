@@ -6,11 +6,9 @@
     android:fitsSystemWindows="true">
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/chat_fragment"
-        android:name="ru.snowadv.chat.presentation.chat.ChatFragment"
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:tag="chat_fragment" />
+        android:layout_height="match_parent"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

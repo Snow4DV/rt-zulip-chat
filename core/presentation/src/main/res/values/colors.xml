@@ -1,8 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="primary">#2A9D8F</color>
     <color name="primaryDark">#20756A</color>
-    <color name="primaryVariant">#20756A</color>
+    <color name="primaryVariant">#27786E</color>
+    <color name="secondary">#E9C46A</color>
+    <color name="secondaryVariant">#B1944C</color>
+
+    <color name="black">#FF000000</color>
+    <color name="black_0">#101010</color>
+    <color name="black_1">#1B1B1B</color>
+    <color name="black_2">#1E1E1E</color>
+    <color name="black_3">#202020</color>
+    <color name="black_4">#2A2A2A</color>
+    <color name="black_5">#323232</color>
+
+    <color name="light_gray_1">#808080</color>
+    <color name="light_gray_2">#A1A1A1</color>
+    <color name="light_gray_3">#BDBDBD</color>
+    <color name="light_gray_4">#DDDDDD</color>
+    <color name="light_gray_5">#DFDFDF</color>
+    <color name="gray">#919191</color>
+
+    <color name="text">@color/black_0</color>
+    <color name="secondary_text">@color/light_gray_1</color>
+
+
+    <color name="dusty_rose">#B5838D</color>
+    <color name="muted_lavander">#9885B1</color>
+    <color name="warm_taupe">#A89F86</color>
+    <color name="teal">#2A9D8F</color>
+    <color name="faded_coral">#D08A8A</color>
+    <color name="moody_lilac">#8D6E96</color>
+    <color name="smokey_sage">#8C9A92</color>
+    <color name="rustic_brick">#A35548</color>
+    <color name="midnight_plum">#4B3B4B</color>
+    <color name="vintage_gold">#B89664</color>
+    <color name="vintage_green">#7D957D</color>
+    <color name="pale_yellow">#E9C46A</color>
+    <color name="earthy_olive">#716344</color>
+
+    <color name="top_bar_bw">@color/light_gray_4</color>
+    <color name="on_surface">@color/light_gray_5</color>
+
+    <color name="online">#4AB54D</color>
+    <color name="offline">#f44336</color>
+    <color name="idle">#FF9800</color>
 </resources>

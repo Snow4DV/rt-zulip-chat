@@ -10,8 +10,8 @@ import androidx.core.view.marginLeft
 import androidx.core.view.marginRight
 import androidx.core.view.marginTop
 import ru.snowadv.chat.R
-import ru.snowadv.presentation.util.ViewInvalidatingProperty
-import ru.snowadv.presentation.util.dimToPx
+import ru.snowadv.presentation.view.ViewInvalidatingProperty
+import ru.snowadv.presentation.view.dimToPx
 import kotlin.math.max
 
 /**

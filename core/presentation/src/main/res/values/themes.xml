@@ -1,9 +1,11 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.ZulipChat" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.ZulipChat" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primaryDark</item>
+        <item name="colorSecondary">@color/secondary</item>
         <item name="android:statusBarColor">@color/primaryDark</item>
+        <item name="android:textColor">@color/black_0</item>
     </style>
 
     <style name="Theme.ZulipChat" parent="Base.Theme.ZulipChat" />
