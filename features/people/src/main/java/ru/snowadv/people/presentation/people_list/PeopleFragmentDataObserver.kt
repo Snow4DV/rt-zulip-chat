@@ -16,7 +16,6 @@ import ru.snowadv.presentation.adapter.setupDiffDelegatesAdapter
 import ru.snowadv.presentation.fragment.FragmentDataObserver
 import ru.snowadv.presentation.fragment.inflateState
 import ru.snowadv.presentation.fragment.setOnRetryClickListener
-import ru.snowadv.presentation.model.ScreenState.Loading.filtered
 import ru.snowadv.presentation.recycler.setupDecorator
 import ru.snowadv.presentation.recycler.setupDefaultDecorator
 
