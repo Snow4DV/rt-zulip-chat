@@ -32,7 +32,8 @@ class ChatRepositoryImpl(
 ) : MessageRepository, EmojiRepository {
     override fun getAvailableEmojis(): Flow<Resource<List<ChatEmoji>>> {
         return emojiDataRepository.getAvailableEmojis()
-            .map { it.map { it.map { it.toChatEmoji() } } }.flowOn(Dispatchers.Default)
+            .map { it.map { it.map { it.toChatEmoji() } } }
+            .flowOn(Dispatchers.Default)
     }
 
     override fun getMessages(

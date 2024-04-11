@@ -12,6 +12,7 @@ import ru.snowadv.channels_data.api.StreamDataRepository
 import ru.snowadv.channels_data.api.TopicDataRepository
 import ru.snowadv.model.Resource
 import ru.snowadv.model.map
+import ru.snowadv.voiceapp.glue.util.mapListContent
 import ru.snowadv.voiceapp.glue.util.toChannelStream
 import ru.snowadv.voiceapp.glue.util.toChannelTopic
 
@@ -21,19 +22,19 @@ class ChannelsRepositoryImpl(
 ): StreamRepository, TopicRepository {
     override fun getStreams(): Flow<Resource<List<Stream>>> {
         return streamDataRepository.getStreams()
-            .map { it.map { it.map { it.toChannelStream() } } }
+            .map { res -> res.mapListContent { it.toChannelStream() } }
             .flowOn(Dispatchers.Default)
     }
 
     override fun getSubscribedStreams(): Flow<Resource<List<Stream>>>{
         return streamDataRepository.getSubscribedStreams()
-            .map { it.map { it.map { it.toChannelStream() } } }
+            .map { res -> res.mapListContent { it.toChannelStream() } }
             .flowOn(Dispatchers.Default)
     }
 
     override fun getTopics(streamId: Long): Flow<Resource<List<Topic>>> {
         return topicDataRepository.getTopics(streamId)
-            .map { it.map { it.map { it.toChannelTopic() } } }
+            .map { res -> res.mapListContent { it.toChannelTopic() } }
             .flowOn(Dispatchers.Default)
     }
 }

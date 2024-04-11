@@ -53,7 +53,7 @@ class UserDataRepositoryImpl(
                 userDtoResult.combineFold(
                     other = userPresenceDtoResult,
                     onBothSuccess = { userDto, userPresenceDto ->
-                        emit(Resource.Success(userDto.toDataUser(userPresenceDto)))
+                        emit(Resource.Success(userDto.toDataUser(userPresenceDto, true)))
                     },
                     onFailure = {
                         emit(Resource.Error(it))

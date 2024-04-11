@@ -23,11 +23,18 @@ internal fun AllUsersDto.toUsersListWithPresences(allUsersPresenceDto: AllUsersP
     return users.map { it.toDataUser(userEmailToPresence[it.email] ?: DataUserStatus.OFFLINE) }
 }
 
-internal fun SingleUserDto.toDataUser(presenceDto: SingleUserPresenceDto): DataUser {
+internal fun SingleUserDto.toDataUser(
+    presenceDto: SingleUserPresenceDto,
+    hasOfflineStatus: Boolean
+): DataUser {
     return user.toDataUser(
-        status = DataUserStatus.fromTimestampAndStatus(
-            presenceDto.presence.website.timestamp,
-            presenceDto.presence.website.status,
-        )
+        status = if (hasOfflineStatus) {
+            DataUserStatus.fromStatus(presenceDto.presence.aggregated.status)
+        } else {
+            DataUserStatus.fromTimestampAndStatus(
+                presenceDto.presence.aggregated.timestamp,
+                presenceDto.presence.aggregated.status,
+            )
+        }
     )
 }

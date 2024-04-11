@@ -5,7 +5,7 @@ import java.time.Instant
 enum class DataUserStatus(val apiName: String) {
     ONLINE("active"),
     IDLE("idle"),
-    OFFLINE("");
+    OFFLINE("offline");
 
     companion object {
         // This variable describes how long can user be inactive to still be considered online/idle
@@ -21,6 +21,12 @@ enum class DataUserStatus(val apiName: String) {
                 apiStatus == IDLE.apiName -> IDLE
                 else -> OFFLINE
             }
+        }
+
+        fun fromStatus(
+            apiStatus: String,
+        ): DataUserStatus {
+            return entries.first { it.apiName == apiStatus }
         }
     }
 }

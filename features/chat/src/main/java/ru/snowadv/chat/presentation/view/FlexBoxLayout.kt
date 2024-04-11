@@ -13,6 +13,7 @@ import ru.snowadv.chat.R
 import ru.snowadv.presentation.view.ViewInvalidatingProperty
 import ru.snowadv.presentation.view.dimToPx
 import kotlin.math.max
+import androidx.core.content.res.use
 
 /**
  * This layout follows these rules:

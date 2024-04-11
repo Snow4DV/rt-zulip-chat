@@ -5,6 +5,7 @@ import ru.snowadv.network.model.TopicDto
 import ru.snowadv.network.model.UserDto
 import ru.snowadv.network.model.UserPresenceDto
 import java.time.Instant
+import kotlin.math.abs
 
 internal object StubData {
     private val subscribedStreamsIds = setOf(1L, 2L)
@@ -319,9 +320,11 @@ internal object StubData {
         )
     }
 
-    val peoplePresenceDtosById get() = people.associateBy { it.id.toLong() }.mapValues {
+    val perUserPresenceStatuses = listOf("active", "idle", "offline")
+
+    val peoplePresenceDtosById get() = people.associateBy { it.id }.mapValues {
         UserPresenceDto(
-            if (it.value.id % 2L == 0L) "idle" else "active",
+            perUserPresenceStatuses[(abs(it.value.id) % 3).toInt()],
             if (it.value.id % 3L == 0L) serverTimestamp-650 else serverTimestamp,
         )
     }

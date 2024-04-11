@@ -13,6 +13,7 @@ import ru.snowadv.chat.R
 import ru.snowadv.presentation.view.ViewInvalidatingProperty
 import ru.snowadv.presentation.view.dimToPx
 import kotlin.math.max
+import androidx.core.content.res.use
 
 /**
  * This view draws button with emoji and count inside. Uses background with ripple effect.
