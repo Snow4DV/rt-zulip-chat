@@ -18,9 +18,7 @@ import ru.snowadv.chat.presentation.emoji_chooser.view_model.EmojiChooserViewMod
 import ru.snowadv.chat.presentation.model.ChatEmoji
 import ru.snowadv.presentation.fragment.FragmentDataObserver
 
-typealias OnEmojiClickListener = (ChatEmoji) -> Unit
-
-class EmojiChooserBottomSheetDialog private constructor() : BottomSheetDialogFragment(),
+class EmojiChooserBottomSheetDialog public constructor() : BottomSheetDialogFragment(),
     FragmentDataObserver<FragmentEmojiChooserBinding, EmojiChooserViewModel, EmojiChooserBottomSheetDialog> by EmojiChooserDataObserver() {
 
     companion object {
