@@ -5,6 +5,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import ru.snowadv.channels.R
 import ru.snowadv.channels.databinding.FragmentStreamListBinding
 import ru.snowadv.channels.presentation.adapter.ShimmerTopicAdapterDelegate
 import ru.snowadv.channels.presentation.adapter.StreamAdapterDelegate
@@ -17,7 +18,7 @@ import ru.snowadv.presentation.adapter.impl.DiffDelegationAdapter
 import ru.snowadv.presentation.adapter.setupDiffDelegatesAdapter
 import ru.snowadv.presentation.adapter.updateAnimationDurations
 import ru.snowadv.presentation.fragment.FragmentDataObserver
-import ru.snowadv.presentation.fragment.setNewState
+import ru.snowadv.presentation.fragment.inflateState
 import ru.snowadv.presentation.fragment.setOnRetryClickListener
 import ru.snowadv.presentation.recycler.setupDefaultDecorator
 import ru.snowadv.presentation.view.setVisibility
@@ -78,8 +79,7 @@ internal class StreamListFragmentDataObserver :
         adapter: DiffDelegationAdapter,
         state: StreamListScreenState
     ) = with(binding) {
-        stateBox.setNewState(screenState = state.screenState, customLoading = true)
-        streamShimmer.shimmer.setVisibility(state.screenState.isLoading)
+        stateBox.inflateState(screenState = state.screenState, shimmerLayout = R.layout.fragment_stream_list_shimmer)
         adapter.submitList(state.screenState.getCurrentData() ?: emptyList())
     }
 

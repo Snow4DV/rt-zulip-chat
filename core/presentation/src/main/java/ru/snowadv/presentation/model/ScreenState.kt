@@ -11,8 +11,4 @@ sealed class ScreenState<out T> {
     fun getCurrentData(): T? {
         return if (this is Success) this.data else null
     }
-
-    inline fun <reified T> ScreenState<List<T>>.filtered(predicate: (T) -> Boolean): ScreenState<List<T>> {
-        return this.getCurrentData()?.filter(predicate)?.let { if (it.isNotEmpty()) Success(it) else Empty} ?: this
-    }
 }

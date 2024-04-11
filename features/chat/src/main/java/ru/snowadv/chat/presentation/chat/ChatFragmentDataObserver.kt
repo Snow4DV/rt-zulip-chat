@@ -31,7 +31,7 @@ import ru.snowadv.presentation.fragment.ErrorHandlingFragment
 import ru.snowadv.presentation.util.DateFormatter
 import ru.snowadv.presentation.util.DateTimeFormatter
 import ru.snowadv.presentation.fragment.FragmentDataObserver
-import ru.snowadv.presentation.fragment.setNewState
+import ru.snowadv.presentation.fragment.inflateState
 import ru.snowadv.presentation.fragment.setOnRetryClickListener
 import ru.snowadv.presentation.fragment.setTopBarText
 import ru.snowadv.presentation.util.impl.DayDateFormatter
@@ -179,10 +179,8 @@ internal class ChatFragmentDataObserver :
         bottomBar.sendOrAddAttachmentButton.isVisible = state.isActionButtonVisible
         adapter.submitList(state.screenState.getCurrentData())
         binding.bottomBar.messageEditText.setTextIfChanged(state.messageField)
-        stateBox.setNewState(state.screenState, customLoading = true)
-        shimmer.root.isVisible = state.screenState.isLoading
+        stateBox.inflateState(state.screenState, R.layout.fragment_chat_shimmer)
         actionProgressBar.isVisible = state.changingReaction || state.sendingMessage
-
     }
 
 

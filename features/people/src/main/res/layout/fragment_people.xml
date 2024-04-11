@@ -23,19 +23,11 @@
 
     <include
         android:id="@+id/state_box"
-        layout="@layout/item_state_box"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/search_bar" />
-
-    <include
-        android:id="@+id/shimmer"
-        layout="@layout/fragment_people_shimmer"
         app:layout_constraintTop_toBottomOf="@id/search_bar"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        layout="@layout/item_state_box" />
 
 
 

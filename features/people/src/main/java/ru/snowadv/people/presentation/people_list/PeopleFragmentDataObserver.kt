@@ -16,7 +16,7 @@ import ru.snowadv.people.presentation.people_list.view_model.PeopleListViewModel
 import ru.snowadv.presentation.adapter.impl.DiffDelegationAdapter
 import ru.snowadv.presentation.adapter.setupDiffDelegatesAdapter
 import ru.snowadv.presentation.fragment.FragmentDataObserver
-import ru.snowadv.presentation.fragment.setNewState
+import ru.snowadv.presentation.fragment.inflateState
 import ru.snowadv.presentation.fragment.setOnRetryClickListener
 import ru.snowadv.presentation.recycler.setupDecorator
 import ru.snowadv.presentation.view.setTextIfChanged
@@ -89,8 +89,7 @@ internal class PeopleFragmentDataObserver :
         adapter: DiffDelegationAdapter,
         searchQuery: String,
     ) = with(binding) {
-        stateBox.setNewState(state.screenState, customLoading = true)
-        shimmer.root.setVisibility(state.screenState.isLoading)
+        stateBox.inflateState(state.screenState, R.layout.fragment_people_shimmer)
         adapter.submitList(state.screenState.getCurrentData())
         searchBar.searchEditText.setTextIfChanged(searchQuery)
     }

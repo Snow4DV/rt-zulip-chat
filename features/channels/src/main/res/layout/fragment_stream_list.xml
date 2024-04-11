@@ -14,16 +14,6 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/item_stream" />
 
-    <include
-        android:id="@+id/state_box"
-        layout="@layout/item_state_box"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <include
-        android:id="@+id/stream_shimmer"
-        layout="@layout/fragment_stream_list_shimmer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <include android:id="@+id/state_box" layout="@layout/item_state_box"/>
 
 </FrameLayout>

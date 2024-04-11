@@ -3,6 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?android:colorBackground"
+    android:elevation="@dimen/state_box_elevation"
     android:padding="@dimen/common_padding"
     android:theme="@style/Theme.ZulipChat">
 

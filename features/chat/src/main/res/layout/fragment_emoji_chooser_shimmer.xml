@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+
+        android:layout_height="wrap_content">
+        <include
+            android:id="@+id/shimmer_1"
+            layout="@layout/item_emoji_shimmer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal" />
+
+        <include
+            android:id="@+id/shimmer_2"
+            layout="@layout/item_emoji_shimmer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/shimmer_1"
+            android:layout_gravity="center_horizontal" />
+        <include
+            android:id="@+id/shimmer_3"
+            layout="@layout/item_emoji_shimmer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/shimmer_2"
+            android:layout_gravity="center_horizontal" />
+        <include
+            android:id="@+id/shimmer_4"
+            layout="@layout/item_emoji_shimmer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/shimmer_3"
+            android:layout_gravity="center_horizontal" />
+        <include
+            android:id="@+id/shimmer_5"
+            layout="@layout/item_emoji_shimmer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/shimmer_4"
+            android:layout_gravity="center_horizontal" />
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

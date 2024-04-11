@@ -4,7 +4,6 @@ import ru.snowadv.channels.presentation.model.Stream
 import ru.snowadv.channels.presentation.model.StreamIdContainer
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.presentation.model.ScreenState
-import ru.snowadv.presentation.model.ScreenState.Loading.filtered
 
 internal data class StreamListScreenState(
     val screenState: ScreenState<List<DelegateItem>> = ScreenState.Loading, // Source of truth
@@ -72,11 +71,12 @@ internal data class StreamListScreenState(
             }
             ?.toSet() ?: emptySet()
         return copy(
-            screenState = screenState
-                .filtered {
+            screenState = screenState.getCurrentData()
+                ?.filter {
                     it is Stream && it.id in filteredStreamIds
                             || it is StreamIdContainer && it.streamId in filteredStreamIds
                 }
+                ?.let { ScreenState.Success(it) } ?: screenState
         )
     }
 }
