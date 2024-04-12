@@ -6,7 +6,7 @@ import ru.snowadv.network.model.MessageDto
 import ru.snowadv.network.model.ReactionDto
 import ru.snowadv.utils.DateUtils
 
-internal fun MessageDto.toDataMessage(): DataMessage {
+internal fun MessageDto.toDataMessage(currentUserId: Long): DataMessage {
     return DataMessage(
         id = id,
         content = content,
@@ -14,14 +14,22 @@ internal fun MessageDto.toDataMessage(): DataMessage {
         senderId = senderId,
         senderName = senderFullName,
         senderAvatarUrl = avatarUrl,
-        reactions = reactions.map { it.toDataReaction() })
+        reactions = reactions.toDataReactionList(currentUserId)
+    )
 }
 
-internal fun ReactionDto.toDataReaction(): DataReaction {
-    return DataReaction(
-        userId = userId,
-        emojiName = emojiName,
-        emojiCode = emojiCode.toInt(radix = 16),
-        reactionType = reactionType
-    )
+fun List<ReactionDto>.toDataReactionList(currentUserId: Long): List<DataReaction> {
+    return buildList {
+        this@toDataReactionList.groupBy { it.emojiName }.asSequence().map { it.value }.forEach {
+            add(
+                DataReaction(
+                    emojiName = it.first().emojiName,
+                    emojiCode = it.first().emojiCode.toInt(radix = 16),
+                    count = it.size,
+                    reactionType = it.first().reactionType,
+                    userReacted = it.any { reaction -> reaction.userId == currentUserId },
+                )
+            )
+        }
+    }
 }

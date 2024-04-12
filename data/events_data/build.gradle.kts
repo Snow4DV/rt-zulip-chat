@@ -12,4 +12,5 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(projects.core.utils)
     implementation(projects.core.network)
+    implementation(projects.core.data)
 }

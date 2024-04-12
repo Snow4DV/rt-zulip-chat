@@ -15,11 +15,7 @@ internal fun DataNarrow.toDto(): NarrowDto {
     return NarrowDto(operator, operand)
 }
 
-internal fun ReactionDto.toDataReaction(): DataReaction {
-    return DataReaction(userId, emojiName, emojiCode.toInt(radix = 16), reactionType) // TODO filter emojis with strange code
-}
-
-internal fun MessageDto.toDataMessage(): DataMessage {
+internal fun MessageDto.toDataMessage(currentUserId: Long): DataMessage {
     return DataMessage(
         id = id,
         content = content,
@@ -27,16 +23,32 @@ internal fun MessageDto.toDataMessage(): DataMessage {
         senderId = senderId,
         senderName = senderFullName,
         senderAvatarUrl = avatarUrl,
-        reactions = reactions.map { it.toDataReaction() },
+        reactions = reactions.toDataReactionList(currentUserId)
     )
 }
 
-internal fun EventDto.toDataEvent(): DataEvent {
+internal fun EventDto.toDataEvent(currentUserId: Long): DataEvent {
     return when (this) {
-        is EventDto.MessageEventDto -> DataEvent.MessageEvent(id, message.toDataMessage())
+        is EventDto.MessageEventDto -> DataEvent.MessageEvent(id, message.toDataMessage(currentUserId))
     }
 }
 
 internal fun List<DataEventType>.toStringEventTypes(): List<String> {
     return map { it.apiName }
+}
+
+fun List<ReactionDto>.toDataReactionList(currentUserId: Long): List<DataReaction> {
+    return buildList {
+        this@toDataReactionList.groupBy { it.emojiName }.asSequence().map { it.value }.forEach {
+            add(
+                DataReaction(
+                    emojiName = it.first().emojiName,
+                    emojiCode = it.first().emojiCode.toInt(radix = 16), // TODO filter emojis with strange code like "1fff-20ce"
+                    count = it.size,
+                    reactionType = it.first().reactionType,
+                    userReacted = it.any { reaction -> reaction.userId == currentUserId },
+                )
+            )
+        }
+    }
 }

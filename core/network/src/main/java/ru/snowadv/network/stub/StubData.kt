@@ -316,7 +316,7 @@ internal object StubData {
     val peoplePresenceDtosByEmail get() = people.associateBy { it.email }.mapValues {
         UserPresenceDto(
             if (it.value.id % 2L == 0L) "idle" else "active",
-            if (it.value.id % 3L == 0L) serverTimestamp-650 else serverTimestamp,
+            (if (it.value.id % 3L == 0L) serverTimestamp-650 else serverTimestamp).toDouble(),
         )
     }
 
@@ -325,7 +325,7 @@ internal object StubData {
     val peoplePresenceDtosById get() = people.associateBy { it.id }.mapValues {
         UserPresenceDto(
             perUserPresenceStatuses[(abs(it.value.id) % 3).toInt()],
-            if (it.value.id % 3L == 0L) serverTimestamp-650 else serverTimestamp,
+            (if (it.value.id % 3L == 0L) serverTimestamp-650 else serverTimestamp).toDouble(),
         )
     }
 }

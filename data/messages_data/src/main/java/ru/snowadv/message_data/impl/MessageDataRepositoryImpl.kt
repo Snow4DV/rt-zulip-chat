@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import ru.snowadv.data.api.AuthProvider
 import ru.snowadv.message_data.api.MessageDataRepository
 import ru.snowadv.message_data.model.DataMessage
 import ru.snowadv.message_data.util.toDataMessage
@@ -17,13 +18,15 @@ import ru.snowadv.utils.toResource
 
 class MessageDataRepositoryImpl(
     private val ioDispatcher: CoroutineDispatcher,
+    private val authProvider: AuthProvider,
+    private val api: ZulipApi,
 ) : MessageDataRepository {
-    private val api: ZulipApi = StubZulipApi
+    private val currentUserId get() = authProvider.getAuthorizedUser().id
     override fun getMessages(streamName: String, topicName: String): Flow<Resource<List<DataMessage>>> =
         flow {
             emit(Resource.Loading)
-            api.getMessages(NarrowDto.ofStreamAndTopic(streamName, topicName))
-                .foldToResource { messagesDto -> messagesDto.messages.map { messageDto -> messageDto.toDataMessage() } }
+            api.getMessages(numBefore = 100, narrow = NarrowDto.ofStreamAndTopic(streamName, topicName))
+                .foldToResource { messagesDto -> messagesDto.messages.map { messageDto -> messageDto.toDataMessage(currentUserId) } }
                 .let { res -> emit(res) }
         }.flowOn(ioDispatcher)
 

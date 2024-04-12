@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.isActive
+import ru.snowadv.data.api.AuthProvider
 import ru.snowadv.events_data.api.EventDataRepository
 import ru.snowadv.events_data.model.DataEvent
 import ru.snowadv.events_data.model.DataEventType
@@ -20,8 +21,9 @@ import ru.snowadv.network.stub.StubZulipApi
 
 class EventDataRepositoryImpl(
     private val ioDispatcher: CoroutineDispatcher,
+    private val authProvider: AuthProvider,
+    private val api: ZulipApi,
 ): EventDataRepository {
-    private val api: ZulipApi = StubZulipApi
     override fun listenToEvents(
         types: List<DataEventType>,
         narrows: List<DataNarrow>
@@ -46,7 +48,7 @@ class EventDataRepositoryImpl(
         while (currentCoroutineContext().isActive) {
             api.getEventsFromEventQueue(queueId, lastEventId).fold(
                 onSuccess = { eventsDto ->
-                    emit(Resource.Success(eventsDto.events.map { it.toDataEvent() }))
+                    emit(Resource.Success(eventsDto.events.map { it.toDataEvent(authProvider.getAuthorizedUser().id) }))
                     eventsDto.events.lastOrNull()?.let { lastEventDto ->
                         lastEventId = lastEventDto.id
                     }

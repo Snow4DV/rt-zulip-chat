@@ -14,8 +14,8 @@ import ru.snowadv.utils.foldToResource
 
 class EmojiDataRepositoryImpl(
     private val ioDispatcher: CoroutineDispatcher,
+    private val api: ZulipApi,
 ): EmojiDataRepository {
-    private val api: ZulipApi = StubZulipApi
     override fun getAvailableEmojis(): Flow<Resource<List<DataEmoji>>> = flow {
         emit(Resource.Loading)
         emit(api.getEmojis().foldToResource { it.toDataEmojiList() })

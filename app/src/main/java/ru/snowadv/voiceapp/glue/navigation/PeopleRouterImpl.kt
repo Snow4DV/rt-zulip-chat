@@ -8,6 +8,6 @@ import ru.snowadv.voiceapp.navigation.Screens
 
 class PeopleRouterImpl(private val ciceroneRouter: Router): PeopleRouter {
     override fun openProfile(userId: Long) {
-        ciceroneRouter.navigateTo(Screens.Profile(userId, false))
+        ciceroneRouter.navigateTo(Screens.Profile(userId))
     }
 }

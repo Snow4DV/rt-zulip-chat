@@ -15,25 +15,14 @@ internal fun DataMessage.toChatMessage(): ChatMessage {
         senderId = senderId,
         senderName = senderName,
         senderAvatarUrl = senderAvatarUrl,
-        reactions = reactions.toChatReactions(1L), // TODO: implement logic, hardcoded at this point
+        reactions = reactions.map { it.toChatReaction() }
     )
-}
-
-fun List<DataReaction>.toChatReactions(currentUserId: Long): List<ChatReaction> {
-    return buildList {
-        this@toChatReactions.groupBy { it.emojiName }.asSequence().map { it.value }.forEach {
-            add(
-                ChatReaction(
-                    name = it.first().emojiName,
-                    emojiCode = it.first().emojiCode,
-                    count = it.size,
-                    userReacted = it.any { reaction -> reaction.userId == currentUserId },
-                )
-            )
-        }
-    }
 }
 
 internal fun DataEmoji.toChatEmoji(): ChatEmoji {
     return ChatEmoji(name, code)
+}
+
+internal fun DataReaction.toChatReaction(): ChatReaction {
+    return ChatReaction(emojiName, emojiCode, count, userReacted)
 }

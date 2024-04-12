@@ -7,8 +7,7 @@ import ru.snowadv.profile.domain.repository.ProfileRepository
 
 internal class ProfileViewModelFactory(
     private val router: ProfileRouter,
-    private val profileId: Long,
-    private val isOwner: Boolean,
+    private val profileId: Long?,
     private val profileRepository: ProfileRepository,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
@@ -17,7 +16,6 @@ internal class ProfileViewModelFactory(
             return ProfileViewModel(
                 router = router,
                 profileId = profileId,
-                isOwner = isOwner,
                 profileRepo = profileRepository,
             ) as T
         }

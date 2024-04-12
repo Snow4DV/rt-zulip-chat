@@ -13,7 +13,7 @@ class HomeScreenFactoryImpl: HomeScreenFactory {
         return when(screen) {
             HomeScreen.CHANNELS -> ChannelListFragment.newInstance()
             HomeScreen.PEOPLE -> PeopleFragment.newInstance()
-            HomeScreen.PROFILE -> ProfileFragment.newInstance(1L, true) // Will use id from auth repository in future
+            HomeScreen.PROFILE -> ProfileFragment.newInstance() // Will use id from auth repository in future
         }
     }
 }

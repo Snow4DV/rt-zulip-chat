@@ -15,7 +15,7 @@ internal fun UserDto.toDataUser(status: DataUserStatus): DataUser {
 internal fun AllUsersDto.toUsersListWithPresences(allUsersPresenceDto: AllUsersPresenceDto): List<DataUser> {
     val userEmailToPresence = allUsersPresenceDto.userEmailToPresenceSources.mapValues {
         DataUserStatus.fromTimestampAndStatus(
-            it.value.aggregated.timestamp,
+            it.value.aggregated.timestamp.toLong(),
             it.value.aggregated.status
         )
     }
@@ -32,7 +32,7 @@ internal fun SingleUserDto.toDataUser(
             DataUserStatus.fromStatus(presenceDto.presence.aggregated.status)
         } else {
             DataUserStatus.fromTimestampAndStatus(
-                presenceDto.presence.aggregated.timestamp,
+                presenceDto.presence.aggregated.timestamp.toLong(),
                 presenceDto.presence.aggregated.status,
             )
         }

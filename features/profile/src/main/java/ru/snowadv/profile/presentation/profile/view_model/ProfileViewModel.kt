@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import ru.snowadv.model.Resource
 import ru.snowadv.profile.domain.repository.ProfileRepository
 import ru.snowadv.profile.presentation.profile.event.ProfileEvent
 import ru.snowadv.profile.presentation.profile.state.ProfileScreenState
@@ -16,11 +17,10 @@ import ru.snowadv.profile.domain.navigation.ProfileRouter
 
 internal class ProfileViewModel(
     private val router: ProfileRouter,
-    private val profileId: Long,
+    private val profileId: Long?,
     private val profileRepo: ProfileRepository,
-    isOwner: Boolean,
 ) : ViewModel() {
-    private val _state = MutableStateFlow(ProfileScreenState(isOwner = isOwner))
+    private val _state = MutableStateFlow(ProfileScreenState(isOwner = profileId == null))
     val state = _state.asStateFlow()
 
     init {
@@ -38,7 +38,8 @@ internal class ProfileViewModel(
     }
 
     private fun loadProfile() {
-        profileRepo.getPerson(profileId).onEach { resource ->
+        (profileId?.let { profileRepo.getPerson(it) } ?: profileRepo.getCurrentPerson()).onEach { resource ->
+            if (resource is Resource.Error && resource.throwable != null) throw resource.throwable!!
             _state.update { oldState ->
                 oldState.copy(
                     screenState = resource.toScreenState(mapper = { person -> person.toUiModel() }),

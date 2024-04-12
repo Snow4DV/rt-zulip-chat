@@ -15,8 +15,8 @@ import ru.snowadv.utils.foldToResource
 
 class TopicDataRepositoryImpl(
     private val ioDispatcher: CoroutineDispatcher,
+    private val api: ZulipApi,
 ): TopicDataRepository {
-    private val api: ZulipApi = StubZulipApi
     override fun getTopics(streamId: Long): Flow<Resource<List<DataTopic>>> = flow {
         emit(Resource.Loading)
         emit(api.getTopicsByChannel(streamId).foldToResource { topicsDto -> topicsDto.topics.map { it.toDataTopic(streamId) } })

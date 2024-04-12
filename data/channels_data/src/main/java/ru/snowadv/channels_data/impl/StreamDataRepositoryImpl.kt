@@ -15,9 +15,8 @@ import ru.snowadv.utils.foldToResource
 
 class StreamDataRepositoryImpl(
     private val ioDispatcher: CoroutineDispatcher,
+    private val api: ZulipApi,
 ): StreamDataRepository {
-
-    private val api: ZulipApi = StubZulipApi
     override fun getStreams(): Flow<Resource<List<DataStream>>> = flow {
         emit(Resource.Loading)
         emit(api.getAllStreams().foldToResource { streamsDto -> streamsDto.streams.map { it.toDataStream() } })

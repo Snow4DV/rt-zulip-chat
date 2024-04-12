@@ -11,6 +11,6 @@ object Screens {
     fun Channels() = FragmentScreen { ChannelListFragment.newInstance() }
     fun Chat(streamName: String, topicName: String) = FragmentScreen { ChatFragment.newInstance(streamName, topicName) }
     fun People() = FragmentScreen { PeopleFragment.newInstance() }
-    fun Profile(userId: Long, isOwner: Boolean) = FragmentScreen { ProfileFragment.newInstance(userId, isOwner)}
+    fun Profile(userId: Long?) = FragmentScreen { ProfileFragment.newInstance(userId)}
     fun Home() = FragmentScreen { HomeFragment.newInstance() }
 }

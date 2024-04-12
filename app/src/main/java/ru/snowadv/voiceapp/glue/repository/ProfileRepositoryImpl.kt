@@ -15,4 +15,8 @@ class ProfileRepositoryImpl(
     override fun getPerson(id: Long): Flow<Resource<Person>> {
         return userDataRepository.getUser(id).map { it.map { it.toProfilePerson() } }
     }
+
+    override fun getCurrentPerson(): Flow<Resource<Person>> {
+        return userDataRepository.getCurrentUser().map { it.map { it.toProfilePerson() } }
+    }
 }

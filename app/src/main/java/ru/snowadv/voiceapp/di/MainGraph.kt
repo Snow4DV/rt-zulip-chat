@@ -22,6 +22,7 @@ internal object MainGraph { // Will be replaced with proper DI
     private val profileDepsProvider by lazy { ProfileDepsProvider() }
     private val homeDepsProvider by lazy { HomeDepsProvider() }
 
+
     fun init(router: Router) {
         mainDepsProvider.router = router
         initFeatureGraphs()

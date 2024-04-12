@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import retrofit2.http.Query
 import ru.snowadv.network.api.ZulipApi
 import ru.snowadv.network.model.AllStreamsDto
 import ru.snowadv.network.model.AllUsersDto
@@ -75,7 +76,7 @@ object StubZulipApi : ZulipApi {
                     it.value,
                     it.value
                 )
-            }, StubData.serverTimestamp))
+            }, StubData.serverTimestamp.toDouble()))
         }
     }
 
@@ -89,13 +90,26 @@ object StubZulipApi : ZulipApi {
         }
     }
 
-    override suspend fun getMessages(narrow: List<NarrowDto>): Result<MessagesDto> {
+    override suspend fun getMessages(
+        @Query(value = "anchor") anchor: String,
+        @Query(value = "num_before") numBefore: Int,
+        @Query(value = "num_after") numAfter: Int,
+        @Query(value = "narrow") narrow: List<NarrowDto>
+    ): Result<MessagesDto> {
         return resultAfterDelay { Result.success(MessagesDto(messages.value)) }
     }
 
     override suspend fun sendMessage(stream: String, topic: String, text: String): Result<Unit> {
         sendMessageToState(stream, topic, text)
         return resultAfterDelay { Result.success(Unit) }
+    }
+
+    override fun editMessage(messageId: Long, content: String): Result<Unit> {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteMessage(messageId: Long): Result<Unit> {
+        TODO("Not yet implemented")
     }
 
     override suspend fun addReaction(messageId: Long, emojiName: String): Result<Unit> {

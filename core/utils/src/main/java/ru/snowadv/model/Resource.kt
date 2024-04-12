@@ -27,3 +27,11 @@ fun <T, R> Resource<T>.map(mapper: (T) -> R): Resource<R> {
         is Resource.Error -> this
     }
 }
+
+fun Resource<*>.toUnitResource(): Resource<Unit> {
+    return when(this) {
+        is Resource.Success -> Resource.Success(Unit)
+        is Resource.Loading -> this
+        is Resource.Error -> this
+    }
+}

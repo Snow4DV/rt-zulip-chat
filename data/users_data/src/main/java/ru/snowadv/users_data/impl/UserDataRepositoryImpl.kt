@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import ru.snowadv.data.api.AuthProvider
 import ru.snowadv.model.Resource
 import ru.snowadv.network.api.ZulipApi
 import ru.snowadv.network.stub.StubZulipApi
@@ -17,8 +18,9 @@ import ru.snowadv.utils.combineFold
 
 class UserDataRepositoryImpl(
     private val ioDispatcher: CoroutineDispatcher,
+    private val api: ZulipApi,
+    private val authProvider: AuthProvider,
 ) : UserDataRepository {
-    private val api: ZulipApi = StubZulipApi
     override fun getAllUsers(): Flow<Resource<List<DataUser>>> = flow {
         asyncAwait(
             s1 = {
@@ -62,5 +64,9 @@ class UserDataRepositoryImpl(
             },
         )
     }.flowOn(ioDispatcher)
+
+    override fun getCurrentUser(): Flow<Resource<DataUser>> {
+        return getUser(authProvider.getAuthorizedUser().id)
+    }
 
 }
