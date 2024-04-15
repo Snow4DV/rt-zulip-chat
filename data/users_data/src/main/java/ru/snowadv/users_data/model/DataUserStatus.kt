@@ -9,7 +9,7 @@ enum class DataUserStatus(val apiName: String) {
 
     companion object {
         // This variable describes how long can user be inactive to still be considered online/idle
-        private const val ONLINE_DELTA_SEC = 60 * 15
+        private const val ONLINE_DELTA_SEC = 60 * 5
         fun fromTimestampAndStatus(
             timestamp: Long,
             apiStatus: String,

@@ -9,7 +9,6 @@ import ru.snowadv.emojis_data.model.DataEmoji
 import ru.snowadv.emojis_data.util.toDataEmojiList
 import ru.snowadv.model.Resource
 import ru.snowadv.network.api.ZulipApi
-import ru.snowadv.network.stub.StubZulipApi
 import ru.snowadv.utils.foldToResource
 
 class EmojiDataRepositoryImpl(

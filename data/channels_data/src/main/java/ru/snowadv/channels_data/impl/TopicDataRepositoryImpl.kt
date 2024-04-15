@@ -10,7 +10,6 @@ import ru.snowadv.channels_data.model.DataTopic
 import ru.snowadv.channels_data.util.toDataTopic
 import ru.snowadv.model.Resource
 import ru.snowadv.network.api.ZulipApi
-import ru.snowadv.network.stub.StubZulipApi
 import ru.snowadv.utils.foldToResource
 
 class TopicDataRepositoryImpl(

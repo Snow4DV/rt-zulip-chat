@@ -1,5 +1,7 @@
 package ru.snowadv.chat.presentation.emoji_chooser
 
+import android.app.Dialog
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -18,7 +20,7 @@ import ru.snowadv.chat.presentation.emoji_chooser.view_model.EmojiChooserViewMod
 import ru.snowadv.chat.presentation.model.ChatEmoji
 import ru.snowadv.presentation.fragment.FragmentDataObserver
 
-class EmojiChooserBottomSheetDialog public constructor() : BottomSheetDialogFragment(),
+class EmojiChooserBottomSheetDialog constructor() : BottomSheetDialogFragment(),
     FragmentDataObserver<FragmentEmojiChooserBinding, EmojiChooserViewModel, EmojiChooserBottomSheetDialog> by EmojiChooserDataObserver() {
 
     companion object {

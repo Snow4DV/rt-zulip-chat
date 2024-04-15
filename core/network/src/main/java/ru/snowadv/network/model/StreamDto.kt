@@ -22,7 +22,7 @@ data class StreamDto(
     @SerialName("name")
     val name: String,
     @SerialName("description")
-    val description: String,
+    val description: String? = null,
     @SerialName("color")
     val color: String? = null,
 )

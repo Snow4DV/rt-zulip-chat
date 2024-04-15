@@ -3,10 +3,11 @@ package ru.snowadv.chat.presentation.util
 import ru.snowadv.chat.presentation.model.ChatMessage
 import ru.snowadv.chat.domain.model.ChatMessage as DomainChatMessage
 import ru.snowadv.chat.presentation.model.ChatDate
+import ru.snowadv.chat.presentation.model.ChatReaction
 import ru.snowadv.presentation.adapter.DelegateItem
 
-internal fun List<DomainChatMessage>.mapToAdapterMessagesAndDates(currentUserId: Long): List<DelegateItem> {
-    return this.map { it.toUiChatMessage(currentUserId) }.mapToAdapterMessagesAndDates()
+internal fun List<DomainChatMessage>.mapToUiAdapterMessagesAndDates(): List<DelegateItem> {
+    return this.map { it.toUiChatMessage() }.mapToAdapterMessagesAndDates()
 }
 
 

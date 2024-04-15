@@ -132,7 +132,7 @@ internal class ChatFragmentDataObserver :
     ) {
         when (event) {
             is ChatScreenFragmentEvent.OpenReactionChooser -> {
-                openReactionChooser(event.destMessageId, this, viewModel)
+                openReactionChooser(event.destMessageId, this)
             }
 
             is ChatScreenFragmentEvent.ExplainNotImplemented -> {
@@ -177,7 +177,11 @@ internal class ChatFragmentDataObserver :
             }
         )
         bottomBar.sendOrAddAttachmentButton.isVisible = state.isActionButtonVisible
-        adapter.submitList(state.screenState.getCurrentData())
+        adapter.submitList(state.screenState.getCurrentData()) {
+            if (adapter.itemCount > 0) {
+                binding.messagesRecycler.scrollToPosition(adapter.itemCount - 1)
+            }
+        }
         binding.bottomBar.messageEditText.setTextIfChanged(state.messageField)
         stateBox.inflateState(state.screenState, R.layout.fragment_chat_shimmer)
         actionProgressBar.isVisible = state.changingReaction || state.sendingMessage
@@ -235,7 +239,7 @@ internal class ChatFragmentDataObserver :
         )
     }
 
-    private fun openReactionChooser(messageId: Long, fragment: Fragment, viewModel: ChatViewModel) {
+    private fun openReactionChooser(messageId: Long, fragment: Fragment) {
         val dialog = EmojiChooserBottomSheetDialog.newInstance(EMOJI_CHOOSER_REQUEST_KEY, messageId)
         dialog.show(fragment.childFragmentManager)
     }

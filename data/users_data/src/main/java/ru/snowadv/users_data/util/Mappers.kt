@@ -16,7 +16,8 @@ internal fun AllUsersDto.toUsersListWithPresences(allUsersPresenceDto: AllUsersP
     val userEmailToPresence = allUsersPresenceDto.userEmailToPresenceSources.mapValues {
         DataUserStatus.fromTimestampAndStatus(
             it.value.aggregated.timestamp.toLong(),
-            it.value.aggregated.status
+            it.value.aggregated.status,
+            allUsersPresenceDto.serverTimestamp.toLong()
         )
     }
 

@@ -58,6 +58,7 @@ dependencies {
     implementation(projects.core.data)
     implementation(projects.core.network)
     implementation(projects.core.propertiesProvider)
+    implementation(projects.core.eventApi)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

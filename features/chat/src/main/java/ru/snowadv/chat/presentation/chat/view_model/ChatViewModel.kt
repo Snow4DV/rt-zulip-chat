@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -20,11 +19,14 @@ import ru.snowadv.chat.presentation.chat.state.ChatScreenState
 import ru.snowadv.chat.domain.navigation.ChatRouter
 import ru.snowadv.chat.domain.use_case.AddReactionUseCase
 import ru.snowadv.chat.domain.use_case.GetCurrentMessagesUseCase
-import ru.snowadv.chat.domain.use_case.ListenToMessagesUseCase
+import ru.snowadv.chat.domain.use_case.ListenToChatEventsUseCase
 import ru.snowadv.chat.domain.use_case.RemoveReactionUseCase
 import ru.snowadv.chat.domain.use_case.SendMessageUseCase
-import ru.snowadv.chat.presentation.util.mapToAdapterMessagesAndDates
+import ru.snowadv.chat.presentation.util.mapToUiAdapterMessagesAndDates
+import ru.snowadv.chat.presentation.util.toUiChatEmoji
 import ru.snowadv.chat.presentation.util.toUiChatMessage
+import ru.snowadv.event_api.helper.MutableEventQueueListenerBag
+import ru.snowadv.event_api.model.DomainEvent
 import ru.snowadv.model.Resource
 import ru.snowadv.presentation.model.ScreenState
 import ru.snowadv.presentation.util.toScreenState
@@ -37,17 +39,22 @@ internal class ChatViewModel(
     private val removeReactionUseCase: RemoveReactionUseCase,
     private val sendMessageUseCase: SendMessageUseCase,
     private val getMessagesUseCase: GetCurrentMessagesUseCase,
-    private val listenToMessagesUseCase: ListenToMessagesUseCase,
+    private val listenToChatEventsUseCase: ListenToChatEventsUseCase,
 ) : ViewModel() {
 
-    private var messageCollectorJob: Job? = null
+    private var eventListenerJob: Job? = null
+    private val eventListenerBag = MutableEventQueueListenerBag()
+
     private var changeReactionJob: Job? = null
     private var sendMessageJob: Job? = null
 
     private val _state = MutableStateFlow(createInitialState())
     val state: Flow<ChatScreenState> = _state
-        .onStart { startCollectingMessages() }
-        .onCompletion { stopCollectingMessages() }
+        .onStart { startStopListenerByScreenState(_state.value.screenState) }
+        .onEach {
+            startStopListenerByScreenState(it.screenState)
+        }
+        .onCompletion { stopListeningToEvents() }
 
     private val _eventFlow = MutableSharedFlow<ChatScreenFragmentEvent>(extraBufferCapacity = 1)
     val eventFlow = _eventFlow.asSharedFlow()
@@ -99,7 +106,7 @@ internal class ChatViewModel(
             }
 
             ChatScreenEvent.ReloadClicked -> {
-                getInitMessages()
+                viewModelScope.launch { getInitMessages() }
             }
 
             is ChatScreenEvent.MessageLongClicked -> {
@@ -223,41 +230,86 @@ internal class ChatViewModel(
         }
     }
 
-    private fun getInitMessages() {
-        getMessagesUseCase(streamName, topicName).onEach { messagesRes ->
+    private fun getInitMessages(): Job {
+        return getMessagesUseCase(streamName, topicName).onEach { messagesRes ->
             _state.update { state ->
                 state.copy(
                     screenState = messagesRes.toScreenState(
                         mapper = { messageList ->
-                            messageList.mapToAdapterMessagesAndDates(1)
+                            messageList.mapToUiAdapterMessagesAndDates()
                         },
                         isEmptyChecker = { messageList ->
                             messageList.isEmpty()
                         },
                     ),
-                    messages = messagesRes.getDataOrNull()?.map { it.toUiChatMessage(1) }
+                    messages = messagesRes.getDataOrNull()?.map { it.toUiChatMessage() }
                         ?: emptyList()
                 )
             }
         }.launchIn(viewModelScope)
     }
 
-    private fun startCollectingMessages() {
-        messageCollectorJob?.cancel()
-        messageCollectorJob = listenToMessagesUseCase(streamName, topicName)
+    private fun startListeningToEvents() {
+        if (eventListenerJob?.isActive == true) return
+
+        eventListenerJob = listenToChatEventsUseCase(
+            bag = eventListenerBag,
+            streamName = streamName,
+            topicName = topicName,
+            reloadAction = { getInitMessages().join() }
+        )
             // Wait for successful initial fetch before starting
             //.onStart { _state.first { it.screenState is ScreenState.Success } }
-            .onEach { messagesRes ->
-                if (messagesRes is Resource.Success) {
-                    _state.update {  currentState ->
-                        currentState.replaceOrAddMessages(messagesRes.data.map { it.toUiChatMessage(1) })
-                    }
-                }
-            }
+            .onEach(::handleOnlineEvent)
             .launchIn(viewModelScope)
     }
 
-    private fun stopCollectingMessages() {
-        messageCollectorJob?.cancel()
+    private fun handleOnlineEvent(event: DomainEvent) {
+        viewModelScope.launch {
+            when (event) {
+                is DomainEvent.MessageDomainEvent -> {
+                    _state.update {
+                        it.addMessage(event.eventMessage.toUiChatMessage())
+                    }
+                }
+                is DomainEvent.DeleteMessageDomainEvent -> {
+                    _state.update {
+                        it.removeMessage(event.messageId)
+                    }
+                }
+                is DomainEvent.UpdateMessageDomainEvent -> {
+                    _state.update {
+                        event.content?.let { content -> it.updateMessage(event.messageId, content) } ?: it
+                    }
+                }
+                is DomainEvent.ReactionDomainEvent -> {
+                    when(event.op) {
+                        "add" -> {
+                            _state.update {
+                                it.addReaction(event.toUiChatEmoji(), event.messageId, event.currentUserReaction)
+                            }
+                        }
+                        "remove" -> {
+                            _state.update {
+                                it.removeReaction(event.toUiChatEmoji(), event.messageId, event.currentUserReaction)
+                            }
+                        }
+                    }
+                }
+                else -> Unit // ignored
+            }
+        }
+    }
+
+    private fun stopListeningToEvents() {
+        eventListenerJob?.cancel()
+    }
+
+    private fun startStopListenerByScreenState(state: ScreenState<*>) {
+        if (state is ScreenState.Success || state is ScreenState.Empty)   {
+            startListeningToEvents()
+        } else {
+            stopListeningToEvents()
+        }
     }
 }

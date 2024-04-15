@@ -13,14 +13,6 @@ interface MessageRepository {
         topicName: String,
     ): Flow<Resource<List<ChatMessage>>>
 
-    /**
-     * This flow should emit new message objects when they have changed.
-     * Should emit Resource.Error before death.
-     */
-    fun listenToNewMessages(
-        streamName: String,
-        topicName: String,
-    ): Flow<Resource<List<ChatMessage>>>
     fun sendMessage(
         streamName: String,
         topicName: String,

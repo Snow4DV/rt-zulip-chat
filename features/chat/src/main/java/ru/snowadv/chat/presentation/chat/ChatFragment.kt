@@ -53,7 +53,7 @@ class ChatFragment : Fragment(),
             addReactionUseCase = ChatGraph.addReactionUseCase,
             removeReactionUseCase = ChatGraph.removeReactionUseCase,
             getCurrentMessagesUseCase = ChatGraph.getCurrentMessagesUseCase,
-            listenToMessagesUseCase = ChatGraph.listenToMessagesUseCase,
+            listenToChatEventsUseCase = ChatGraph.listenToMessagesUseCase,
             sendMessageUseCase = ChatGraph.sendMessageUseCase,
         )
     }

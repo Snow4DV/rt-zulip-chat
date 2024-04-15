@@ -12,7 +12,7 @@ import ru.snowadv.channels_data.impl.TopicDataRepositoryImpl
 import ru.snowadv.data.api.AuthProvider
 import ru.snowadv.emojis_data.api.EmojiDataRepository
 import ru.snowadv.emojis_data.impl.EmojiDataRepositoryImpl
-import ru.snowadv.events_data.api.EventDataRepository
+import ru.snowadv.event_api.repository.EventRepository
 import ru.snowadv.events_data.impl.EventDataRepositoryImpl
 import ru.snowadv.message_data.api.MessageDataRepository
 import ru.snowadv.message_data.impl.MessageDataRepositoryImpl
@@ -31,7 +31,7 @@ internal class MainDepsProvider {
     val ioDispatcher: CoroutineDispatcher by lazy { Dispatchers.IO }
     val streamDataRepository: StreamDataRepository by lazy { StreamDataRepositoryImpl(ioDispatcher = ioDispatcher, api = api) }
     val topicDataRepository: TopicDataRepository by lazy { TopicDataRepositoryImpl(ioDispatcher = ioDispatcher, api = api) }
-    val eventDataRepository: EventDataRepository by lazy { EventDataRepositoryImpl(ioDispatcher = ioDispatcher, authProvider = authProvider, api = api) }
+    val eventDataRepository: EventRepository by lazy { EventDataRepositoryImpl(ioDispatcher = ioDispatcher, authProvider = authProvider, api = api) }
     val messageDataRepository: MessageDataRepository by lazy { MessageDataRepositoryImpl(ioDispatcher = ioDispatcher, authProvider = authProvider, api = api) }
     val userDataRepository: UserDataRepository by lazy { UserDataRepositoryImpl(ioDispatcher = ioDispatcher, api = api, authProvider = authProvider) }
     val emojiDataRepository: EmojiDataRepository by lazy { EmojiDataRepositoryImpl(ioDispatcher = ioDispatcher, api = api) }

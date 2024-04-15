@@ -14,6 +14,7 @@ import ru.snowadv.presentation.view.ViewInvalidatingProperty
 import ru.snowadv.presentation.view.dimToPx
 import kotlin.math.max
 import androidx.core.content.res.use
+import ru.snowadv.utils.EmojiUtils
 
 /**
  * This view draws button with emoji and count inside. Uses background with ripple effect.
@@ -36,11 +37,11 @@ internal class ReactionView @JvmOverloads constructor(
         get() = if (isPlus) {
             "+"
         } else {
-            "${emojiCode.toEmojiString()} $count"
+            "${EmojiUtils.combinedHexToString(emojiCode)} $count"
         }
 
     companion object {
-        const val DEFAULT_EMOJI_CODE = 0x1f603
+        const val DEFAULT_EMOJI_CODE = "1f603"
         const val DEFAULT_COUNT = 0
         const val DEFAULT_TEXT_AND_EMOJI_SIZE_SP = 10
         const val DEFAULT_TEXT_COLOR = Color.BLACK
@@ -129,7 +130,9 @@ internal class ReactionView @JvmOverloads constructor(
         context.obtainStyledAttributes(attrs, R.styleable.ReactionView, defStyleAttr, defStyleRes)
             .use { styledAttributes ->
                 emojiCode =
-                    styledAttributes.getInt(R.styleable.ReactionView_emojiCode, DEFAULT_EMOJI_CODE)
+                    styledAttributes.getInt(R.styleable.ReactionView_emojiCode, -1).let {
+                        if (it == -1) DEFAULT_EMOJI_CODE else EmojiUtils.codePointToStringOrDefault(it)
+                    }
                 count = styledAttributes.getInt(R.styleable.ReactionView_count, DEFAULT_COUNT)
                 textSizePx = styledAttributes.getDimensionPixelSize(
                     R.styleable.ReactionView_android_textSize,

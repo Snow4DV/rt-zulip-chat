@@ -15,7 +15,8 @@ internal fun DataMessage.toChatMessage(): ChatMessage {
         senderId = senderId,
         senderName = senderName,
         senderAvatarUrl = senderAvatarUrl,
-        reactions = reactions.map { it.toChatReaction() }
+        reactions = reactions.map { it.toChatReaction() },
+        owner = owner,
     )
 }
 

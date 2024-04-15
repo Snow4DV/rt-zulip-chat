@@ -4,7 +4,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import ru.snowadv.chat.presentation.view.OutgoingMessageLayout
-import ru.snowadv.chat.domain.model.ChatReaction
+import ru.snowadv.chat.presentation.model.ChatReaction
 import ru.snowadv.chat.presentation.model.ChatMessage
 import ru.snowadv.chat.presentation.model.ChatMessageType
 import ru.snowadv.presentation.adapter.DelegateItem

@@ -14,7 +14,8 @@ internal fun MessageDto.toDataMessage(currentUserId: Long): DataMessage {
         senderId = senderId,
         senderName = senderFullName,
         senderAvatarUrl = avatarUrl,
-        reactions = reactions.toDataReactionList(currentUserId)
+        reactions = reactions.toDataReactionList(currentUserId),
+        owner = currentUserId == senderId,
     )
 }
 
@@ -24,7 +25,7 @@ fun List<ReactionDto>.toDataReactionList(currentUserId: Long): List<DataReaction
             add(
                 DataReaction(
                     emojiName = it.first().emojiName,
-                    emojiCode = it.first().emojiCode.toInt(radix = 16),
+                    emojiCode = it.first().emojiCode,
                     count = it.size,
                     reactionType = it.first().reactionType,
                     userReacted = it.any { reaction -> reaction.userId == currentUserId },

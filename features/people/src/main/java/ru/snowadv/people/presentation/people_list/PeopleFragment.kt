@@ -26,7 +26,7 @@ class PeopleFragment : Fragment(),
     private val viewModel: PeopleListViewModel by viewModels {
         PeopleListViewModelFactory(
             PeopleGraph.deps.router,
-            PeopleGraph.deps.peopleRepository
+            PeopleGraph.getPeopleUseCase,
         )
     }
 

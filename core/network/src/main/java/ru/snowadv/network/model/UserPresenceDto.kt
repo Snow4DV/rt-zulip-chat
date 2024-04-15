@@ -33,6 +33,12 @@ data class PresenceSourcesDto(
 )
 
 @Serializable
+data class WebsitePresenceSourceDto(
+    @SerialName("website")
+    val website: UserPresenceDto,
+)
+
+@Serializable
 data class UserPresenceDto(
     /*
     Whether the user had recently interacted with Zulip at the time of the timestamp.

@@ -10,7 +10,6 @@ import ru.snowadv.channels_data.model.DataStream
 import ru.snowadv.channels_data.util.toDataStream
 import ru.snowadv.model.Resource
 import ru.snowadv.network.api.ZulipApi
-import ru.snowadv.network.stub.StubZulipApi
 import ru.snowadv.utils.foldToResource
 
 class StreamDataRepositoryImpl(

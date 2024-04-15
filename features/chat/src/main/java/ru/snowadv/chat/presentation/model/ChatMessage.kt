@@ -1,6 +1,6 @@
 package ru.snowadv.chat.presentation.model
 
-import ru.snowadv.chat.domain.model.ChatReaction
+import ru.snowadv.chat.presentation.model.ChatReaction
 import ru.snowadv.presentation.adapter.DelegateItem
 import java.time.LocalDateTime
 
@@ -14,8 +14,8 @@ internal data class ChatMessage(
     val reactions: List<ChatReaction>,
     val messageType: ChatMessageType
 ) : DelegateItem {
-    override fun getPayload(old: DelegateItem): Any? {
-        return if (old is ChatMessage && checkIfOnlyReactionsChanged(old)) {
+    override fun getPayload(oldItem: DelegateItem): Any? {
+        return if (oldItem is ChatMessage && checkIfOnlyReactionsChanged(oldItem)) {
             Payload.ReactionsChanged(reactions)
         } else {
             null

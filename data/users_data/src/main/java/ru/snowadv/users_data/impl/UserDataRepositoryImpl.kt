@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.flowOn
 import ru.snowadv.data.api.AuthProvider
 import ru.snowadv.model.Resource
 import ru.snowadv.network.api.ZulipApi
-import ru.snowadv.network.stub.StubZulipApi
 import ru.snowadv.users_data.api.UserDataRepository
 import ru.snowadv.users_data.model.DataUser
 import ru.snowadv.users_data.util.toDataUser

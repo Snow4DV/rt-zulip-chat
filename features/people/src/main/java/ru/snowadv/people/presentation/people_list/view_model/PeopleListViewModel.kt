@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import ru.snowadv.model.Resource
 import ru.snowadv.people.domain.navigation.PeopleRouter
 import ru.snowadv.people.domain.repository.PeopleRepository
+import ru.snowadv.people.domain.use_case.GetPeopleUseCase
 import ru.snowadv.people.presentation.people_list.event.PeopleListEvent
 import ru.snowadv.people.presentation.people_list.event.PeopleListFragmentEvent
 import ru.snowadv.people.presentation.people_list.state.PeopleListScreenState
@@ -27,7 +28,7 @@ import ru.snowadv.presentation.view_model.ViewModelConst
 
 internal class PeopleListViewModel(
     private val router: PeopleRouter,
-    private val peopleRepo: PeopleRepository,
+    private val getPeopleUseCase: GetPeopleUseCase,
 ) : ViewModel() {
 
     val searchPublisher = MutableStateFlow("")
@@ -69,7 +70,7 @@ internal class PeopleListViewModel(
     }
 
     private fun loadPeople() {
-        peopleRepo.getPeople().onEach {  resource ->
+        getPeopleUseCase().onEach {  resource ->
             _state.update {  screenState ->
                 screenState.copy(
                     screenState = resource.toScreenState(

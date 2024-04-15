@@ -1,8 +1,9 @@
 package ru.snowadv.network.api
 
 import com.skydoves.retrofit.adapters.result.ResultCallAdapterFactory
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import okhttp3.MediaType
+import kotlinx.serialization.modules.SerializersModule
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -13,24 +14,30 @@ import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
+import retrofit2.http.Header
+import retrofit2.http.Headers
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 import ru.snowadv.data.api.AuthProvider
 import ru.snowadv.network.interceptor.HeaderBasicAuthInterceptor
+import ru.snowadv.network.interceptor.TimeoutSetterInterceptor
 import ru.snowadv.network.model.AllStreamsDto
 import ru.snowadv.network.model.AllUsersDto
 import ru.snowadv.network.model.AllUsersPresenceDto
 import ru.snowadv.network.model.EmojisDto
 import ru.snowadv.network.model.EventQueueDto
+import ru.snowadv.network.model.EventTypesDto
 import ru.snowadv.network.model.EventsDto
 import ru.snowadv.network.model.MessagesDto
-import ru.snowadv.network.model.NarrowDto
+import ru.snowadv.network.model.Narrow2DArrayDto
+import ru.snowadv.network.model.NarrowListDto
 import ru.snowadv.network.model.SingleUserDto
 import ru.snowadv.network.model.SingleUserPresenceDto
 import ru.snowadv.network.model.SubscribedStreamsDto
 import ru.snowadv.network.model.TopicsDto
+import ru.snowadv.network.serializer.NarrowListDtoSerializer
 
 interface ZulipApi { // Will add annotations later, at this moment it is used with stubs only
     // Streams
@@ -65,18 +72,22 @@ interface ZulipApi { // Will add annotations later, at this moment it is used wi
     @GET("messages")
     suspend fun getMessages(
         @Query(value = "anchor")
-        anchor: String = "newest",
+        anchor: String = DEFAULT_MESSAGE_ANCHOR,
         @Query(value = "num_before")
         numBefore: Int,
         @Query(value = "num_after")
-        numAfter: Int = 0,
+        numAfter: Int,
         @Query(value = "narrow")
-        narrow: List<NarrowDto>
+        narrow: NarrowListDto
     ): Result<MessagesDto>
 
-    @FormUrlEncoded
     @POST("messages")
-    suspend fun sendMessage(stream: String, topic: String, text: String): Result<Unit>
+    suspend fun sendMessage(
+        @Query("type") type: String = DEFAULT_MESSAGE_TYPE,
+        @Query("to") stream: String,
+        @Query("topic") topic: String,
+        @Query("content") content: String
+    ): Result<Unit>
 
     @FormUrlEncoded
     @PATCH("messages/{msg_id}")
@@ -125,18 +136,21 @@ interface ZulipApi { // Will add annotations later, at this moment it is used wi
      */
     @POST("register")
     suspend fun registerEventQueue(
-        @Query("event_types") eventTypes: List<String>,
-        @Query("narrow") narrow: List<List<String>>,
+        @Query("event_types") eventTypes: EventTypesDto,
+        @Query("narrow") narrow: Narrow2DArrayDto,
     ): Result<EventQueueDto>
 
     @GET("events")
     suspend fun getEventsFromEventQueue(
         @Query("queue_id") queueId: String,
         @Query("last_event_id") lastEventId: Long,
+        @Header("READ_TIMEOUT") readTimeout: Long,
     ): Result<EventsDto>
 
     companion object {
         const val BASE_URL = "https://tinkoff-android-spring-2024.zulipchat.com/api/v1/"
+        const val DEFAULT_MESSAGE_TYPE = "stream"
+        const val DEFAULT_MESSAGE_ANCHOR = "newest"
     }
 }
 
@@ -162,7 +176,10 @@ private fun retrofit(
 
     val newOkhttpClient = (okHttpClient?.newBuilder() ?: OkHttpClient.Builder())
         .addInterceptor(HeaderBasicAuthInterceptor(authProvider))
-        .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
+        .addInterceptor(TimeoutSetterInterceptor())
+        .addInterceptor(HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        })
         .build()
 
     return Retrofit.Builder()
@@ -174,5 +191,11 @@ private fun retrofit(
 }
 
 private fun defaultJson(): Json {
-    return Json { ignoreUnknownKeys = true }
+    return Json {
+        ignoreUnknownKeys = true
+        serializersModule = SerializersModule {
+            contextual(NarrowListDto::class, NarrowListDtoSerializer)
+        }
+    }
 }
+
