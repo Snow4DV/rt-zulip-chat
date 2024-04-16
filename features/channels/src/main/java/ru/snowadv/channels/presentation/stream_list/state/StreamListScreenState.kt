@@ -7,6 +7,7 @@ import ru.snowadv.presentation.model.ScreenState
 
 internal data class StreamListScreenState(
     val screenState: ScreenState<List<DelegateItem>> = ScreenState.Loading, // Source of truth
+    val streamIdToUnreadMessagesIds: Map<Long, List<Long>> = emptyMap(),
 ) {
     val selectedStream: Stream? = (screenState as? ScreenState.Success<List<DelegateItem>>)
         ?.data?.asSequence()

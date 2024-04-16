@@ -17,6 +17,24 @@ data class EventQueueDto(
     val lastEventId: Long,
     @SerialName("event_queue_longpoll_timeout_seconds")
     val longPollTimeoutSeconds: Int,
+    @SerialName("unread_msgs")
+    val unreadMessages: UnreadMessagesDto? = null,
+)
+
+@Serializable
+data class UnreadMessagesDto(
+    @SerialName("streams")
+    val streams: List<StreamUnreadMessagesDto>
+)
+
+@Serializable
+data class StreamUnreadMessagesDto(
+    @SerialName("stream_id")
+    val streamId: Long,
+    @SerialName("topic")
+    val topicName: String,
+    @SerialName("unread_message_ids")
+    val unreadMessagesIds: List<Long>,
 )
 
 @Serializable
@@ -160,6 +178,19 @@ sealed class EventDto {
         val sender: SenderDto
     ): EventDto()
 
+    @Serializable
+    @SerialName(UPDATE_MESSAGE_FLAGS_EVENT_TYPE)
+    data class UpdateMessageFlagsEventDto(
+        @SerialName("id")
+        override val id: Long,
+        @SerialName("flag")
+        val flag: String,
+        @SerialName("op")
+        val op: String, // add, remove
+        @SerialName("messages")
+        val messagesIds: List<Long>
+    ): EventDto()
+
     companion object {
         const val REALM_EVENT_TYPE = "realm"
         const val HEARTBEAT_EVENT_TYPE = "heartbeat"
@@ -176,5 +207,7 @@ sealed class EventDto {
         const val REACTION_EVENT_TYPE = "reaction"
         const val ATTACHMENT_EVENT_TYPE = "attachment"
         const val TYPING_EVENT_TYPE = "typing"
+
+        const val UPDATE_MESSAGE_FLAGS_EVENT_TYPE = "update_message_flags"
     }
 }

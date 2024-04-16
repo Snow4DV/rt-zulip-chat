@@ -77,4 +77,16 @@ sealed class DomainEvent {
         val userId: Long,
         val userEmail: String,
     ): DomainEvent()
+
+    data class UnreadMessagesEvent(
+        override val id: Long,
+        val streamIdToUnreadMessagesIds: Map<Long,List<Long>>
+    ): DomainEvent()
+
+    data class UpdateMessageFlagsEvent(
+        override val id: Long,
+        val flag: String,
+        val op: String, // add, remove
+        val messagesIds: List<Long>
+    ): DomainEvent()
 }

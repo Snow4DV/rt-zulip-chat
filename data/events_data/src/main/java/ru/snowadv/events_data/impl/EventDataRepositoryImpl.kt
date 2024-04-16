@@ -43,10 +43,21 @@ class EventDataRepositoryImpl(
                 .onFailure {
                     bag.clear()
                 }.getOrThrow()
-                .let { eventQueueDto -> // will throw in case of failure to trigger restart later
+                .let { eventQueueDto -> // Will throw in case of failure to trigger restart later
                     bag.lastEventId = eventQueueDto.lastEventId
                     bag.queueId = eventQueueDto.queueId
                     bag.timeoutSeconds = eventQueueDto.longPollTimeoutSeconds
+
+                    eventQueueDto.unreadMessages?.let { unreadMessagesDto -> // Present ONLY if message and update_message_flags are both present in types
+                        emit(
+                            DomainEvent.UnreadMessagesEvent(
+                                id = bag.lastEventId,
+                                streamIdToUnreadMessagesIds = unreadMessagesDto.streams
+                                    .associateBy { it.streamId }
+                                    .mapValues { it.value.unreadMessagesIds }
+                            )
+                        )
+                    }
                 }
             bag.lastEventId
         }
@@ -84,6 +95,4 @@ class EventDataRepositoryImpl(
                     }
             }
         }.flowOn(ioDispatcher)
-
-
 }

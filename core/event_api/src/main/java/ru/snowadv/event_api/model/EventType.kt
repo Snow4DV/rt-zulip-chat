@@ -13,5 +13,6 @@ enum class EventType(val apiName: String, type: KClass<*>) {
     DELETE_MESSAGE("delete_message", DomainEvent.DeleteMessageDomainEvent::class),
     UPDATE_MESSAGE("update_message", DomainEvent.UpdateMessageDomainEvent::class),
     REACTION("reaction", DomainEvent.ReactionDomainEvent::class),
-    TYPING("typing", DomainEvent.TypingDomainEvent::class)
+    TYPING("typing", DomainEvent.TypingDomainEvent::class),
+    UPDATE_MESSAGE_FLAGS("update_message_flags", DomainEvent.UpdateMessageFlagsEvent::class),
 }

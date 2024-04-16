@@ -52,6 +52,7 @@ internal fun EventDto.toDataEvent(currentUserId: Long): DomainEvent {
         is EventDto.UpdateMessageEventDto -> DomainEvent.UpdateMessageDomainEvent(id, messageId, content)
         is EventDto.UserStatusEventDto -> DomainEvent.UserStatusDomainEvent(id, emojiCode, emojiName, reactionType, statusText, userId)
         is EventDto.UserSubscriptionEventDto -> DomainEvent.UserSubscriptionDomainEvent(id, op, subscriptions?.map { it.toEventStream() })
+        is EventDto.UpdateMessageFlagsEventDto -> DomainEvent.UpdateMessageFlagsEvent(id, flag, op, messagesIds)
     }
 }
 
