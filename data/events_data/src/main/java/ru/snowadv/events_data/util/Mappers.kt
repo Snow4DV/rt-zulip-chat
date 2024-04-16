@@ -45,7 +45,7 @@ internal fun EventDto.toDataEvent(currentUserId: Long): DomainEvent {
         is EventDto.HeartbeatEventDto -> DomainEvent.HeartbeatDomainEvent(id)
         is EventDto.RealmEventDto -> DomainEvent.RealmDomainEvent(id, op)
         is EventDto.DeleteMessageEventDto -> DomainEvent.DeleteMessageDomainEvent(id, messageId)
-        is EventDto.PresenceEventDto -> DomainEvent.PresenceDomainEvent(id, presence.website.toEventPresence(serverTimestamp), userId, email)
+        is EventDto.PresenceEventDto -> DomainEvent.PresenceDomainEvent(id, presence.website.toEventPresence(serverTimestamp), userId, email, userId == currentUserId)
         is EventDto.ReactionEventDto -> DomainEvent.ReactionDomainEvent(id, op, emojiCode, emojiName, messageId, reactionType, userId, userId == currentUserId)
         is EventDto.StreamEventDto -> DomainEvent.StreamDomainEvent(id, op, streams?.map { it.toEventStream() })
         is EventDto.TypingEventDto -> DomainEvent.TypingDomainEvent(id, op, messageType, streamId, topic, sender.userId, sender.email)

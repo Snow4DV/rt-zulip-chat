@@ -27,6 +27,7 @@ class PeopleFragment : Fragment(),
         PeopleListViewModelFactory(
             PeopleGraph.deps.router,
             PeopleGraph.getPeopleUseCase,
+            PeopleGraph.listenToPresenceEventsUseCase,
         )
     }
 

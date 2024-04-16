@@ -26,7 +26,7 @@ internal fun List<ChatMessage>.mapToAdapterMessagesAndDates(): List<DelegateItem
 
     return buildList {
         messagesMap.forEach {
-            add(ChatDate(it.key))
+            add(ChatDate(it.value?.firstOrNull()?.sentAt ?: it.key.atStartOfDay()))
             addAll(it.value)
         }
     }

@@ -39,6 +39,7 @@ sealed class DomainEvent {
         val presence: EventPresence,
         val userId: Long,
         val email: String,
+        val currentUser: Boolean,
     ): DomainEvent()
 
     data class UserStatusDomainEvent(

@@ -16,7 +16,7 @@ internal class DateSplitterAdapterDelegate(
     internal inner class ChatDateViewHolder(private val binding: ItemChatDateSplitterBinding) :
         ViewHolder(binding.root) {
         fun bind(chatDate: ChatDate) = with(binding) {
-            binding.dateText.text = dateFormatter.format(chatDate.date)
+            binding.dateText.text = dateFormatter.format(chatDate.dateTime.toLocalDate())
         }
     }
 

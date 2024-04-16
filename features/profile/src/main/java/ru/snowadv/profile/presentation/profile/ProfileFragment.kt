@@ -43,7 +43,8 @@ class ProfileFragment : Fragment(),
         ProfileViewModelFactory(
             router = ProfileGraph.deps.router,
             profileId = profileId,
-            profileRepository = ProfileGraph.deps.repo,
+            getProfileUseCase = ProfileGraph.getProfileUseCase,
+            listenToPresenceEventsUseCase = ProfileGraph.listenToPresenceEventsUseCase,
         )
     }
 
