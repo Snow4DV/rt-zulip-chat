@@ -173,7 +173,6 @@ internal abstract class MessageLayout @JvmOverloads constructor(
 
         reactions.forEach {
             viewsMap[it.emojiCode]?.let { reactionView ->
-                (reactionView.parent as? ViewGroup)?.removeView(reactionView)
                 reactionsContainer.addView(reactionView)
             }
         }

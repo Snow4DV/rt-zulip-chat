@@ -6,6 +6,7 @@ import ru.snowadv.chat.domain.navigation.ChatRouter
 import ru.snowadv.chat.domain.use_case.AddReactionUseCase
 import ru.snowadv.chat.domain.use_case.GetCurrentMessagesUseCase
 import ru.snowadv.chat.domain.use_case.ListenToChatEventsUseCase
+import ru.snowadv.chat.domain.use_case.LoadMoreMessagesUseCase
 import ru.snowadv.chat.domain.use_case.RemoveReactionUseCase
 import ru.snowadv.chat.domain.use_case.SendMessageUseCase
 
@@ -18,6 +19,7 @@ internal class ChatViewModelFactory(
     private val getCurrentMessagesUseCase: GetCurrentMessagesUseCase,
     private val listenToChatEventsUseCase: ListenToChatEventsUseCase,
     private val sendMessageUseCase: SendMessageUseCase,
+    private val loadMoreMessagesUseCase: LoadMoreMessagesUseCase,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -30,7 +32,8 @@ internal class ChatViewModelFactory(
                 removeReactionUseCase = removeReactionUseCase,
                 sendMessageUseCase = sendMessageUseCase,
                 getMessagesUseCase = getCurrentMessagesUseCase,
-                listenToChatEventsUseCase = listenToChatEventsUseCase
+                listenToChatEventsUseCase = listenToChatEventsUseCase,
+                loadMoreMessagesUseCase = loadMoreMessagesUseCase,
             ) as T
         }
         throw IllegalArgumentException("Unknown VM class")

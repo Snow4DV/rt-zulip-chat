@@ -2,17 +2,20 @@ package ru.snowadv.chat.presentation.chat.view_model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ru.snowadv.chat.domain.model.ChatPaginatedMessages
 import ru.snowadv.chat.presentation.chat.event.ChatScreenEvent
 import ru.snowadv.chat.presentation.chat.event.ChatScreenFragmentEvent
 import ru.snowadv.chat.presentation.chat.state.ChatScreenState
@@ -20,14 +23,18 @@ import ru.snowadv.chat.domain.navigation.ChatRouter
 import ru.snowadv.chat.domain.use_case.AddReactionUseCase
 import ru.snowadv.chat.domain.use_case.GetCurrentMessagesUseCase
 import ru.snowadv.chat.domain.use_case.ListenToChatEventsUseCase
+import ru.snowadv.chat.domain.use_case.LoadMoreMessagesUseCase
 import ru.snowadv.chat.domain.use_case.RemoveReactionUseCase
 import ru.snowadv.chat.domain.use_case.SendMessageUseCase
+import ru.snowadv.chat.presentation.model.ChatPaginationStatus
+import ru.snowadv.chat.presentation.util.mapToAdapterMessagesAndDates
 import ru.snowadv.chat.presentation.util.mapToUiAdapterMessagesAndDates
 import ru.snowadv.chat.presentation.util.toUiChatEmoji
 import ru.snowadv.chat.presentation.util.toUiChatMessage
 import ru.snowadv.event_api.helper.MutableEventQueueListenerBag
 import ru.snowadv.event_api.model.DomainEvent
 import ru.snowadv.model.Resource
+import ru.snowadv.model.map
 import ru.snowadv.presentation.model.ScreenState
 import ru.snowadv.presentation.util.toScreenState
 
@@ -40,6 +47,7 @@ internal class ChatViewModel(
     private val sendMessageUseCase: SendMessageUseCase,
     private val getMessagesUseCase: GetCurrentMessagesUseCase,
     private val listenToChatEventsUseCase: ListenToChatEventsUseCase,
+    private val loadMoreMessagesUseCase: LoadMoreMessagesUseCase,
 ) : ViewModel() {
 
     private var eventListenerJob: Job? = null
@@ -47,6 +55,8 @@ internal class ChatViewModel(
 
     private var changeReactionJob: Job? = null
     private var sendMessageJob: Job? = null
+
+    private var paginationJob: Job? = null
 
     private val _state = MutableStateFlow(createInitialState())
     val state: Flow<ChatScreenState> = _state
@@ -131,6 +141,13 @@ internal class ChatViewModel(
                         }
                     )
                 }
+            }
+
+            ChatScreenEvent.PaginationLoadMore -> {
+                loadMoreMessages()
+            }
+            ChatScreenEvent.ScrolledToTop -> {
+                //loadMoreMessages()
             }
         }
     }
@@ -231,10 +248,11 @@ internal class ChatViewModel(
     }
 
     private fun getInitMessages(): Job {
+        paginationJob?.cancel()
         return getMessagesUseCase(streamName, topicName).onEach { messagesRes ->
             _state.update { state ->
                 state.copy(
-                    screenState = messagesRes.toScreenState(
+                    screenState = messagesRes.map { it.messages }.toScreenState(
                         mapper = { messageList ->
                             messageList.mapToUiAdapterMessagesAndDates()
                         },
@@ -242,11 +260,77 @@ internal class ChatViewModel(
                             messageList.isEmpty()
                         },
                     ),
-                    messages = messagesRes.getDataOrNull()?.map { it.toUiChatMessage() }
-                        ?: emptyList()
+                    messages = messagesRes.getDataOrNull()?.messages?.map { it.toUiChatMessage() }
+                        ?: emptyList(),
+                    paginationStatus = messagesRes.getDataOrNull()?.let { data ->
+                        when {
+                            data.foundOldest -> ChatPaginationStatus.LoadedAll
+                            else -> ChatPaginationStatus.HasMore
+                        }
+                    } ?: ChatPaginationStatus.None
                 )
             }
         }.launchIn(viewModelScope)
+    }
+
+    private fun loadMoreMessages() {
+        if (paginationJob?.isActive == true) return
+
+        with(_state.value) {
+            if (screenState !is ScreenState.Success || paginationStatus !is ChatPaginationStatus.HasMore) {
+                return
+            }
+        }
+
+        val firstMessageId: Long? = _state.value.firstLoadedMessageId
+        val includeAnchor = firstMessageId == null
+
+        paginationJob = loadMoreMessagesUseCase(streamName , topicName, firstMessageId, includeAnchor)
+            .onEach(::processPaginationMessagesResource)
+            .flowOn(Dispatchers.Default).launchIn(viewModelScope)
+    }
+
+    private suspend fun processPaginationMessagesResource(res: Resource<ChatPaginatedMessages>) {
+        when(res) {
+            is Resource.Error -> {
+                _state.update {
+                    it.copy(
+                        paginationStatus = ChatPaginationStatus.Error
+                    )
+                }
+            }
+            is Resource.Loading -> {
+                _state.update {
+                    it.copy(
+                        paginationStatus = ChatPaginationStatus.Loading
+                    )
+                }
+            }
+            is Resource.Success -> {
+                _state.update { state ->
+                    val messagesList = buildList {
+                        addAll(res.data.messages.map { it.toUiChatMessage() })
+                        addAll(state.messages)
+                    }
+                    state.copy(
+                        paginationStatus = if (res.data.foundOldest) {
+                            ChatPaginationStatus.LoadedAll
+                        } else {
+                            ChatPaginationStatus.HasMore
+                        },
+                        messages = messagesList,
+                        screenState = res.map { messagesList }.toScreenState(
+                            mapper = { messageList ->
+                                messageList.mapToAdapterMessagesAndDates()
+                            },
+                            isEmptyChecker = { messageList ->
+                                messageList.isEmpty()
+                            },
+                        ),
+                    )
+                }
+            }
+        }
     }
 
     private fun startListeningToEvents() {
@@ -272,30 +356,44 @@ internal class ChatViewModel(
                         it.addMessage(event.eventMessage.toUiChatMessage())
                     }
                 }
+
                 is DomainEvent.DeleteMessageDomainEvent -> {
                     _state.update {
                         it.removeMessage(event.messageId)
                     }
                 }
+
                 is DomainEvent.UpdateMessageDomainEvent -> {
                     _state.update {
-                        event.content?.let { content -> it.updateMessage(event.messageId, content) } ?: it
+                        event.content?.let { content -> it.updateMessage(event.messageId, content) }
+                            ?: it
                     }
                 }
+
                 is DomainEvent.ReactionDomainEvent -> {
-                    when(event.op) {
+                    when (event.op) {
                         "add" -> {
                             _state.update {
-                                it.addReaction(event.toUiChatEmoji(), event.messageId, event.currentUserReaction)
+                                it.addReaction(
+                                    event.toUiChatEmoji(),
+                                    event.messageId,
+                                    event.currentUserReaction
+                                )
                             }
                         }
+
                         "remove" -> {
                             _state.update {
-                                it.removeReaction(event.toUiChatEmoji(), event.messageId, event.currentUserReaction)
+                                it.removeReaction(
+                                    event.toUiChatEmoji(),
+                                    event.messageId,
+                                    event.currentUserReaction
+                                )
                             }
                         }
                     }
                 }
+
                 else -> Unit // ignored
             }
         }
@@ -306,7 +404,7 @@ internal class ChatViewModel(
     }
 
     private fun startStopListenerByScreenState(state: ScreenState<*>) {
-        if (state is ScreenState.Success || state is ScreenState.Empty)   {
+        if (state is ScreenState.Success || state is ScreenState.Empty) {
             startListeningToEvents()
         } else {
             stopListeningToEvents()

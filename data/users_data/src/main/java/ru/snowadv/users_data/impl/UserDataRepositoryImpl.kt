@@ -51,15 +51,11 @@ class UserDataRepositoryImpl(
                 api.getUserPresence(userId)
             },
             transform = { userDtoResult, userPresenceDtoResult ->
-                userDtoResult.combineFold(
-                    other = userPresenceDtoResult,
-                    onBothSuccess = { userDto, userPresenceDto ->
-                        emit(Resource.Success(userDto.toDataUser(userPresenceDto, true)))
-                    },
-                    onFailure = {
-                        emit(Resource.Error(it))
-                    },
-                )
+                val resultResource = userDtoResult.getOrNull()?.let {
+                    Resource.Success(it.toDataUser(userPresenceDtoResult.getOrNull(), true))
+                } ?: Resource.Error(userDtoResult.exceptionOrNull())
+
+                emit(resultResource)
             },
         )
     }.flowOn(ioDispatcher)

@@ -17,8 +17,8 @@ data class Person(
 
     enum class Status(val colorResId: Int, val displayNameResId: Int) {
         ONLINE(ru.snowadv.presentation.R.color.online, R.string.online),
-        OFFLINE(ru.snowadv.presentation.R.color.offline, R.string.offline),
         IDLE(ru.snowadv.presentation.R.color.idle, R.string.idle),
+        OFFLINE(ru.snowadv.presentation.R.color.offline, R.string.offline),
     }
 
     override fun getPayload(oldItem: DelegateItem): Any? {

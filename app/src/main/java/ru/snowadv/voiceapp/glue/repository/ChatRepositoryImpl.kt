@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import ru.snowadv.chat.domain.model.ChatMessage
 import ru.snowadv.chat.domain.model.ChatEmoji
+import ru.snowadv.chat.domain.model.ChatPaginatedMessages
 import ru.snowadv.chat.domain.repository.EmojiRepository
 import ru.snowadv.chat.domain.repository.MessageRepository
 import ru.snowadv.emojis_data.api.EmojiDataRepository
@@ -15,6 +16,7 @@ import ru.snowadv.model.map
 import ru.snowadv.voiceapp.glue.util.mapNotNullListContent
 import ru.snowadv.voiceapp.glue.util.toChatEmoji
 import ru.snowadv.voiceapp.glue.util.toChatMessage
+import ru.snowadv.voiceapp.glue.util.toChatPaginatedMessages
 
 class ChatRepositoryImpl(
     private val messageDataRepository: MessageDataRepository,
@@ -22,16 +24,25 @@ class ChatRepositoryImpl(
 ) : MessageRepository, EmojiRepository {
     override fun getAvailableEmojis(): Flow<Resource<List<ChatEmoji>>> {
         return emojiDataRepository.getAvailableEmojis()
-            .map { it.map { it.map { it.toChatEmoji() } } }
+            .map { it.map { dataEmojis -> dataEmojis.map { emoji -> emoji.toChatEmoji() } } }
             .flowOn(Dispatchers.Default)
     }
 
     override fun getMessages(
         streamName: String,
-        topicName: String
-    ): Flow<Resource<List<ChatMessage>>> {
-        return messageDataRepository.getMessages(streamName, topicName)
-            .map { it.map { it.map { it.toChatMessage() } } }.flowOn(Dispatchers.Default)
+        topicName: String,
+        includeAnchorMessage: Boolean,
+        anchorMessageId: Long?,
+        countOfMessages: Int
+    ): Flow<Resource<ChatPaginatedMessages>> {
+        return messageDataRepository.getMessages(
+            streamName = streamName,
+            topicName = topicName,
+            includeAnchorMessage = includeAnchorMessage,
+            countOfMessages = countOfMessages,
+            anchorMessageId = anchorMessageId
+        ).map { it.map { dataPagMes -> dataPagMes.toChatPaginatedMessages() } }
+            .flowOn(Dispatchers.Default)
     }
 
     override fun sendMessage(

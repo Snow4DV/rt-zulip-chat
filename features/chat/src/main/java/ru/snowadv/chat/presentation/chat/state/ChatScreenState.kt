@@ -2,6 +2,7 @@ package ru.snowadv.chat.presentation.chat.state
 
 import ru.snowadv.chat.presentation.model.ChatEmoji
 import ru.snowadv.chat.presentation.model.ChatMessage
+import ru.snowadv.chat.presentation.model.ChatPaginationStatus
 import ru.snowadv.chat.presentation.model.ChatReaction
 import ru.snowadv.chat.presentation.util.mapToAdapterMessagesAndDates
 import ru.snowadv.presentation.adapter.DelegateItem
@@ -16,7 +17,20 @@ internal data class ChatScreenState(
     val messages: List<ChatMessage> = emptyList(),
     val messageField: String = "",
     val actionButtonType: ActionButtonType = ActionButtonType.ADD_ATTACHMENT,
+    val paginationStatus: ChatPaginationStatus = ChatPaginationStatus.HasMore,
 ) {
+
+    val paginatedScreenState = screenState.map { messagesDelegates ->
+        when (paginationStatus) {
+            ChatPaginationStatus.None, ChatPaginationStatus.LoadedAll -> messagesDelegates
+            ChatPaginationStatus.Loading, ChatPaginationStatus.HasMore, ChatPaginationStatus.Error -> buildList {
+                add(paginationStatus)
+                addAll(messagesDelegates)
+            }
+        }
+    }
+
+    val firstLoadedMessageId: Long? = messages.firstOrNull()?.id
 
     val isActionButtonVisible = !screenState.isLoading && !sendingMessage
 

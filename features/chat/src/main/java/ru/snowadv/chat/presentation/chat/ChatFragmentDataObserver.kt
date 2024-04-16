@@ -18,12 +18,14 @@ import ru.snowadv.chat.databinding.FragmentChatBinding
 import ru.snowadv.chat.presentation.adapter.DateSplitterAdapterDelegate
 import ru.snowadv.chat.presentation.adapter.IncomingMessageAdapterDelegate
 import ru.snowadv.chat.presentation.adapter.OutgoingMessageAdapterDelegate
+import ru.snowadv.chat.presentation.adapter.PaginationStatusAdapterDelegate
 import ru.snowadv.chat.presentation.chat.event.ChatScreenEvent
 import ru.snowadv.chat.presentation.chat.event.ChatScreenFragmentEvent
 import ru.snowadv.chat.presentation.chat.state.ChatScreenState
 import ru.snowadv.chat.presentation.chat.view_model.ChatViewModel
 import ru.snowadv.chat.presentation.emoji_chooser.EmojiChooserBottomSheetDialog
 import ru.snowadv.chat.presentation.model.ChatAction
+import ru.snowadv.chat.presentation.model.ChatPaginationStatus
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.presentation.adapter.impl.AdapterDelegatesManager
 import ru.snowadv.presentation.adapter.impl.DiffDelegationAdapter
@@ -123,6 +125,11 @@ internal class ChatFragmentDataObserver :
         binding.stateBox.setOnRetryClickListener {
             viewModel.handleEvent(ChatScreenEvent.ReloadClicked)
         }
+        binding.messagesRecycler.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+            if (scrollY == 0) {
+                viewModel.handleEvent(ChatScreenEvent.ScrolledToTop)
+            }
+        }
     }
 
     private fun ChatFragment.handleFragmentEventFlow(
@@ -177,16 +184,21 @@ internal class ChatFragmentDataObserver :
             }
         )
         bottomBar.sendOrAddAttachmentButton.isVisible = state.isActionButtonVisible
-        adapter.submitList(state.screenState.getCurrentData()) {
-            if (adapter.itemCount > 0) {
-                binding.messagesRecycler.scrollToPosition(adapter.itemCount - 1)
-            }
-        }
+        adapter.submitList(state.paginatedScreenState.getCurrentData())
         binding.bottomBar.messageEditText.setTextIfChanged(state.messageField)
         stateBox.inflateState(state.screenState, R.layout.fragment_chat_shimmer)
         actionProgressBar.isVisible = state.changingReaction || state.sendingMessage
     }
 
+    private fun initPaginationStatusDelegate(viewModel: ChatViewModel): PaginationStatusAdapterDelegate {
+        return PaginationStatusAdapterDelegate(
+            onPaginationStatusClick = {
+                if (it is ChatPaginationStatus.HasMore || it is ChatPaginationStatus.Error) {
+                    viewModel.handleEvent(ChatScreenEvent.PaginationLoadMore)
+                }
+            }
+        )
+    }
 
     private fun initOutgoingMessagesDelegate(viewModel: ChatViewModel): OutgoingMessageAdapterDelegate {
         return OutgoingMessageAdapterDelegate(
@@ -235,7 +247,8 @@ internal class ChatFragmentDataObserver :
         return AdapterDelegatesManager(
             initDateSplitterDelegate(),
             initIncomingMessagesDelegate(viewModel),
-            initOutgoingMessagesDelegate(viewModel)
+            initOutgoingMessagesDelegate(viewModel),
+            initPaginationStatusDelegate(viewModel),
         )
     }
 

@@ -8,7 +8,9 @@ import kotlinx.coroutines.flow.flowOn
 import ru.snowadv.data.api.AuthProvider
 import ru.snowadv.message_data.api.MessageDataRepository
 import ru.snowadv.message_data.model.DataMessage
+import ru.snowadv.message_data.model.DataPaginatedMessages
 import ru.snowadv.message_data.util.toDataMessage
+import ru.snowadv.message_data.util.toDataPaginatedMessages
 import ru.snowadv.model.Resource
 import ru.snowadv.network.api.ZulipApi
 import ru.snowadv.network.model.NarrowDto
@@ -22,11 +24,28 @@ class MessageDataRepositoryImpl(
     private val api: ZulipApi,
 ) : MessageDataRepository {
     private val currentUserId get() = authProvider.getAuthorizedUser().id
-    override fun getMessages(streamName: String, topicName: String): Flow<Resource<List<DataMessage>>> =
+    override fun getMessages(
+        streamName: String,
+        topicName: String,
+        includeAnchorMessage: Boolean,
+        countOfMessages: Int,
+        anchorMessageId: Long?
+    ): Flow<Resource<DataPaginatedMessages>> =
         flow {
             emit(Resource.Loading)
-            api.getMessages(numBefore = 100, narrow = NarrowListDto(NarrowDto.ofStreamAndTopic(streamName, topicName)), numAfter = 0)
-                .foldToResource { messagesDto -> messagesDto.messages.map { messageDto -> messageDto.toDataMessage(currentUserId) } }
+            api.getMessages(
+                numBefore = countOfMessages,
+                narrow = NarrowListDto(NarrowDto.ofStreamAndTopic(streamName, topicName)),
+                numAfter = 0,
+                anchor = anchorMessageId?.toString() ?: "newest"
+            )
+                .foldToResource { messagesDto ->
+                    messagesDto.toDataPaginatedMessages(
+                        currentUserId,
+                        anchorMessageId,
+                        includeAnchorMessage
+                    )
+                }
                 .let { res -> emit(res) }
         }.flowOn(ioDispatcher)
 
@@ -36,13 +55,14 @@ class MessageDataRepositoryImpl(
         text: String
     ): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading)
-        emit(api.sendMessage(stream = streamName,  topic = topicName, content = text).toResource())
+        emit(api.sendMessage(stream = streamName, topic = topicName, content = text).toResource())
     }.flowOn(ioDispatcher)
 
-    override fun addReactionToMessage(messageId: Long, reactionName: String): Flow<Resource<Unit>> = flow {
-        emit(Resource.Loading)
-        emit(api.addReaction(messageId, reactionName).toResource())
-    }.flowOn(ioDispatcher)
+    override fun addReactionToMessage(messageId: Long, reactionName: String): Flow<Resource<Unit>> =
+        flow {
+            emit(Resource.Loading)
+            emit(api.addReaction(messageId, reactionName).toResource())
+        }.flowOn(ioDispatcher)
 
     override fun removeReactionFromMessage(
         messageId: Long,

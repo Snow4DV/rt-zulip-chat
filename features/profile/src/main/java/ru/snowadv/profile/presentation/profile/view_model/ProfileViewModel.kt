@@ -39,7 +39,6 @@ internal class ProfileViewModel(
 
     private fun loadProfile() {
         (profileId?.let { profileRepo.getPerson(it) } ?: profileRepo.getCurrentPerson()).onEach { resource ->
-            if (resource is Resource.Error && resource.throwable != null) throw resource.throwable!!
             _state.update { oldState ->
                 oldState.copy(
                     screenState = resource.toScreenState(mapper = { person -> person.toUiModel() }),

@@ -7,15 +7,18 @@ import ru.snowadv.chat.domain.repository.MessageRepository
 import ru.snowadv.chat.domain.util.PaginationConfig
 import ru.snowadv.model.Resource
 
-internal class GetCurrentMessagesUseCase(private val messagesRepository: MessageRepository) {
+internal class LoadMoreMessagesUseCase(private val messagesRepository: MessageRepository) {
     operator fun invoke(
         streamName: String,
         topicName: String,
+        firstLoadedMessageId: Long?,
+        includeAnchor: Boolean,
     ): Flow<Resource<ChatPaginatedMessages>> {
         return messagesRepository.getMessages(
             streamName = streamName,
             topicName = topicName,
-            includeAnchorMessage = true,
+            includeAnchorMessage = includeAnchor,
+            anchorMessageId = firstLoadedMessageId,
             countOfMessages = PaginationConfig.MESSAGES_COUNT_PER_FETCH,
         )
     }

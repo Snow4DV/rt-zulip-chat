@@ -55,6 +55,7 @@ class ChatFragment : Fragment(),
             getCurrentMessagesUseCase = ChatGraph.getCurrentMessagesUseCase,
             listenToChatEventsUseCase = ChatGraph.listenToMessagesUseCase,
             sendMessageUseCase = ChatGraph.sendMessageUseCase,
+            loadMoreMessagesUseCase = ChatGraph.loadMoreMessagesUseCase,
         )
     }
 

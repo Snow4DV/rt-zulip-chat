@@ -1,8 +1,10 @@
 package ru.snowadv.message_data.util
 
 import ru.snowadv.message_data.model.DataMessage
+import ru.snowadv.message_data.model.DataPaginatedMessages
 import ru.snowadv.message_data.model.DataReaction
 import ru.snowadv.network.model.MessageDto
+import ru.snowadv.network.model.MessagesDto
 import ru.snowadv.network.model.ReactionDto
 import ru.snowadv.utils.DateUtils
 
@@ -16,6 +18,24 @@ internal fun MessageDto.toDataMessage(currentUserId: Long): DataMessage {
         senderAvatarUrl = avatarUrl,
         reactions = reactions.toDataReactionList(currentUserId),
         owner = currentUserId == senderId,
+    )
+}
+
+internal fun MessagesDto.toDataPaginatedMessages(
+    currentUserId: Long,
+    anchorMessageId: Long?,
+    includeAnchorMessage: Boolean
+): DataPaginatedMessages {
+    return DataPaginatedMessages(
+        messages = messages.asSequence()
+            .filter {
+                !(it.id == anchorMessageId && !includeAnchorMessage
+                        || it.id == messages.lastOrNull()?.id && !includeAnchorMessage && anchorMessageId == null)
+            }
+            .map { it.toDataMessage(currentUserId) }.toList(),
+        foundAnchor = foundAnchor,
+        foundOldest = foundOldest,
+        foundNewest = foundNewest,
     )
 }
 

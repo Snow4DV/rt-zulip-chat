@@ -7,6 +7,12 @@ import kotlinx.serialization.Serializable
 data class MessagesDto(
     @SerialName("messages")
     val messages: List<MessageDto>,
+    @SerialName("found_anchor")
+    val foundAnchor: Boolean,
+    @SerialName("found_oldest")
+    val foundOldest: Boolean,
+    @SerialName("found_newest")
+    val foundNewest: Boolean,
 )
 
 @Serializable

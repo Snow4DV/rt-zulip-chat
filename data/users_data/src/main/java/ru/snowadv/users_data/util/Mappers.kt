@@ -25,11 +25,13 @@ internal fun AllUsersDto.toUsersListWithPresences(allUsersPresenceDto: AllUsersP
 }
 
 internal fun SingleUserDto.toDataUser(
-    presenceDto: SingleUserPresenceDto,
+    presenceDto: SingleUserPresenceDto? = null,
     hasOfflineStatus: Boolean
 ): DataUser {
     return user.toDataUser(
-        status = if (hasOfflineStatus) {
+        status = if (presenceDto == null) {
+            DataUserStatus.OFFLINE
+        } else if (hasOfflineStatus) {
             DataUserStatus.fromStatus(presenceDto.presence.aggregated.status)
         } else {
             DataUserStatus.fromTimestampAndStatus(
