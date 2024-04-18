@@ -14,6 +14,7 @@ import ru.snowadv.presentation.view.ViewInvalidatingProperty
 import ru.snowadv.presentation.view.dimToPx
 import kotlin.math.max
 import kotlin.math.min
+import androidx.core.content.res.use
 
 
 /**

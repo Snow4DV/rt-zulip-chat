@@ -14,14 +14,6 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/item_stream" />
 
-    <include
-        android:id="@+id/action_loading_box"
-        layout="@layout/item_action_loading"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clickable="false"
-        tools:visibility="visible" />
-
     <include android:id="@+id/state_box" layout="@layout/item_state_box"/>
 
 </FrameLayout>

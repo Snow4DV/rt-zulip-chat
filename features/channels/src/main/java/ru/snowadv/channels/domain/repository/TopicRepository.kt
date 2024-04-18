@@ -2,9 +2,9 @@ package ru.snowadv.channels.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 import ru.snowadv.channels.domain.model.Topic
-import ru.snowadv.domain.model.Resource
+import ru.snowadv.model.Resource
 
-internal interface TopicRepository {
+interface TopicRepository {
 
     fun getTopics(streamId: Long): Flow<Resource<List<Topic>>>
 }

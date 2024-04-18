@@ -2,56 +2,63 @@ package ru.snowadv.channels.presentation.stream_list.view_model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
-import ru.snowadv.channels.data.repository.StubStreamRepository
-import ru.snowadv.channels.data.repository.StubTopicRepository
-import ru.snowadv.channels.domain.model.Stream
+import ru.snowadv.channels.di.ChannelsGraph
 import ru.snowadv.channels.domain.model.StreamType
-import ru.snowadv.channels.domain.repository.StreamRepository
-import ru.snowadv.channels.domain.repository.TopicRepository
-import ru.snowadv.domain.model.Resource
-import ru.snowadv.channels.presentation.channel_list.event.ChannelListEvent
-import ru.snowadv.channels.presentation.channel_list.view_model.ChannelListSharedViewModel
+import ru.snowadv.channels.domain.navigation.ChannelsRouter
+import ru.snowadv.channels.domain.use_case.GetStreamsUseCase
+import ru.snowadv.channels.domain.use_case.GetTopicsUseCase
+import ru.snowadv.channels.presentation.model.ShimmerTopic
+import ru.snowadv.model.Resource
 import ru.snowadv.channels.presentation.stream_list.event.StreamListEvent
 import ru.snowadv.channels.presentation.stream_list.event.StreamListFragmentEvent
 import ru.snowadv.channels.presentation.stream_list.state.StreamListScreenState
 import ru.snowadv.channels.presentation.util.toUiModel
-import ru.snowadv.channels.presentation.util.toUiModelListWithPositions
-import ru.snowadv.presentation.model.ScreenState
-import ru.snowadv.utils.hasAnyCoroutinesRunning
-import ru.snowadv.utils.hasMoreThanOneCoroutineRunning
+import ru.snowadv.presentation.util.toScreenState
+import ru.snowadv.presentation.view_model.ViewModelConst
 
 internal class StreamListViewModel(
     private val type: StreamType,
-    private val listSharedViewModel: ChannelListSharedViewModel,
-    private val streamRepo: StreamRepository = StubStreamRepository,
-    private val topicRepo: TopicRepository = StubTopicRepository,
+    private val router: ChannelsRouter,
+    private val getStreamsUseCase: GetStreamsUseCase,
+    private val getTopicsUseCase: GetTopicsUseCase,
+    searchQueryFlow: StateFlow<String>,
 ) : ViewModel() {
 
-    private val obtainStreamsAccordingToType get() = getStreamsFunction()
+    private val screenState = MutableStateFlow(StreamListScreenState())
 
-    private val _state = MutableStateFlow(StreamListScreenState())
-    val state = _state.asStateFlow()
+    @OptIn(FlowPreview::class)
+    val uiState = screenState
+        .combine(
+            searchQueryFlow.debounce(ViewModelConst.SEARCH_QUERY_DEBOUNCE_MS)
+        ) { screenState, searchQuery ->
+            if (searchQuery.isNotEmpty()) {
+                screenState.filterStreamsByQuery(searchQuery)
+            } else {
+                screenState
+            }
+        }.flowOn(Dispatchers.Default)
 
     private val _eventFlow = MutableSharedFlow<StreamListFragmentEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    private val actionSupervisorJob = SupervisorJob(viewModelScope.coroutineContext.job)
-    private val actionCoroutineScope = CoroutineScope(actionSupervisorJob)
+    private var getTopicsJob: Job? = null
 
     init {
-        observeSearchQuery()
+        loadStreams()
     }
 
     fun handleEvent(event: StreamListEvent) {
@@ -61,15 +68,12 @@ internal class StreamListViewModel(
             }
 
             is StreamListEvent.ClickedOnTopic -> {
-                state.value.selectedStream?.name?.let { streamName ->
-                    listSharedViewModel.handleEvent(
-                        ChannelListEvent.ClickedOnTopic(
-                            streamName,
-                            event.topicName
-                        )
+                screenState.value.selectedStream?.name?.let { streamName ->
+                    router.openTopic(
+                        streamName,
+                        event.topicName,
                     )
                 }
-
             }
 
             is StreamListEvent.ClickedOnReload -> {
@@ -78,101 +82,67 @@ internal class StreamListViewModel(
         }
     }
 
-    init {
-        loadStreams()
-    }
-
     private fun loadStreams() {
-        obtainStreamsAccordingToType().onEach { resource ->
-            when (resource) {
-                is Resource.Error -> {
-                    _state.update {
-                        _state.value.copy(
-                            screenState = ScreenState.Error(resource.throwable)
-                        )
-                    }
-                }
-
-                Resource.Loading -> {
-                    _state.update {
-                        _state.value.copy(
-                            screenState = ScreenState.Loading
-                        )
-                    }
-                }
-
-                is Resource.Success -> {
-                    _state.update {
-                        _state.value.copy(
-                            screenState = if (resource.data.isNotEmpty()) {
-                                ScreenState.Success(resource.data.map { it.toUiModel() })
-                            } else {
-                                ScreenState.Empty
-                            }
-                        )
-                    }
-                }
+        getStreamsUseCase(type).onEach { resource ->
+            screenState.update { state ->
+                state.copy(
+                    screenState = resource.toScreenState(
+                        mapper = { streamList ->
+                            streamList.map { stream -> stream.toUiModel() }
+                        },
+                        isEmptyChecker = {
+                            it.isEmpty()
+                        },
+                    )
+                )
             }
         }.launchIn(viewModelScope)
     }
 
     private fun loadOrHideTopics(streamId: Long) {
-        if (state.value.selectedStream?.id == streamId) {
-            _state.value = state.value.hideTopics()
-            return
-        }
-        topicRepo.getTopics(streamId).onEach { resource ->
-            when (resource) {
-                is Resource.Error -> {
-                    _state.update {
-                        _state.value.copy(
-                            actionInProgress = actionCoroutineScope.hasMoreThanOneCoroutineRunning(),
-                        )
-                    }
-                    viewModelScope.launch {
+        getTopicsJob?.cancel()
+        viewModelScope.launch {
+            if (screenState.value.selectedStream?.id == streamId) {
+                screenState.update {
+                    it.hideTopics()
+                }
+                return@launch
+            }
+            getTopicsJob = getTopicsUseCase(streamId).onEach { resource ->
+                when (resource) {
+                    is Resource.Error -> {
+                        screenState.update { it.hideTopics() }
                         _eventFlow.emit(
                             StreamListFragmentEvent.ShowInternetErrorWithRetry(
-                            retryAction = {
-                                loadOrHideTopics(streamId)
-                            }
-                        ))
-                    }
-                }
-
-                is Resource.Loading -> {
-                    _state.update {
-                        _state.value.copy(
-                            actionInProgress = actionCoroutineScope.hasAnyCoroutinesRunning(),
+                                retryAction = {
+                                    loadOrHideTopics(streamId)
+                                }
+                            )
                         )
                     }
-                }
 
-                is Resource.Success -> {
-                    _state.update {
-                        it.loadTopics(streamId, resource.data.toUiModelListWithPositions()).copy(
-                            actionInProgress = actionCoroutineScope.hasMoreThanOneCoroutineRunning(),
-                        )
+                    is Resource.Loading -> {
+                        screenState.update {
+                            it.loadTopics(
+                                streamId,
+                                ShimmerTopic.generateShimmers(streamId)
+                            )
+                        }
+                    }
+
+                    is Resource.Success -> {
+                        screenState.update {
+                            it.loadTopics(streamId, resource.data.mapIndexed { index, topic ->
+                                topic.toUiModel(
+                                    index
+                                )
+                            })
+                        }
                     }
                 }
-            }
-        }.launchIn(actionCoroutineScope)
-    }
-
-
-    private fun getStreamsFunction(): () -> Flow<Resource<List<Stream>>> {
-        return when (type) {
-            StreamType.SUBSCRIBED -> streamRepo::getSubscribedStreams
-            StreamType.ALL -> streamRepo::getStreams
+            }.launchIn(this)
         }
     }
 
-    private fun observeSearchQuery() {
-        listSharedViewModel.searchQuery.onEach { newQuery ->
-            _state.update { state ->
-                state.copy(
-                    searchQuery = newQuery
-                )
-            }
-        }.launchIn(viewModelScope)
-    }
+
 }

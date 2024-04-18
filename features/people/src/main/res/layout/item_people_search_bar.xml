@@ -3,29 +3,32 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingHorizontal="@dimen/top_bar_padding_horizontal"
-    android:background="@color/top_bar_bw">
+    android:background="@color/top_bar_bw"
+    android:paddingHorizontal="@dimen/top_bar_padding_horizontal">
 
     <EditText
         android:id="@+id/search_edit_text"
         style="@style/Theme.ZulipChat.SearchEditText"
-        android:backgroundTint="@android:color/transparent"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/search_margin_right"
+        android:backgroundTint="@android:color/transparent"
         android:hint="@string/people_search_hint"
         android:paddingVertical="@dimen/top_bar_padding_vertical"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/search_icon"
         app:layout_constraintTop_toTopOf="parent" />
-    <ImageView
+
+    <ImageButton
         android:id="@+id/search_icon"
+        style="@style/Theme.ZulipChat.ImageButton"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:paddingLeft="@dimen/search_icon_padding"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/search_icon"
+        android:padding="@dimen/small_common_padding"
         android:src="@drawable/ic_search"
-        android:contentDescription="@string/search_icon" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

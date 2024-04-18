@@ -13,9 +13,10 @@
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/user_avatar"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:src="@drawable/ic_user_avatar"
         app:layout_constraintBottom_toTopOf="@id/user_name"
+        app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/top_bar"
@@ -60,7 +61,7 @@
         android:layout_marginLeft="@dimen/common_margin"
         android:layout_marginTop="30dp"
         android:textColor="@color/secondary_text"
-        android:textSize="18sp"
+        android:textSize="@dimen/user_status_text_size"
 
         app:layout_constraintBottom_toBottomOf="@id/user_email"
         app:layout_constraintLeft_toRightOf="@id/user_email"
@@ -69,10 +70,11 @@
         tools:textColor="@color/online" />
 
 
-    <com.google.android.material.button.MaterialButton
+    <Button
         android:id="@+id/button_logout"
         android:layout_width="@dimen/logout_button_width"
         android:layout_height="wrap_content"
+        style="@style/Theme.ZulipChat.Button"
         android:layout_marginTop="@dimen/common_margin"
         android:backgroundTint="@color/on_surface"
         android:text="@string/log_out"
@@ -85,10 +87,12 @@
 
     <include
         android:id="@+id/state_box"
+        layout="@layout/item_state_box"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/top_bar"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        layout="@layout/item_state_box" />
+        app:layout_constraintTop_toBottomOf="@id/top_bar" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

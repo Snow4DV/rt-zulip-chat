@@ -46,4 +46,6 @@
     <color name="online">#4AB54D</color>
     <color name="offline">#f44336</color>
     <color name="idle">#FF9800</color>
+
+    <color name="listener_error">#cf6679</color>
 </resources>

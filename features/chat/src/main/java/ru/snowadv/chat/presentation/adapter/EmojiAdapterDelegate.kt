@@ -4,10 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import ru.snowadv.chat.databinding.ItemChatDateSplitterBinding
 import ru.snowadv.chat.databinding.ItemEmojiBinding
-import ru.snowadv.chat.domain.model.Emoji
-import ru.snowadv.chat.presentation.model.ChatDate
 import ru.snowadv.chat.presentation.model.ChatEmoji
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.presentation.adapter.DelegationItemAdapterDelegate

@@ -1,11 +1,8 @@
 package ru.snowadv.chat.presentation.adapter
 
-import android.content.Context
 import android.view.ViewGroup
-import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import ru.snowadv.chat.R
 import ru.snowadv.chat.presentation.view.OutgoingMessageLayout
 import ru.snowadv.chat.domain.model.ChatReaction
 import ru.snowadv.chat.presentation.model.ChatMessage
@@ -35,7 +32,7 @@ internal class OutgoingMessageAdapterDelegate(
             messageLayout.onReactionClickListener = { count, emojiCode, userReacted ->
                 if (adapterPosition != RecyclerView.NO_POSITION) {
                     getItemAtPosition(getCurrentList(), adapterPosition)?.let { message ->
-                        message.reactions.firstOrNull { it.code == emojiCode }?.let {  reaction ->
+                        message.reactions.firstOrNull { it.emojiCode == emojiCode }?.let { reaction ->
                             onReactionClickListener?.invoke(reaction, message)
                         }
                     }

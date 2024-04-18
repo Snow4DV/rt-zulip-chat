@@ -6,6 +6,7 @@ sealed class ScreenState<out T> {
     class Error(val error: Throwable? = null): ScreenState<Nothing>()
     data object Empty: ScreenState<Nothing>()
 
+    val isLoading get() = this is Loading
 
     fun getCurrentData(): T? {
         return if (this is Success) this.data else null

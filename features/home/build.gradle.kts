@@ -43,7 +43,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
-    implementation(projects.core.domain)
     implementation(projects.core.presentation)
     implementation(projects.core.utils)
     implementation(libs.androidx.legacy.support.v4)

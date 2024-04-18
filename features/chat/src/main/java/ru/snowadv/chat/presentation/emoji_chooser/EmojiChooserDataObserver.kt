@@ -77,20 +77,8 @@ internal class EmojiChooserDataObserver :
         binding: FragmentEmojiChooserBinding,
         recyclerAdapter: DiffDelegationAdapter
     ) {
-        binding.stateBox.inflateState(state)
+        binding.stateBox.inflateState(state, R.layout.fragment_emoji_chooser_shimmer)
         recyclerAdapter.submitList(state.getCurrentData())
-    }
-
-    private fun FragmentEmojiChooserBinding.setVisibleView(visibleView: View) {
-        root.children
-            .filter { it.id != R.id.sheet_puller }
-            .forEach {
-                it.visibility = if (it === visibleView) {
-                    View.VISIBLE
-                } else {
-                    View.GONE
-                }
-            }
     }
 
     private fun setupAdapter(

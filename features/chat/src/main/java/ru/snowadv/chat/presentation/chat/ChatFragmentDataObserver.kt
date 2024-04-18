@@ -3,12 +3,14 @@ package ru.snowadv.chat.presentation.chat
 import android.content.Context
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import ru.snowadv.chat.R
@@ -25,6 +27,7 @@ import ru.snowadv.chat.presentation.model.ChatAction
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.presentation.adapter.impl.AdapterDelegatesManager
 import ru.snowadv.presentation.adapter.impl.DiffDelegationAdapter
+import ru.snowadv.presentation.fragment.ErrorHandlingFragment
 import ru.snowadv.presentation.util.DateFormatter
 import ru.snowadv.presentation.util.DateTimeFormatter
 import ru.snowadv.presentation.fragment.FragmentDataObserver
@@ -33,6 +36,8 @@ import ru.snowadv.presentation.fragment.setOnRetryClickListener
 import ru.snowadv.presentation.fragment.setTopBarText
 import ru.snowadv.presentation.util.impl.DayDateFormatter
 import ru.snowadv.presentation.util.impl.LocalizedDateTimeFormatter
+import ru.snowadv.presentation.view.setTextIfChanged
+import kotlin.math.abs
 
 internal class ChatFragmentDataObserver :
     FragmentDataObserver<FragmentChatBinding, ChatViewModel, ChatFragment> {
@@ -81,8 +86,8 @@ internal class ChatFragmentDataObserver :
         viewModel: ChatViewModel,
         fragment: Fragment
     ) {
-        viewModel.state.onEach {
-            bindState(it, binding)
+        viewModel.state.onEach { state ->
+            render(state, binding)
         }.flowWithLifecycle(fragment.viewLifecycleOwner.lifecycle)
             .launchIn(fragment.viewLifecycleOwner.lifecycleScope)
     }
@@ -92,9 +97,9 @@ internal class ChatFragmentDataObserver :
         fragment: ChatFragment,
         binding: FragmentChatBinding
     ) {
-        viewModel.fragmentEventFlow
+        viewModel.eventFlow
             .onEach {
-                handleFragmentEventFlow(it, fragment, viewModel, binding)
+                fragment.handleFragmentEventFlow(it, viewModel, binding)
             }
             .flowWithLifecycle(fragment.viewLifecycleOwner.lifecycle)
             .launchIn(fragment.viewLifecycleOwner.lifecycleScope)
@@ -106,7 +111,7 @@ internal class ChatFragmentDataObserver :
     ) {
         binding.bottomBar.messageEditText.addTextChangedListener {
             it?.toString()?.let { currentMessage ->
-                viewModel.handleEvent(ChatScreenEvent.TextFieldMessageChanged(currentMessage))
+                viewModel.handleEvent(ChatScreenEvent.MessageFieldChanged(currentMessage))
             }
         }
         binding.bottomBar.sendOrAddAttachmentButton.setOnClickListener {
@@ -120,62 +125,62 @@ internal class ChatFragmentDataObserver :
         }
     }
 
-    private fun handleFragmentEventFlow(
+    private fun ChatFragment.handleFragmentEventFlow(
         event: ChatScreenFragmentEvent,
-        fragment: ChatFragment,
         viewModel: ChatViewModel,
         binding: FragmentChatBinding
     ) {
         when (event) {
             is ChatScreenFragmentEvent.OpenReactionChooser -> {
-                openReactionChooser(event.destMessageId, fragment, viewModel)
-            }
-
-            is ChatScreenFragmentEvent.ExplainError -> {
-                showErrorToast(fragment, R.string.unexpected_error)
+                openReactionChooser(event.destMessageId, this, viewModel)
             }
 
             is ChatScreenFragmentEvent.ExplainNotImplemented -> {
-                showErrorToast(fragment, R.string.not_supported)
+                showErrorToast(this, R.string.not_supported)
             }
 
             is ChatScreenFragmentEvent.ExplainReactionAlreadyExists -> {
-                showErrorToast(fragment, R.string.reaction_already_exists)
+                showErrorToast(this, R.string.reaction_already_exists)
             }
 
             is ChatScreenFragmentEvent.ScrollRecyclerToTheEnd -> {
-                binding.messagesRecycler.smoothScrollToPosition(adapter.itemCount - 1)
+                binding.messagesRecycler.smoothScrollToPosition(abs(adapter.itemCount - 1))
             }
 
             is ChatScreenFragmentEvent.OpenMessageActionsChooser -> {
-                fragment.openActionsDialog(ChatAction.createActionsForMessage(event.messageId, event.userId)) {
+                openActionsDialog(ChatAction.createActionsForMessage(event.messageId, event.userId)) {
                     when(it) {
                         is ChatAction.AddReaction -> viewModel.handleEvent(ChatScreenEvent.AddReactionClicked(event.messageId))
                         is ChatAction.OpenProfile -> viewModel.handleEvent(ChatScreenEvent.GoToProfileClicked(event.userId))
                     }
                 }
             }
+
+            is ChatScreenFragmentEvent.ShowInternetErrorWithRetry -> {
+                showActionInternetErrorWithRetry(binding.root) {
+                    event.retryAction()
+                }
+            }
         }
     }
 
-    private fun Fragment.bindState(
+    private fun Fragment.render(
         state: ChatScreenState,
         binding: FragmentChatBinding
-    ) {
-        binding.topicName.text = getString(ru.snowadv.presentation.R.string.topic_title, state.topic)
-        binding.topBackButtonBar.setTopBarText(getString(ru.snowadv.presentation.R.string.stream_title, state.stream))
-        binding.bottomBar.sendOrAddAttachmentButton.setImageResource(
-            if (state.messageField.isEmpty()) R.drawable.ic_add_attachment else R.drawable.ic_send
-        )
-        adapter.submitList(state.screenState.getCurrentData())
-        with(binding.bottomBar.messageEditText.text.toString()) {
-            if (state.messageField != this) {
-                binding.bottomBar.messageEditText.setText(state.messageField)
+    ) = with (binding) {
+        topicName.text = getString(ru.snowadv.presentation.R.string.topic_title, state.topic)
+        topBackButtonBar.setTopBarText(getString(ru.snowadv.presentation.R.string.stream_title, state.stream))
+        bottomBar.sendOrAddAttachmentButton.setImageResource(
+            when(state.actionButtonType) {
+                ChatScreenState.ActionButtonType.SEND_MESSAGE -> R.drawable.ic_send
+                ChatScreenState.ActionButtonType.ADD_ATTACHMENT -> R.drawable.ic_add_attachment
             }
-        }
-        binding.stateBox.inflateState(state.screenState)
-        binding.actionProgressBar.visibility =
-            if (state.actionInProcess) View.VISIBLE else View.GONE
+        )
+        bottomBar.sendOrAddAttachmentButton.isVisible = state.isActionButtonVisible
+        adapter.submitList(state.screenState.getCurrentData())
+        binding.bottomBar.messageEditText.setTextIfChanged(state.messageField)
+        stateBox.inflateState(state.screenState, R.layout.fragment_chat_shimmer)
+        actionProgressBar.isVisible = state.changingReaction || state.sendingMessage
     }
 
 

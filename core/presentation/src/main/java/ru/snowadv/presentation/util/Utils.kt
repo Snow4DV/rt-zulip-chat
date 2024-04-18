@@ -1,6 +1,6 @@
 package ru.snowadv.presentation.util
 
-import ru.snowadv.domain.model.Resource
+import ru.snowadv.model.Resource
 import ru.snowadv.presentation.model.ScreenState
 
 fun <T> Array<T>.mapInPlace(transform: (T) -> T): Array<T> {

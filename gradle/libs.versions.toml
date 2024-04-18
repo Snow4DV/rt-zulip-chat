@@ -6,7 +6,7 @@ compileSdk = "34"
 targetSdk = "34"
 
 # Plugins
-agp = "8.3.0"
+agp = "8.3.1"
 kotlin = "1.9.22"
 
 # Libraries
@@ -28,6 +28,8 @@ mockk = "1.13.9"
 desugarJdkLibs = "2.0.4"
 coil = "2.6.0"
 cicerone = "7.1"
+facebookShimmer = "0.5.0"
+kotlinx-serialization = "1.6.0"
 
 
 [libraries]
@@ -50,6 +52,8 @@ desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", ver
 coil = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 cicerone = { group = "com.github.terrakok", name = "cicerone", version.ref = "cicerone" }
+facebook-shimmer = { group="com.facebook.shimmer", name = "shimmer", version.ref="facebookShimmer" }
+kotlinSerialization-json = { group="org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref="kotlinx-serialization" }
 
 
 [plugins]
@@ -58,4 +62,5 @@ jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "k
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 jetbrainsKotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinParcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 

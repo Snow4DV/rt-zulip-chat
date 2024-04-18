@@ -5,8 +5,8 @@ import ru.snowadv.presentation.adapter.DelegateItem
 internal data class Topic(
     val uniqueId: String,
     val name: String,
-    val streamId: Long,
+    override val streamId: Long,
     val position: Int,
-) : DelegateItem {
+) : DelegateItem, StreamIdContainer {
     override val id: Any get() = uniqueId
 }

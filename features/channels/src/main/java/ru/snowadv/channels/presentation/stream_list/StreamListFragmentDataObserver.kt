@@ -5,12 +5,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import ru.snowadv.channels.R
 import ru.snowadv.channels.databinding.FragmentStreamListBinding
+import ru.snowadv.channels.presentation.adapter.ShimmerTopicAdapterDelegate
 import ru.snowadv.channels.presentation.adapter.StreamAdapterDelegate
 import ru.snowadv.channels.presentation.adapter.TopicAdapterDelegate
 import ru.snowadv.channels.presentation.stream_list.event.StreamListFragmentEvent
-import ru.snowadv.channels.presentation.stream_list.state.StreamListScreenState
 import ru.snowadv.channels.presentation.stream_list.event.StreamListEvent
+import ru.snowadv.channels.presentation.stream_list.state.StreamListScreenState
 import ru.snowadv.channels.presentation.stream_list.view_model.StreamListViewModel
 import ru.snowadv.presentation.adapter.impl.DiffDelegationAdapter
 import ru.snowadv.presentation.adapter.setupDiffDelegatesAdapter
@@ -44,9 +46,9 @@ internal class StreamListFragmentDataObserver :
         viewModel: StreamListViewModel,
         adapter: DiffDelegationAdapter
     ) {
-        viewModel.state.onEach {
+        viewModel.uiState.onEach {
             bindState(binding, adapter, it)
-        }.flowWithLifecycle(lifecycle).launchIn(lifecycleScope)
+        }.flowWithLifecycle(lifecycle).launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
     private fun StreamListFragment.observeEvents(
@@ -55,7 +57,7 @@ internal class StreamListFragmentDataObserver :
     ) {
         viewModel.eventFlow.onEach {
             handleEvent(binding, it)
-        }.flowWithLifecycle(viewLifecycleOwner.lifecycle).launchIn(lifecycleScope)
+        }.flowWithLifecycle(viewLifecycleOwner.lifecycle).launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
     private fun StreamListFragment.handleEvent(
@@ -77,10 +79,8 @@ internal class StreamListFragmentDataObserver :
         adapter: DiffDelegationAdapter,
         state: StreamListScreenState
     ) = with(binding) {
-        actionLoadingBox.root.setVisibility(state.actionInProgress)
-        val filteredState = state.filteredScreenState()
-        stateBox.inflateState(state.screenState)
-        adapter.submitList(filteredState.getCurrentData() ?: emptyList())
+        stateBox.inflateState(screenState = state.screenState, shimmerLayout = R.layout.fragment_stream_list_shimmer)
+        adapter.submitList(state.screenState.getCurrentData() ?: emptyList())
     }
 
     private fun RecyclerView.setupAdapter(viewModel: StreamListViewModel): DiffDelegationAdapter {
@@ -93,6 +93,7 @@ internal class StreamListFragmentDataObserver :
         return setupDiffDelegatesAdapter(
             setupStreamAdapterDelegate(viewModel),
             setupTopicAdapterDelegate(viewModel),
+            setupShimmerTopicAdapterDelegate(),
         )
     }
 
@@ -110,6 +111,10 @@ internal class StreamListFragmentDataObserver :
                 viewModel.handleEvent(StreamListEvent.ClickedOnTopic(it.name))
             }
         )
+    }
+
+    private fun setupShimmerTopicAdapterDelegate(): ShimmerTopicAdapterDelegate {
+        return ShimmerTopicAdapterDelegate()
     }
 
 

@@ -12,19 +12,18 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.snowadv.chat.data.repository.StubEmojiRepository
-import ru.snowadv.chat.domain.model.Emoji
 import ru.snowadv.chat.domain.repository.EmojiRepository
+import ru.snowadv.chat.domain.use_case.GetEmojisUseCase
 import ru.snowadv.chat.presentation.emoji_chooser.event.EmojiChooserEvent
 import ru.snowadv.chat.presentation.emoji_chooser.event.EmojiChooserFragmentEvent
 import ru.snowadv.chat.presentation.model.ChatEmoji
 import ru.snowadv.chat.presentation.util.toUiChatEmoji
-import ru.snowadv.domain.model.Resource
+import ru.snowadv.model.Resource
 import ru.snowadv.presentation.model.ScreenState
 import ru.snowadv.presentation.util.toScreenState
 
 internal class EmojiChooserViewModel(
-    private val repo: EmojiRepository = StubEmojiRepository, // TODO Replace with DI
+    private val getEmojisUseCase: GetEmojisUseCase,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO, // TODO Replace with DI
 ): ViewModel() {
 
@@ -53,11 +52,11 @@ internal class EmojiChooserViewModel(
 
     private fun getEmojisfromRepository() {
         viewModelScope.launch(ioDispatcher) {
-            repo.getAvailableEmojis().onEach(::handleEmojiResource).launchIn(this)
+            getEmojisUseCase().onEach(::handleEmojiResource).launchIn(this)
         }
     }
 
-    private fun handleEmojiResource(res: Resource<List<Emoji>>) {
+    private fun handleEmojiResource(res: Resource<List<ru.snowadv.chat.domain.model.ChatEmoji>>) {
         res.toScreenState(
             mapper = { list ->
                 list.map { emoji -> emoji.toUiChatEmoji() }

@@ -1,6 +1,5 @@
 package ru.snowadv.channels.presentation.channel_list
 
-import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -8,49 +7,66 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import ru.snowadv.channels.databinding.FragmentChannelListBinding
 import ru.snowadv.channels.presentation.channel_list.event.ChannelListEvent
-import ru.snowadv.channels.presentation.channel_list.state.ChannelListScreenState
-import ru.snowadv.channels.presentation.channel_list.view_model.ChannelListSharedViewModel
+import ru.snowadv.channels.presentation.channel_list.event.ChannelListFragmentEvent
+import ru.snowadv.channels.presentation.channel_list.view_model.ChannelListViewModel
 import ru.snowadv.presentation.fragment.FragmentDataObserver
 
 internal class ChannelListFragmentDataObserver :
-    FragmentDataObserver<FragmentChannelListBinding, ChannelListSharedViewModel, ChannelListFragment> {
+    FragmentDataObserver<FragmentChannelListBinding, ChannelListViewModel, ChannelListFragment> {
 
     override fun ChannelListFragment.registerObservingFragment(
         binding: FragmentChannelListBinding,
-        viewModel: ChannelListSharedViewModel
+        viewModel: ChannelListViewModel
     ) {
         observeState(binding, viewModel)
+        observeEventFlow(viewModel)
         initListeners(binding, viewModel)
+    }
+
+    private fun ChannelListFragment.observeEventFlow(viewModel: ChannelListViewModel) {
+        viewModel.eventFlow.onEach {
+            handleFragmentEvent(it)
+        }.flowWithLifecycle(viewLifecycleOwner.lifecycle)
+            .launchIn(viewLifecycleOwner.lifecycleScope)
+    }
+
+    private fun ChannelListFragment.handleFragmentEvent(
+        event: ChannelListFragmentEvent
+    ) {
+        when(event) {
+            ChannelListFragmentEvent.ShowKeyboardAndFocusOnTextField -> showKeyboardAndFocusOnSearchField()
+        }
     }
 
     private fun ChannelListFragment.observeState(
         binding: FragmentChannelListBinding,
-        viewModel: ChannelListSharedViewModel,
+        viewModel: ChannelListViewModel,
     ) {
-        viewModel.state.onEach {
-            bindState(binding, it)
+        viewModel.searchQueryPublisher.onEach {
+            render(binding, it)
         }.flowWithLifecycle(viewLifecycleOwner.lifecycle).launchIn(lifecycleScope)
     }
-    private fun bindState(
-        binding: FragmentChannelListBinding,
-        state: ChannelListScreenState,
-    ) = with(binding) {
-        if (searchBar.searchEditText.text.toString() != state.searchQuery) {
-            searchBar.searchEditText.setText(state.searchQuery)
-        }
 
+    private fun render(
+        binding: FragmentChannelListBinding,
+        query: String,
+    ) = with(binding) {
+        if (searchBar.searchEditText.text.toString() != query) {
+            searchBar.searchEditText.setText(query)
+        }
     }
 
     private fun initListeners(
         binding: FragmentChannelListBinding,
-        viewModel: ChannelListSharedViewModel,
+        viewModel: ChannelListViewModel,
     ) {
         binding.searchBar.searchEditText.addTextChangedListener { editable ->
-            editable?.toString()?.let {  text ->
-                if (viewModel.state.value.searchQuery != text) {
-                    viewModel.handleEvent(ChannelListEvent.SearchQueryChanged(text))
-                }
+            editable?.toString()?.let { text ->
+                viewModel.searchQueryPublisher.tryEmit(text)
             }
+        }
+        binding.searchBar.searchIcon.setOnClickListener {
+            viewModel.handleEvent(ChannelListEvent.SearchIconClicked)
         }
     }
 }

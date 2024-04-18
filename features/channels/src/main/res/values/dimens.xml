@@ -9,7 +9,7 @@
     <dimen name="stream_topic_name_text_size">20sp</dimen>
     <dimen name="topic_msg_counter_text_size">18sp</dimen>
     <dimen name="search_text_size">24sp</dimen>
-    <dimen name="search_icon_padding">36dp</dimen>
+    <dimen name="search_edit_text_right_margin">36dp</dimen>
     <dimen name="search_padding_left">35dp</dimen>
     <dimen name="top_bar_padding_vertical">20dp</dimen>
     <dimen name="tabs_layout_height">60dp</dimen>

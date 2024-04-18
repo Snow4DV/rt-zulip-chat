@@ -1,6 +1,5 @@
 package ru.snowadv.profile.presentation.profile
 
-import android.graphics.drawable.ColorDrawable
 import androidx.fragment.app.viewModels
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -14,7 +13,6 @@ import ru.snowadv.profile.presentation.profile.view_model.ProfileViewModel
 import ru.snowadv.profile.presentation.profile.view_model.ProfileViewModelFactory
 import ru.snowadv.presentation.fragment.FragmentDataObserver
 import ru.snowadv.presentation.fragment.setColorAndText
-import ru.snowadv.presentation.fragment.setTopBarColor
 import ru.snowadv.profile.di.ProfileGraph
 
 class ProfileFragment : Fragment(),
@@ -38,9 +36,10 @@ class ProfileFragment : Fragment(),
 
     private val viewModel: ProfileViewModel by viewModels {
         ProfileViewModelFactory(
-            ProfileGraph.router,
-            profileId,
-            isOwner
+            router = ProfileGraph.deps.router,
+            profileId = profileId,
+            isOwner = isOwner,
+            profileRepository = ProfileGraph.deps.repo,
         )
     }
 

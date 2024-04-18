@@ -12,6 +12,7 @@ import ru.snowadv.home.databinding.FragmentHomeBinding
 import ru.snowadv.home.di.HomeGraph
 import ru.snowadv.home.presentation.home.view_model.HomeViewModel
 import ru.snowadv.home.presentation.local_navigation.HomeScreen
+import ru.snowadv.presentation.activity.hideKeyboard
 import ru.snowadv.presentation.fragment.FragmentDataObserver
 
 class HomeFragment : Fragment(),
@@ -20,13 +21,12 @@ class HomeFragment : Fragment(),
     private val currentTabFragment: Fragment?
         get() = childFragmentManager.fragments.firstOrNull { !it.isHidden }
 
-
     companion object {
         fun newInstance(): Fragment = HomeFragment()
     }
 
     private val viewModel: HomeViewModel by viewModels()
-    private val factory by lazy { HomeGraph.homeScreenFactory }
+    private val factory by lazy { HomeGraph.deps.homeScreenFactory }
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = requireNotNull(_binding) {"Binding wasn't initialized"}
@@ -43,6 +43,7 @@ class HomeFragment : Fragment(),
     }
 
     fun selectTab(screen: HomeScreen) {
+        activity?.hideKeyboard()
         val currentFragment = currentTabFragment
         val newFragment = childFragmentManager.findFragmentByTag(screen.tag)
 
@@ -63,8 +64,6 @@ class HomeFragment : Fragment(),
                 show(fragment)
                 setMaxLifecycle(fragment, Lifecycle.State.RESUMED)
             }
-        }.commit()
+        }.commitNow()
     }
-
-
 }

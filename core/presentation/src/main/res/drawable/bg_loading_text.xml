@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:bottom="@dimen/shimmer_text_bg_padding_bottom"
+        android:top="@dimen/shimmer_text_bg_padding_top">
+
+        <shape android:shape="rectangle">
+            <solid android:color="@color/light_gray_2" />
+            <corners android:radius="@dimen/common_radius" />
+        </shape>
+    </item>
+</layer-list>

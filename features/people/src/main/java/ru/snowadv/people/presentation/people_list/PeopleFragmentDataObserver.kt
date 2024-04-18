@@ -3,12 +3,14 @@ package ru.snowadv.people.presentation.people_list
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import ru.snowadv.people.R
 import ru.snowadv.people.presentation.adapter.PeopleAdapterDelegate
 import ru.snowadv.people.databinding.FragmentPeopleBinding
 import ru.snowadv.people.presentation.people_list.event.PeopleListEvent
+import ru.snowadv.people.presentation.people_list.event.PeopleListFragmentEvent
 import ru.snowadv.people.presentation.people_list.state.PeopleListScreenState
 import ru.snowadv.people.presentation.people_list.view_model.PeopleListViewModel
 import ru.snowadv.presentation.adapter.impl.DiffDelegationAdapter
@@ -17,7 +19,8 @@ import ru.snowadv.presentation.fragment.FragmentDataObserver
 import ru.snowadv.presentation.fragment.inflateState
 import ru.snowadv.presentation.fragment.setOnRetryClickListener
 import ru.snowadv.presentation.recycler.setupDecorator
-import ru.snowadv.presentation.recycler.setupDefaultDecorator
+import ru.snowadv.presentation.view.setTextIfChanged
+import ru.snowadv.presentation.view.setVisibility
 
 internal class PeopleFragmentDataObserver :
     FragmentDataObserver<FragmentPeopleBinding, PeopleListViewModel, PeopleFragment> {
@@ -33,6 +36,7 @@ internal class PeopleFragmentDataObserver :
         )
         binding.peopleRecycler.adapter = adapter
         observeState(binding, viewModel, adapter)
+        observeEvents(viewModel)
         initListeners(binding, viewModel)
     }
 
@@ -42,13 +46,30 @@ internal class PeopleFragmentDataObserver :
     ) {
         binding.searchBar.searchEditText.addTextChangedListener { editable ->
             editable?.toString()?.let { text ->
-                if (viewModel.state.value.searchQuery != text) {
-                    viewModel.handleEvent(PeopleListEvent.ChangedSearchQuery(text))
-                }
+                viewModel.searchPublisher.tryEmit(text)
             }
         }
         binding.stateBox.setOnRetryClickListener {
             viewModel.handleEvent(PeopleListEvent.ClickedOnRetry)
+        }
+        binding.searchBar.searchIcon.setOnClickListener {
+            viewModel.handleEvent(PeopleListEvent.ClickedOnSearchIcon)
+        }
+    }
+
+    private fun PeopleFragment.observeEvents(
+        viewModel: PeopleListViewModel,
+    ) {
+        viewModel.eventFlow.onEach {
+            handleEvent(it)
+        }.flowWithLifecycle(viewLifecycleOwner.lifecycle).launchIn(viewLifecycleOwner.lifecycleScope)
+    }
+
+    private fun PeopleFragment.handleEvent(
+        event: PeopleListFragmentEvent
+    ) {
+        when(event) {
+            PeopleListFragmentEvent.FocusOnSearchFieldAndOpenKeyboard -> focusOnSearchFieldAndOpenKeyboard()
         }
     }
 
@@ -57,21 +78,20 @@ internal class PeopleFragmentDataObserver :
         viewModel: PeopleListViewModel,
         adapter: DiffDelegationAdapter
     ) {
-        viewModel.state.onEach {
-            bindState(binding, it, adapter)
+        viewModel.state.combine(viewModel.searchPublisher) { state, searchQuery ->
+            render(binding, state, adapter, searchQuery)
         }.flowWithLifecycle(viewLifecycleOwner.lifecycle).launchIn(lifecycleScope)
     }
 
-    private fun bindState(
+    private fun render(
         binding: FragmentPeopleBinding,
         state: PeopleListScreenState,
         adapter: DiffDelegationAdapter,
+        searchQuery: String,
     ) = with(binding) {
-        stateBox.inflateState(state.filteredScreenState())
-        if (state.searchQuery != searchBar.searchEditText.text.toString()) {
-            searchBar.searchEditText.setText(state.searchQuery)
-        }
-        adapter.submitList(state.filteredScreenState().getCurrentData())
+        stateBox.inflateState(state.screenState, R.layout.fragment_people_shimmer)
+        adapter.submitList(state.screenState.getCurrentData())
+        searchBar.searchEditText.setTextIfChanged(searchQuery)
     }
 
     private fun setupDelegateAdapter(viewModel: PeopleListViewModel): DiffDelegationAdapter {
