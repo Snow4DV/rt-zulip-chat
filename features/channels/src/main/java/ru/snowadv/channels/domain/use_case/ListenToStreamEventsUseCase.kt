@@ -13,6 +13,7 @@ internal class ListenToStreamEventsUseCase(
         internal val eventTypes =
             listOf(
                 EventType.REALM, EventType.HEARTBEAT, EventType.MESSAGE, EventType.UPDATE_MESSAGE_FLAGS,
+                EventType.SUBSCRIPTION, EventType.STREAM,
             )
     }
 

@@ -95,7 +95,7 @@ sealed class EventResponseDto {
         @SerialName("op")
         val op: String, // will be "remove", "add", "update", "peer_add" or "peer_remove"
         @SerialName("subscriptions")
-        // only affected subscriptions. Will be null if op is not "add" or "update"
+        // only affected subscriptions. Will be null if op is not "add" or "remove"
         val subscriptions: List<StreamResponseDto>? = null,
     ): EventResponseDto()
 
@@ -140,7 +140,11 @@ sealed class EventResponseDto {
         @SerialName("op")
         val op: String, // create, update, delete,
         @SerialName("streams")
-        val streams: List<StreamResponseDto>? = null // will present only in create/delete ops
+        val streams: List<StreamResponseDto>? = null, // will present only in create/delete ops
+        @SerialName("name")
+        val streamName: String? = null, // will present only in update op
+        @SerialName("stream_id")
+        val streamId: Long? = null, // will present only in update op
     ): EventResponseDto()
 
     @Serializable

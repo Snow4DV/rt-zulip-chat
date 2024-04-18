@@ -27,6 +27,7 @@ import ru.snowadv.channels.domain.use_case.GetStreamsUseCase
 import ru.snowadv.channels.domain.use_case.GetTopicsUseCase
 import ru.snowadv.channels.domain.use_case.ListenToStreamEventsUseCase
 import ru.snowadv.channels.presentation.model.ShimmerTopic
+import ru.snowadv.channels.presentation.model.Stream
 import ru.snowadv.model.Resource
 import ru.snowadv.channels.presentation.stream_list.event.StreamListEvent
 import ru.snowadv.channels.presentation.stream_list.event.StreamListFragmentEvent
@@ -148,10 +149,8 @@ internal class StreamListViewModel(
 
                     is Resource.Success -> {
                         screenState.update {
-                            it.loadTopics(streamId, resource.data.mapIndexed { index, topic ->
-                                topic.toUiModel(
-                                    index
-                                )
+                            it.loadTopics(streamId, resource.data.map { topic ->
+                                topic.toUiModel()
                             })
                         }
                     }
@@ -212,6 +211,44 @@ internal class StreamListViewModel(
                         })
 
 
+                    }
+                }
+
+                is DomainEvent.UserSubscriptionDomainEvent -> {
+                    if (type == StreamType.SUBSCRIBED) {
+                        event.subscriptions?.let { subscriptions ->
+                            when(event.op) {
+                                "add" -> screenState.update {
+                                    it.addStreams(subscriptions.map { eventStream -> eventStream.toUiModel() })
+                                }
+                                "remove" -> screenState.update {
+                                    it.removeStreams(subscriptions.map { eventStream -> eventStream.toUiModel() })
+                                }
+                            }
+                        }
+                    }
+                }
+
+                is DomainEvent.StreamDomainEvent -> {
+                    if (type == StreamType.ALL) {
+                        event.streams?.let { streams ->
+                            when (event.op) {
+                                "create" -> screenState.update {
+                                    it.addStreams(streams.map { stream -> stream.toUiModel() })
+                                }
+                                "delete" -> screenState.update {
+                                    it.removeStreams(streams.map { stream -> stream.toUiModel() })
+                                }
+                            }
+                        }
+                    } else if (event.op == "update") {
+                        event.streamId?.let { streamId ->
+                            event.streamName?.let { streamName ->
+                                screenState.update {
+                                    it.updateStream(streamId, streamName)
+                                }
+                            }
+                        }
                     }
                 }
 

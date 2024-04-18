@@ -43,6 +43,48 @@ internal data class StreamListScreenState(
         }
     }
 
+    fun addStreams(streams: List<Stream>): StreamListScreenState {
+        val streamIds = screenState.getCurrentData()
+            ?.asSequence()
+            ?.mapNotNull { if (it is Stream) it.id else null }
+            ?.toSet() ?: emptySet()
+        return copy(
+            screenState = screenState.map {
+                list -> list + streams.filter { stream -> stream.id !in streamIds }
+            }
+        )
+    }
+
+    fun removeStreams(streams: List<Stream>): StreamListScreenState {
+        val removedStreamIds = streams.asSequence().map { it.id }.toSet()
+        val curState = if (selectedStream?.id?.let { id -> id in removedStreamIds } == true) {
+            this.hideTopics()
+        } else {
+            this
+        }
+        return curState.copy(
+            screenState = screenState.map {
+                    list -> list.filter { !(it is Stream && it.id in removedStreamIds) }
+            }
+        )
+    }
+
+    fun updateStream(streamId: Long, streamName: String): StreamListScreenState {
+        return copy(
+            screenState = screenState.map { list ->
+                list.map { delegateItem ->
+                    if (delegateItem is Stream && delegateItem.id == streamId) {
+                        delegateItem.copy(
+                            name = streamName
+                        )
+                    } else {
+                        delegateItem
+                    }
+                }
+            }
+        )
+    }
+
     fun hideTopics(): StreamListScreenState {
         return if (screenState is ScreenState.Success) {
             copy(

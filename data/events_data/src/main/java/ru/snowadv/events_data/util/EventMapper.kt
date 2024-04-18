@@ -54,7 +54,7 @@ internal object EventMapper {
             is EventResponseDto.DeleteMessageEventDto -> DomainEvent.DeleteMessageDomainEvent(id, messageId)
             is EventResponseDto.PresenceEventDto -> DomainEvent.PresenceDomainEvent(id, presence.website.toEventPresence(serverTimestamp), userId, email, userId == currentUserId)
             is EventResponseDto.ReactionEventDto -> DomainEvent.ReactionDomainEvent(id, op, emojiCode, emojiName, messageId, reactionType, userId, userId == currentUserId)
-            is EventResponseDto.StreamEventDto -> DomainEvent.StreamDomainEvent(id, op, streams?.map { it.toEventStream() })
+            is EventResponseDto.StreamEventDto -> DomainEvent.StreamDomainEvent(id, op, streams?.map { it.toEventStream() }, streamName, streamId)
             is EventResponseDto.TypingEventDto -> DomainEvent.TypingDomainEvent(id, op, messageType, streamId, topic, sender.userId, sender.email)
             is EventResponseDto.UpdateMessageEventDto -> DomainEvent.UpdateMessageDomainEvent(id, messageId, content)
             is EventResponseDto.UserStatusEventDto -> DomainEvent.UserStatusDomainEvent(id, emojiCode, emojiName, reactionType, statusText, userId)

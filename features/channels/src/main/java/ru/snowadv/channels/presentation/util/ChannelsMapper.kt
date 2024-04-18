@@ -7,6 +7,7 @@ import ru.snowadv.channels.presentation.model.Stream
 import ru.snowadv.channels.presentation.model.StreamUnreadMessages
 import ru.snowadv.channels.presentation.model.Topic
 import ru.snowadv.channels.presentation.model.TopicUnreadMessages
+import ru.snowadv.event_api.model.EventStream
 import ru.snowadv.event_api.model.EventStreamUpdateFlagsMessages
 import ru.snowadv.event_api.model.EventTopicUpdateFlagsMessages
 import ru.snowadv.channels.domain.model.Stream as DomainStream
@@ -21,18 +22,17 @@ internal object ChannelsMapper {
         )
     }
 
-    fun DomainTopic.toUiModel(position: Int): Topic {
+    fun DomainTopic.toUiModel(): Topic {
         return Topic(
             uniqueId = uniqueId,
             name = name,
             streamId = streamId,
-            position = position,
             unreadMessagesCount = 0,
         )
     }
 
     fun List<DomainTopic>.toUiModelListWithPositions(): List<Topic> {
-        return mapIndexed { index, topic -> topic.toUiModel(index) }
+        return map { topic -> topic.toUiModel() }
     }
 
     fun StreamType.toLocalizedString(context: Context): String {
@@ -52,5 +52,9 @@ internal object ChannelsMapper {
 
     fun EventStreamUpdateFlagsMessages.toUiModel(): StreamUnreadMessages {
         return StreamUnreadMessages(streamId, topicsUnreadMessages.map { it.toUiModel() })
+    }
+
+    fun EventStream.toUiModel(expanded: Boolean = false): Stream {
+        return Stream(id, name, expanded)
     }
 }

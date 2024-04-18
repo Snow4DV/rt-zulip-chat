@@ -31,7 +31,7 @@ sealed class DomainEvent {
     data class UserSubscriptionDomainEvent(
         override val id: Long,
         val op: String, // will be "remove", "add", "update", "peer_add" or "peer_remove"
-        val subscriptions: List<EventStream>? = null,
+        val subscriptions: List<EventStream>? = null, // only affected subscriptions. Will be null if op is not "add" or "update"
     ): DomainEvent()
 
     data class PresenceDomainEvent(
@@ -54,7 +54,9 @@ sealed class DomainEvent {
     data class StreamDomainEvent(
         override val id: Long,
         val op: String, // create, update, delete,
-        val streams: List<EventStream>? = null // will present only in create/delete ops
+        val streams: List<EventStream>? = null, // will present only in create/delete ops
+        val streamName: String? = null, // will present only in update op
+        val streamId: Long? = null, // will present only in update op
     ): DomainEvent()
 
     data class ReactionDomainEvent(
