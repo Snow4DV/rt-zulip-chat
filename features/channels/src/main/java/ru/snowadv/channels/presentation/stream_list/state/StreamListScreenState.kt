@@ -135,7 +135,7 @@ internal data class StreamListScreenState(
                             nowUnreadMessagesByStreamIdAndTopicName[streamUnreadMessages.streamId]
                                 ?.get(topicUnreadMessages.topicName)
                                 ?.let { prevTopicUnreadMessages ->
-                                    removeAll(prevTopicUnreadMessages.unreadMessagesIds.toSet())
+                                    addAll(prevTopicUnreadMessages.unreadMessagesIds.toSet())
                                 }
                         }.toList()
                     )

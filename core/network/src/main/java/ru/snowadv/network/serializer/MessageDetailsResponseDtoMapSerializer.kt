@@ -13,13 +13,14 @@ import ru.snowadv.network.model.MessageDetailsResponseDto
 object MessageDetailsResponseDtoMapSerializer : JsonTransformingSerializer<Map<String, MessageDetailsResponseDto>>(
     MapSerializer(String.serializer(), MessageDetailsResponseDto.serializer())
 ) {
+    private val json = Json {ignoreUnknownKeys = true}
     override fun transformDeserialize(element: JsonElement): JsonElement {
         val jsonObject = element.jsonObject
         val resultMap = HashMap<String, MessageDetailsResponseDto>()
         for ((key, value) in jsonObject) {
-            val messageDetail = Json.decodeFromJsonElement<MessageDetailsResponseDto>(value)
+            val messageDetail = json.decodeFromJsonElement<MessageDetailsResponseDto>(value)
             resultMap[key] = messageDetail
         }
-        return Json.encodeToJsonElement(resultMap)
+        return json.encodeToJsonElement(resultMap)
     }
 }
