@@ -2,6 +2,7 @@ package ru.snowadv.chat.presentation.chat.view_model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -28,10 +29,10 @@ import ru.snowadv.chat.domain.use_case.LoadMoreMessagesUseCase
 import ru.snowadv.chat.domain.use_case.RemoveReactionUseCase
 import ru.snowadv.chat.domain.use_case.SendMessageUseCase
 import ru.snowadv.chat.presentation.model.ChatPaginationStatus
-import ru.snowadv.chat.presentation.util.mapToAdapterMessagesAndDates
-import ru.snowadv.chat.presentation.util.mapToUiAdapterMessagesAndDates
-import ru.snowadv.chat.presentation.util.toUiChatEmoji
-import ru.snowadv.chat.presentation.util.toUiChatMessage
+import ru.snowadv.chat.presentation.util.AdapterUtils.mapToAdapterMessagesAndDates
+import ru.snowadv.chat.presentation.util.AdapterUtils.mapToUiAdapterMessagesAndDates
+import ru.snowadv.chat.presentation.util.ChatMappers.toUiChatEmoji
+import ru.snowadv.chat.presentation.util.ChatMappers.toUiChatMessage
 import ru.snowadv.event_api.helper.MutableEventQueueListenerBag
 import ru.snowadv.event_api.model.DomainEvent
 import ru.snowadv.model.Resource
@@ -49,6 +50,7 @@ internal class ChatViewModel(
     private val getMessagesUseCase: GetCurrentMessagesUseCase,
     private val listenToChatEventsUseCase: ListenToChatEventsUseCase,
     private val loadMoreMessagesUseCase: LoadMoreMessagesUseCase,
+    private val defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
     private var eventListenerJob: Job? = null
@@ -288,7 +290,7 @@ internal class ChatViewModel(
 
         paginationJob = loadMoreMessagesUseCase(streamName , topicName, firstMessageId, includeAnchor)
             .onEach(::processPaginationMessagesResource)
-            .flowOn(Dispatchers.Default).launchIn(viewModelScope)
+            .flowOn(defaultDispatcher).launchIn(viewModelScope)
     }
 
     private fun processPaginationMessagesResource(res: Resource<ChatPaginatedMessages>) {

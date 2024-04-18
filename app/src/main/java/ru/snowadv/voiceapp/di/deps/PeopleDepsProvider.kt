@@ -16,7 +16,11 @@ import ru.snowadv.voiceapp.glue.repository.PeopleRepositoryImpl
 
 class PeopleDepsProvider : PeopleDeps {
     override val router: PeopleRouter by lazy { PeopleRouterImpl(MainGraph.mainDepsProvider.router) }
-    override val peopleRepository: PeopleRepository by lazy { PeopleRepositoryImpl(MainGraph.mainDepsProvider.userDataRepository) }
+    override val peopleRepository: PeopleRepository by lazy {
+        PeopleRepositoryImpl(MainGraph.mainDepsProvider.userDataRepository,
+            MainGraph.mainDepsProvider.defaultDispatcher,
+        )
+    }
     override val eventRepo: EventRepository
         get() = MainGraph.mainDepsProvider.eventDataRepository
 }

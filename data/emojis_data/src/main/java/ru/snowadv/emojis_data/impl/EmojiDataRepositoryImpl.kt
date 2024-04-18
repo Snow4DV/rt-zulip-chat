@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import ru.snowadv.emojis_data.api.EmojiDataRepository
 import ru.snowadv.emojis_data.model.DataEmoji
-import ru.snowadv.emojis_data.util.toDataEmojiList
+import ru.snowadv.emojis_data.util.EmojisMapper.toDataEmojiList
 import ru.snowadv.model.Resource
 import ru.snowadv.network.api.ZulipApi
 import ru.snowadv.utils.foldToResource

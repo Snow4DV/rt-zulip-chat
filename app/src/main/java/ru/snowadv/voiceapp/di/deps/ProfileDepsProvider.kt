@@ -11,7 +11,10 @@ import ru.snowadv.voiceapp.glue.repository.ProfileRepositoryImpl
 
 class ProfileDepsProvider: ProfileDeps {
     override val router: ProfileRouter by lazy { ProfileRouterImpl(MainGraph.mainDepsProvider.router) }
-    override val repo: ProfileRepository by lazy { ProfileRepositoryImpl(MainGraph.mainDepsProvider.userDataRepository) }
-    override val eventRepo: EventRepository
+    override val repo: ProfileRepository by lazy {
+        ProfileRepositoryImpl(MainGraph.mainDepsProvider.userDataRepository,
+            MainGraph.mainDepsProvider.defaultDispatcher)
+    }
+    override val eventRepo: EventRepositoryz
         get() = MainGraph.mainDepsProvider.eventDataRepository
 }

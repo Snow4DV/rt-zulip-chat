@@ -31,7 +31,7 @@ import ru.snowadv.model.Resource
 import ru.snowadv.channels.presentation.stream_list.event.StreamListEvent
 import ru.snowadv.channels.presentation.stream_list.event.StreamListFragmentEvent
 import ru.snowadv.channels.presentation.stream_list.state.StreamListScreenState
-import ru.snowadv.channels.presentation.util.toUiModel
+import ru.snowadv.channels.presentation.util.ChannelsMapper.toUiModel
 import ru.snowadv.event_api.helper.MutableEventQueueListenerBag
 import ru.snowadv.event_api.model.DomainEvent
 import ru.snowadv.presentation.model.ScreenState

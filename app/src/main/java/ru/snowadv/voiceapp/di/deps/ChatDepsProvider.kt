@@ -16,6 +16,7 @@ class ChatDepsProvider: ChatDeps {
             ChatRepositoryImpl(
                 messageDataRepository,
                 emojiDataRepository,
+                defaultDispatcher
             )
         }
     }

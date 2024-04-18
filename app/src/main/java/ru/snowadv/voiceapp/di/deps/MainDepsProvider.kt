@@ -23,9 +23,7 @@ import ru.snowadv.users_data.api.UserDataRepository
 import ru.snowadv.users_data.impl.UserDataRepositoryImpl
 import ru.snowadv.voiceapp.glue.auth.AuthProviderImpl
 
-internal class MainDepsProvider {
-    // injectables
-    lateinit var router: Router
+internal class MainDepsProvider(val router: Router) {
     // lazy
     val api: ZulipApi by lazy { ZulipApi(authProvider = authProvider) }
     val streamDataRepository: StreamDataRepository by lazy { StreamDataRepositoryImpl(ioDispatcher = ioDispatcher, api = api) }

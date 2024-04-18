@@ -14,7 +14,8 @@ class ChannelsDepsProvider : ChannelsDeps {
     private val channelsRepo by lazy {
         ChannelsRepositoryImpl(
             MainGraph.mainDepsProvider.streamDataRepository,
-            MainGraph.mainDepsProvider.topicDataRepository
+            MainGraph.mainDepsProvider.topicDataRepository,
+            MainGraph.mainDepsProvider.defaultDispatcher,
         )
     }
     override val router: ChannelsRouter by lazy { ChannelsRouterImpl(MainGraph.mainDepsProvider.router) }

@@ -16,11 +16,11 @@ import ru.snowadv.presentation.model.ScreenState
 import ru.snowadv.profile.domain.repository.ProfileRepository
 import ru.snowadv.profile.presentation.profile.event.ProfileEvent
 import ru.snowadv.profile.presentation.profile.state.ProfileScreenState
-import ru.snowadv.profile.presentation.util.toUiModel
 import ru.snowadv.presentation.util.toScreenState
 import ru.snowadv.profile.domain.navigation.ProfileRouter
 import ru.snowadv.profile.domain.use_case.GetProfileUseCase
 import ru.snowadv.profile.domain.use_case.ListenToPresenceEventsUseCase
+import ru.snowadv.profile.presentation.util.ProfileMappers.toUiModel
 
 internal class ProfileViewModel(
     private val router: ProfileRouter,

@@ -2,7 +2,7 @@ package ru.snowadv.people.presentation.people_list.view_model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -13,22 +13,19 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.snowadv.event_api.helper.MutableEventQueueListenerBag
-import ru.snowadv.model.Resource
 import ru.snowadv.people.domain.navigation.PeopleRouter
-import ru.snowadv.people.domain.repository.PeopleRepository
 import ru.snowadv.people.domain.use_case.GetPeopleUseCase
 import ru.snowadv.people.domain.use_case.ListenToPresenceEventsUseCase
 import ru.snowadv.people.presentation.people_list.event.PeopleListEvent
 import ru.snowadv.people.presentation.people_list.event.PeopleListFragmentEvent
 import ru.snowadv.people.presentation.people_list.state.PeopleListScreenState
-import ru.snowadv.people.presentation.util.toUiModel
+import ru.snowadv.people.presentation.util.PeopleMappers.toUiModel
 import ru.snowadv.presentation.model.ScreenState
 import ru.snowadv.presentation.util.toScreenState
 import ru.snowadv.presentation.view_model.ViewModelConst
@@ -37,6 +34,7 @@ internal class PeopleListViewModel(
     private val router: PeopleRouter,
     private val getPeopleUseCase: GetPeopleUseCase,
     private val listenToPresenceEventsUseCase: ListenToPresenceEventsUseCase,
+    private val defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
     val searchPublisher = MutableStateFlow("")
@@ -54,7 +52,7 @@ internal class PeopleListViewModel(
         .onStart { startStopListener(_state.value.screenState) }
         .onEach { startStopListener(it.screenState) }
         .onCompletion { startStopListener(_state.value.screenState) }
-        .flowOn(Dispatchers.Default)
+        .flowOn(defaultDispatcher)
 
     private val _eventFlow = MutableSharedFlow<PeopleListFragmentEvent>()
     val eventFlow = _eventFlow.asSharedFlow()

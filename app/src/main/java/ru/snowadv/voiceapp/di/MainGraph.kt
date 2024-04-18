@@ -16,7 +16,8 @@ import ru.snowadv.voiceapp.di.deps.ProfileDepsProvider
 
 internal object MainGraph { // Will be replaced with proper DI
 
-    val mainDepsProvider by lazy { MainDepsProvider() }
+    lateinit var mainDepsProvider: MainDepsProvider
+
     private val channelsDepsProvider by lazy { ChannelsDepsProvider() }
     private val chatDepsProvider by lazy {ChatDepsProvider()}
     private val peopleDepsProvider by lazy { PeopleDepsProvider() }
@@ -25,7 +26,7 @@ internal object MainGraph { // Will be replaced with proper DI
 
 
     fun init(router: Router) {
-        mainDepsProvider.router = router
+        mainDepsProvider = MainDepsProvider(router)
         initFeatureGraphs()
     }
 

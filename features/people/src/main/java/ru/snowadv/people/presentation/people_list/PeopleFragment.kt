@@ -25,9 +25,10 @@ class PeopleFragment : Fragment(),
 
     private val viewModel: PeopleListViewModel by viewModels {
         PeopleListViewModelFactory(
-            PeopleGraph.deps.router,
-            PeopleGraph.getPeopleUseCase,
-            PeopleGraph.listenToPresenceEventsUseCase,
+            router = PeopleGraph.deps.router,
+            getPeopleUseCase = PeopleGraph.getPeopleUseCase,
+            listenToPresenceEventsUseCase = PeopleGraph.listenToPresenceEventsUseCase,
+            defaultDispatcher = PeopleGraph.deps.defaultDispatcher,
         )
     }
 

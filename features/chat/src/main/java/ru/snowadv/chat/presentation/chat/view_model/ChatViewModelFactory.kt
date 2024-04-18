@@ -2,6 +2,7 @@ package ru.snowadv.chat.presentation.chat.view_model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import kotlinx.coroutines.CoroutineDispatcher
 import ru.snowadv.chat.domain.navigation.ChatRouter
 import ru.snowadv.chat.domain.use_case.AddReactionUseCase
 import ru.snowadv.chat.domain.use_case.GetCurrentMessagesUseCase
@@ -20,6 +21,7 @@ internal class ChatViewModelFactory(
     private val listenToChatEventsUseCase: ListenToChatEventsUseCase,
     private val sendMessageUseCase: SendMessageUseCase,
     private val loadMoreMessagesUseCase: LoadMoreMessagesUseCase,
+    private val defaultDispatcher: CoroutineDispatcher,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -34,6 +36,7 @@ internal class ChatViewModelFactory(
                 getMessagesUseCase = getCurrentMessagesUseCase,
                 listenToChatEventsUseCase = listenToChatEventsUseCase,
                 loadMoreMessagesUseCase = loadMoreMessagesUseCase,
+                defaultDispatcher = defaultDispatcher,
             ) as T
         }
         throw IllegalArgumentException("Unknown VM class")

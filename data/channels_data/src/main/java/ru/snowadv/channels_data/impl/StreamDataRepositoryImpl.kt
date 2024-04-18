@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import ru.snowadv.channels_data.api.StreamDataRepository
 import ru.snowadv.channels_data.model.DataStream
-import ru.snowadv.channels_data.util.toDataStream
+import ru.snowadv.channels_data.util.ChannelsMapper.toDataStream
 import ru.snowadv.model.Resource
 import ru.snowadv.network.api.ZulipApi
 import ru.snowadv.utils.foldToResource

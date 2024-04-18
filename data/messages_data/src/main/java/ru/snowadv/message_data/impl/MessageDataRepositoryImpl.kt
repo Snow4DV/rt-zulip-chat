@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.flowOn
 import ru.snowadv.data.api.AuthProvider
 import ru.snowadv.message_data.api.MessageDataRepository
 import ru.snowadv.message_data.model.DataPaginatedMessages
-import ru.snowadv.message_data.util.toDataPaginatedMessages
+import ru.snowadv.message_data.util.MessagesMapper.toDataPaginatedMessages
 import ru.snowadv.model.Resource
 import ru.snowadv.network.api.ZulipApi
 import ru.snowadv.network.model.NarrowRequestDto

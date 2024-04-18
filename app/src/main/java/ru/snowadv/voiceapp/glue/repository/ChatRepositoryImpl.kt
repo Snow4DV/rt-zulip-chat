@@ -1,5 +1,6 @@
 package ru.snowadv.voiceapp.glue.repository
 
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
@@ -21,11 +22,18 @@ import ru.snowadv.voiceapp.glue.util.toChatPaginatedMessages
 class ChatRepositoryImpl(
     private val messageDataRepository: MessageDataRepository,
     private val emojiDataRepository: EmojiDataRepository,
+    private val defaultDispatcher: CoroutineDispatcher,
 ) : MessageRepository, EmojiRepository {
     override fun getAvailableEmojis(): Flow<Resource<List<ChatEmoji>>> {
         return emojiDataRepository.getAvailableEmojis()
-            .map { it.map { dataEmojis -> dataEmojis.map { emoji -> emoji.toChatEmoji() } } }
-            .flowOn(Dispatchers.Default)
+            .map {
+                it.map { dataEmojis ->
+                    dataEmojis.map { emoji ->
+                        emoji.toChatEmoji()
+                    }
+                }
+            }
+            .flowOn(defaultDispatcher)
     }
 
     override fun getMessages(
@@ -41,8 +49,11 @@ class ChatRepositoryImpl(
             includeAnchorMessage = includeAnchorMessage,
             countOfMessages = countOfMessages,
             anchorMessageId = anchorMessageId
-        ).map { it.map { dataPagMes -> dataPagMes.toChatPaginatedMessages() } }
-            .flowOn(Dispatchers.Default)
+        ).map {
+            it.map { dataPagMes ->
+                dataPagMes.toChatPaginatedMessages()
+            }
+        }.flowOn(defaultDispatcher)
     }
 
     override fun sendMessage(

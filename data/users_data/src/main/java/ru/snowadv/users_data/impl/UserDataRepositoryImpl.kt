@@ -10,8 +10,8 @@ import ru.snowadv.model.Resource
 import ru.snowadv.network.api.ZulipApi
 import ru.snowadv.users_data.api.UserDataRepository
 import ru.snowadv.users_data.model.DataUser
-import ru.snowadv.users_data.util.toDataUser
-import ru.snowadv.users_data.util.toUsersListWithPresences
+import ru.snowadv.users_data.util.UsersMapper.toDataUser
+import ru.snowadv.users_data.util.UsersMapper.toUsersListWithPresences
 import ru.snowadv.utils.asyncAwait
 import ru.snowadv.utils.combineFold
 
