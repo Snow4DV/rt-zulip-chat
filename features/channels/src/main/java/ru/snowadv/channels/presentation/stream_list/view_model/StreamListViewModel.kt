@@ -2,6 +2,7 @@ package ru.snowadv.channels.presentation.stream_list.view_model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
@@ -11,9 +12,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.snowadv.channels.di.ChannelsGraph
@@ -21,12 +25,16 @@ import ru.snowadv.channels.domain.model.StreamType
 import ru.snowadv.channels.domain.navigation.ChannelsRouter
 import ru.snowadv.channels.domain.use_case.GetStreamsUseCase
 import ru.snowadv.channels.domain.use_case.GetTopicsUseCase
+import ru.snowadv.channels.domain.use_case.ListenToStreamEventsUseCase
 import ru.snowadv.channels.presentation.model.ShimmerTopic
 import ru.snowadv.model.Resource
 import ru.snowadv.channels.presentation.stream_list.event.StreamListEvent
 import ru.snowadv.channels.presentation.stream_list.event.StreamListFragmentEvent
 import ru.snowadv.channels.presentation.stream_list.state.StreamListScreenState
 import ru.snowadv.channels.presentation.util.toUiModel
+import ru.snowadv.event_api.helper.MutableEventQueueListenerBag
+import ru.snowadv.event_api.model.DomainEvent
+import ru.snowadv.presentation.model.ScreenState
 import ru.snowadv.presentation.util.toScreenState
 import ru.snowadv.presentation.view_model.ViewModelConst
 
@@ -35,10 +43,15 @@ internal class StreamListViewModel(
     private val router: ChannelsRouter,
     private val getStreamsUseCase: GetStreamsUseCase,
     private val getTopicsUseCase: GetTopicsUseCase,
+    private val listenToStreamEventsUseCase: ListenToStreamEventsUseCase,
+    private val defaultDispatcher: CoroutineDispatcher,
     searchQueryFlow: StateFlow<String>,
 ) : ViewModel() {
 
     private val screenState = MutableStateFlow(StreamListScreenState())
+
+    private var eventListenerJob: Job? = null
+    private val eventListenerBag = MutableEventQueueListenerBag()
 
     @OptIn(FlowPreview::class)
     val uiState = screenState
@@ -50,7 +63,10 @@ internal class StreamListViewModel(
             } else {
                 screenState
             }
-        }.flowOn(Dispatchers.Default)
+        }.onStart { startStopListenerByScreenState(screenState.value.screenState) }
+        .onEach {
+            startStopListenerByScreenState(it.screenState)
+        }.onCompletion { stopListeningToEvents() }.flowOn(defaultDispatcher)
 
     private val _eventFlow = MutableSharedFlow<StreamListFragmentEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -82,8 +98,8 @@ internal class StreamListViewModel(
         }
     }
 
-    private fun loadStreams() {
-        getStreamsUseCase(type).onEach { resource ->
+    private fun loadStreams(): Job {
+        return getStreamsUseCase(type).onEach { resource ->
             screenState.update { state ->
                 state.copy(
                     screenState = resource.toScreenState(
@@ -141,6 +157,78 @@ internal class StreamListViewModel(
                     }
                 }
             }.launchIn(this)
+        }
+    }
+
+
+    private fun startListeningToEvents() {
+        if (eventListenerJob?.isActive == true) return
+
+        eventListenerJob = listenToStreamEventsUseCase(
+            bag = eventListenerBag,
+            reloadAction = { loadStreams().join() }
+        )
+            .onStart { screenState.first { it.screenState is ScreenState.Success } }
+            .onEach(::handleOnlineEvent)
+            .flowOn(defaultDispatcher)
+            .launchIn(viewModelScope)
+    }
+
+    private fun handleOnlineEvent(event: DomainEvent) {
+        viewModelScope.launch {
+            when (event) {
+                is DomainEvent.MessageDomainEvent -> {
+                    event.eventMessage.streamId?.let { streamId ->
+                        screenState.update {
+                            it.addNewMessage(
+                                streamId,
+                                event.eventMessage.subject,
+                                event.eventMessage.id,
+                            )
+                        }
+                    }
+                }
+
+                is DomainEvent.UnreadMessagesEvent -> {
+                    screenState.update {
+                        it.setInitialUnreadMessages(event.streamUnreadMessages.map {
+                            updateMsgFlags -> updateMsgFlags.toUiModel()
+                        })
+                    }
+                }
+
+                is DomainEvent.AddReadMessageFlagEvent -> {
+                    screenState.update {
+                        it.markMessagesAsRead(
+                            event.addFlagMessagesIds
+                        )
+                    }
+                }
+
+                is DomainEvent.RemoveReadMessageFlagEvent -> {
+                    screenState.update {
+                        it.markMessagesAsUnread(event.removeFlagMessages.map {
+                            updateFlagMessages -> updateFlagMessages.toUiModel()
+                        })
+
+
+                    }
+                }
+
+                else -> Unit // ignored
+            }
+        }
+    }
+
+    private fun stopListeningToEvents() {
+        eventListenerJob?.cancel()
+    }
+
+    private fun startStopListenerByScreenState(state: ScreenState<*>) {
+        if (state is ScreenState.Success || state is ScreenState.Empty) {
+            startListeningToEvents()
+        } else {
+            stopListeningToEvents()
         }
     }
 

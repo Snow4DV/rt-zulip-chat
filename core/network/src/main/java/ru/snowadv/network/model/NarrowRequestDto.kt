@@ -2,11 +2,9 @@ package ru.snowadv.network.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 @Serializable
-data class NarrowDto(
+data class NarrowRequestDto(
     @SerialName("operator")
     val operator: String,
     @SerialName("operand")
@@ -17,8 +15,8 @@ data class NarrowDto(
     }
 
     companion object {
-        fun ofStreamAndTopic(streamName: String, topicName: String): List<NarrowDto> {
-            return listOf(NarrowDto("stream", streamName), NarrowDto("topic", topicName))
+        fun ofStreamAndTopic(streamName: String, topicName: String): List<NarrowRequestDto> {
+            return listOf(NarrowRequestDto("stream", streamName), NarrowRequestDto("topic", topicName))
         }
     }
 

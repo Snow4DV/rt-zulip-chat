@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
@@ -290,7 +291,7 @@ internal class ChatViewModel(
             .flowOn(Dispatchers.Default).launchIn(viewModelScope)
     }
 
-    private suspend fun processPaginationMessagesResource(res: Resource<ChatPaginatedMessages>) {
+    private fun processPaginationMessagesResource(res: Resource<ChatPaginatedMessages>) {
         when(res) {
             is Resource.Error -> {
                 _state.update {
@@ -342,8 +343,7 @@ internal class ChatViewModel(
             topicName = topicName,
             reloadAction = { getInitMessages().join() }
         )
-            // Wait for successful initial fetch before starting
-            //.onStart { _state.first { it.screenState is ScreenState.Success } }
+            .onStart {_state.first { it.screenState is ScreenState.Success } }
             .onEach(::handleOnlineEvent)
             .launchIn(viewModelScope)
     }

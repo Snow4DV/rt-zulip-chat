@@ -28,7 +28,6 @@ internal class MainDepsProvider {
     lateinit var router: Router
     // lazy
     val api: ZulipApi by lazy { ZulipApi(authProvider = authProvider) }
-    val ioDispatcher: CoroutineDispatcher by lazy { Dispatchers.IO }
     val streamDataRepository: StreamDataRepository by lazy { StreamDataRepositoryImpl(ioDispatcher = ioDispatcher, api = api) }
     val topicDataRepository: TopicDataRepository by lazy { TopicDataRepositoryImpl(ioDispatcher = ioDispatcher, api = api) }
     val eventDataRepository: EventRepository by lazy { EventDataRepositoryImpl(ioDispatcher = ioDispatcher, authProvider = authProvider, api = api) }
@@ -40,4 +39,8 @@ internal class MainDepsProvider {
     val authDataRepository: AuthDataRepository by lazy { AuthDataRepositoryImpl(authUserPropertyRepository) }
 
     val authProvider: AuthProvider by lazy { AuthProviderImpl(authDataRepository) }
+
+    val defaultDispatcher by lazy { Dispatchers.Default }
+    val mainDispatcher by lazy { Dispatchers.Main }
+    val ioDispatcher: CoroutineDispatcher by lazy { Dispatchers.IO }
 }

@@ -3,12 +3,12 @@ package ru.snowadv.message_data.util
 import ru.snowadv.message_data.model.DataMessage
 import ru.snowadv.message_data.model.DataPaginatedMessages
 import ru.snowadv.message_data.model.DataReaction
-import ru.snowadv.network.model.MessageDto
-import ru.snowadv.network.model.MessagesDto
-import ru.snowadv.network.model.ReactionDto
+import ru.snowadv.network.model.MessageResponseDto
+import ru.snowadv.network.model.MessagesResponseDto
+import ru.snowadv.network.model.ReactionResponseDto
 import ru.snowadv.utils.DateUtils
 
-internal fun MessageDto.toDataMessage(currentUserId: Long): DataMessage {
+internal fun MessageResponseDto.toDataMessage(currentUserId: Long): DataMessage {
     return DataMessage(
         id = id,
         content = content,
@@ -21,7 +21,7 @@ internal fun MessageDto.toDataMessage(currentUserId: Long): DataMessage {
     )
 }
 
-internal fun MessagesDto.toDataPaginatedMessages(
+internal fun MessagesResponseDto.toDataPaginatedMessages(
     currentUserId: Long,
     anchorMessageId: Long?,
     includeAnchorMessage: Boolean
@@ -39,7 +39,7 @@ internal fun MessagesDto.toDataPaginatedMessages(
     )
 }
 
-fun List<ReactionDto>.toDataReactionList(currentUserId: Long): List<DataReaction> {
+fun List<ReactionResponseDto>.toDataReactionList(currentUserId: Long): List<DataReaction> {
     return buildList {
         this@toDataReactionList.groupBy { it.emojiName }.asSequence().map { it.value }.forEach {
             add(

@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class SenderDto(
+data class SenderResponseDto(
     @SerialName("email")
     val email: String,
     @SerialName("user_id")

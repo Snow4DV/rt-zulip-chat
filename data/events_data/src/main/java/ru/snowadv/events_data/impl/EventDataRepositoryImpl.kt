@@ -12,12 +12,14 @@ import ru.snowadv.data.api.AuthProvider
 import ru.snowadv.event_api.helper.MutableEventQueueListenerBag
 import ru.snowadv.event_api.model.DomainEvent
 import ru.snowadv.event_api.model.EventNarrow
+import ru.snowadv.event_api.model.EventStreamUpdateFlagsMessages
 import ru.snowadv.event_api.model.EventType
 import ru.snowadv.event_api.repository.EventRepository
 import ru.snowadv.events_data.exception.UnableToObtainQueueException
-import ru.snowadv.events_data.util.toDataEvent
-import ru.snowadv.events_data.util.toEventTypesDto
-import ru.snowadv.events_data.util.toNarrow2DArrayDto
+import ru.snowadv.events_data.util.EventMapper.toDataEvent
+import ru.snowadv.events_data.util.EventMapper.toEventTopicUnreadMessages
+import ru.snowadv.events_data.util.EventMapper.toEventTypesDto
+import ru.snowadv.events_data.util.EventMapper.toNarrow2DArrayDto
 import ru.snowadv.network.api.ZulipApi
 import java.io.IOException
 
@@ -52,9 +54,11 @@ class EventDataRepositoryImpl(
                         emit(
                             DomainEvent.UnreadMessagesEvent(
                                 id = bag.lastEventId,
-                                streamIdToUnreadMessagesIds = unreadMessagesDto.streams
-                                    .associateBy { it.streamId }
-                                    .mapValues { it.value.unreadMessagesIds }
+                                streamUnreadMessages = unreadMessagesDto.streams.groupBy { it.streamId }.map {
+                                    EventStreamUpdateFlagsMessages(
+                                        it.key,
+                                        it.value.map { streamTopicUnreadMessagesDto -> streamTopicUnreadMessagesDto.toEventTopicUnreadMessages() })
+                                }
                             )
                         )
                     }

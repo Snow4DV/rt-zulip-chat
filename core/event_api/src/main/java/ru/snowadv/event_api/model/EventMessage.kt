@@ -11,4 +11,7 @@ data class EventMessage(
     val avatarUrl: String? = null,
     val reactions: List<EventReaction>,
     val owner: Boolean,
+    val type: String,
+    val streamId: Long? = null, // will not be present if it is DM message
+    val subject: String, // will be ""/empty string for DMs
 )

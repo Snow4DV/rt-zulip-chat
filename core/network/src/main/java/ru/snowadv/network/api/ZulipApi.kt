@@ -1,7 +1,7 @@
 package ru.snowadv.network.api
 
 import com.skydoves.retrofit.adapters.result.ResultCallAdapterFactory
-import kotlinx.serialization.encodeToString
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import okhttp3.MediaType.Companion.toMediaType
@@ -15,7 +15,6 @@ import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
-import retrofit2.http.Headers
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -23,43 +22,44 @@ import retrofit2.http.Query
 import ru.snowadv.data.api.AuthProvider
 import ru.snowadv.network.interceptor.HeaderBasicAuthInterceptor
 import ru.snowadv.network.interceptor.TimeoutSetterInterceptor
-import ru.snowadv.network.model.AllStreamsDto
-import ru.snowadv.network.model.AllUsersDto
+import ru.snowadv.network.model.AllStreamsResponseDto
+import ru.snowadv.network.model.AllUsersResponseDto
 import ru.snowadv.network.model.AllUsersPresenceDto
-import ru.snowadv.network.model.EmojisDto
-import ru.snowadv.network.model.EventQueueDto
-import ru.snowadv.network.model.EventTypesDto
-import ru.snowadv.network.model.EventsDto
-import ru.snowadv.network.model.MessagesDto
-import ru.snowadv.network.model.Narrow2DArrayDto
-import ru.snowadv.network.model.NarrowListDto
-import ru.snowadv.network.model.SingleUserDto
+import ru.snowadv.network.model.EmojisResponseDto
+import ru.snowadv.network.model.EventQueueResponseDto
+import ru.snowadv.network.model.EventTypesRequestDto
+import ru.snowadv.network.model.EventsResponseDto
+import ru.snowadv.network.model.MessagesResponseDto
+import ru.snowadv.network.model.Narrow2DArrayRequestDto
+import ru.snowadv.network.model.NarrowListRequestDto
+import ru.snowadv.network.model.SingleUserResponseDto
 import ru.snowadv.network.model.SingleUserPresenceDto
-import ru.snowadv.network.model.SubscribedStreamsDto
-import ru.snowadv.network.model.TopicsDto
+import ru.snowadv.network.model.SubscribedStreamsResponseDto
+import ru.snowadv.network.model.TopicsResponseDto
+import ru.snowadv.network.serializer.Narrow2DArrayDtoSerializer
 import ru.snowadv.network.serializer.NarrowListDtoSerializer
 
 interface ZulipApi { // Will add annotations later, at this moment it is used with stubs only
     // Streams
     @GET("streams")
-    suspend fun getAllStreams(): Result<AllStreamsDto>
+    suspend fun getAllStreams(): Result<AllStreamsResponseDto>
 
     @GET("users/me/subscriptions")
-    suspend fun getSubscribedStreams(): Result<SubscribedStreamsDto>
+    suspend fun getSubscribedStreams(): Result<SubscribedStreamsResponseDto>
 
     // Topics
     @GET("users/me/{stream_id}/topics")
-    suspend fun getTopicsByChannel(@Path(value = "stream_id") streamId: Long): Result<TopicsDto>
+    suspend fun getTopicsByChannel(@Path(value = "stream_id") streamId: Long): Result<TopicsResponseDto>
 
     // Users
     @GET("users")
-    suspend fun getAllUsers(): Result<AllUsersDto>
+    suspend fun getAllUsers(): Result<AllUsersResponseDto>
 
     @GET("users/{user_id}")
-    suspend fun getUser(@Path(value = "user_id") userId: Long): Result<SingleUserDto>
+    suspend fun getUser(@Path(value = "user_id") userId: Long): Result<SingleUserResponseDto>
 
     @GET("users/me")
-    suspend fun getCurrentUser(): Result<SingleUserDto>
+    suspend fun getCurrentUser(): Result<SingleUserResponseDto>
 
     // Users presence
     @GET("realm/presence")
@@ -78,8 +78,8 @@ interface ZulipApi { // Will add annotations later, at this moment it is used wi
         @Query(value = "num_after")
         numAfter: Int,
         @Query(value = "narrow")
-        narrow: NarrowListDto
-    ): Result<MessagesDto>
+        narrow: NarrowListRequestDto
+    ): Result<MessagesResponseDto>
 
     @POST("messages")
     suspend fun sendMessage(
@@ -123,7 +123,7 @@ interface ZulipApi { // Will add annotations later, at this moment it is used wi
 
     // Emojis
     @GET("/static/generated/emoji/emoji_codes.json")
-    suspend fun getEmojis(): Result<EmojisDto>
+    suspend fun getEmojis(): Result<EmojisResponseDto>
 
     // Event API
     /**
@@ -136,16 +136,16 @@ interface ZulipApi { // Will add annotations later, at this moment it is used wi
      */
     @POST("register")
     suspend fun registerEventQueue(
-        @Query("event_types") eventTypes: EventTypesDto,
-        @Query("narrow") narrow: Narrow2DArrayDto,
-    ): Result<EventQueueDto>
+        @Query("event_types") eventTypes: EventTypesRequestDto,
+        @Query("narrow") narrow: Narrow2DArrayRequestDto,
+    ): Result<EventQueueResponseDto>
 
     @GET("events")
     suspend fun getEventsFromEventQueue(
         @Query("queue_id") queueId: String,
         @Query("last_event_id") lastEventId: Long,
         @Header("READ_TIMEOUT") readTimeout: Long,
-    ): Result<EventsDto>
+    ): Result<EventsResponseDto>
 
     companion object {
         const val BASE_URL = "https://tinkoff-android-spring-2024.zulipchat.com/api/v1/"
@@ -194,7 +194,7 @@ private fun defaultJson(): Json {
     return Json {
         ignoreUnknownKeys = true
         serializersModule = SerializersModule {
-            contextual(NarrowListDto::class, NarrowListDtoSerializer)
+            contextual(NarrowListRequestDto::class, NarrowListDtoSerializer)
         }
     }
 }

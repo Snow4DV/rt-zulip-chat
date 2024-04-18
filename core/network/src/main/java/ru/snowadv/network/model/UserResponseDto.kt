@@ -4,19 +4,19 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AllUsersDto(
+data class AllUsersResponseDto(
     @SerialName("members")
-    val users: List<UserDto>,
+    val users: List<UserResponseDto>,
 )
 
 @Serializable
-data class SingleUserDto(
+data class SingleUserResponseDto(
     @SerialName("user")
-    val user: UserDto,
+    val user: UserResponseDto,
 )
 
 @Serializable
-data class UserDto(
+data class UserResponseDto(
     @SerialName("user_id")
     val id: Long,
     @SerialName("full_name")

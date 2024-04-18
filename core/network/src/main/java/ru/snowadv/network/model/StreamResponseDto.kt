@@ -4,19 +4,19 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AllStreamsDto(
+data class AllStreamsResponseDto(
     @SerialName("streams")
-    val streams: List<StreamDto>,
+    val streams: List<StreamResponseDto>,
 )
 
 @Serializable
-data class SubscribedStreamsDto(
+data class SubscribedStreamsResponseDto(
     @SerialName("subscriptions")
-    val subscriptions: List<StreamDto>,
+    val subscriptions: List<StreamResponseDto>,
 )
 
 @Serializable
-data class StreamDto(
+data class StreamResponseDto(
     @SerialName("stream_id")
     val id: Long,
     @SerialName("name")

@@ -4,7 +4,11 @@ import android.content.Context
 import ru.snowadv.channels.R
 import ru.snowadv.channels.domain.model.StreamType
 import ru.snowadv.channels.presentation.model.Stream
+import ru.snowadv.channels.presentation.model.StreamUnreadMessages
 import ru.snowadv.channels.presentation.model.Topic
+import ru.snowadv.channels.presentation.model.TopicUnreadMessages
+import ru.snowadv.event_api.model.EventStreamUpdateFlagsMessages
+import ru.snowadv.event_api.model.EventTopicUpdateFlagsMessages
 import ru.snowadv.channels.domain.model.Stream as DomainStream
 import ru.snowadv.channels.domain.model.Topic as DomainTopic
 
@@ -22,6 +26,7 @@ internal fun DomainTopic.toUiModel(position: Int): Topic {
         name = name,
         streamId = streamId,
         position = position,
+        unreadMessagesCount = 0,
     )
 }
 
@@ -38,4 +43,12 @@ internal fun StreamType.toLocalizedString(context: Context): String {
             context.getString(R.string.all_streams)
         }
     }
+}
+
+internal fun EventTopicUpdateFlagsMessages.toUiModel(): TopicUnreadMessages {
+    return TopicUnreadMessages(topicName = topicName, unreadMessagesIds = unreadMessagesIds)
+}
+
+internal fun EventStreamUpdateFlagsMessages.toUiModel(): StreamUnreadMessages {
+    return StreamUnreadMessages(streamId, topicsUnreadMessages.map { it.toUiModel() })
 }

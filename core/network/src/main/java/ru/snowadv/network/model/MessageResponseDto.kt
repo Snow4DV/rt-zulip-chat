@@ -4,9 +4,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MessagesDto(
+data class MessagesResponseDto(
     @SerialName("messages")
-    val messages: List<MessageDto>,
+    val messages: List<MessageResponseDto>,
     @SerialName("found_anchor")
     val foundAnchor: Boolean,
     @SerialName("found_oldest")
@@ -16,7 +16,7 @@ data class MessagesDto(
 )
 
 @Serializable
-data class MessageDto(
+data class MessageResponseDto(
     @SerialName("id")
     val id: Long,
     @SerialName("content")
@@ -30,5 +30,17 @@ data class MessageDto(
     @SerialName("avatar_url")
     val avatarUrl: String? = null,
     @SerialName("reactions")
-    val reactions: List<ReactionDto>,
+    val reactions: List<ReactionResponseDto>,
+    @SerialName("type")
+    val type: String,
+    @SerialName("subject")
+    val subject: String, // will be empty string for DM messages
+    @SerialName("stream_id")
+    val streamId: Long? = null, // will be null if it is DM message
 )
+
+/*
+"stream_id": 432915,
+"type": "stream",
+"subject": "testing",
+ */

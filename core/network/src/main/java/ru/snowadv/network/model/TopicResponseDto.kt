@@ -4,13 +4,13 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class TopicsDto(
+data class TopicsResponseDto(
     @SerialName("topics")
-    val topics: List<TopicDto>,
+    val topics: List<TopicResponseDto>,
 )
 
 @Serializable
-data class TopicDto(
+data class TopicResponseDto(
     @SerialName("name")
     val name: String,
 )

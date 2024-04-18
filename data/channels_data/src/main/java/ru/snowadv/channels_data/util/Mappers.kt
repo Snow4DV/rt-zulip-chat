@@ -2,13 +2,13 @@ package ru.snowadv.channels_data.util
 
 import ru.snowadv.channels_data.model.DataStream
 import ru.snowadv.channels_data.model.DataTopic
-import ru.snowadv.network.model.StreamDto
-import ru.snowadv.network.model.TopicDto
+import ru.snowadv.network.model.StreamResponseDto
+import ru.snowadv.network.model.TopicResponseDto
 
-internal fun StreamDto.toDataStream(): DataStream {
+internal fun StreamResponseDto.toDataStream(): DataStream {
     return DataStream(id = id, name = name)
 }
-internal fun TopicDto.toDataTopic(streamId: Long): DataTopic {
+internal fun TopicResponseDto.toDataTopic(streamId: Long): DataTopic {
     return DataTopic(
         uniqueId = getUniqueIdForTopic(streamId, name),
         name = name,

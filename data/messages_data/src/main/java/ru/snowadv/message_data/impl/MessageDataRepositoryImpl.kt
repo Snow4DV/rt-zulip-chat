@@ -1,20 +1,17 @@
 package ru.snowadv.message_data.impl
 
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import ru.snowadv.data.api.AuthProvider
 import ru.snowadv.message_data.api.MessageDataRepository
-import ru.snowadv.message_data.model.DataMessage
 import ru.snowadv.message_data.model.DataPaginatedMessages
-import ru.snowadv.message_data.util.toDataMessage
 import ru.snowadv.message_data.util.toDataPaginatedMessages
 import ru.snowadv.model.Resource
 import ru.snowadv.network.api.ZulipApi
-import ru.snowadv.network.model.NarrowDto
-import ru.snowadv.network.model.NarrowListDto
+import ru.snowadv.network.model.NarrowRequestDto
+import ru.snowadv.network.model.NarrowListRequestDto
 import ru.snowadv.utils.foldToResource
 import ru.snowadv.utils.toResource
 
@@ -35,7 +32,7 @@ class MessageDataRepositoryImpl(
             emit(Resource.Loading)
             api.getMessages(
                 numBefore = countOfMessages,
-                narrow = NarrowListDto(NarrowDto.ofStreamAndTopic(streamName, topicName)),
+                narrow = NarrowListRequestDto(NarrowRequestDto.ofStreamAndTopic(streamName, topicName)),
                 numAfter = 0,
                 anchor = anchorMessageId?.toString() ?: "newest"
             )

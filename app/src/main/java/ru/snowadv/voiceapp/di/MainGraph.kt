@@ -1,6 +1,7 @@
 package ru.snowadv.voiceapp.di
 
 import com.github.terrakok.cicerone.Router
+import kotlinx.coroutines.Dispatchers
 import ru.snowadv.channels.di.ChannelsGraph
 import ru.snowadv.chat.di.ChatGraph
 import ru.snowadv.home.di.HomeGraph

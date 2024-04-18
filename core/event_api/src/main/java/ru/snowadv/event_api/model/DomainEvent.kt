@@ -80,13 +80,31 @@ sealed class DomainEvent {
 
     data class UnreadMessagesEvent(
         override val id: Long,
-        val streamIdToUnreadMessagesIds: Map<Long,List<Long>>
+        val streamUnreadMessages: List<EventStreamUpdateFlagsMessages>,
     ): DomainEvent()
 
-    data class UpdateMessageFlagsEvent(
+
+
+    data class AddMessageFlagEvent(
         override val id: Long,
         val flag: String,
-        val op: String, // add, remove
-        val messagesIds: List<Long>
+        val addFlagMessagesIds: List<Long>,
+    ): DomainEvent()
+
+    data class RemoveMessageFlagEvent(
+        override val id: Long,
+        val flag: String,
+        val removeFlagMessagesIds: List<Long>,
+    ): DomainEvent()
+
+    data class AddReadMessageFlagEvent(
+        override val id: Long,
+        val addFlagMessagesIds: List<Long>,
+    ): DomainEvent()
+
+    data class RemoveReadMessageFlagEvent(
+        override val id: Long,
+        val removeFlagMessagesIds: List<Long>,
+        val removeFlagMessages: List<EventStreamUpdateFlagsMessages>,
     ): DomainEvent()
 }
