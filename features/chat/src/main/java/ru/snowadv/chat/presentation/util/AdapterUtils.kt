@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import ru.snowadv.chat.presentation.model.ChatDate
 import ru.snowadv.chat.presentation.model.ChatMessage
+import ru.snowadv.chat.presentation.util.ChatMappers.toUiChatMessage
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.chat.domain.model.ChatMessage as DomainChatMessage
 

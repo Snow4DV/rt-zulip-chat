@@ -26,8 +26,8 @@ class ChatRepositoryImpl(
 ) : MessageRepository, EmojiRepository {
     override fun getAvailableEmojis(): Flow<Resource<List<ChatEmoji>>> {
         return emojiDataRepository.getAvailableEmojis()
-            .map {
-                it.map { dataEmojis ->
+            .map { res ->
+                res.map { dataEmojis ->
                     dataEmojis.map { emoji ->
                         emoji.toChatEmoji()
                     }
@@ -49,8 +49,8 @@ class ChatRepositoryImpl(
             includeAnchorMessage = includeAnchorMessage,
             countOfMessages = countOfMessages,
             anchorMessageId = anchorMessageId
-        ).map {
-            it.map { dataPagMes ->
+        ).map { res ->
+            res.map { dataPagMes ->
                 dataPagMes.toChatPaginatedMessages()
             }
         }.flowOn(defaultDispatcher)

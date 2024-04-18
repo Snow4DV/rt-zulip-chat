@@ -96,7 +96,7 @@ class ChatFragment : Fragment(),
 
     fun openActionsDialog(actions: List<ChatAction>, onResult: (ChatAction) -> Unit) {
         AlertDialog.Builder(requireContext())
-            .setItems(actions.map { getString(it.titleResId) }.toTypedArray()) { dialog, which ->
+            .setItems(actions.map { getString(it.titleResId) }.toTypedArray()) { _, which ->
                 onResult(actions[which])
             }
             .create().show()

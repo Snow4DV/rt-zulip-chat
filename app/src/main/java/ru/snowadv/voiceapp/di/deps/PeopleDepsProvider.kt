@@ -1,5 +1,6 @@
 package ru.snowadv.voiceapp.di.deps
 
+import kotlinx.coroutines.CoroutineDispatcher
 import ru.snowadv.channels.di.ChannelsDeps
 import ru.snowadv.channels.domain.navigation.ChannelsRouter
 import ru.snowadv.channels.domain.repository.StreamRepository
@@ -23,4 +24,6 @@ class PeopleDepsProvider : PeopleDeps {
     }
     override val eventRepo: EventRepository
         get() = MainGraph.mainDepsProvider.eventDataRepository
+    override val defaultDispatcher: CoroutineDispatcher
+        get() = MainGraph.mainDepsProvider.defaultDispatcher
 }

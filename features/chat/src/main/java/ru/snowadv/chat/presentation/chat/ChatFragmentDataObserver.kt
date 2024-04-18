@@ -272,7 +272,7 @@ internal class ChatFragmentDataObserver :
     }
 
     private fun initEmojiChooserResultListener(fragment: Fragment, viewModel: ChatViewModel) {
-        fragment.childFragmentManager.setFragmentResultListener(EMOJI_CHOOSER_REQUEST_KEY, fragment.viewLifecycleOwner) { key, bundle ->
+        fragment.childFragmentManager.setFragmentResultListener(EMOJI_CHOOSER_REQUEST_KEY, fragment.viewLifecycleOwner) { _, bundle ->
             val chosenReaction =
                 bundle.getString(EmojiChooserBottomSheetDialog.BUNDLE_CHOSEN_REACTION_NAME)
                     ?: error("No reaction came as result from EmojiChooserBottomSheetDialog")

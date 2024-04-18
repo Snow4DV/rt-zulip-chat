@@ -1,5 +1,6 @@
 package ru.snowadv.voiceapp.di.deps
 
+import kotlinx.coroutines.CoroutineDispatcher
 import ru.snowadv.chat.di.ChatDeps
 import ru.snowadv.chat.domain.navigation.ChatRouter
 import ru.snowadv.chat.domain.repository.EmojiRepository
@@ -24,4 +25,5 @@ class ChatDepsProvider: ChatDeps {
     override val emojiRepository: EmojiRepository get() = chatRepository
     override val messageRepository: MessageRepository get() = chatRepository
     override val eventRepository: EventRepository get() = MainGraph.mainDepsProvider.eventDataRepository
+    override val defaultDispatcher: CoroutineDispatcher get() = MainGraph.mainDepsProvider.defaultDispatcher
 }

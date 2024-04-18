@@ -15,6 +15,6 @@ class ProfileDepsProvider: ProfileDeps {
         ProfileRepositoryImpl(MainGraph.mainDepsProvider.userDataRepository,
             MainGraph.mainDepsProvider.defaultDispatcher)
     }
-    override val eventRepo: EventRepositoryz
+    override val eventRepo: EventRepository
         get() = MainGraph.mainDepsProvider.eventDataRepository
 }
