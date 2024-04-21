@@ -119,7 +119,6 @@ class EventDataRepositoryImpl(
             }
         }
     }
-
     @Throws(IOException::class, IllegalStateException::class, UnableToObtainQueueException::class)
     private fun obtainEventQueueEndlessly(bag: MutableEventQueueListenerBag, queueId: String): Flow<DomainEvent> =
         flow {

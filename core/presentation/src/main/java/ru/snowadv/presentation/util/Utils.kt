@@ -34,3 +34,27 @@ fun <T, E> Resource<T>.toScreenState(mapper: (T) -> E, isEmptyChecker: ((T) -> B
         }
     }
 }
+
+fun <T, E> List<T>.toScreenState(mapper: (T) -> E): ScreenState<List<E>> {
+    return if (this.isEmpty()) {
+        ScreenState.Empty
+    } else {
+        ScreenState.Success(map(mapper))
+    }
+}
+
+fun <T, E> List<T>.toScreenStateListMapper(mapper: (List<T>) -> List<E>): ScreenState<List<E>> {
+    return if (this.isEmpty()) {
+        ScreenState.Empty
+    } else {
+        ScreenState.Success(mapper(this))
+    }
+}
+
+fun <T> List<T>.toScreenState() : ScreenState<List<T>> {
+    return if (this.isEmpty()) {
+        ScreenState.Empty
+    } else {
+        ScreenState.Success(this)
+    }
+}

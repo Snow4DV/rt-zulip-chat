@@ -1,6 +1,5 @@
 package ru.snowadv.profile.presentation.profile
 
-import androidx.fragment.app.viewModels
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -72,7 +71,7 @@ class ProfileFragment : BaseFragment<ProfileEventElm, ProfileEffectElm, ProfileS
 
 
     override fun render(state: ProfileStateElm) {
-        renderState(state, binding)
+        renderStateByRenderer(state, binding)
     }
 
 }

@@ -11,19 +11,26 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import ru.snowadv.chat.databinding.FragmentChatBinding
 import ru.snowadv.chat.di.ChatGraph
-import ru.snowadv.chat.presentation.chat.view_model.ChatViewModel
-import ru.snowadv.chat.presentation.chat.view_model.ChatViewModelFactory
+import ru.snowadv.chat.presentation.chat.elm.ChatEffectElm
+import ru.snowadv.chat.presentation.chat.elm.ChatEventElm
+import ru.snowadv.chat.presentation.chat.elm.ChatStateElm
+import ru.snowadv.chat.presentation.chat.elm.ChatStoreFactoryElm
 import ru.snowadv.chat.presentation.model.ChatAction
 import ru.snowadv.presentation.R
 import ru.snowadv.presentation.adapter.util.PaddingItemDecorator
+import ru.snowadv.presentation.elm.BaseFragment
+import ru.snowadv.presentation.fragment.ElmFragmentRenderer
 import ru.snowadv.presentation.fragment.ErrorHandlingFragment
 import ru.snowadv.presentation.fragment.FragmentDataObserver
 import ru.snowadv.presentation.fragment.impl.SnackbarErrorHandlingFragment
 import ru.snowadv.presentation.fragment.setStatusBarColor
 import ru.snowadv.presentation.fragment.setTopBarColor
+import vivid.money.elmslie.android.renderer.elmStoreWithRenderer
+import vivid.money.elmslie.core.store.Store
 
-class ChatFragment : Fragment(),
-    FragmentDataObserver<FragmentChatBinding, ChatViewModel, ChatFragment> by ChatFragmentDataObserver(),
+internal class ChatFragment : BaseFragment<ChatEventElm, ChatEffectElm, ChatStateElm>(),
+    ElmFragmentRenderer<ChatFragment, FragmentChatBinding, ChatEventElm, ChatEffectElm, ChatStateElm>
+    by ChatFragmentRenderer(),
     ErrorHandlingFragment by SnackbarErrorHandlingFragment() {
 
     companion object {
@@ -45,19 +52,13 @@ class ChatFragment : Fragment(),
     private val topicName: String by lazy {
         requireArguments().getString(ARG_TOPIC_NAME_KEY) ?: error("Missing topic name argument")
     }
-    private val viewModel: ChatViewModel by viewModels {
-        ChatViewModelFactory(
-            router = ChatGraph.deps.router,
+
+    override val store: Store<ChatEventElm, ChatEffectElm, ChatStateElm> by elmStoreWithRenderer(elmRenderer = this) {
+        ChatStoreFactoryElm(
+            actor = ChatGraph.chatActorElm,
             streamName = streamName,
             topicName = topicName,
-            addReactionUseCase = ChatGraph.addReactionUseCase,
-            removeReactionUseCase = ChatGraph.removeReactionUseCase,
-            getCurrentMessagesUseCase = ChatGraph.getCurrentMessagesUseCase,
-            listenToChatEventsUseCase = ChatGraph.listenToMessagesUseCase,
-            sendMessageUseCase = ChatGraph.sendMessageUseCase,
-            loadMoreMessagesUseCase = ChatGraph.loadMoreMessagesUseCase,
-            defaultDispatcher = ChatGraph.deps.defaultDispatcher,
-        )
+        ).create()
     }
 
     override fun onCreateView(
@@ -71,15 +72,24 @@ class ChatFragment : Fragment(),
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        registerObservingFragment(binding, viewModel)
         setStatusBarColor(R.color.primary)
         binding.topBackButtonBar.setTopBarColor(R.color.primary)
+        onRendererViewCreated(binding, store)
+        if (savedInstanceState == null) store.accept(ChatEventElm.Ui.Init)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        onViewDestroyedToObserver()
+        onDestroyRendererView()
         _binding = null
+    }
+
+    override fun render(state: ChatStateElm) {
+        renderStateByRenderer(state, binding)
+    }
+
+    override fun handleEffect(effect: ChatEffectElm) {
+        handleEffectByRenderer(effect, binding, store)
     }
 
     private fun addDecoratorToRecycler(binding: FragmentChatBinding) {

@@ -43,52 +43,59 @@ internal class ProfileReducerElm  : ScreenDslReducer<ProfileEventElm, ProfileEve
             }
 
             is ProfileEventElm.Internal.ServerEvent.EventQueueFailed -> {
-                state {
-                    copy(eventQueueData = null, screenState = ScreenState.Error())
+                if (event.recreateQueue) {
+                    commands {
+                        +ProfileCommandElm.LoadData(state.profileId)
+                    }
+                } else {
+                    commands {
+                        +ProfileCommandElm.ObservePresence(
+                            profileId = state.profileId,
+                            isRestart = true,
+                            queueProps = state.eventQueueData,
+                        )
+                    }
                 }
             }
 
             is ProfileEventElm.Internal.ServerEvent.EventQueueRegistered -> {
-                val queueProps = EventQueueProperties(
-                    event.queueId,
-                    event.timeoutSeconds,
-                    event.eventId
-                )
                 state {
                     copy(
-                        eventQueueData = queueProps,
+                        eventQueueData = EventQueueProperties(
+                            event.queueId,
+                            event.timeoutSeconds,
+                            event.eventId
+                        ),
                     )
                 }
                 commands {
                     +ProfileCommandElm.ObservePresence(
                         profileId = state.profileId,
                         isRestart = false,
-                        queueProps = queueProps,
+                        queueProps = state.eventQueueData,
                     )
                 }
             }
 
             is ProfileEventElm.Internal.ServerEvent.EventQueueUpdated -> {
-                val queueProps = state.eventQueueData?.copy(lastEventId = event.eventId)
                 state {
                     copy(
-                        eventQueueData = queueProps,
+                        eventQueueData = state.eventQueueData?.copy(lastEventId = event.eventId),
                     )
                 }
                 commands {
                     +ProfileCommandElm.ObservePresence(
                         profileId = state.profileId,
                         isRestart = false,
-                        queueProps = queueProps,
+                        queueProps = state.eventQueueData,
                     )
                 }
             }
 
             is ProfileEventElm.Internal.ServerEvent.PresenceUpdated -> {
-                val queueProps = state.eventQueueData?.copy(lastEventId = event.eventId)
                 state {
                     copy(
-                        eventQueueData = queueProps,
+                        eventQueueData = state.eventQueueData?.copy(lastEventId = event.eventId),
                         screenState = screenState.map { person ->
                             person.copy(
                                 status = event.newStatus
@@ -100,7 +107,7 @@ internal class ProfileReducerElm  : ScreenDslReducer<ProfileEventElm, ProfileEve
                     +ProfileCommandElm.ObservePresence(
                         profileId = state.profileId,
                         isRestart = false,
-                        queueProps = queueProps,
+                        queueProps = state.eventQueueData,
                     )
                 }
             }

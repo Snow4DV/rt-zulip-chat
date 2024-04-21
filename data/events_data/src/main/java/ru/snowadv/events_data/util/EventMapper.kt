@@ -51,17 +51,83 @@ internal object EventMapper {
 
     fun EventResponseDto.toDataEvent(currentUserId: Long, queueId: String): DomainEvent {
         return when (this) {
-            is EventResponseDto.MessageEventDto -> DomainEvent.MessageDomainEvent(id, message.toEventMessage(currentUserId), queueId)
-            is EventResponseDto.HeartbeatEventDto -> DomainEvent.HeartbeatDomainEvent(id, queueId)
-            is EventResponseDto.RealmEventDto -> DomainEvent.RealmDomainEvent(id, op, queueId)
-            is EventResponseDto.DeleteMessageEventDto -> DomainEvent.DeleteMessageDomainEvent(id, messageId, queueId)
-            is EventResponseDto.PresenceEventDto -> DomainEvent.PresenceDomainEvent(id, queueId, presence.website.toEventPresence(serverTimestamp), userId, email, userId == currentUserId,)
-            is EventResponseDto.ReactionEventDto -> DomainEvent.ReactionDomainEvent(id, op, emojiCode, emojiName, queueId, messageId, reactionType, userId, userId == currentUserId)
-            is EventResponseDto.StreamEventDto -> DomainEvent.StreamDomainEvent(id, op, queueId, streams?.map { it.toEventStream() }, streamName, streamId)
-            is EventResponseDto.TypingEventDto -> DomainEvent.TypingDomainEvent(id, op, messageType, queueId, streamId, topic, sender.userId, sender.email)
-            is EventResponseDto.UpdateMessageEventDto -> DomainEvent.UpdateMessageDomainEvent(id, messageId, content, queueId)
-            is EventResponseDto.UserStatusEventDto -> DomainEvent.UserStatusDomainEvent(id, queueId, emojiCode, emojiName, reactionType, statusText, userId)
-            is EventResponseDto.UserSubscriptionEventDto -> DomainEvent.UserSubscriptionDomainEvent(id, queueId, op, subscriptions?.map { it.toEventStream() })
+            is EventResponseDto.MessageEventDto -> DomainEvent.MessageDomainEvent(
+                id = id,
+                eventMessage = message.toEventMessage(currentUserId),
+                queueId = queueId,
+            )
+            is EventResponseDto.HeartbeatEventDto -> DomainEvent.HeartbeatDomainEvent(
+                id = id,
+                queueId = queueId,
+            )
+            is EventResponseDto.RealmEventDto -> DomainEvent.RealmDomainEvent(
+                id = id,
+                op = op,
+                queueId = queueId,
+            )
+            is EventResponseDto.DeleteMessageEventDto -> DomainEvent.DeleteMessageDomainEvent(
+                id = id,
+                messageId = messageId,
+                queueId = queueId,
+            )
+            is EventResponseDto.PresenceEventDto -> DomainEvent.PresenceDomainEvent(
+                id = id,
+                queueId = queueId,
+                presence = presence.website.toEventPresence(serverTimestamp),
+                userId = userId,
+                email = email,
+                currentUser = userId == currentUserId,
+                )
+            is EventResponseDto.ReactionEventDto -> DomainEvent.ReactionDomainEvent(
+                id = id,
+                queueId = queueId,
+                op = op,
+                emojiCode = emojiCode,
+                emojiName = emojiName,
+                messageId = messageId,
+                reactionType = reactionType,
+                userId = userId,
+                currentUserReaction = userId == currentUserId,
+            )
+            is EventResponseDto.StreamEventDto -> DomainEvent.StreamDomainEvent(
+                id = id,
+                queueId = queueId,
+                op = op,
+                streams = streams?.map { it.toEventStream() },
+                streamName = streamName,
+                streamId = streamId,
+            )
+            is EventResponseDto.TypingEventDto -> DomainEvent.TypingDomainEvent(
+                id = id,
+                queueId = queueId,
+                op = op,
+                messageType = messageType,
+                streamId = streamId,
+                topic = topic,
+                userId = sender.userId,
+                userEmail = sender.email,
+            )
+            is EventResponseDto.UpdateMessageEventDto -> DomainEvent.UpdateMessageDomainEvent(
+                id = id,
+                messageId = messageId,
+                content = content,
+                queueId = queueId,
+            )
+            is EventResponseDto.UserStatusEventDto -> DomainEvent.UserStatusDomainEvent(
+                id = id,
+                queueId = queueId,
+                emojiCode = emojiCode,
+                emojiName = emojiName,
+                reactionType = reactionType,
+                statusText = statusText,
+                userId = userId,
+            )
+            is EventResponseDto.UserSubscriptionEventDto -> DomainEvent.UserSubscriptionDomainEvent(
+                id = id,
+                queueId = queueId,
+                op = op,
+                subscriptions = subscriptions?.map { it.toEventStream() },
+            )
             is EventResponseDto.UpdateMessageFlagsEventDto -> this.toAddOrRemoveFlagsEvent(queueId)
         }
     }

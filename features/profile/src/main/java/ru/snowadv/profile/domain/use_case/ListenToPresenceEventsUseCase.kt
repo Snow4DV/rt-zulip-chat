@@ -10,7 +10,7 @@ import ru.snowadv.event_api.repository.EventRepository
 internal class ListenToPresenceEventsUseCase(private val eventRepository: EventRepository) {
     companion object {
         internal val eventTypes =
-            listOf(
+            setOf(
                 EventType.PRESENCE,
             )
     }
@@ -21,7 +21,7 @@ internal class ListenToPresenceEventsUseCase(private val eventRepository: EventR
         eventQueueProps: EventQueueProperties?,
     ): Flow<DomainEvent> {
         return eventRepository.listenEvents(
-            types = EventType.entries.toSet(),
+            types = eventTypes,
             narrows = emptySet(),
             delayBeforeObtain = isRestart,
             eventQueueProps = eventQueueProps,

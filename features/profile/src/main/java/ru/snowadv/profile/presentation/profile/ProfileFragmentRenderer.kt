@@ -34,7 +34,7 @@ internal class ProfileFragmentRenderer :
         }
     }
 
-    override fun ProfileFragment.renderState(
+    override fun ProfileFragment.renderStateByRenderer(
         state: ProfileStateElm,
         binding: FragmentProfileBinding
     ): Unit = with(binding) {
