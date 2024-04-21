@@ -42,6 +42,8 @@ dependencies {
     implementation(projects.core.utils)
     implementation(projects.core.eventApi)
 
+    implementation(libs.elmslie.core)
+    implementation(libs.elmslie.android)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

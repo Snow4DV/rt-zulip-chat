@@ -33,6 +33,7 @@ kotlinx-serialization = "1.6.0"
 retrofit = "2.11.0"
 retrofitResultConverter = "1.0.9"
 okhttp-interceptor ="4.12.0"
+elmslie = "3.0.0-alpha10"
 
 
 [libraries]
@@ -61,6 +62,8 @@ retrofit-core = { group="com.squareup.retrofit2", name="retrofit", version.ref="
 retrofit-kotlinxConverter = {group="com.squareup.retrofit2", name="converter-kotlinx-serialization", version.ref="retrofit"}
 retrofit-resultConverter = {group="com.github.skydoves", name="retrofit-adapters-result", version.ref="retrofitResultConverter"}
 okhttp-logging-interceptor = {group="com.squareup.okhttp3", name="logging-interceptor", version.ref="okhttp-interceptor"}
+elmslie-core = {group="com.github.vivid-money.elmslie", name="elmslie-core", version.ref="elmslie"}
+elmslie-android = {group="com.github.vivid-money.elmslie", name="elmslie-android", version.ref="elmslie"}
 
 
 

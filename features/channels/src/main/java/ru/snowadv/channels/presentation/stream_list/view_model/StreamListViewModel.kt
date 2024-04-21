@@ -3,7 +3,6 @@ package ru.snowadv.channels.presentation.stream_list.view_model
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -20,14 +19,12 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.snowadv.channels.di.ChannelsGraph
 import ru.snowadv.channels.domain.model.StreamType
 import ru.snowadv.channels.domain.navigation.ChannelsRouter
 import ru.snowadv.channels.domain.use_case.GetStreamsUseCase
 import ru.snowadv.channels.domain.use_case.GetTopicsUseCase
 import ru.snowadv.channels.domain.use_case.ListenToStreamEventsUseCase
 import ru.snowadv.channels.presentation.model.ShimmerTopic
-import ru.snowadv.channels.presentation.model.Stream
 import ru.snowadv.model.Resource
 import ru.snowadv.channels.presentation.stream_list.event.StreamListEvent
 import ru.snowadv.channels.presentation.stream_list.event.StreamListFragmentEvent
@@ -188,11 +185,11 @@ internal class StreamListViewModel(
                     }
                 }
 
-                is DomainEvent.UnreadMessagesEvent -> {
+                is DomainEvent.RegisteredNewQueueEvent -> {
                     screenState.update {
-                        it.setInitialUnreadMessages(event.streamUnreadMessages.map {
+                        it.setInitialUnreadMessages(event.streamUnreadMessages?.map { // TODO replace with new event system
                             updateMsgFlags -> updateMsgFlags.toUiModel()
-                        })
+                        } ?: error ("Wrong event queue registered. Check event types in use case"))
                     }
                 }
 

@@ -53,7 +53,7 @@ class UserDataRepositoryImpl(
             transform = { userDtoResult, userPresenceDtoResult ->
                 val resultResource = userDtoResult.getOrNull()?.let {
                     Resource.Success(it.toDataUser(userPresenceDtoResult.getOrNull(), true))
-                } ?: Resource.Error(userDtoResult.exceptionOrNull())
+                } ?: Resource.Error(userDtoResult.exceptionOrNull() ?: IllegalStateException())
 
                 emit(resultResource)
             },

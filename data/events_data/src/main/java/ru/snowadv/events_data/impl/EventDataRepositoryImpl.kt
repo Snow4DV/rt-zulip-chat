@@ -12,15 +12,17 @@ import ru.snowadv.data.api.AuthProvider
 import ru.snowadv.event_api.helper.MutableEventQueueListenerBag
 import ru.snowadv.event_api.model.DomainEvent
 import ru.snowadv.event_api.model.EventNarrow
-import ru.snowadv.event_api.model.EventStreamUpdateFlagsMessages
+import ru.snowadv.event_api.helper.EventQueueProperties
 import ru.snowadv.event_api.model.EventType
 import ru.snowadv.event_api.repository.EventRepository
 import ru.snowadv.events_data.exception.UnableToObtainQueueException
 import ru.snowadv.events_data.util.EventMapper.toDataEvent
-import ru.snowadv.events_data.util.EventMapper.toEventTopicUnreadMessages
+import ru.snowadv.events_data.util.EventMapper.toEventStreamMessages
 import ru.snowadv.events_data.util.EventMapper.toEventTypesDto
 import ru.snowadv.events_data.util.EventMapper.toNarrow2DArrayDto
+import ru.snowadv.events_data.util.EventMapper.toRegisteredQueueEvent
 import ru.snowadv.network.api.ZulipApi
+import ru.snowadv.network.utils.NetworkUtils.isHttpExceptionWithCode
 import java.io.IOException
 
 class EventDataRepositoryImpl(
@@ -33,7 +35,7 @@ class EventDataRepositoryImpl(
         const val RETRY_DELAY_MILLIS = 10_000L
     }
 
-    override fun listenForEvents(
+    override fun listenForEvents( // TODO remove and move all screens to new event system
         bag: MutableEventQueueListenerBag,
         types: List<EventType>,
         narrows: List<EventNarrow>,
@@ -52,13 +54,11 @@ class EventDataRepositoryImpl(
 
                     eventQueueDto.unreadMessages?.let { unreadMessagesDto -> // Present ONLY if message and update_message_flags are both present in types
                         emit(
-                            DomainEvent.UnreadMessagesEvent(
+                            DomainEvent.RegisteredNewQueueEvent(
                                 id = bag.lastEventId,
-                                streamUnreadMessages = unreadMessagesDto.streams.groupBy { it.streamId }.map {
-                                    EventStreamUpdateFlagsMessages(
-                                        it.key,
-                                        it.value.map { streamTopicUnreadMessagesDto -> streamTopicUnreadMessagesDto.toEventTopicUnreadMessages() })
-                                }
+                                timeoutSeconds = eventQueueDto.longPollTimeoutSeconds,
+                                queueId = eventQueueDto.queueId,
+                                streamUnreadMessages = unreadMessagesDto.streams.toEventStreamMessages(),
                             )
                         )
                     }
@@ -67,7 +67,7 @@ class EventDataRepositoryImpl(
         }
 
         // Listen to queue
-        obtainEventQueueEndlessly(bag)
+        obtainEventQueueEndlessly(bag, queueId = bag.queueId ?: error("bad queue"))
             .collect { emit(it) }
     }.retryWhen { cause, _ ->
         bag.clear()
@@ -78,8 +78,50 @@ class EventDataRepositoryImpl(
         true
     }.flowOn(ioDispatcher)
 
+    override fun listenEvents(
+        types: Set<EventType>,
+        narrows: Set<EventNarrow>,
+        eventQueueProps: EventQueueProperties?,
+        delayBeforeObtain: Boolean
+    ): Flow<DomainEvent> = flow {
+        if (delayBeforeObtain) {
+            delay(RETRY_DELAY_MILLIS)
+        }
+        if (eventQueueProps !=  null) {
+            api.getEventsFromEventQueue(
+                queueId = eventQueueProps.queueId,
+                lastEventId = eventQueueProps.lastEventId,
+                readTimeout = eventQueueProps.timeoutSeconds * 1000L,
+            ).fold(
+                onSuccess = {
+                    val userId = authProvider.getAuthorizedUser().id
+                    it.events.map { eventDto -> eventDto.toDataEvent(userId, eventQueueProps.queueId) }.forEach { event ->
+                        emit(event)
+                    }
+                },
+                onFailure = {
+                    emit(DomainEvent.FailedFetchingQueueEvent(
+                        id = eventQueueProps.lastEventId,
+                        queueId = eventQueueProps.queueId,
+                        isQueueBad = it.isHttpExceptionWithCode(400),
+                    ))
+                },
+            )
+        } else {
+            api.registerEventQueue(
+                eventTypes = (types + EventType.HEARTBEAT + EventType.REALM).toEventTypesDto(),
+                narrow = narrows.toNarrow2DArrayDto(),
+            ).getOrElse {
+                emit(DomainEvent.FailedFetchingQueueEvent(-1, null, true))
+                return@flow
+            }.let { eventsDto ->
+                emit(eventsDto.toRegisteredQueueEvent())
+            }
+        }
+    }
+
     @Throws(IOException::class, IllegalStateException::class, UnableToObtainQueueException::class)
-    private fun obtainEventQueueEndlessly(bag: MutableEventQueueListenerBag): Flow<DomainEvent> =
+    private fun obtainEventQueueEndlessly(bag: MutableEventQueueListenerBag, queueId: String): Flow<DomainEvent> =
         flow {
             while (currentCoroutineContext().isActive) {
                 api.getEventsFromEventQueue(
@@ -89,7 +131,7 @@ class EventDataRepositoryImpl(
                     readTimeout = bag.timeoutSeconds * 1000L
                 ).getOrElse { throw UnableToObtainQueueException() }
                     .let { eventsDto ->
-                        eventsDto.events.map { it.toDataEvent(authProvider.getAuthorizedUser().id) }
+                        eventsDto.events.map { it.toDataEvent(authProvider.getAuthorizedUser().id, queueId = queueId) }
                             .forEach { domainEvent ->
                                 emit(domainEvent)
                             }

@@ -2,9 +2,8 @@ package ru.snowadv.profile.domain.use_case
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterIsInstance
-import ru.snowadv.event_api.helper.MutableEventQueueListenerBag
 import ru.snowadv.event_api.model.DomainEvent
+import ru.snowadv.event_api.helper.EventQueueProperties
 import ru.snowadv.event_api.model.EventType
 import ru.snowadv.event_api.repository.EventRepository
 
@@ -12,22 +11,23 @@ internal class ListenToPresenceEventsUseCase(private val eventRepository: EventR
     companion object {
         internal val eventTypes =
             listOf(
-                EventType.REALM, EventType.HEARTBEAT, EventType.PRESENCE
+                EventType.PRESENCE,
             )
     }
 
     operator fun invoke(
-        bag: MutableEventQueueListenerBag,
         userId: Long?,
-        reloadAction: suspend () -> Unit
-    ): Flow<DomainEvent.PresenceDomainEvent> {
-        return eventRepository.listenForEvents(
-            bag = bag,
-            types = eventTypes,
-            narrows = emptyList(),
-            reloadAction = reloadAction,
-        ).filterIsInstance<DomainEvent.PresenceDomainEvent>().filter { presenceEvent ->
-            userId?.let { userId -> presenceEvent.userId == userId } ?: presenceEvent.currentUser
+        isRestart: Boolean,
+        eventQueueProps: EventQueueProperties?,
+    ): Flow<DomainEvent> {
+        return eventRepository.listenEvents(
+            types = EventType.entries.toSet(),
+            narrows = emptySet(),
+            delayBeforeObtain = isRestart,
+            eventQueueProps = eventQueueProps,
+        ).filter { presenceEvent ->
+            !(presenceEvent is DomainEvent.PresenceDomainEvent
+                    && userId?.let { userId -> presenceEvent.userId != userId } ?: !presenceEvent.currentUser)
         }
     }
 }

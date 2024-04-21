@@ -24,7 +24,6 @@ internal class ContactsActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
-        RecyclerView.ViewHolder
 
         binding = ActivityContactsBinding.inflate(layoutInflater)
         setContentView(binding.root)

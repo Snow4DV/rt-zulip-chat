@@ -16,10 +16,12 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+
+        maven("https://jitpack.io")
     }
 }
 
-rootProject.name = "VoiceApp"
+rootProject.name = "ChatApp"
 include(":app")
 include(":app_contacts")
 include(":core")
