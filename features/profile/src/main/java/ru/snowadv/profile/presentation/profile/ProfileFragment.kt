@@ -19,7 +19,7 @@ import ru.snowadv.profile.presentation.profile.elm.ProfileStoreFactoryElm
 import vivid.money.elmslie.android.renderer.elmStoreWithRenderer
 import vivid.money.elmslie.core.store.Store
 
-class ProfileFragment : BaseFragment<ProfileEventElm, ProfileEffectElm, ProfileStateElm>(),
+internal class ProfileFragment : BaseFragment<ProfileEventElm, ProfileEffectElm, ProfileStateElm>(),
     ElmFragmentRenderer<ProfileFragment, FragmentProfileBinding, ProfileEventElm, ProfileEffectElm, ProfileStateElm> by ProfileFragmentRenderer() {
 
     companion object {

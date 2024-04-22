@@ -23,7 +23,6 @@ internal class ProfileActorElm( // actor that interacts with domain layer
     override fun execute(command: ProfileCommandElm): Flow<ProfileEventElm> = when(command) {
         is ProfileCommandElm.LoadData -> {
             getProfileUseCase.invoke(command.profileId).map { res ->
-
                 when(res) {
                     is Resource.Error -> ProfileEventElm.Internal.Error(res.throwable)
                     is Resource.Loading -> ProfileEventElm.Internal.Loading
@@ -39,7 +38,7 @@ internal class ProfileActorElm( // actor that interacts with domain layer
                     is DomainEvent.FailedFetchingQueueEvent -> event.toElmEvent()
                     else -> event.toUpdateQueueDataElmEvent()
                 }
-            }.asSwitchFlow()
+            }
         }
 
         ProfileCommandElm.GoBack -> flow {

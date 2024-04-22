@@ -1,21 +1,23 @@
-package ru.snowadv.profile.presentation.profile.elm
+package ru.snowadv.people.presentation.people_list.elm
 
 import ru.snowadv.event_api.helper.EventInfoHolder
 import ru.snowadv.event_api.model.EventSenderType
-import ru.snowadv.profile.presentation.model.Person
+import ru.snowadv.people.presentation.model.Person
 
-internal sealed interface ProfileEventElm {
+internal sealed interface PeopleListEventElm {
 
-    sealed interface Ui : ProfileEventElm {
+    sealed interface Ui : PeopleListEventElm {
         data object Init : Ui
         data object Paused : Ui
         data object Resumed : Ui
         data object ClickedOnRetry : Ui
-        data object ClickedOnBack : Ui
+        data object ClickedOnSearchIcon : Ui
+        data class ClickedOnPerson(val userId: Long) : Ui
+        data class ChangedSearchQuery(val query: String) : Ui
     }
 
-    sealed interface Internal : ProfileEventElm {
-        data class PersonLoaded(val person: Person) : Internal
+    sealed interface Internal : PeopleListEventElm {
+        data class PeopleLoaded(val people: List<Person>) : Internal
         data class Error(val throwable: Throwable) : Internal
         data object Loading : Internal
 
@@ -37,12 +39,13 @@ internal sealed interface ProfileEventElm {
                 ServerEvent() {
                 override val senderType: EventSenderType
                     get() = EventSenderType.SYNTHETIC_FAIL
-                }
+            }
 
             data class PresenceUpdated(
                 override val queueId: String,
                 override val eventId: Long,
                 val newStatus: Person.Status,
+                val userId: Long,
             ) :
                 ServerEvent()
 

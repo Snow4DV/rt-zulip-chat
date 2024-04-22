@@ -35,6 +35,24 @@ fun <T, E> Resource<T>.toScreenState(mapper: (T) -> E, isEmptyChecker: ((T) -> B
     }
 }
 
+fun <T> Resource<List<T>>.toScreenState(): ScreenState<List<T>> {
+    return when(this) {
+        is Resource.Error -> {
+            ScreenState.Error(this.throwable)
+        }
+        is Resource.Loading -> {
+            ScreenState.Loading
+        }
+        is Resource.Success -> {
+            if (data.isEmpty()) {
+                ScreenState.Empty
+            } else {
+                ScreenState.Success(data)
+            }
+        }
+    }
+}
+
 fun <T, E> List<T>.toScreenState(mapper: (T) -> E): ScreenState<List<E>> {
     return if (this.isEmpty()) {
         ScreenState.Empty

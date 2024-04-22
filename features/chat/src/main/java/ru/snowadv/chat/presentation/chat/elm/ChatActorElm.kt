@@ -16,7 +16,6 @@ import vivid.money.elmslie.core.store.Actor
 
 internal class ChatActorElm(
     private val router: ChatRouter,
-
     private val addReactionUseCase: AddReactionUseCase,
     private val removeReactionUseCase: RemoveReactionUseCase,
     private val sendMessageUseCase: SendMessageUseCase,

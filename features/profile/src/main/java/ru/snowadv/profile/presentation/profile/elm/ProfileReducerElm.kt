@@ -96,17 +96,6 @@ internal class ProfileReducerElm  : ScreenDslReducer<ProfileEventElm, ProfileEve
         }
     }
 
-    private fun Result.observeCommand() {
-        if (!state.isResumed || state.screenState !is ScreenState.Success) return
-        commands {
-            +ProfileCommandElm.ObservePresence(
-                profileId = state.profileId,
-                isRestart = false,
-                queueProps = state.eventQueueData,
-            )
-        }
-    }
-
     override fun Result.ui(event: ProfileEventElm.Ui): Any =
         when(event) {
             ProfileEventElm.Ui.ClickedOnBack -> commands { +ProfileCommandElm.GoBack }
@@ -122,5 +111,16 @@ internal class ProfileReducerElm  : ScreenDslReducer<ProfileEventElm, ProfileEve
                 observeCommand()
             }
         }
+
+    private fun Result.observeCommand() {
+        if (!state.isResumed || state.screenState !is ScreenState.Success) return
+        commands {
+            +ProfileCommandElm.ObservePresence(
+                profileId = state.profileId,
+                isRestart = false,
+                queueProps = state.eventQueueData,
+            )
+        }
+    }
 
 }

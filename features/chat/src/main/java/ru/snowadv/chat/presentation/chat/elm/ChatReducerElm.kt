@@ -21,7 +21,7 @@ internal class ChatReducerElm :
     ) {
     override fun Result.internal(event: ChatEventElm.Internal) {
         if (!StateMachineQueueHelper.determineIfEventIsByServerAndBelongsToStateOrOther(
-                state.eventQueueData, event
+                queueProps = state.eventQueueData, event = event
             )
         ) return
         when (event) {
