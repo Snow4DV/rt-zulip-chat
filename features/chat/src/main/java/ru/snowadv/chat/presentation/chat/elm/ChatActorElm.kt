@@ -56,6 +56,8 @@ internal class ChatActorElm(
             listenToChatEventsUseCase(
                 isRestart = command.isRestart,
                 eventQueueProps = command.queueProps,
+                streamName = command.streamName,
+                topicName = command.topicName,
             ).map { it.toElmEvent() }
         }
 

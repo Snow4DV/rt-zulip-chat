@@ -1,7 +1,5 @@
 package ru.snowadv.chat.presentation.emoji_chooser
 
-import android.app.Dialog
-import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,13 +13,20 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import ru.snowadv.chat.R
 import ru.snowadv.chat.databinding.FragmentEmojiChooserBinding
 import ru.snowadv.chat.di.ChatGraph
-import ru.snowadv.chat.presentation.emoji_chooser.view_model.EmojiChooserViewModel
-import ru.snowadv.chat.presentation.emoji_chooser.view_model.EmojiChooserViewModelFactory
+import ru.snowadv.chat.presentation.chat.elm.ChatStoreFactoryElm
+import ru.snowadv.chat.presentation.emoji_chooser.elm.EmojiChooserEffectElm
+import ru.snowadv.chat.presentation.emoji_chooser.elm.EmojiChooserEventElm
+import ru.snowadv.chat.presentation.emoji_chooser.elm.EmojiChooserStateElm
+import ru.snowadv.chat.presentation.emoji_chooser.elm.EmojiChooserStateFactoryElm
 import ru.snowadv.chat.presentation.model.ChatEmoji
-import ru.snowadv.presentation.fragment.FragmentDataObserver
+import ru.snowadv.presentation.elm.BaseBottomSheetDialogFragment
+import ru.snowadv.presentation.fragment.ElmFragmentRenderer
+import vivid.money.elmslie.android.renderer.elmStoreWithRenderer
+import vivid.money.elmslie.core.store.Store
 
-class EmojiChooserBottomSheetDialog constructor() : BottomSheetDialogFragment(),
-    FragmentDataObserver<FragmentEmojiChooserBinding, EmojiChooserViewModel, EmojiChooserBottomSheetDialog> by EmojiChooserDataObserver() {
+internal class EmojiChooserBottomSheetDialog : BaseBottomSheetDialogFragment<EmojiChooserEventElm, EmojiChooserEffectElm, EmojiChooserStateElm>(),
+    ElmFragmentRenderer<EmojiChooserBottomSheetDialog, FragmentEmojiChooserBinding, EmojiChooserEventElm, EmojiChooserEffectElm, EmojiChooserStateElm>
+    by EmojiChooserRenderer() {
 
     companion object {
         const val TAG = "emoji_chooser_dialog"
@@ -55,11 +60,15 @@ class EmojiChooserBottomSheetDialog constructor() : BottomSheetDialogFragment(),
                 if (it == DEFAULT_ARG_MESSAGE_ID) error("Missing message id argument")
             }
     }
+
     private var _binding: FragmentEmojiChooserBinding? = null
-    private val viewModel: EmojiChooserViewModel by viewModels(
-        factoryProducer = { EmojiChooserViewModelFactory(ChatGraph.getEmojisUseCase) }
-    )
     private val binding get() = requireNotNull(_binding) { "Binding wasn't initialized" }
+
+    override val store: Store<EmojiChooserEventElm, EmojiChooserEffectElm, EmojiChooserStateElm> by elmStoreWithRenderer(elmRenderer = this) {
+        EmojiChooserStateFactoryElm(
+            actor = ChatGraph.emojiChooserActorElm,
+        ).create()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,13 +80,22 @@ class EmojiChooserBottomSheetDialog constructor() : BottomSheetDialogFragment(),
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        registerObservingFragment(binding, viewModel)
+        onRendererViewCreated(binding, store)
         setStateBoxBackgroundColor()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        onDestroyRendererView()
         _binding = null
+    }
+
+    override fun render(state: EmojiChooserStateElm) {
+        renderStateByRenderer(state = state, binding = binding)
+    }
+
+    override fun handleEffect(effect: EmojiChooserEffectElm) {
+        handleEffectByRenderer(effect = effect, binding = binding, store = store)
     }
 
     fun show(fragmentManager: FragmentManager) = show(fragmentManager, TAG)

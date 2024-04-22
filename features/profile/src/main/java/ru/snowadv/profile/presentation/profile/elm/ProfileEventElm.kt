@@ -11,6 +11,8 @@ sealed interface ProfileEventElm {
 
     sealed interface Ui : ProfileEventElm {
         data object Init : Ui
+        data object Paused : Ui
+        data object Resumed : Ui
         data object ClickedOnRetry : Ui
         data object ClickedOnBack : Ui
     }

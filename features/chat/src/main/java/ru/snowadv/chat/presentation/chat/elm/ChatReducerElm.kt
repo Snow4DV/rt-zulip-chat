@@ -5,6 +5,7 @@ import ru.snowadv.chat.presentation.model.ChatMessage
 import ru.snowadv.chat.presentation.model.ChatPaginationStatus
 import ru.snowadv.chat.presentation.model.ChatReaction
 import ru.snowadv.chat.presentation.util.AdapterUtils.mapToAdapterMessagesAndDates
+import ru.snowadv.chat.presentation.util.AdapterUtils.mapToUiAdapterMessagesAndDates
 import ru.snowadv.chat.presentation.util.ChatMappers.toUiChatMessage
 import ru.snowadv.event_api.helper.StateMachineQueueHelper
 import ru.snowadv.event_api.helper.EventQueueProperties
@@ -40,7 +41,7 @@ internal class ChatReducerElm :
             is ChatEventElm.Internal.InitialChatLoaded -> {
                 state {
                     copy(
-                        screenState = event.messages.messages.toScreenState { it.toUiChatMessage() },
+                        screenState = event.messages.messages.toScreenStateListMapper { it.mapToUiAdapterMessagesAndDates() },
                         messages = event.messages.messages.map { it.toUiChatMessage() },
                         paginationStatus = when {
                             event.messages.foundOldest -> ChatPaginationStatus.LoadedAll
@@ -94,7 +95,7 @@ internal class ChatReducerElm :
                 commands {
                     if (event.recreateQueue) {
                         +ChatCommandElm.LoadInitialMessages(state.stream, state.topic)
-                    } else {
+                    } else if (state.resumed){
                         +ChatCommandElm.ObserveEvents(
                             streamName = state.stream,
                             topicName = state.topic,
@@ -290,6 +291,16 @@ internal class ChatReducerElm :
             ChatEventElm.Ui.Init -> commands {
                 +ChatCommandElm.LoadInitialMessages(state.stream, state.topic)
             }
+
+            ChatEventElm.Ui.Paused -> state {
+                copy(resumed = false)
+            }
+            ChatEventElm.Ui.Resumed -> {
+                state {
+                    copy(resumed = true)
+                }
+                commandObserve()
+            }
         }
     }
 
@@ -302,6 +313,7 @@ internal class ChatReducerElm :
     }
 
     private fun Result.commandObserve() {
+        if (!state.resumed || state.screenState !is ScreenState.Success) return
         commands {
             +ChatCommandElm.ObserveEvents(
                 streamName = state.stream,

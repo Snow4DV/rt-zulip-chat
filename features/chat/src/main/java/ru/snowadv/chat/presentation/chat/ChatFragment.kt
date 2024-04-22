@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import ru.snowadv.chat.databinding.FragmentChatBinding
 import ru.snowadv.chat.di.ChatGraph
@@ -60,11 +61,14 @@ internal class ChatFragment : BaseFragment<ChatEventElm, ChatEffectElm, ChatStat
             topicName = topicName,
         ).create()
     }
+    override val resumeUiEvent: ChatEventElm = ChatEventElm.Ui.Resumed
+    override val pauseUiEvent: ChatEventElm = ChatEventElm.Ui.Paused
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        super.onCreateView(inflater, container, savedInstanceState)
         return FragmentChatBinding.inflate(layoutInflater).also {
             _binding = it
             addDecoratorToRecycler(it)
@@ -75,7 +79,6 @@ internal class ChatFragment : BaseFragment<ChatEventElm, ChatEffectElm, ChatStat
         setStatusBarColor(R.color.primary)
         binding.topBackButtonBar.setTopBarColor(R.color.primary)
         onRendererViewCreated(binding, store)
-        if (savedInstanceState == null) store.accept(ChatEventElm.Ui.Init)
     }
 
     override fun onDestroyView() {

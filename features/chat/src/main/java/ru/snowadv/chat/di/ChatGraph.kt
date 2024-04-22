@@ -8,6 +8,7 @@ import ru.snowadv.chat.domain.use_case.LoadMoreMessagesUseCase
 import ru.snowadv.chat.domain.use_case.RemoveReactionUseCase
 import ru.snowadv.chat.domain.use_case.SendMessageUseCase
 import ru.snowadv.chat.presentation.chat.elm.ChatActorElm
+import ru.snowadv.chat.presentation.emoji_chooser.elm.EmojiChooserActorElm
 
 object ChatGraph {
     internal lateinit var deps: ChatDeps
@@ -18,6 +19,7 @@ object ChatGraph {
     internal val sendMessageUseCase by lazy { SendMessageUseCase(deps.messageRepository) }
     internal val getEmojisUseCase by lazy { GetEmojisUseCase(deps.emojiRepository) }
     internal val loadMoreMessagesUseCase by lazy { LoadMoreMessagesUseCase(deps.messageRepository) }
+
     internal val chatActorElm by lazy { ChatActorElm(
         router = deps.router,
         addReactionUseCase = addReactionUseCase,
@@ -26,6 +28,9 @@ object ChatGraph {
         getMessagesUseCase = getCurrentMessagesUseCase,
         listenToChatEventsUseCase = listenToMessagesUseCase,
         loadMoreMessagesUseCase = loadMoreMessagesUseCase,
+    ) }
+    internal val emojiChooserActorElm by lazy { EmojiChooserActorElm(
+        getEmojisUseCase = getEmojisUseCase,
     ) }
 
     fun init(deps: ChatDeps) {

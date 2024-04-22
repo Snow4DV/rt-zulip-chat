@@ -22,10 +22,12 @@ internal class ListenToChatEventsUseCase(private val eventRepository: EventRepos
     operator fun invoke(
         isRestart: Boolean,
         eventQueueProps: EventQueueProperties?,
+        streamName: String,
+        topicName: String,
     ): Flow<DomainEvent> {
         return eventRepository.listenEvents(
             types = eventTypes,
-            narrows = emptySet(),
+            narrows = setOf(EventNarrow("stream", streamName), EventNarrow("topic", topicName)),
             delayBeforeObtain = isRestart,
             eventQueueProps = eventQueueProps,
         )

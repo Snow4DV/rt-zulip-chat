@@ -10,7 +10,7 @@ internal class ProfileStoreFactoryElm(
 
     fun create(): Store<ProfileEventElm, ProfileEffectElm, ProfileStateElm> {
         return ElmStore(
-            initialState = ProfileStateElm(profileId = profileId, eventQueueData = null),
+            initialState = ProfileStateElm(profileId = profileId, eventQueueData = null, isResumed = false),
             actor = actor,
             reducer = ProfileReducerElm(),
         )

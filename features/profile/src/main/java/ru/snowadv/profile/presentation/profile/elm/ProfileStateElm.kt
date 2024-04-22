@@ -8,6 +8,7 @@ data class ProfileStateElm(
     val screenState: ScreenState<Person> = ScreenState.Loading,
     val profileId: Long?,
     val eventQueueData: EventQueueProperties?,
+    val isResumed: Boolean,
 ) {
     val isOwner = profileId == null
 }

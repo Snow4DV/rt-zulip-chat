@@ -20,6 +20,7 @@ internal data class ChatStateElm(
     val actionButtonType: ActionButtonType = ActionButtonType.ADD_ATTACHMENT,
     val paginationStatus: ChatPaginationStatus = ChatPaginationStatus.HasMore,
     val eventQueueData: EventQueueProperties?,
+    val resumed: Boolean = false,
 ) {
 
     val paginatedScreenState = screenState.map { messagesDelegates ->

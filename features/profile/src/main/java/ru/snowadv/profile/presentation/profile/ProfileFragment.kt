@@ -51,12 +51,14 @@ class ProfileFragment : BaseFragment<ProfileEventElm, ProfileEffectElm, ProfileS
     override val store: Store<ProfileEventElm, ProfileEffectElm, ProfileStateElm> by elmStoreWithRenderer(elmRenderer = this) {
         ProfileStoreFactoryElm(ProfileGraph.profileActorElm, profileId).create()
     }
-
+    override val resumeUiEvent: ProfileEventElm = ProfileEventElm.Ui.Resumed
+    override val pauseUiEvent: ProfileEventElm = ProfileEventElm.Ui.Paused
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        super.onCreateView(inflater, container, savedInstanceState)
         return FragmentProfileBinding.inflate(inflater, container, false)
             .also { _binding = it }.root
     }

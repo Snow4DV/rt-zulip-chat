@@ -14,6 +14,7 @@ internal class ChatStoreFactoryElm(
             initialState = ChatStateElm(stream = streamName, topic = topicName, eventQueueData = null),
             actor = actor,
             reducer = ChatReducerElm(),
+            startEvent = ChatEventElm.Ui.Init,
         )
     }
 }

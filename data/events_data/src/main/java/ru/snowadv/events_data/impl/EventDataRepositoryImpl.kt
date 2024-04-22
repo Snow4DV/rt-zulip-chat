@@ -22,6 +22,7 @@ import ru.snowadv.events_data.util.EventMapper.toEventTypesDto
 import ru.snowadv.events_data.util.EventMapper.toNarrow2DArrayDto
 import ru.snowadv.events_data.util.EventMapper.toRegisteredQueueEvent
 import ru.snowadv.network.api.ZulipApi
+import ru.snowadv.network.utils.NetworkUtils.getHttpExceptionCode
 import ru.snowadv.network.utils.NetworkUtils.isHttpExceptionWithCode
 import java.io.IOException
 
@@ -33,6 +34,8 @@ class EventDataRepositoryImpl(
 
     companion object {
         const val RETRY_DELAY_MILLIS = 10_000L
+        const val BAD_EVENT_QUEUE_ID_ERROR_CODE = "BAD_EVENT_QUEUE_ID"
+        const val BAD_REQUEST_ERROR_CODE = "BAD_REQUEST"
     }
 
     override fun listenForEvents( // TODO remove and move all screens to new event system
@@ -100,11 +103,26 @@ class EventDataRepositoryImpl(
                     }
                 },
                 onFailure = {
-                    emit(DomainEvent.FailedFetchingQueueEvent(
-                        id = eventQueueProps.lastEventId,
-                        queueId = eventQueueProps.queueId,
-                        isQueueBad = it.isHttpExceptionWithCode(400),
-                    ))
+                    when (it.getHttpExceptionCode()) {
+                        BAD_REQUEST_ERROR_CODE -> {
+                            return@flow // We do nothing in that case. Most likely queue was collected twice.
+                        }
+                        BAD_EVENT_QUEUE_ID_ERROR_CODE -> {
+                            emit(DomainEvent.FailedFetchingQueueEvent(
+                                id = eventQueueProps.lastEventId,
+                                queueId = eventQueueProps.queueId,
+                                isQueueBad = true,
+                            ))
+                        }
+                        else -> {
+                            emit(DomainEvent.FailedFetchingQueueEvent(
+                                id = eventQueueProps.lastEventId,
+                                queueId = eventQueueProps.queueId,
+                                isQueueBad = false,
+                            ))
+                        }
+                    }
+
                 },
             )
         } else {

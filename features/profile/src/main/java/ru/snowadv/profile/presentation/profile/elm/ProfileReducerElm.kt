@@ -47,7 +47,7 @@ internal class ProfileReducerElm  : ScreenDslReducer<ProfileEventElm, ProfileEve
                     commands {
                         +ProfileCommandElm.LoadData(state.profileId)
                     }
-                } else {
+                } else if (state.isResumed) {
                     commands {
                         +ProfileCommandElm.ObservePresence(
                             profileId = state.profileId,
@@ -68,13 +68,7 @@ internal class ProfileReducerElm  : ScreenDslReducer<ProfileEventElm, ProfileEve
                         ),
                     )
                 }
-                commands {
-                    +ProfileCommandElm.ObservePresence(
-                        profileId = state.profileId,
-                        isRestart = false,
-                        queueProps = state.eventQueueData,
-                    )
-                }
+                observeCommand()
             }
 
             is ProfileEventElm.Internal.ServerEvent.EventQueueUpdated -> {
@@ -83,13 +77,7 @@ internal class ProfileReducerElm  : ScreenDslReducer<ProfileEventElm, ProfileEve
                         eventQueueData = state.eventQueueData?.copy(lastEventId = event.eventId),
                     )
                 }
-                commands {
-                    +ProfileCommandElm.ObservePresence(
-                        profileId = state.profileId,
-                        isRestart = false,
-                        queueProps = state.eventQueueData,
-                    )
-                }
+                observeCommand()
             }
 
             is ProfileEventElm.Internal.ServerEvent.PresenceUpdated -> {
@@ -103,14 +91,19 @@ internal class ProfileReducerElm  : ScreenDslReducer<ProfileEventElm, ProfileEve
                         }
                     )
                 }
-                commands {
-                    +ProfileCommandElm.ObservePresence(
-                        profileId = state.profileId,
-                        isRestart = false,
-                        queueProps = state.eventQueueData,
-                    )
-                }
+                observeCommand()
             }
+        }
+    }
+
+    private fun Result.observeCommand() {
+        if (!state.isResumed || state.screenState !is ScreenState.Success) return
+        commands {
+            +ProfileCommandElm.ObservePresence(
+                profileId = state.profileId,
+                isRestart = false,
+                queueProps = state.eventQueueData,
+            )
         }
     }
 
@@ -119,6 +112,15 @@ internal class ProfileReducerElm  : ScreenDslReducer<ProfileEventElm, ProfileEve
             ProfileEventElm.Ui.ClickedOnBack -> commands { +ProfileCommandElm.GoBack }
             ProfileEventElm.Ui.ClickedOnRetry -> commands { +ProfileCommandElm.LoadData(profileId = state.profileId) }
             ProfileEventElm.Ui.Init -> commands { +ProfileCommandElm.LoadData(profileId = state.profileId) }
+            ProfileEventElm.Ui.Paused -> state {
+                copy(isResumed = false)
+            }
+            ProfileEventElm.Ui.Resumed -> {
+                state {
+                    copy(isResumed = true)
+                }
+                observeCommand()
+            }
         }
 
 }

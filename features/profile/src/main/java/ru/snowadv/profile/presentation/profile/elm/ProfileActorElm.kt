@@ -39,7 +39,7 @@ internal class ProfileActorElm( // actor that interacts with domain layer
                     is DomainEvent.FailedFetchingQueueEvent -> event.toElmEvent()
                     else -> event.toUpdateQueueDataElmEvent()
                 }
-            }
+            }.asSwitchFlow()
         }
 
         ProfileCommandElm.GoBack -> flow {

@@ -10,6 +10,8 @@ internal sealed interface ChatEventElm {
 
     sealed interface Ui : ChatEventElm {
         data object Init : Ui
+        data object Resumed : Ui
+        data object Paused : Ui
         data object SendMessageAddAttachmentButtonClicked : Ui
         data class MessageLongClicked(val messageId: Long, val userId: Long) : Ui
         data class AddReactionClicked(val messageId: Long) : Ui
