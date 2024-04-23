@@ -76,3 +76,19 @@ fun <T> List<T>.toScreenState() : ScreenState<List<T>> {
         ScreenState.Success(this)
     }
 }
+
+fun <T> ScreenState<List<T>>.filterList(predicate: (T) -> Boolean ) : ScreenState<List<T>> {
+    return when(this) {
+        ScreenState.Empty -> this
+        is ScreenState.Error -> this
+        ScreenState.Loading -> this
+        is ScreenState.Success -> {
+            val filteredList = data.filter { predicate(it) }
+            if (filteredList.isEmpty()) {
+                ScreenState.Empty
+            } else {
+                ScreenState.Success(filteredList)
+            }
+        }
+    }
+}

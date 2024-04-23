@@ -54,7 +54,4 @@ internal sealed interface PeopleListEventElm {
         }
 
     }
-
-
-
 }
