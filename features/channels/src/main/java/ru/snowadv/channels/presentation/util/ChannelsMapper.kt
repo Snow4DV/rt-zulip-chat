@@ -93,6 +93,7 @@ internal object ChannelsMapper {
                     messageId = eventMessage.id,
                     streamId = eventMessage.streamId,
                     topicName = eventMessage.subject,
+                    flags = eventMessage.flags,
                 )
             }
             is DomainEvent.RegisteredNewQueueEvent -> StreamListEventElm.Internal.ServerEvent.EventQueueRegistered(

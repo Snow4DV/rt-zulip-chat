@@ -12,7 +12,7 @@ internal class ChannelListReducerElm :
     override fun Result.ui(event: ChannelListEventElm.Ui) {
         when (event) {
             is ChannelListEventElm.Ui.ChangedSearchQuery -> state {
-                copy(searchQuery = event.query)
+                copy(searchQuery = event.query).takeIf { event.query != searchQuery } ?: this
             }
             ChannelListEventElm.Ui.SearchIconClicked -> effects {
                 +ChannelListEffectElm.ShowKeyboardAndFocusOnTextField

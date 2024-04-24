@@ -18,20 +18,10 @@ internal data class ChatStateElm(
     val messages: List<ChatMessage> = emptyList(),
     val messageField: String = "",
     val actionButtonType: ActionButtonType = ActionButtonType.ADD_ATTACHMENT,
-    val paginationStatus: ChatPaginationStatus = ChatPaginationStatus.HasMore,
+    val paginationStatus: ChatPaginationStatus = ChatPaginationStatus.None,
     val eventQueueData: EventQueueProperties?,
     val resumed: Boolean = false,
 ) {
-
-    val paginatedScreenState = screenState.map { messagesDelegates ->
-        when (paginationStatus) {
-            ChatPaginationStatus.None, ChatPaginationStatus.LoadedAll -> messagesDelegates
-            ChatPaginationStatus.Loading, ChatPaginationStatus.HasMore, ChatPaginationStatus.Error -> buildList {
-                add(paginationStatus)
-                addAll(messagesDelegates)
-            }
-        }
-    }
 
     val firstLoadedMessageId: Long? = messages.firstOrNull()?.id
 

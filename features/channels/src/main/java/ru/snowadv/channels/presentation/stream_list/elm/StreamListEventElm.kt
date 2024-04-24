@@ -59,6 +59,7 @@ internal sealed interface StreamListEventElm {
                 val streamId: Long?,
                 val topicName: String,
                 val messageId: Long,
+                val flags: Set<String>,
             ) : ServerEvent()
 
             data class MessageDeleted(

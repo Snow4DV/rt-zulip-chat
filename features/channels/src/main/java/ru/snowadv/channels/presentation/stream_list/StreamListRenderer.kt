@@ -102,6 +102,4 @@ internal class StreamListRenderer :
     private fun setupShimmerTopicAdapterDelegate(): ShimmerTopicAdapterDelegate {
         return ShimmerTopicAdapterDelegate()
     }
-
-
 }

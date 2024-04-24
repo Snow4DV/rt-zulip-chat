@@ -7,8 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.snowadv.chat.databinding.FragmentChatBinding
 import ru.snowadv.chat.di.ChatGraph
@@ -22,7 +21,6 @@ import ru.snowadv.presentation.adapter.util.PaddingItemDecorator
 import ru.snowadv.presentation.elm.BaseFragment
 import ru.snowadv.presentation.fragment.ElmFragmentRenderer
 import ru.snowadv.presentation.fragment.ErrorHandlingFragment
-import ru.snowadv.presentation.fragment.FragmentDataObserver
 import ru.snowadv.presentation.fragment.impl.SnackbarErrorHandlingFragment
 import ru.snowadv.presentation.fragment.setStatusBarColor
 import ru.snowadv.presentation.fragment.setTopBarColor
@@ -114,4 +112,6 @@ internal class ChatFragment : BaseFragment<ChatEventElm, ChatEffectElm, ChatStat
             }
             .create().show()
     }
+
+
 }

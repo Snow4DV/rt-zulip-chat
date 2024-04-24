@@ -47,7 +47,7 @@ sealed class EventResponseDto {
         @SerialName("id")
         override val id: Long,
         @SerialName("message")
-        val message: MessageResponseDto
+        val message: MessageResponseDto,
     ): EventResponseDto()
     @Serializable
     @SerialName(DELETE_MESSAGE_EVENT_TYPE)

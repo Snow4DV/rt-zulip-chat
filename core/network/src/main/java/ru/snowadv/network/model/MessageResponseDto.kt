@@ -37,10 +37,6 @@ data class MessageResponseDto(
     val subject: String, // will be empty string for DM messages
     @SerialName("stream_id")
     val streamId: Long? = null, // will be null if it is DM message
+    @SerialName("flags")
+    val flags: List<String> = emptyList(),
 )
-
-/*
-"stream_id": 432915,
-"type": "stream",
-"subject": "testing",
- */

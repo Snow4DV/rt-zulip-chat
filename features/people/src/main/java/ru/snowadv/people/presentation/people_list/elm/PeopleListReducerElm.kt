@@ -101,11 +101,13 @@ internal class PeopleListReducerElm :
                 observeCommand()
             }
 
-            is PeopleListEventElm.Ui.ChangedSearchQuery -> state {
-                copy(
-                    searchQuery = event.query,
-                    screenState = peopleRes.toScreenState().filterBySearchQuery(event.query),
-                )
+            is PeopleListEventElm.Ui.ChangedSearchQuery -> if (state.searchQuery != event.query) {
+                state {
+                    copy(
+                        searchQuery = event.query,
+                        screenState = peopleRes.toScreenState().filterBySearchQuery(event.query),
+                    )
+                }
             }
 
             is PeopleListEventElm.Ui.ClickedOnPerson -> commands {
@@ -130,7 +132,7 @@ internal class PeopleListReducerElm :
     private fun ScreenState<List<Person>>.filterBySearchQuery(query: String): ScreenState<List<Person>> {
         return getCurrentData()
             ?.filter { it.fullName.contains(other = query, ignoreCase = true) }
-            ?.let { ScreenState.Success(it) } ?: this
+            ?.let { if (it.isEmpty()) ScreenState.Empty else ScreenState.Success(it) } ?: this
     }
 
     private fun PeopleListStateElm.updateStatus(userId: Long, status: Person.Status, eventId: Long): PeopleListStateElm {

@@ -87,7 +87,9 @@ internal class ChatFragmentRenderer :
             }
         )
         bottomBar.sendOrAddAttachmentButton.isVisible = state.isActionButtonVisible
-        adapter.submitList(state.paginatedScreenState.getCurrentData())
+
+        adapter.submitList(listOf(state.paginationStatus) + (state.screenState.getCurrentData() ?: emptyList()))
+
         binding.bottomBar.messageEditText.setTextIfChanged(state.messageField)
         stateBox.inflateState(state.screenState, R.layout.fragment_chat_shimmer)
         actionProgressBar.isVisible = state.changingReaction || state.sendingMessage

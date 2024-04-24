@@ -1,6 +1,12 @@
 package ru.snowadv.channels.presentation.channel_list
 
 import androidx.core.widget.addTextChangedListener
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import ru.snowadv.channels.databinding.FragmentChannelListBinding
 import ru.snowadv.channels.presentation.channel_list.elm.ChannelListEffectElm
 import ru.snowadv.channels.presentation.channel_list.elm.ChannelListEventElm
@@ -38,26 +44,19 @@ internal class ChannelListFragmentRenderer :
         }
     }
 
-    private fun render(
-        binding: FragmentChannelListBinding,
-        query: String,
-    ) = with(binding) {
-        if (searchBar.searchEditText.text.toString() != query) {
-            searchBar.searchEditText.setText(query)
-        }
-    }
-
-    private fun initListeners(
+    private fun ChannelListFragment.initListeners(
         binding: FragmentChannelListBinding,
         store: Store<ChannelListEventElm, ChannelListEffectElm, ChannelListStateElm>,
     ) {
         binding.searchBar.searchEditText.addTextChangedListener { editable ->
             editable?.toString()?.let { text ->
-                store.accept(ChannelListEventElm.Ui.ChangedSearchQuery(text))
+                mutableStateFlow.tryEmit(text)
             }
         }
         binding.searchBar.searchIcon.setOnClickListener {
             store.accept(ChannelListEventElm.Ui.SearchIconClicked)
         }
+        searchQuery.onEach { store.accept(ChannelListEventElm.Ui.ChangedSearchQuery(it)) }
+            .flowWithLifecycle(viewLifecycleOwner.lifecycle).launchIn(viewLifecycleOwner.lifecycleScope)
     }
 }

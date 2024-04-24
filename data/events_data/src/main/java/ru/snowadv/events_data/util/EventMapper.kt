@@ -38,6 +38,7 @@ internal object EventMapper {
             type = type,
             streamId = streamId,
             subject = subject,
+            flags = flags.toSet(),
         )
     }
 
