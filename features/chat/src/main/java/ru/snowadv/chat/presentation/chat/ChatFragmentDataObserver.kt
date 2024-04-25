@@ -18,12 +18,14 @@ import ru.snowadv.chat.databinding.FragmentChatBinding
 import ru.snowadv.chat.presentation.adapter.DateSplitterAdapterDelegate
 import ru.snowadv.chat.presentation.adapter.IncomingMessageAdapterDelegate
 import ru.snowadv.chat.presentation.adapter.OutgoingMessageAdapterDelegate
+import ru.snowadv.chat.presentation.adapter.PaginationStatusAdapterDelegate
 import ru.snowadv.chat.presentation.chat.event.ChatScreenEvent
 import ru.snowadv.chat.presentation.chat.event.ChatScreenFragmentEvent
 import ru.snowadv.chat.presentation.chat.state.ChatScreenState
 import ru.snowadv.chat.presentation.chat.view_model.ChatViewModel
 import ru.snowadv.chat.presentation.emoji_chooser.EmojiChooserBottomSheetDialog
 import ru.snowadv.chat.presentation.model.ChatAction
+import ru.snowadv.chat.presentation.model.ChatPaginationStatus
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.presentation.adapter.impl.AdapterDelegatesManager
 import ru.snowadv.presentation.adapter.impl.DiffDelegationAdapter
@@ -123,6 +125,11 @@ internal class ChatFragmentDataObserver :
         binding.stateBox.setOnRetryClickListener {
             viewModel.handleEvent(ChatScreenEvent.ReloadClicked)
         }
+        binding.messagesRecycler.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+            if (scrollY == 0) {
+                viewModel.handleEvent(ChatScreenEvent.ScrolledToTop)
+            }
+        }
     }
 
     private fun ChatFragment.handleFragmentEventFlow(
@@ -132,7 +139,7 @@ internal class ChatFragmentDataObserver :
     ) {
         when (event) {
             is ChatScreenFragmentEvent.OpenReactionChooser -> {
-                openReactionChooser(event.destMessageId, this, viewModel)
+                openReactionChooser(event.destMessageId, this)
             }
 
             is ChatScreenFragmentEvent.ExplainNotImplemented -> {
@@ -177,12 +184,21 @@ internal class ChatFragmentDataObserver :
             }
         )
         bottomBar.sendOrAddAttachmentButton.isVisible = state.isActionButtonVisible
-        adapter.submitList(state.screenState.getCurrentData())
+        adapter.submitList(state.paginatedScreenState.getCurrentData())
         binding.bottomBar.messageEditText.setTextIfChanged(state.messageField)
         stateBox.inflateState(state.screenState, R.layout.fragment_chat_shimmer)
         actionProgressBar.isVisible = state.changingReaction || state.sendingMessage
     }
 
+    private fun initPaginationStatusDelegate(viewModel: ChatViewModel): PaginationStatusAdapterDelegate {
+        return PaginationStatusAdapterDelegate(
+            onPaginationStatusClick = {
+                if (it is ChatPaginationStatus.HasMore || it is ChatPaginationStatus.Error) {
+                    viewModel.handleEvent(ChatScreenEvent.PaginationLoadMore)
+                }
+            }
+        )
+    }
 
     private fun initOutgoingMessagesDelegate(viewModel: ChatViewModel): OutgoingMessageAdapterDelegate {
         return OutgoingMessageAdapterDelegate(
@@ -231,11 +247,12 @@ internal class ChatFragmentDataObserver :
         return AdapterDelegatesManager(
             initDateSplitterDelegate(),
             initIncomingMessagesDelegate(viewModel),
-            initOutgoingMessagesDelegate(viewModel)
+            initOutgoingMessagesDelegate(viewModel),
+            initPaginationStatusDelegate(viewModel),
         )
     }
 
-    private fun openReactionChooser(messageId: Long, fragment: Fragment, viewModel: ChatViewModel) {
+    private fun openReactionChooser(messageId: Long, fragment: Fragment) {
         val dialog = EmojiChooserBottomSheetDialog.newInstance(EMOJI_CHOOSER_REQUEST_KEY, messageId)
         dialog.show(fragment.childFragmentManager)
     }
@@ -255,7 +272,7 @@ internal class ChatFragmentDataObserver :
     }
 
     private fun initEmojiChooserResultListener(fragment: Fragment, viewModel: ChatViewModel) {
-        fragment.childFragmentManager.setFragmentResultListener(EMOJI_CHOOSER_REQUEST_KEY, fragment.viewLifecycleOwner) { key, bundle ->
+        fragment.childFragmentManager.setFragmentResultListener(EMOJI_CHOOSER_REQUEST_KEY, fragment.viewLifecycleOwner) { _, bundle ->
             val chosenReaction =
                 bundle.getString(EmojiChooserBottomSheetDialog.BUNDLE_CHOSEN_REACTION_NAME)
                     ?: error("No reaction came as result from EmojiChooserBottomSheetDialog")

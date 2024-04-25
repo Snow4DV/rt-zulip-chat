@@ -29,9 +29,13 @@
 
     <TextView
         android:id="@+id/user_name"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/user_profile_name_top_margin"
+        android:ellipsize="end"
+        android:gravity="center_horizontal"
+        android:maxLines="1"
+        android:paddingHorizontal="@dimen/common_padding"
         android:textColor="@color/text"
         android:textSize="@dimen/user_name_profile_text_size"
         app:layout_constraintBottom_toTopOf="@id/user_email"
@@ -42,9 +46,13 @@
 
     <TextView
         android:id="@+id/user_email"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        app:layout_constraintWidth_max="wrap"
+        app:layout_constraintWidth_percent="0.7"
         android:layout_marginTop="@dimen/common_margin"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:textColor="@color/secondary_text"
         android:textSize="@dimen/user_email_profile_text_size"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -60,9 +68,10 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/common_margin"
         android:layout_marginTop="30dp"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:textColor="@color/secondary_text"
         android:textSize="@dimen/user_status_text_size"
-
         app:layout_constraintBottom_toBottomOf="@id/user_email"
         app:layout_constraintLeft_toRightOf="@id/user_email"
         app:layout_constraintRight_toRightOf="parent"
@@ -72,9 +81,9 @@
 
     <Button
         android:id="@+id/button_logout"
+        style="@style/Theme.ZulipChat.Button"
         android:layout_width="@dimen/logout_button_width"
         android:layout_height="wrap_content"
-        style="@style/Theme.ZulipChat.Button"
         android:layout_marginTop="@dimen/common_margin"
         android:backgroundTint="@color/on_surface"
         android:text="@string/log_out"

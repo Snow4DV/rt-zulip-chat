@@ -16,7 +16,7 @@ internal class EmojiAdapterDelegate(private val listener: OnEmojiItemClickListen
     internal inner class ChatEmojiViewHolder(private val binding: ItemEmojiBinding) :
         ViewHolder(binding.root) {
         fun bind(emoji: ChatEmoji) = with(binding) {
-            root.text = emoji.getCodeString()
+            root.text = emoji.convertedEmojiString
         }
 
         fun initClickListeners(getCurrentList: () -> List<DelegateItem>) {

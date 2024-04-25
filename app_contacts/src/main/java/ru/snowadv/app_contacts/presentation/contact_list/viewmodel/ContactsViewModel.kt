@@ -18,7 +18,7 @@ internal class ContactsViewModel: ViewModel() {
 
 
     fun event(event: ContactsUiEvent) {
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch {
             when(event) {
                 is ContactsUiEvent.FetchContactsButtonClicked -> {
                     _activityEventFlow.emit(ContactsActivityEvent.AskContactsPermission)

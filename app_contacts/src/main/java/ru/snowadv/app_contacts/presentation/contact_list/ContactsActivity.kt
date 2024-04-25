@@ -6,6 +6,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.RecyclerView
 import ru.snowadv.app_contacts.R
 import ru.snowadv.app_contacts.databinding.ActivityContactsBinding
 import ru.snowadv.app_contacts.presentation.common.ObserverActivity
@@ -23,6 +24,7 @@ internal class ContactsActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
+        RecyclerView.ViewHolder
 
         binding = ActivityContactsBinding.inflate(layoutInflater)
         setContentView(binding.root)

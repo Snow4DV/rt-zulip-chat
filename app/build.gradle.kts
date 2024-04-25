@@ -46,6 +46,7 @@ dependencies {
     implementation(projects.data.messagesData)
     implementation(projects.data.usersData)
     implementation(projects.data.emojisData)
+    implementation(projects.data.authData)
 
     implementation(projects.features.channels)
     implementation(projects.features.chat)
@@ -54,6 +55,10 @@ dependencies {
     implementation(projects.features.profile)
 
     implementation(projects.core.utils)
+    implementation(projects.core.data)
+    implementation(projects.core.network)
+    implementation(projects.core.propertiesProvider)
+    implementation(projects.core.eventApi)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

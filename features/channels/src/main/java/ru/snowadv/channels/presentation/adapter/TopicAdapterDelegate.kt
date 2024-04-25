@@ -2,11 +2,13 @@ package ru.snowadv.channels.presentation.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import ru.snowadv.channels.R
 import ru.snowadv.channels.databinding.ItemTopicBinding
 import ru.snowadv.channels.presentation.model.Topic
+import ru.snowadv.channels.presentation.model.TopicUnreadMessages
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.presentation.adapter.DelegationItemAdapterDelegate
 import kotlin.math.abs
@@ -14,7 +16,7 @@ import kotlin.math.abs
 internal class TopicAdapterDelegate(
     private val onTopicClickListener: ((Topic) -> Unit)? = null,
 ) :
-    DelegationItemAdapterDelegate<Topic, TopicAdapterDelegate.TopicViewHolder, Nothing>() {
+    DelegationItemAdapterDelegate<Topic, TopicAdapterDelegate.TopicViewHolder, Topic.Payload>() {
     internal inner class TopicViewHolder(
         private val binding: ItemTopicBinding,
         private val colors: IntArray
@@ -33,7 +35,19 @@ internal class TopicAdapterDelegate(
 
         fun bind(topic: Topic) = with(binding) {
             topicNameText.text = topic.name
+            bindMsgCounter(topic.unreadMessagesCount)
             bindColor(topic.name)
+        }
+
+        fun handlePayload(payload: Topic.Payload) {
+            when(payload) {
+                is Topic.Payload.MsgCounterChanged -> bindMsgCounter(payload.newCounter)
+            }
+        }
+
+        private fun bindMsgCounter(newCounter: Int) = with(binding) {
+            topicMsgCounter.isVisible = newCounter > 0
+            topicMsgCounter.text = root.context.getString(R.string.msg_counter, newCounter)
         }
 
         private fun bindColor(name: String) = with(binding) {
@@ -64,8 +78,12 @@ internal class TopicAdapterDelegate(
     override fun onBindViewHolder(
         item: Topic,
         holder: TopicViewHolder,
-        payloads: List<Nothing>
+        payloads: List<Topic.Payload>
     ) {
-        holder.bind(item)
+        if (payloads.isEmpty()) {
+            holder.bind(item)
+        } else {
+            payloads.forEach(holder::handlePayload)
+        }
     }
 }

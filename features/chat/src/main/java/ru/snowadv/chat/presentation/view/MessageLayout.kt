@@ -1,19 +1,21 @@
 package ru.snowadv.chat.presentation.view
 
 import android.content.Context
+import android.text.Html
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.text.HtmlCompat
 import androidx.core.view.children
 import ru.snowadv.chat.databinding.ItemReactionBinding
-import ru.snowadv.chat.domain.model.ChatReaction
+import ru.snowadv.chat.presentation.model.ChatReaction
 import ru.snowadv.presentation.view.ViewInvalidatingProperty
 import ru.snowadv.presentation.view.dimToPx
 
-typealias OnReactionClickListener = (count: Int, emojiCode: Int, userReacted: Boolean) -> Unit
+typealias OnReactionClickListener = (count: Int, emojiCode: String, userReacted: Boolean) -> Unit
 typealias OnMessageLongClickListener = () -> Unit
 typealias OnAddReactionClickListener = () -> Unit
 
@@ -25,7 +27,7 @@ internal abstract class MessageLayout @JvmOverloads constructor(
 ) :
     ViewGroup(context, attrs, defStyleAttr, defStyleRes) {
 
-    protected val reactions = HashMap<Int, ReactionView>() // Emoji code to ReactionView
+    protected val reactions = HashMap<String, ReactionView>() // Emoji code to ReactionView
     protected val layoutInflater: LayoutInflater = LayoutInflater.from(context)
 
     protected abstract val reactionsContainer: FlexBoxLayout
@@ -58,7 +60,7 @@ internal abstract class MessageLayout @JvmOverloads constructor(
     var messageText: CharSequence
         get() = messageTextView.text
         set(value) {
-            messageTextView.text = value
+            messageTextView.text = HtmlCompat.fromHtml(value.toString(), HtmlCompat.FROM_HTML_MODE_COMPACT)
             requestLayout()
         }
     var timestampText: CharSequence
@@ -95,7 +97,7 @@ internal abstract class MessageLayout @JvmOverloads constructor(
      * It removes view if count < 1
      */
     private fun addUpdateRemoveReaction(
-        emojiCode: Int,
+        emojiCode: String,
         count: Int,
         userReacted: Boolean
     ) {
@@ -112,7 +114,7 @@ internal abstract class MessageLayout @JvmOverloads constructor(
     }
 
     private fun addUpdateRemoveReaction(
-        emojiCode: Int,
+        emojiCode: String,
         count: Int,
         userReacted: Boolean,
         requestLayout: Boolean
@@ -189,7 +191,7 @@ internal abstract class MessageLayout @JvmOverloads constructor(
         removeReactionView(reaction.emojiCode, requestLayout)
     }
 
-    private fun removeReactionView(emojiCode: Int, requestLayout: Boolean = true) {
+    private fun removeReactionView(emojiCode: String, requestLayout: Boolean = true) {
         reactions[emojiCode]?.let {
             reactionsContainer.removeView(it)
             reactions.remove(it.emojiCode)
@@ -203,7 +205,7 @@ internal abstract class MessageLayout @JvmOverloads constructor(
 
     private fun updateReactionView(
         view: ReactionView,
-        emojiCode: Int,
+        emojiCode: String,
         count: Int,
         userReacted: Boolean,
         requestLayout: Boolean = true

@@ -42,4 +42,19 @@
         tools:text="#general" />
 
 
+    <TextView
+        android:id="@+id/topic_msg_counter"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:gravity="center_vertical"
+        android:textColor="@color/white"
+        android:textSize="@dimen/topic_msg_counter_text_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.05"
+        app:layout_constraintLeft_toRightOf="@id/topic_name_text"
+        app:layout_constraintRight_toRightOf="@id/end_guideline"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="24 mes" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -53,8 +53,10 @@ class ChatFragment : Fragment(),
             addReactionUseCase = ChatGraph.addReactionUseCase,
             removeReactionUseCase = ChatGraph.removeReactionUseCase,
             getCurrentMessagesUseCase = ChatGraph.getCurrentMessagesUseCase,
-            listenToMessagesUseCase = ChatGraph.listenToMessagesUseCase,
+            listenToChatEventsUseCase = ChatGraph.listenToMessagesUseCase,
             sendMessageUseCase = ChatGraph.sendMessageUseCase,
+            loadMoreMessagesUseCase = ChatGraph.loadMoreMessagesUseCase,
+            defaultDispatcher = ChatGraph.deps.defaultDispatcher,
         )
     }
 
@@ -94,7 +96,7 @@ class ChatFragment : Fragment(),
 
     fun openActionsDialog(actions: List<ChatAction>, onResult: (ChatAction) -> Unit) {
         AlertDialog.Builder(requireContext())
-            .setItems(actions.map { getString(it.titleResId) }.toTypedArray()) { dialog, which ->
+            .setItems(actions.map { getString(it.titleResId) }.toTypedArray()) { _, which ->
                 onResult(actions[which])
             }
             .create().show()

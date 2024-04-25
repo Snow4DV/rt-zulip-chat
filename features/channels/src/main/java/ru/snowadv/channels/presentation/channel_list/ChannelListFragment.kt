@@ -14,7 +14,7 @@ import ru.snowadv.channels.domain.model.StreamType
 import ru.snowadv.channels.presentation.channel_list.api.SearchHolder
 import ru.snowadv.channels.presentation.channel_list.pager_adapter.StreamsAdapter
 import ru.snowadv.channels.presentation.channel_list.view_model.ChannelListViewModel
-import ru.snowadv.channels.presentation.util.toLocalizedString
+import ru.snowadv.channels.presentation.util.ChannelsMapper.toLocalizedString
 import ru.snowadv.presentation.activity.showKeyboard
 import ru.snowadv.presentation.fragment.ErrorHandlingFragment
 import ru.snowadv.presentation.fragment.FragmentDataObserver

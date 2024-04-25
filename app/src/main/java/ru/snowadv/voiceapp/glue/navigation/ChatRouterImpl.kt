@@ -10,7 +10,7 @@ class ChatRouterImpl(private val ciceroneRouter: Router): ChatRouter {
     }
 
     override fun openProfile(profileId: Long) {
-        ciceroneRouter.navigateTo(Screens.Profile(profileId, false))
+        ciceroneRouter.navigateTo(Screens.Profile(profileId))
     }
 
 

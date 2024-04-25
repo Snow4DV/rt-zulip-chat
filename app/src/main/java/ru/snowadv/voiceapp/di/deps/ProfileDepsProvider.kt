@@ -1,5 +1,6 @@
 package ru.snowadv.voiceapp.di.deps
 
+import ru.snowadv.event_api.repository.EventRepository
 import ru.snowadv.people.domain.navigation.PeopleRouter
 import ru.snowadv.profile.di.ProfileDeps
 import ru.snowadv.profile.domain.navigation.ProfileRouter
@@ -10,5 +11,10 @@ import ru.snowadv.voiceapp.glue.repository.ProfileRepositoryImpl
 
 class ProfileDepsProvider: ProfileDeps {
     override val router: ProfileRouter by lazy { ProfileRouterImpl(MainGraph.mainDepsProvider.router) }
-    override val repo: ProfileRepository by lazy { ProfileRepositoryImpl(MainGraph.mainDepsProvider.userDataRepository) }
+    override val repo: ProfileRepository by lazy {
+        ProfileRepositoryImpl(MainGraph.mainDepsProvider.userDataRepository,
+            MainGraph.mainDepsProvider.defaultDispatcher)
+    }
+    override val eventRepo: EventRepository
+        get() = MainGraph.mainDepsProvider.eventDataRepository
 }

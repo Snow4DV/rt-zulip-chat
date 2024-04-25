@@ -2,6 +2,7 @@ package ru.snowadv.chat.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 import ru.snowadv.chat.domain.model.ChatMessage
+import ru.snowadv.chat.domain.model.ChatPaginatedMessages
 import ru.snowadv.model.Resource
 
 interface MessageRepository {
@@ -11,16 +12,11 @@ interface MessageRepository {
     fun getMessages(
         streamName: String,
         topicName: String,
-    ): Flow<Resource<List<ChatMessage>>>
+        includeAnchorMessage: Boolean,
+        anchorMessageId: Long? = null,
+        countOfMessages: Int,
+    ): Flow<Resource<ChatPaginatedMessages>>
 
-    /**
-     * This flow should emit new message objects when they have changed.
-     * Should emit Resource.Error before death.
-     */
-    fun listenToNewMessages(
-        streamName: String,
-        topicName: String,
-    ): Flow<Resource<List<ChatMessage>>>
     fun sendMessage(
         streamName: String,
         topicName: String,

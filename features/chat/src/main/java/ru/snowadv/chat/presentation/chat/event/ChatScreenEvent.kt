@@ -10,4 +10,6 @@ internal sealed class ChatScreenEvent {
     class MessageFieldChanged(val text: String): ChatScreenEvent()
     data object GoBackClicked: ChatScreenEvent()
     data object ReloadClicked: ChatScreenEvent()
+    data object PaginationLoadMore: ChatScreenEvent()
+    data object ScrolledToTop: ChatScreenEvent()
 }

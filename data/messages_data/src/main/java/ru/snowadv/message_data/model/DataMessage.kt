@@ -10,4 +10,5 @@ data class DataMessage(
     val senderName: String,
     val senderAvatarUrl: String?,
     val reactions: List<DataReaction>,
+    val owner: Boolean,
 )

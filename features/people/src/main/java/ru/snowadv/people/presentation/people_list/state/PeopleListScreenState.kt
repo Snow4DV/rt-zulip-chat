@@ -14,4 +14,18 @@ internal data class PeopleListScreenState(
                 ?.let { ScreenState.Success(it) } ?: screenState,
         )
     }
+
+    fun updateStatus(userId: Long, status: Person.Status): PeopleListScreenState { // TODO think of solution to get offline events too
+        return copy(
+            screenState = screenState.map { people ->
+                people.map { person ->
+                    if (person.id == userId) {
+                        person.copy(status = status)
+                    } else {
+                        person
+                    }
+                }.sortedWith(compareBy({ it.status.ordinal }, { it.fullName }))
+            }
+        )
+    }
 }

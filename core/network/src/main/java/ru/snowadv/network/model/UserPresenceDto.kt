@@ -8,7 +8,7 @@ data class AllUsersPresenceDto(
     @SerialName("presences")
     val userEmailToPresenceSources: Map<String,PresenceSourcesDto>, // user email to presence sources
     @SerialName("server_timestamp")
-    val serverTimestamp: Long,
+    val serverTimestamp: Double,
 )
 
 @Serializable
@@ -33,6 +33,12 @@ data class PresenceSourcesDto(
 )
 
 @Serializable
+data class WebsitePresenceSourceDto(
+    @SerialName("website")
+    val website: UserPresenceDto,
+)
+
+@Serializable
 data class UserPresenceDto(
     /*
     Whether the user had recently interacted with Zulip at the time of the timestamp.
@@ -45,5 +51,5 @@ data class UserPresenceDto(
     If the timestamp is more than a few minutes in the past, the user is offline.
      */
     @SerialName("timestamp")
-    val timestamp: Long,
+    val timestamp: Double,
 )

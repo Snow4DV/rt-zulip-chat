@@ -40,6 +40,10 @@ class StreamListFragment : Fragment(), ErrorHandlingFragment by SnackbarErrorHan
             streamType = streamsType,
             router = ChannelsGraph.deps.router,
             searchQueryFlow = parentSearchQueryFlow,
+            getStreamsUseCase = ChannelsGraph.getStreamsUseCase,
+            getTopicsUseCase = ChannelsGraph.getTopicsUseCase,
+            listenToStreamEventsUseCase = ChannelsGraph.listenToStreamEventsUseCase,
+            defaultDispatcher = ChannelsGraph.deps.defaultDispatcher,
         )
     }
 

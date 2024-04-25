@@ -17,14 +17,13 @@ import ru.snowadv.chat.domain.use_case.GetEmojisUseCase
 import ru.snowadv.chat.presentation.emoji_chooser.event.EmojiChooserEvent
 import ru.snowadv.chat.presentation.emoji_chooser.event.EmojiChooserFragmentEvent
 import ru.snowadv.chat.presentation.model.ChatEmoji
-import ru.snowadv.chat.presentation.util.toUiChatEmoji
+import ru.snowadv.chat.presentation.util.ChatMappers.toUiChatEmoji
 import ru.snowadv.model.Resource
 import ru.snowadv.presentation.model.ScreenState
 import ru.snowadv.presentation.util.toScreenState
 
 internal class EmojiChooserViewModel(
     private val getEmojisUseCase: GetEmojisUseCase,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO, // TODO Replace with DI
 ): ViewModel() {
 
 
@@ -51,7 +50,7 @@ internal class EmojiChooserViewModel(
     }
 
     private fun getEmojisfromRepository() {
-        viewModelScope.launch(ioDispatcher) {
+        viewModelScope.launch {
             getEmojisUseCase().onEach(::handleEmojiResource).launchIn(this)
         }
     }

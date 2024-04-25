@@ -29,4 +29,6 @@
     <dimen name="error_icon_size">40dp</dimen>
     <dimen name="horizontal_progress_bar_height">8dp</dimen>
     <dimen name="date_splitter_shimmer_width">60dp</dimen>
+    <dimen name="pagination_error_icon_size">50dp</dimen>
+    <dimen name="pagination_more_icon_size">50dp</dimen>
 </resources>

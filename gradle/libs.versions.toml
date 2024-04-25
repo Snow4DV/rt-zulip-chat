@@ -30,6 +30,9 @@ coil = "2.6.0"
 cicerone = "7.1"
 facebookShimmer = "0.5.0"
 kotlinx-serialization = "1.6.0"
+retrofit = "2.11.0"
+retrofitResultConverter = "1.0.9"
+okhttp-interceptor ="4.12.0"
 
 
 [libraries]
@@ -54,6 +57,11 @@ mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 cicerone = { group = "com.github.terrakok", name = "cicerone", version.ref = "cicerone" }
 facebook-shimmer = { group="com.facebook.shimmer", name = "shimmer", version.ref="facebookShimmer" }
 kotlinSerialization-json = { group="org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref="kotlinx-serialization" }
+retrofit-core = { group="com.squareup.retrofit2", name="retrofit", version.ref="retrofit" }
+retrofit-kotlinxConverter = {group="com.squareup.retrofit2", name="converter-kotlinx-serialization", version.ref="retrofit"}
+retrofit-resultConverter = {group="com.github.skydoves", name="retrofit-adapters-result", version.ref="retrofitResultConverter"}
+okhttp-logging-interceptor = {group="com.squareup.okhttp3", name="logging-interceptor", version.ref="okhttp-interceptor"}
+
 
 
 [plugins]

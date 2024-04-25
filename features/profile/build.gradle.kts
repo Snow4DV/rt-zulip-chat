@@ -38,14 +38,16 @@ android {
 
 
 dependencies {
+    implementation(projects.core.presentation)
+    implementation(projects.core.utils)
+    implementation(projects.core.eventApi)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.facebook.shimmer)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
-    implementation(projects.core.presentation)
-    implementation(projects.core.utils)
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)

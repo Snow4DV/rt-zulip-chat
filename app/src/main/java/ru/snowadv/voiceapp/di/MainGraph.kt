@@ -1,6 +1,7 @@
 package ru.snowadv.voiceapp.di
 
 import com.github.terrakok.cicerone.Router
+import kotlinx.coroutines.Dispatchers
 import ru.snowadv.channels.di.ChannelsGraph
 import ru.snowadv.chat.di.ChatGraph
 import ru.snowadv.home.di.HomeGraph
@@ -15,15 +16,17 @@ import ru.snowadv.voiceapp.di.deps.ProfileDepsProvider
 
 internal object MainGraph { // Will be replaced with proper DI
 
-    val mainDepsProvider by lazy { MainDepsProvider() }
+    lateinit var mainDepsProvider: MainDepsProvider
+
     private val channelsDepsProvider by lazy { ChannelsDepsProvider() }
     private val chatDepsProvider by lazy {ChatDepsProvider()}
     private val peopleDepsProvider by lazy { PeopleDepsProvider() }
     private val profileDepsProvider by lazy { ProfileDepsProvider() }
     private val homeDepsProvider by lazy { HomeDepsProvider() }
 
+
     fun init(router: Router) {
-        mainDepsProvider.router = router
+        mainDepsProvider = MainDepsProvider(router)
         initFeatureGraphs()
     }
 

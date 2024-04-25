@@ -5,20 +5,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import ru.snowadv.data.api.AuthProvider
 import ru.snowadv.model.Resource
 import ru.snowadv.network.api.ZulipApi
-import ru.snowadv.network.stub.StubZulipApi
 import ru.snowadv.users_data.api.UserDataRepository
 import ru.snowadv.users_data.model.DataUser
-import ru.snowadv.users_data.util.toDataUser
-import ru.snowadv.users_data.util.toUsersListWithPresences
+import ru.snowadv.users_data.util.UsersMapper.toDataUser
+import ru.snowadv.users_data.util.UsersMapper.toUsersListWithPresences
 import ru.snowadv.utils.asyncAwait
 import ru.snowadv.utils.combineFold
 
 class UserDataRepositoryImpl(
     private val ioDispatcher: CoroutineDispatcher,
+    private val api: ZulipApi,
+    private val authProvider: AuthProvider,
 ) : UserDataRepository {
-    private val api: ZulipApi = StubZulipApi
     override fun getAllUsers(): Flow<Resource<List<DataUser>>> = flow {
         asyncAwait(
             s1 = {
@@ -50,17 +51,17 @@ class UserDataRepositoryImpl(
                 api.getUserPresence(userId)
             },
             transform = { userDtoResult, userPresenceDtoResult ->
-                userDtoResult.combineFold(
-                    other = userPresenceDtoResult,
-                    onBothSuccess = { userDto, userPresenceDto ->
-                        emit(Resource.Success(userDto.toDataUser(userPresenceDto, true)))
-                    },
-                    onFailure = {
-                        emit(Resource.Error(it))
-                    },
-                )
+                val resultResource = userDtoResult.getOrNull()?.let {
+                    Resource.Success(it.toDataUser(userPresenceDtoResult.getOrNull(), true))
+                } ?: Resource.Error(userDtoResult.exceptionOrNull())
+
+                emit(resultResource)
             },
         )
     }.flowOn(ioDispatcher)
+
+    override fun getCurrentUser(): Flow<Resource<DataUser>> {
+        return getUser(authProvider.getAuthorizedUser().id)
+    }
 
 }

@@ -6,4 +6,5 @@ import ru.snowadv.profile.domain.model.Person
 
 interface ProfileRepository {
     fun getPerson(id: Long): Flow<Resource<Person>>
+    fun getCurrentPerson(): Flow<Resource<Person>>
 }

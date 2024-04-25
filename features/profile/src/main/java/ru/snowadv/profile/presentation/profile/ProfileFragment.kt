@@ -20,14 +20,19 @@ class ProfileFragment : Fragment(),
 
     companion object {
         const val ARG_PROFILE_ID_KEY = "profile_id"
-        const val ARG_IS_OWNER_KEY = "is_owner"
         const val DEFAULT_PROFILE_ID = -1L
-        const val DEFAULT_IS_OWNER = false
-        fun newInstance(profileId: Long, isOwner: Boolean): Fragment = ProfileFragment().apply {
-            arguments = bundleOf(
-                ARG_PROFILE_ID_KEY to profileId,
-                ARG_IS_OWNER_KEY to isOwner
-            )
+
+        /**
+         * Pass either profileId to show other user's profile or null to display current user's profile
+         */
+        fun newInstance(profileId: Long? = null): Fragment = ProfileFragment().apply {
+            profileId?.let { profileId ->
+                arguments = bundleOf(
+                    ARG_PROFILE_ID_KEY to profileId,
+                )
+            } ?: run {
+                arguments = bundleOf()
+            }
         }
     }
 
@@ -38,20 +43,16 @@ class ProfileFragment : Fragment(),
         ProfileViewModelFactory(
             router = ProfileGraph.deps.router,
             profileId = profileId,
-            isOwner = isOwner,
-            profileRepository = ProfileGraph.deps.repo,
+            getProfileUseCase = ProfileGraph.getProfileUseCase,
+            listenToPresenceEventsUseCase = ProfileGraph.listenToPresenceEventsUseCase,
         )
     }
 
-    private val profileId by lazy {
-        requireArguments().getLong(ARG_PROFILE_ID_KEY, DEFAULT_PROFILE_ID).also {
-            if (it == DEFAULT_PROFILE_ID) error("No profileId argument passed to ProfileFragment")
+    private val profileId: Long? by lazy {
+        requireArguments().getLong(ARG_PROFILE_ID_KEY, DEFAULT_PROFILE_ID).let {
+            if (it == DEFAULT_PROFILE_ID) null else it
         }
     }
-    private val isOwner by lazy {
-        requireArguments().getBoolean(ARG_IS_OWNER_KEY, DEFAULT_IS_OWNER)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

@@ -1,11 +1,15 @@
 package ru.snowadv.chat.presentation.model
 
 import ru.snowadv.presentation.adapter.DelegateItem
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 internal data class ChatDate(
-    val date: LocalDate
+    /*
+    Date time is used to make ChatDates before different messages different to DiffUtil.
+    Doing otherwise might make scroll jump to the top when paginating with the ChatDate
+     */
+    val dateTime: LocalDateTime
 ): DelegateItem {
     override val id
-        get() = date
+        get() = dateTime
 }
