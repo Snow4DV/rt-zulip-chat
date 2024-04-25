@@ -177,9 +177,6 @@ private fun retrofit(
     val newOkhttpClient = (okHttpClient?.newBuilder() ?: OkHttpClient.Builder())
         .addInterceptor(HeaderBasicAuthInterceptor(authProvider))
         .addInterceptor(TimeoutSetterInterceptor())
-        .addInterceptor(HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        })
         .build()
 
     return Retrofit.Builder()

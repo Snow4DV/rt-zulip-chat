@@ -39,8 +39,9 @@ internal class EmojiChooserRenderer :
         state: EmojiChooserStateElm,
         binding: FragmentEmojiChooserBinding
     ) {
-        binding.stateBox.inflateState(state.screenState, R.layout.fragment_emoji_chooser_shimmer)
-        adapter.submitList(state.screenState.getCurrentData())
+        adapter.submitList(state.screenState.getCurrentData()) {
+            binding.stateBox.inflateState(state.screenState, R.layout.fragment_emoji_chooser_shimmer)
+        }
     }
 
     override fun EmojiChooserBottomSheetDialog.handleEffectByRenderer(

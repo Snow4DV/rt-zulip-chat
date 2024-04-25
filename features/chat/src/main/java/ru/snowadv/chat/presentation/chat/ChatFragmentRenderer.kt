@@ -35,6 +35,7 @@ import ru.snowadv.presentation.fragment.setTopBarText
 import ru.snowadv.presentation.util.impl.DayDateFormatter
 import ru.snowadv.presentation.util.impl.LocalizedDateTimeFormatter
 import ru.snowadv.presentation.view.setTextIfChanged
+import ru.snowadv.presentation.view.setTextIfEmpty
 import vivid.money.elmslie.core.store.Store
 import kotlin.math.abs
 
@@ -88,10 +89,12 @@ internal class ChatFragmentRenderer :
         )
         bottomBar.sendOrAddAttachmentButton.isVisible = state.isActionButtonVisible
 
-        adapter.submitList(listOf(state.paginationStatus) + (state.screenState.getCurrentData() ?: emptyList()))
+        adapter.submitList(listOf(state.paginationStatus) + (state.screenState.getCurrentData() ?: emptyList())) {
+            stateBox.inflateState(state.screenState, R.layout.fragment_chat_shimmer)
+        }
 
-        binding.bottomBar.messageEditText.setTextIfChanged(state.messageField)
-        stateBox.inflateState(state.screenState, R.layout.fragment_chat_shimmer)
+        binding.bottomBar.messageEditText.setTextIfEmpty(state.messageField)
+
         actionProgressBar.isVisible = state.changingReaction || state.sendingMessage
     }
 

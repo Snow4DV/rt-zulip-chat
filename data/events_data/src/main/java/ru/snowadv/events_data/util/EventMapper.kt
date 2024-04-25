@@ -63,7 +63,7 @@ internal object EventMapper {
             )
             is EventResponseDto.RealmEventDto -> DomainEvent.RealmDomainEvent(
                 id = id,
-                op = op,
+                op = DomainEvent.RealmDomainEvent.OperationType.valueOf(op.toString()),
                 queueId = queueId,
             )
             is EventResponseDto.DeleteMessageEventDto -> DomainEvent.DeleteMessageDomainEvent(
@@ -82,7 +82,7 @@ internal object EventMapper {
             is EventResponseDto.ReactionEventDto -> DomainEvent.ReactionDomainEvent(
                 id = id,
                 queueId = queueId,
-                op = op,
+                op = DomainEvent.ReactionDomainEvent.OperationType.valueOf(op.toString()),
                 emojiCode = emojiCode,
                 emojiName = emojiName,
                 messageId = messageId,
@@ -93,7 +93,7 @@ internal object EventMapper {
             is EventResponseDto.StreamEventDto -> DomainEvent.StreamDomainEvent(
                 id = id,
                 queueId = queueId,
-                op = op,
+                op = DomainEvent.StreamDomainEvent.OperationType.valueOf(op.toString()),
                 streams = streams?.map { it.toEventStream() },
                 streamName = streamName,
                 streamId = streamId,
@@ -101,7 +101,7 @@ internal object EventMapper {
             is EventResponseDto.TypingEventDto -> DomainEvent.TypingDomainEvent(
                 id = id,
                 queueId = queueId,
-                op = op,
+                op = DomainEvent.TypingDomainEvent.OperationType.valueOf(op.toString()),
                 messageType = messageType,
                 streamId = streamId,
                 topic = topic,
@@ -126,7 +126,7 @@ internal object EventMapper {
             is EventResponseDto.UserSubscriptionEventDto -> DomainEvent.UserSubscriptionDomainEvent(
                 id = id,
                 queueId = queueId,
-                op = op,
+                op = DomainEvent.UserSubscriptionDomainEvent.OperationType.valueOf(op.toString()),
                 subscriptions = subscriptions?.map { it.toEventStream() },
             )
             is EventResponseDto.UpdateMessageFlagsEventDto -> this.toAddOrRemoveFlagsEvent(queueId)
@@ -144,8 +144,10 @@ internal object EventMapper {
 
     fun EventResponseDto.UpdateMessageFlagsEventDto.toAddOrRemoveFlagsEvent(queueId: String): DomainEvent {
         return when {
-            op == "add" && flag == "read" -> DomainEvent.AddReadMessageFlagEvent(id, messagesIds, queueId)
-            op == "remove" && flag == "read" && messageIdToMessageDetails != null -> {
+            op == EventResponseDto.UpdateMessageFlagsEventDto.OperationType.ADD
+                    && flag == "read" -> DomainEvent.AddReadMessageFlagEvent(id, messagesIds, queueId)
+            op == EventResponseDto.UpdateMessageFlagsEventDto.OperationType.REMOVE
+                    && flag == "read" && messageIdToMessageDetails != null -> {
                 DomainEvent.RemoveReadMessageFlagEvent(
                     id = id,
                     removeFlagMessagesIds = messagesIds,
@@ -163,9 +165,9 @@ internal object EventMapper {
                     queueId = queueId,
                 )
             }
-            op == "add" -> DomainEvent.AddMessageFlagEvent(id, queueId, flag, messagesIds)
-            op == "remove" -> DomainEvent.RemoveMessageFlagEvent(id, queueId, flag, messagesIds)
-            else -> error("Illegal event flag = $flag: $this")
+            op == EventResponseDto.UpdateMessageFlagsEventDto.OperationType.ADD  -> DomainEvent.AddMessageFlagEvent(id, queueId, flag, messagesIds)
+            op == EventResponseDto.UpdateMessageFlagsEventDto.OperationType.REMOVE  -> DomainEvent.RemoveMessageFlagEvent(id, queueId, flag, messagesIds)
+            else -> error("Illegal event: $this")
         }
     }
 

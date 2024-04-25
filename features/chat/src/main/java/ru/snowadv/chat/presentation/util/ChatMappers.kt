@@ -117,21 +117,20 @@ internal object ChatMappers {
 
     fun DomainEvent.ReactionDomainEvent.toElmEvent(): ChatEventElm {
         return when(op) {
-            "add" -> ChatEventElm.Internal.ServerEvent.ReactionAdded(
+            DomainEvent.ReactionDomainEvent.OperationType.ADD -> ChatEventElm.Internal.ServerEvent.ReactionAdded(
                 queueId = queueId,
                 eventId = id,
                 messageId = messageId,
                 emoji = toUiChatEmoji(),
                 currentUserReaction = currentUserReaction,
             )
-            "remove" -> ChatEventElm.Internal.ServerEvent.ReactionRemoved(
+            DomainEvent.ReactionDomainEvent.OperationType.REMOVE -> ChatEventElm.Internal.ServerEvent.ReactionRemoved(
                 queueId = queueId,
                 eventId = id,
                 messageId = messageId,
                 emoji = toUiChatEmoji(),
                 currentUserReaction = currentUserReaction,
             )
-            else -> error("Unimplemented reaction operation")
         }
     }
 

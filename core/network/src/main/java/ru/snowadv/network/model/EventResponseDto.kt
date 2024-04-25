@@ -77,8 +77,18 @@ sealed class EventResponseDto {
         @SerialName("id")
         override val id: Long,
         @SerialName("op")
-        val op: String,
-    ): EventResponseDto()
+        val op: OperationType,
+    ): EventResponseDto() {
+        @Serializable
+        enum class OperationType(val value: String) {
+            @SerialName("update")
+            UPDATE("update"),
+            @SerialName("deactivated")
+            DEACTIVATED("deactivated"),
+            @SerialName("update_dict")
+            UPDATE_DICT("update_dict"),
+        }
+    }
 
     @Serializable
     @SerialName(HEARTBEAT_EVENT_TYPE)
@@ -93,11 +103,25 @@ sealed class EventResponseDto {
         @SerialName("id")
         override val id: Long,
         @SerialName("op")
-        val op: String, // will be "remove", "add", "update", "peer_add" or "peer_remove"
+        val op: OperationType,
         @SerialName("subscriptions")
         // only affected subscriptions. Will be null if op is not "add" or "remove"
         val subscriptions: List<StreamResponseDto>? = null,
-    ): EventResponseDto()
+    ): EventResponseDto() {
+        @Serializable
+        enum class OperationType(val value: String) {
+            @SerialName("add")
+            ADD("add"),
+            @SerialName("remove")
+            REMOVE("remove"),
+            @SerialName("update")
+            UPDATE("update"),
+            @SerialName("peer_add")
+            PEER_ADD("peer_add"),
+            @SerialName("peer_remove")
+            PEER_REMOVE("peer_remove"),
+        }
+    }
 
     @Serializable
     @SerialName(PRESENCE_EVENT_TYPE)
@@ -138,14 +162,24 @@ sealed class EventResponseDto {
         @SerialName("id")
         override val id: Long,
         @SerialName("op")
-        val op: String, // create, update, delete,
+        val op: OperationType, // create, update, delete,
         @SerialName("streams")
         val streams: List<StreamResponseDto>? = null, // will present only in create/delete ops
         @SerialName("name")
         val streamName: String? = null, // will present only in update op
         @SerialName("stream_id")
         val streamId: Long? = null, // will present only in update op
-    ): EventResponseDto()
+    ): EventResponseDto() {
+        @Serializable
+        enum class OperationType(val value: String) {
+            @SerialName("create")
+            CREATE("create"),
+            @SerialName("update")
+            UPDATE("update"),
+            @SerialName("delete")
+            DELETE("delete"),
+        }
+    }
 
     @Serializable
     @SerialName(REACTION_EVENT_TYPE)
@@ -153,7 +187,7 @@ sealed class EventResponseDto {
         @SerialName("id")
         override val id: Long,
         @SerialName("op")
-        val op: String, // add, remove
+        val op: OperationType, // add, remove
         @SerialName("emoji_code")
         val emojiCode: String,
         @SerialName("emoji_name")
@@ -164,7 +198,15 @@ sealed class EventResponseDto {
         val reactionType: String,
         @SerialName("user_id")
         val userId: Long,
-    ): EventResponseDto()
+    ): EventResponseDto() {
+        @Serializable
+        enum class OperationType(val value: String) {
+            @SerialName("add")
+            ADD("add"),
+            @SerialName("remove")
+            REMOVE("remove"),
+        }
+    }
 
     @Serializable
     @SerialName(TYPING_EVENT_TYPE)
@@ -172,7 +214,7 @@ sealed class EventResponseDto {
         @SerialName("id")
         override val id: Long,
         @SerialName("op")
-        val op: String, // start, stop
+        val op: OperationType, // start, stop
         @SerialName("message_type")
         val messageType: String, // stream, direct
         @SerialName("stream_id")
@@ -181,7 +223,15 @@ sealed class EventResponseDto {
         val topic: String? = null, // only present if message_type is stream
        @SerialName("sender")
         val sender: SenderResponseDto
-    ): EventResponseDto()
+    ): EventResponseDto() {
+        @Serializable
+        enum class OperationType(val value: String) {
+            @SerialName("start")
+            START("start"),
+            @SerialName("stop")
+            STOP("stop"),
+        }
+    }
 
     @Serializable
     @SerialName(UPDATE_MESSAGE_FLAGS_EVENT_TYPE)
@@ -191,13 +241,21 @@ sealed class EventResponseDto {
         @SerialName("flag")
         val flag: String,
         @SerialName("op")
-        val op: String, // add, remove
+        val op: OperationType, // add, remove
         @SerialName("messages")
         val messagesIds: List<Long>,
         @Serializable(with = MessageDetailsResponseDtoMapSerializer::class)
         @SerialName("message_details")
         val messageIdToMessageDetails: Map<String, MessageDetailsResponseDto>? = null, // Will only present on remove action
-    ): EventResponseDto()
+    ): EventResponseDto() {
+        @Serializable
+        enum class OperationType(val value: String) {
+            @SerialName("add")
+            ADD("add"),
+            @SerialName("remove")
+            REMOVE("remove"),
+        }
+    }
 
     companion object {
         const val REALM_EVENT_TYPE = "realm"

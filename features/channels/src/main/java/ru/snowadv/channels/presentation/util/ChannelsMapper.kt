@@ -121,21 +121,21 @@ internal object ChannelsMapper {
 
     fun DomainEvent.StreamDomainEvent.toElmEvent(): StreamListEventElm.Internal.ServerEvent {
         return when(op) {
-            "create" -> {
+            DomainEvent.StreamDomainEvent.OperationType.CREATE-> {
                 StreamListEventElm.Internal.ServerEvent.StreamsAddedEvent(
                     queueId = queueId,
                     eventId = id,
                     streams = streams?.map { it.toUiModel() } ?: emptyList(),
                 )
             }
-            "delete" -> {
+            DomainEvent.StreamDomainEvent.OperationType.DELETE -> {
                 StreamListEventElm.Internal.ServerEvent.StreamsAddedEvent(
                     queueId = queueId,
                     eventId = id,
                     streams = streams?.map { it.toUiModel() } ?: emptyList(),
                 )
             }
-            "update" -> {
+            DomainEvent.StreamDomainEvent.OperationType.UPDATE -> {
                 StreamListEventElm.Internal.ServerEvent.StreamUpdatedEvent(
                     queueId = queueId,
                     eventId = id,
@@ -143,27 +143,26 @@ internal object ChannelsMapper {
                     streamName = streamName,
                 )
             }
-            else -> error("Unsupported event: stream event with operation = \"$op\"")
         }
     }
 
     fun DomainEvent.UserSubscriptionDomainEvent.toElmEvent(): StreamListEventElm.Internal.ServerEvent {
         return when(op) {
-            "add" -> {
+            DomainEvent.UserSubscriptionDomainEvent.OperationType.ADD -> {
                 StreamListEventElm.Internal.ServerEvent.UserSubscriptionsAddedEvent(
                     queueId = queueId,
                     eventId = id,
                     changedStreams = subscriptions?.map { eventStream -> eventStream.toUiModel() } ?: emptyList(),
                 )
             }
-            "remove" -> {
+            DomainEvent.UserSubscriptionDomainEvent.OperationType.REMOVE -> {
                 StreamListEventElm.Internal.ServerEvent.UserSubscriptionsRemovedEvent(
                     queueId = queueId,
                     eventId = id,
                     changedStreams = subscriptions?.map { eventStream -> eventStream.toUiModel() } ?: emptyList(),
                 )
             }
-            else -> error("Unsupported op for subscription event: \"$op\"")
+            else -> this.toEventQueueUpdateElmEvent()
         }
     }
 }
