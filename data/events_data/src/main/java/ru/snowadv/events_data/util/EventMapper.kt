@@ -25,7 +25,7 @@ import ru.snowadv.utils.DateUtils
 
 
 internal object EventMapper {
-    fun MessageResponseDto.toEventMessage(currentUserId: Long): EventMessage {
+    private fun MessageResponseDto.toEventMessage(currentUserId: Long): EventMessage {
         return EventMessage(
             id = id,
             content = content,
@@ -42,11 +42,11 @@ internal object EventMapper {
         )
     }
 
-    fun UserPresenceDto.toEventPresence(serverTimestamp: Double): EventPresence {
+    private fun UserPresenceDto.toEventPresence(serverTimestamp: Double): EventPresence {
         return EventPresence.fromTimestampAndStatus(timestamp.toLong(), status, serverTimestamp.toLong())
     }
 
-    fun StreamResponseDto.toEventStream(): EventStream {
+    private fun StreamResponseDto.toEventStream(): EventStream {
         return EventStream(id, name)
     }
 
@@ -142,7 +142,7 @@ internal object EventMapper {
     }
 
 
-    fun EventResponseDto.UpdateMessageFlagsEventDto.toAddOrRemoveFlagsEvent(queueId: String): DomainEvent {
+    private fun EventResponseDto.UpdateMessageFlagsEventDto.toAddOrRemoveFlagsEvent(queueId: String): DomainEvent {
         return when {
             op == EventResponseDto.UpdateMessageFlagsEventDto.OperationType.ADD
                     && flag == "read" -> DomainEvent.AddReadMessageFlagEvent(id, messagesIds, queueId)
@@ -171,7 +171,7 @@ internal object EventMapper {
         }
     }
 
-    fun EventNarrow.toNarrowDto(): NarrowRequestDto {
+    private fun EventNarrow.toNarrowDto(): NarrowRequestDto {
         return NarrowRequestDto(operator = operator, operand = operand)
     }
 
@@ -183,7 +183,7 @@ internal object EventMapper {
         return Narrow2DArrayRequestDto(map { it.toNarrowDto() })
     }
 
-    fun List<ReactionResponseDto>.toDataReactionList(currentUserId: Long): List<EventReaction> {
+    private fun List<ReactionResponseDto>.toDataReactionList(currentUserId: Long): List<EventReaction> {
         return buildList {
             this@toDataReactionList.groupBy { it.emojiName }.asSequence().map { it.value }.forEach {
                 add(
