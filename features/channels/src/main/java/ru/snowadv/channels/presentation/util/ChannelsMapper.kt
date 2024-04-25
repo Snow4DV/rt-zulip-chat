@@ -61,7 +61,7 @@ internal object ChannelsMapper {
         return Stream(id, name, expanded)
     }
 
-    fun DomainEvent.toEventQueueUpdateElmEvent(): StreamListEventElm.Internal.ServerEvent.EventQueueUpdated {
+    private fun DomainEvent.toEventQueueUpdateElmEvent(): StreamListEventElm.Internal.ServerEvent.EventQueueUpdated {
         return StreamListEventElm.Internal.ServerEvent.EventQueueUpdated(queueId = queueId, eventId = id)
     }
 

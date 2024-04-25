@@ -30,7 +30,7 @@ internal object ChatMappers {
         )
     }
 
-    fun DomainChatReaction.toUiChatReaction(): ChatReaction {
+    private fun DomainChatReaction.toUiChatReaction(): ChatReaction {
         return ChatReaction(
             name = name,
             emojiCode = emojiCode,
@@ -48,7 +48,7 @@ internal object ChatMappers {
         )
     }
 
-    fun EventReaction.toChatReaction(): ChatReaction {
+    private fun EventReaction.toChatReaction(): ChatReaction {
         return ChatReaction(
             name = name,
             emojiCode = emojiCode,

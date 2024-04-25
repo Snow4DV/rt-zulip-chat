@@ -9,7 +9,7 @@ import ru.snowadv.network.model.ReactionResponseDto
 import ru.snowadv.utils.DateUtils
 
 internal object MessagesMapper {
-    fun MessageResponseDto.toDataMessage(currentUserId: Long): DataMessage {
+    private fun MessageResponseDto.toDataMessage(currentUserId: Long): DataMessage {
         return DataMessage(
             id = id,
             content = content,
@@ -40,7 +40,7 @@ internal object MessagesMapper {
         )
     }
 
-    fun List<ReactionResponseDto>.toDataReactionList(currentUserId: Long): List<DataReaction> {
+    private fun List<ReactionResponseDto>.toDataReactionList(currentUserId: Long): List<DataReaction> {
         return buildList {
             this@toDataReactionList.groupBy { it.emojiName }.asSequence().map { it.value }.forEach {
                 add(
