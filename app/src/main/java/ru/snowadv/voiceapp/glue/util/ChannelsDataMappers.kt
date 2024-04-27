@@ -5,10 +5,12 @@ import ru.snowadv.channels.domain.model.Topic
 import ru.snowadv.channels_data.model.DataStream
 import ru.snowadv.channels_data.model.DataTopic
 
-internal fun DataStream.toChannelStream(): Stream {
-    return Stream(id, name)
-}
+object ChannelsDataMappers {
+    internal fun DataStream.toChannelStream(): Stream {
+        return Stream(id, name)
+    }
 
-internal fun DataTopic.toChannelTopic(): Topic {
-    return Topic(uniqueId, name, streamId)
+    internal fun DataTopic.toChannelTopic(): Topic {
+        return Topic(uniqueId, name, streamId)
+    }
 }

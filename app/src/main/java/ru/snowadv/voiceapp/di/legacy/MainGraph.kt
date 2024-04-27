@@ -1,27 +1,23 @@
-package ru.snowadv.voiceapp.di
+package ru.snowadv.voiceapp.di.legacy
 
 import com.github.terrakok.cicerone.Router
-import kotlinx.coroutines.Dispatchers
 import ru.snowadv.channels.di.ChannelsGraph
 import ru.snowadv.chat.di.ChatGraph
 import ru.snowadv.home.di.HomeGraph
 import ru.snowadv.people.di.PeopleGraph
-import ru.snowadv.profile.di.ProfileGraph
-import ru.snowadv.voiceapp.di.deps.ChannelsDepsProvider
-import ru.snowadv.voiceapp.di.deps.ChatDepsProvider
-import ru.snowadv.voiceapp.di.deps.HomeDepsProvider
-import ru.snowadv.voiceapp.di.deps.MainDepsProvider
-import ru.snowadv.voiceapp.di.deps.PeopleDepsProvider
-import ru.snowadv.voiceapp.di.deps.ProfileDepsProvider
+import ru.snowadv.voiceapp.di.legacy.deps.ChannelsDepsProvider
+import ru.snowadv.voiceapp.di.legacy.deps.ChatDepsProvider
+import ru.snowadv.voiceapp.di.legacy.deps.HomeDepsProvider
+import ru.snowadv.voiceapp.di.legacy.deps.MainDepsProvider
+import ru.snowadv.voiceapp.di.legacy.deps.PeopleDepsProvider
 
 internal object MainGraph { // Will be replaced with proper DI
 
     lateinit var mainDepsProvider: MainDepsProvider
 
     private val channelsDepsProvider by lazy { ChannelsDepsProvider() }
-    private val chatDepsProvider by lazy {ChatDepsProvider()}
+    private val chatDepsProvider by lazy { ChatDepsProvider() }
     private val peopleDepsProvider by lazy { PeopleDepsProvider() }
-    private val profileDepsProvider by lazy { ProfileDepsProvider() }
     private val homeDepsProvider by lazy { HomeDepsProvider() }
 
 
@@ -34,7 +30,6 @@ internal object MainGraph { // Will be replaced with proper DI
         ChannelsGraph.init(channelsDepsProvider)
         ChatGraph.init(chatDepsProvider)
         PeopleGraph.init(peopleDepsProvider)
-        ProfileGraph.init(profileDepsProvider)
         HomeGraph.init(homeDepsProvider)
     }
 }

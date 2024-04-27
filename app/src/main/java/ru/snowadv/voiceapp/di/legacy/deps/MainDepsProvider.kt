@@ -1,4 +1,4 @@
-package ru.snowadv.voiceapp.di.deps
+package ru.snowadv.voiceapp.di.legacy.deps
 
 import com.github.terrakok.cicerone.Router
 import kotlinx.coroutines.CoroutineDispatcher

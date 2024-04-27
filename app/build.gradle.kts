@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.kotlin.kapt)
 }
 
 android {
@@ -59,6 +60,10 @@ dependencies {
     implementation(projects.core.network)
     implementation(projects.core.propertiesProvider)
     implementation(projects.core.eventApi)
+    implementation(projects.core.moduleInjector)
+
+    implementation(libs.dagger)
+    kapt(libs.dagger.compiler)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

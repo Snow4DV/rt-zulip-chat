@@ -1,4 +1,4 @@
-package ru.snowadv.voiceapp.di.deps
+package ru.snowadv.voiceapp.di.legacy.deps
 
 import ru.snowadv.home.di.HomeDeps
 import ru.snowadv.home.presentation.local_navigation.HomeScreenFactory

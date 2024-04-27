@@ -1,5 +1,6 @@
 package ru.snowadv.voiceapp.glue.repository
 
+import dagger.Reusable
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -12,17 +13,18 @@ import ru.snowadv.chat.domain.repository.EmojiRepository
 import ru.snowadv.chat.domain.repository.MessageRepository
 import ru.snowadv.emojis_data.api.EmojiDataRepository
 import ru.snowadv.message_data.api.MessageDataRepository
+import ru.snowadv.model.DispatcherProvider
 import ru.snowadv.model.Resource
 import ru.snowadv.model.map
-import ru.snowadv.voiceapp.glue.util.mapNotNullListContent
-import ru.snowadv.voiceapp.glue.util.toChatEmoji
-import ru.snowadv.voiceapp.glue.util.toChatMessage
-import ru.snowadv.voiceapp.glue.util.toChatPaginatedMessages
+import ru.snowadv.voiceapp.glue.util.MessageDataMappers.toChatEmoji
+import ru.snowadv.voiceapp.glue.util.MessageDataMappers.toChatPaginatedMessages
+import javax.inject.Inject
 
-class ChatRepositoryImpl(
+@Reusable
+class ChatRepositoryImpl @Inject constructor(
     private val messageDataRepository: MessageDataRepository,
     private val emojiDataRepository: EmojiDataRepository,
-    private val defaultDispatcher: CoroutineDispatcher,
+    private val dispatcherProvider: DispatcherProvider,
 ) : MessageRepository, EmojiRepository {
     override fun getAvailableEmojis(): Flow<Resource<List<ChatEmoji>>> {
         return emojiDataRepository.getAvailableEmojis()
@@ -33,7 +35,7 @@ class ChatRepositoryImpl(
                     }
                 }
             }
-            .flowOn(defaultDispatcher)
+            .flowOn(dispatcherProvider.default)
     }
 
     override fun getMessages(
@@ -53,7 +55,7 @@ class ChatRepositoryImpl(
             res.map { dataPagMes ->
                 dataPagMes.toChatPaginatedMessages()
             }
-        }.flowOn(defaultDispatcher)
+        }.flowOn(dispatcherProvider.default)
     }
 
     override fun sendMessage(

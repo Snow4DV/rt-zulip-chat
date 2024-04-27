@@ -4,8 +4,9 @@ import ru.snowadv.auth_data.api.AuthDataRepository
 import ru.snowadv.data.api.AuthProvider
 import ru.snowadv.data.model.AuthUser
 import ru.snowadv.exception.UserNotAuthorizedException
+import javax.inject.Inject
 
-class AuthProviderImpl(
+class AuthProviderImpl @Inject constructor(
     private val dataRepository: AuthDataRepository,
 ): AuthProvider {
     override fun getAuthorizedUser(): AuthUser {
