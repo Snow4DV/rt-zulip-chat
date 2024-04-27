@@ -39,7 +39,8 @@ internal object AdapterUtils {
      */
     fun <T, VH : RecyclerView.ViewHolder> ListAdapter<T, VH>.submitListMaintainingBottomPos(
         list: List<T>?,
-        recycler: RecyclerView
+        recycler: RecyclerView,
+        callback: (() -> Unit)? = null,
     ) {
         submitList(list) {
             when {
@@ -48,6 +49,7 @@ internal object AdapterUtils {
                     recycler.scrollToPosition(itemCount - 1)
                 }
             }
+            callback?.invoke()
         }
     }
 

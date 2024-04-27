@@ -5,12 +5,8 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import ru.snowadv.chat.R
 import ru.snowadv.chat.databinding.FragmentChatBinding
 import ru.snowadv.chat.presentation.adapter.DateSplitterAdapterDelegate
@@ -34,7 +30,6 @@ import ru.snowadv.presentation.fragment.setOnRetryClickListener
 import ru.snowadv.presentation.fragment.setTopBarText
 import ru.snowadv.presentation.util.impl.DayDateFormatter
 import ru.snowadv.presentation.util.impl.LocalizedDateTimeFormatter
-import ru.snowadv.presentation.view.setTextIfChanged
 import ru.snowadv.presentation.view.setTextIfEmpty
 import vivid.money.elmslie.core.store.Store
 import kotlin.math.abs
@@ -61,7 +56,7 @@ internal class ChatFragmentRenderer :
         initDateTimeFormatters(requireContext())
         initEmojiChooserResultListener(this, store)
         _adapter = initDelegateAdapter(store).also {
-            setAdapterToRecyclerViewWithLinearLayoutManager(
+            setAdapterToRecyclerView(
                 requireContext(),
                 binding.messagesRecycler,
                 it
@@ -157,13 +152,12 @@ internal class ChatFragmentRenderer :
         _splitterDateFormatter = null
     }
 
-    private fun setAdapterToRecyclerViewWithLinearLayoutManager(
+    private fun setAdapterToRecyclerView(
         context: Context,
         recyclerView: RecyclerView,
         adapter: DiffDelegationAdapter
     ) {
         recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(context)
     }
     private fun initListeners(
         binding: FragmentChatBinding,
