@@ -1,9 +1,11 @@
 package ru.snowadv.voiceapp.glue.injector
 
 import android.content.Context
+import kotlinx.serialization.json.Json
 import ru.snowadv.auth_data.api.AuthDataRepository
 import ru.snowadv.channels_data.api.StreamDataRepository
 import ru.snowadv.channels_data.api.TopicDataRepository
+import ru.snowadv.data.api.AuthProvider
 import ru.snowadv.emojis_data.api.EmojiDataRepository
 import ru.snowadv.event_api.repository.EventRepository
 import ru.snowadv.message_data.api.MessageDataRepository
@@ -11,6 +13,10 @@ import ru.snowadv.module_injector.dependency_holder.BaseDependencyHolder
 import ru.snowadv.module_injector.dependency_holder.DependencyHolder0
 import ru.snowadv.module_injector.dependency_holder.DependencyHolder1
 import ru.snowadv.module_injector.module.BaseModuleDependencies
+import ru.snowadv.network.api.BadAuthBehavior
+import ru.snowadv.network.di.holder.NetworkModuleAPI
+import ru.snowadv.network.di.holder.NetworkModuleComponentHolder
+import ru.snowadv.network.di.holder.NetworkModuleDependencies
 import ru.snowadv.profile.di.holder.ProfileFeatureComponentHolder
 import ru.snowadv.profile.di.holder.ProfileFeatureDependencies
 import ru.snowadv.profile.domain.navigation.ProfileRouter
@@ -59,6 +65,24 @@ internal object ModulesInjector {
                     override val router: ProfileRouter = appApi.profileRouter
                     override val repo: ProfileRepository = appApi.profileRepo
                     override val eventRepo: EventRepository = MainGraph.mainDepsProvider.eventDataRepository
+                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
+
+                }
+            }.dependencies
+        }
+
+        NetworkModuleComponentHolder.dependencyProvider = {
+            class NetworkModuleDependencyHolder(
+                override val block: (BaseDependencyHolder<NetworkModuleDependencies>, AppModuleAPI) -> NetworkModuleDependencies
+            ) : DependencyHolder1<AppModuleAPI, NetworkModuleDependencies>(
+                api1 = AppModuleComponentHolder.get(),
+            )
+
+            NetworkModuleDependencyHolder { dependencyHolder, appApi ->
+                object : NetworkModuleDependencies {
+                    override val badAuthBehavior: BadAuthBehavior = appApi.badAuthBehavior
+                    override val authProvider: AuthProvider = appApi.authProvider
+                    override val json: Json = appApi.json
                     override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
 
                 }

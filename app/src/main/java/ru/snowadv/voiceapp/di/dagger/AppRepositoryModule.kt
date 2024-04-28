@@ -34,8 +34,4 @@ interface AppRepositoryModule {
     fun bindPeopleRepositoryImpl(peopleRepositoryImpl: PeopleRepositoryImpl): PeopleRepository
     @Binds
     fun bindProfileRepositoryImpl(profileRepositoryImpl: ProfileRepositoryImpl): ProfileRepository
-    @Binds
-    fun bindAuthProvider(authProviderImpl: AuthProviderImpl): AuthProvider
-    @Binds
-    fun bindDispatcherProvider(dispatcherProviderImpl: DispatcherProviderImpl): DispatcherProvider
 }

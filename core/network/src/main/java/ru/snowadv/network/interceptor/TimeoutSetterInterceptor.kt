@@ -3,13 +3,14 @@ package ru.snowadv.network.interceptor
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 
 /**
  * This interceptor makes it possible to increase timeout per-request
  * It is used to respect event_queue_longpoll_timeout_seconds sent by server
  */
-class TimeoutSetterInterceptor : Interceptor {
+internal class TimeoutSetterInterceptor @Inject constructor() : Interceptor {
 
     companion object {
         const val CONNECT_TIMEOUT_HEADER = "CONNECT_TIMEOUT"
