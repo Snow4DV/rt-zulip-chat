@@ -7,6 +7,7 @@ import ru.snowadv.channels.domain.repository.TopicRepository
 import ru.snowadv.chat.domain.navigation.ChatRouter
 import ru.snowadv.data.api.AuthProvider
 import ru.snowadv.home.presentation.local_navigation.HomeScreenFactory
+import ru.snowadv.model.DispatcherProvider
 import ru.snowadv.module_injector.module.BaseModuleAPI
 import ru.snowadv.network.api.BadAuthBehavior
 import ru.snowadv.people.domain.navigation.PeopleRouter
@@ -30,4 +31,5 @@ interface AppModuleAPI : BaseModuleAPI {
     val profileRepo: ProfileRepository
 
     val json: Json
+    val dispatcherProvider: DispatcherProvider
 }

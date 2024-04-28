@@ -1,7 +1,7 @@
 package ru.snowadv.voiceapp.glue.auth
 
 import dagger.Reusable
-import ru.snowadv.auth_data.api.AuthDataRepository
+import ru.snowadv.auth_data_api.AuthDataRepository
 import ru.snowadv.data.api.AuthProvider
 import ru.snowadv.data.model.AuthUser
 import ru.snowadv.exception.UserNotAuthorizedException

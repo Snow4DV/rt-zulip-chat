@@ -40,7 +40,6 @@ android {
 dependencies {
     implementation(projects.core.presentation)
     implementation(projects.core.utils)
-    implementation(projects.core.eventApi)
 
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.elmslie.core)

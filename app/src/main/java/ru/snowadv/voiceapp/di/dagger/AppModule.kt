@@ -21,8 +21,8 @@ interface AppModule {
     fun bindBadAuthBehaviorImpl(badAuthBehaviorImpl: BadAuthBehaviorImpl): BadAuthBehavior
 
     companion object {
-        @Provides
         @Reusable
+        @Provides
         fun provideJson(): Json {
             return Json {
                 ignoreUnknownKeys = true

@@ -61,3 +61,32 @@ abstract class DependencyHolder4<A1 : BaseModuleAPI, A2 : BaseModuleAPI, A3 : Ba
     override val dependencies: D
         get() = block(this, api1, api2, api3, api4)
 }
+
+abstract class DependencyHolder5<A1 : BaseModuleAPI, A2 : BaseModuleAPI, A3 : BaseModuleAPI,
+        A4 : BaseModuleAPI, A5 : BaseModuleAPI, D : BaseModuleDependencies>(
+    private val api1: A1,
+    private val api2: A2,
+    private val api3: A3,
+    private val api4: A4,
+    private val api5: A5,
+) : BaseDependencyHolder<D> {
+    abstract val block: (dependencyHolder: BaseDependencyHolder<D>, A1, A2, A3, A4, A5) -> D
+
+    override val dependencies: D
+        get() = block(this, api1, api2, api3, api4, api5)
+}
+
+abstract class DependencyHolder6<A1 : BaseModuleAPI, A2 : BaseModuleAPI, A3 : BaseModuleAPI,
+        A4 : BaseModuleAPI, A5 : BaseModuleAPI, A6 : BaseModuleAPI, D : BaseModuleDependencies>(
+    private val api1: A1,
+    private val api2: A2,
+    private val api3: A3,
+    private val api4: A4,
+    private val api5: A5,
+    private val api6: A6,
+) : BaseDependencyHolder<D> {
+    abstract val block: (dependencyHolder: BaseDependencyHolder<D>, A1, A2, A3, A4, A5, A6) -> D
+
+    override val dependencies: D
+        get() = block(this, api1, api2, api3, api4, api5, api6)
+}

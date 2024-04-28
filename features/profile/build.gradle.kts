@@ -41,7 +41,6 @@ android {
 dependencies {
     implementation(projects.core.presentation)
     implementation(projects.core.utils)
-    implementation(projects.core.eventApi)
     implementation(projects.core.moduleInjector)
 
     implementation(libs.dagger)

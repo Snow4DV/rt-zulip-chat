@@ -1,16 +1,14 @@
 package ru.snowadv.voiceapp.di.holder
 
 import android.content.Context
-import ru.snowadv.auth_data.api.AuthDataRepository
-import ru.snowadv.channels_data.api.StreamDataRepository
-import ru.snowadv.channels_data.api.TopicDataRepository
-import ru.snowadv.emojis_data.api.EmojiDataRepository
-import ru.snowadv.event_api.repository.EventRepository
-import ru.snowadv.message_data.api.MessageDataRepository
+import ru.snowadv.auth_data_api.AuthDataRepository
+import ru.snowadv.channels_data_api.StreamDataRepository
+import ru.snowadv.channels_data_api.TopicDataRepository
+import ru.snowadv.emojis_data_api.model.EmojiDataRepository
+import ru.snowadv.events_data_api.EventRepository
+import ru.snowadv.messages_data_api.MessageDataRepository
 import ru.snowadv.module_injector.module.BaseModuleDependencies
-import ru.snowadv.profile.domain.navigation.ProfileRouter
-import ru.snowadv.profile.domain.repository.ProfileRepository
-import ru.snowadv.users_data.api.UserDataRepository
+import ru.snowadv.users_data_api.UserDataRepository
 
 interface AppModuleDependencies : BaseModuleDependencies {
     val authDataRepository: AuthDataRepository

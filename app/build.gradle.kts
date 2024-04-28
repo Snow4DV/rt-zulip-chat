@@ -42,12 +42,18 @@ android {
 }
 
 dependencies {
-    implementation(projects.data.channelsData)
-    implementation(projects.data.eventsData)
-    implementation(projects.data.messagesData)
-    implementation(projects.data.usersData)
-    implementation(projects.data.emojisData)
-    implementation(projects.data.authData)
+    implementation(projects.data.channelsData.api)
+    implementation(projects.data.channelsData.impl)
+    implementation(projects.data.eventsData.api)
+    implementation(projects.data.eventsData.impl)
+    implementation(projects.data.messagesData.api)
+    implementation(projects.data.messagesData.impl)
+    implementation(projects.data.usersData.api)
+    implementation(projects.data.usersData.impl)
+    implementation(projects.data.emojisData.api)
+    implementation(projects.data.emojisData.impl)
+    implementation(projects.data.authData.api)
+    implementation(projects.data.authData.impl)
 
     implementation(projects.features.channels)
     implementation(projects.features.chat)
@@ -58,8 +64,10 @@ dependencies {
     implementation(projects.core.utils)
     implementation(projects.core.data)
     implementation(projects.core.network)
-    implementation(projects.core.propertiesProvider)
-    implementation(projects.core.eventApi)
+
+    implementation(projects.core.propertiesProvider.api)
+    implementation(projects.core.propertiesProvider.impl)
+
     implementation(projects.core.moduleInjector)
 
     implementation(libs.dagger)

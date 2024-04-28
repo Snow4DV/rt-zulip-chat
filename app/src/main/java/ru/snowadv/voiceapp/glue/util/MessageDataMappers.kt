@@ -5,12 +5,12 @@ import ru.snowadv.chat.domain.model.ChatMessage
 import ru.snowadv.chat.domain.model.ChatPaginatedMessages
 import ru.snowadv.chat.domain.model.ChatReaction
 import ru.snowadv.emojis_data.model.DataEmoji
-import ru.snowadv.message_data.model.DataMessage
+import ru.snowadv.messages_data_api.model.DataMessage
 import ru.snowadv.message_data.model.DataPaginatedMessages
-import ru.snowadv.message_data.model.DataReaction
+import ru.snowadv.messages_data_api.model.DataReaction
 
 object MessageDataMappers {
-    internal fun DataMessage.toChatMessage(): ChatMessage {
+    internal fun ru.snowadv.messages_data_api.model.DataMessage.toChatMessage(): ChatMessage {
         return ChatMessage(
             id = id,
             content = content,
@@ -27,7 +27,7 @@ object MessageDataMappers {
         return ChatEmoji(name = name, code = code)
     }
 
-    internal fun DataReaction.toChatReaction(): ChatReaction {
+    internal fun ru.snowadv.messages_data_api.model.DataReaction.toChatReaction(): ChatReaction {
         return ChatReaction(
             name = emojiName,
             emojiCode = emojiCode,
