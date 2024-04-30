@@ -1,17 +1,17 @@
 package ru.snowadv.voiceapp.glue.util
 
-import ru.snowadv.chat.domain.model.ChatEmoji
-import ru.snowadv.chat.domain.model.ChatMessage
-import ru.snowadv.chat.domain.model.ChatPaginatedMessages
-import ru.snowadv.chat.domain.model.ChatReaction
+import ru.snowadv.chat_api.domain.model.ChatEmoji
+import ru.snowadv.chat_api.domain.model.ChatMessage
+import ru.snowadv.chat_api.domain.model.ChatPaginatedMessages
+import ru.snowadv.chat_api.domain.model.ChatReaction
 import ru.snowadv.emojis_data.model.DataEmoji
 import ru.snowadv.messages_data_api.model.DataMessage
 import ru.snowadv.message_data.model.DataPaginatedMessages
 import ru.snowadv.messages_data_api.model.DataReaction
 
 object MessageDataMappers {
-    internal fun ru.snowadv.messages_data_api.model.DataMessage.toChatMessage(): ChatMessage {
-        return ChatMessage(
+    internal fun ru.snowadv.messages_data_api.model.DataMessage.toChatMessage(): ru.snowadv.chat_api.domain.model.ChatMessage {
+        return ru.snowadv.chat_api.domain.model.ChatMessage(
             id = id,
             content = content,
             sentAt = sentAt,
@@ -23,12 +23,12 @@ object MessageDataMappers {
         )
     }
 
-    internal fun DataEmoji.toChatEmoji(): ChatEmoji {
+    internal fun DataEmoji.toChatEmoji(): ru.snowadv.chat_api.domain.model.ChatEmoji {
         return ChatEmoji(name = name, code = code)
     }
 
-    internal fun ru.snowadv.messages_data_api.model.DataReaction.toChatReaction(): ChatReaction {
-        return ChatReaction(
+    internal fun ru.snowadv.messages_data_api.model.DataReaction.toChatReaction(): ru.snowadv.chat_api.domain.model.ChatReaction {
+        return ru.snowadv.chat_api.domain.model.ChatReaction(
             name = emojiName,
             emojiCode = emojiCode,
             count = count,
@@ -36,7 +36,7 @@ object MessageDataMappers {
         )
     }
 
-    internal fun DataPaginatedMessages.toChatPaginatedMessages(): ChatPaginatedMessages {
+    internal fun DataPaginatedMessages.toChatPaginatedMessages(): ru.snowadv.chat_api.domain.model.ChatPaginatedMessages {
         return ChatPaginatedMessages(
             messages = messages.map { it.toChatMessage() },
             foundAnchor = foundAnchor,

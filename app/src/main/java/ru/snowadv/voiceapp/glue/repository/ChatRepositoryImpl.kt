@@ -6,11 +6,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import ru.snowadv.chat.domain.model.ChatMessage
-import ru.snowadv.chat.domain.model.ChatEmoji
-import ru.snowadv.chat.domain.model.ChatPaginatedMessages
-import ru.snowadv.chat.domain.repository.EmojiRepository
-import ru.snowadv.chat.domain.repository.MessageRepository
+import ru.snowadv.chat_api.domain.model.ChatMessage
+import ru.snowadv.chat_api.domain.model.ChatEmoji
+import ru.snowadv.chat_api.domain.model.ChatPaginatedMessages
+import ru.snowadv.chat_api.domain.repository.EmojiRepository
+import ru.snowadv.chat_api.domain.repository.MessageRepository
 import ru.snowadv.emojis_data.api.EmojiDataRepository
 import ru.snowadv.message_data.api.MessageDataRepository
 import ru.snowadv.model.DispatcherProvider
@@ -25,8 +25,9 @@ class ChatRepositoryImpl @Inject constructor(
     private val messageDataRepository: MessageDataRepository,
     private val emojiDataRepository: EmojiDataRepository,
     private val dispatcherProvider: DispatcherProvider,
-) : MessageRepository, EmojiRepository {
-    override fun getAvailableEmojis(): Flow<Resource<List<ChatEmoji>>> {
+) : ru.snowadv.chat_api.domain.repository.MessageRepository,
+    ru.snowadv.chat_api.domain.repository.EmojiRepository {
+    override fun getAvailableEmojis(): Flow<Resource<List<ru.snowadv.chat_api.domain.model.ChatEmoji>>> {
         return emojiDataRepository.getAvailableEmojis()
             .map { res ->
                 res.map { dataEmojis ->
@@ -44,7 +45,7 @@ class ChatRepositoryImpl @Inject constructor(
         includeAnchorMessage: Boolean,
         anchorMessageId: Long?,
         countOfMessages: Int
-    ): Flow<Resource<ChatPaginatedMessages>> {
+    ): Flow<Resource<ru.snowadv.chat_api.domain.model.ChatPaginatedMessages>> {
         return messageDataRepository.getMessages(
             streamName = streamName,
             topicName = topicName,

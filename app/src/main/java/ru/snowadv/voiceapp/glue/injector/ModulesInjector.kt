@@ -38,8 +38,8 @@ import ru.snowadv.network.di.holder.NetworkModuleComponentHolder
 import ru.snowadv.network.di.holder.NetworkModuleDependencies
 import ru.snowadv.profile.di.holder.ProfileFeatureComponentHolder
 import ru.snowadv.profile.di.holder.ProfileFeatureDependencies
-import ru.snowadv.profile.domain.navigation.ProfileRouter
-import ru.snowadv.profile.domain.repository.ProfileRepository
+import ru.snowadv.profile_api.domain.navigation.ProfileRouter
+import ru.snowadv.profile_api.domain.repository.ProfileRepository
 import ru.snowadv.properties_provider_api.AuthUserPropertyRepository
 import ru.snowadv.properties_provider_api.di.PropertiesProviderModuleAPI
 import ru.snowadv.properties_provider_api.di.PropertiesProviderModuleDependencies
@@ -98,8 +98,8 @@ internal object ModulesInjector {
 
             ProfileFeatureDependencyHolder { dependencyHolder, appApi, eventApi ->
                 object : ProfileFeatureDependencies {
-                    override val router: ProfileRouter = appApi.profileRouter
-                    override val repo: ProfileRepository = appApi.profileRepo
+                    override val router: ru.snowadv.profile_api.domain.navigation.ProfileRouter = appApi.profileRouter
+                    override val repo: ru.snowadv.profile_api.domain.repository.ProfileRepository = appApi.profileRepo
                     override val eventRepo: EventRepository = eventApi.eventRepo
                     override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
 

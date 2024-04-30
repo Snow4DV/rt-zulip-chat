@@ -2,8 +2,8 @@ package ru.snowadv.voiceapp.di.legacy
 
 import com.github.terrakok.cicerone.Router
 import ru.snowadv.channels.di.ChannelsGraph
-import ru.snowadv.chat.di.ChatGraph
-import ru.snowadv.home.di.HomeGraph
+import ru.snowadv.chat_impl.di.ChatGraph
+import di.HomeGraph
 import ru.snowadv.people.di.PeopleGraph
 import ru.snowadv.voiceapp.di.legacy.deps.ChannelsDepsProvider
 import ru.snowadv.voiceapp.di.legacy.deps.ChatDepsProvider
@@ -28,8 +28,8 @@ internal object MainGraph { // Will be replaced with proper DI
 
     private fun initFeatureGraphs() {
         ChannelsGraph.init(channelsDepsProvider)
-        ChatGraph.init(chatDepsProvider)
+        ru.snowadv.chat_impl.di.ChatGraph.init(chatDepsProvider)
         PeopleGraph.init(peopleDepsProvider)
-        HomeGraph.init(homeDepsProvider)
+        di.HomeGraph.init(homeDepsProvider)
     }
 }

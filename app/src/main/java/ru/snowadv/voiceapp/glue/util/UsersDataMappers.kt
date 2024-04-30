@@ -1,7 +1,7 @@
 package ru.snowadv.voiceapp.glue.util
 
-import ru.snowadv.profile.domain.model.Person as ProfilePerson
-import ru.snowadv.people.domain.model.Person as PeoplePerson
+import ru.snowadv.profile_api.domain.model.Person as ProfilePerson
+import ru.snowadv.people_api.domain.model.Person as PeoplePerson
 import ru.snowadv.users_data.model.DataUser
 import ru.snowadv.users_data.model.DataUserStatus
 
