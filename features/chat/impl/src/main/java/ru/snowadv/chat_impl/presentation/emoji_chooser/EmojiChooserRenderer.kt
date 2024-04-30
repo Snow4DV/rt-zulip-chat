@@ -1,12 +1,12 @@
 package ru.snowadv.chat_impl.presentation.emoji_chooser
 
-import ru.snowadv.chat.R
-import ru.snowadv.chat.databinding.FragmentEmojiChooserBinding
-import ru.snowadv.chat.presentation.adapter.EmojiAdapterDelegate
-import ru.snowadv.chat.presentation.emoji_chooser.elm.EmojiChooserEffectElm
-import ru.snowadv.chat.presentation.emoji_chooser.elm.EmojiChooserEventElm
-import ru.snowadv.chat.presentation.emoji_chooser.elm.EmojiChooserStateElm
-import ru.snowadv.chat.presentation.model.ChatEmoji
+import ru.snowadv.chat_impl.R
+import ru.snowadv.chat_impl.databinding.FragmentEmojiChooserBinding
+import ru.snowadv.chat_impl.presentation.adapter.EmojiAdapterDelegate
+import ru.snowadv.chat_impl.presentation.emoji_chooser.elm.EmojiChooserEffectElm
+import ru.snowadv.chat_impl.presentation.emoji_chooser.elm.EmojiChooserEventElm
+import ru.snowadv.chat_impl.presentation.emoji_chooser.elm.EmojiChooserStateElm
+import ru.snowadv.chat_impl.presentation.model.ChatEmoji
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.presentation.adapter.impl.AdapterDelegatesManager
 import ru.snowadv.presentation.adapter.impl.DiffDelegationAdapter

@@ -8,12 +8,12 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.RecyclerView
-import ru.snowadv.chat.databinding.FragmentChatBinding
-import ru.snowadv.chat.presentation.chat.elm.ChatEffectElm
-import ru.snowadv.chat.presentation.chat.elm.ChatEventElm
-import ru.snowadv.chat.presentation.chat.elm.ChatStateElm
-import ru.snowadv.chat.presentation.chat.elm.ChatStoreFactoryElm
-import ru.snowadv.chat.presentation.model.ChatAction
+import ru.snowadv.chat_impl.databinding.FragmentChatBinding
+import ru.snowadv.chat_impl.di.ChatFeatureComponentHolder
+import ru.snowadv.chat_impl.presentation.chat.elm.ChatEffectElm
+import ru.snowadv.chat_impl.presentation.chat.elm.ChatEventElm
+import ru.snowadv.chat_impl.presentation.chat.elm.ChatStateElm
+import ru.snowadv.chat_impl.presentation.model.ChatAction
 import ru.snowadv.presentation.R
 import ru.snowadv.presentation.adapter.util.PaddingItemDecorator
 import ru.snowadv.presentation.elm.BaseFragment
@@ -51,11 +51,10 @@ internal class ChatFragment : BaseFragment<ChatEventElm, ChatEffectElm, ChatStat
     }
 
     override val store: Store<ChatEventElm, ChatEffectElm, ChatStateElm> by elmStoreWithRenderer(elmRenderer = this) {
-        ChatStoreFactoryElm(
-            actor = ru.snowadv.chat_impl.di.ChatGraph.chatActorElm,
+        ChatFeatureComponentHolder.getComponent().chatStoreFactory.create(
             streamName = streamName,
             topicName = topicName,
-        ).create()
+        )
     }
     override val resumeUiEvent: ChatEventElm = ChatEventElm.Ui.Resumed
     override val pauseUiEvent: ChatEventElm = ChatEventElm.Ui.Paused

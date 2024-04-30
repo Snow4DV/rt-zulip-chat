@@ -14,7 +14,7 @@ internal object AdapterUtils {
         return this.map { it.toUiChatMessage() }.mapToAdapterMessagesAndDates()
     }
 
-    private fun List<ChatMessage>.mapToAdapterMessagesAndDates(): List<DelegateItem> {
+    fun List<ChatMessage>.mapToAdapterMessagesAndDates(): List<DelegateItem> {
         val messagesMap = this
             .groupBy { it.sentAt.toLocalDate() }
             .mapValues {

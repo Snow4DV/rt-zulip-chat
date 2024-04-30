@@ -7,14 +7,10 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
-import ru.snowadv.channels.domain.navigation.ChannelsRouter
-import ru.snowadv.chat_api.domain.navigation.ChatRouter
-import ru.snowadv.home_api.presentation.local_navigation.HomeScreenFactory
-import ru.snowadv.people_api.domain.navigation.PeopleRouter
-import ru.snowadv.profile_api.domain.navigation.ProfileRouter
+import ru.snowadv.home_api.presentation.local_navigation.InnerHomeScreenFactory
 import ru.snowadv.voiceapp.glue.navigation.ChannelsRouterImpl
 import ru.snowadv.voiceapp.glue.navigation.ChatRouterImpl
-import ru.snowadv.voiceapp.glue.navigation.HomeScreenFactoryImpl
+import ru.snowadv.home_impl.presentation.feature.InnerHomeScreenFactoryImpl
 import ru.snowadv.voiceapp.glue.navigation.PeopleRouterImpl
 import ru.snowadv.voiceapp.glue.navigation.ProfileRouterImpl
 import javax.inject.Singleton
@@ -23,13 +19,13 @@ import javax.inject.Singleton
 interface AppNavigationModule {
     @Reusable
     @Binds
-    fun bindChannelsRouterImpl(channelsRouterImpl: ChannelsRouterImpl): ChannelsRouter
+    fun bindChannelsRouterImpl(channelsRouterImpl: ChannelsRouterImpl): ru.snowadv.channels_api.domain.navigation.ChannelsRouter
     @Reusable
     @Binds
     fun bindChatRouterImpl(chatRouterImpl: ChatRouterImpl): ru.snowadv.chat_api.domain.navigation.ChatRouter
     @Reusable
     @Binds
-    fun bindHomeScreenFactoryImpl(homeScreenFactoryImpl: HomeScreenFactoryImpl): ru.snowadv.home_api.presentation.local_navigation.HomeScreenFactory
+    fun bindHomeScreenFactoryImpl(homeScreenFactoryImpl: InnerHomeScreenFactoryImpl): InnerHomeScreenFactory
     @Reusable
     @Binds
     fun bindPeopleRouterImpl(peopleRouterImpl: PeopleRouterImpl): ru.snowadv.people_api.domain.navigation.PeopleRouter

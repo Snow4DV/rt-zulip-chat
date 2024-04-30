@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import ru.snowadv.chat.databinding.ItemEmojiBinding
-import ru.snowadv.chat.presentation.model.ChatEmoji
+import ru.snowadv.chat_impl.databinding.ItemEmojiBinding
+import ru.snowadv.chat_impl.presentation.model.ChatEmoji
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.presentation.adapter.DelegationItemAdapterDelegate
 

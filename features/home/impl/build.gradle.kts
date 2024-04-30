@@ -44,6 +44,10 @@ dependencies {
     implementation(projects.core.moduleInjector)
     implementation(projects.features.home.api)
 
+    implementation(projects.features.channels.api)
+    implementation(projects.features.people.api)
+    implementation(projects.features.profile.api)
+
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)
 

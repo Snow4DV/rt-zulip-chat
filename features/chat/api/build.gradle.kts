@@ -34,6 +34,8 @@ android {
 
 dependencies {
     implementation(projects.data.eventsData.api)
+    implementation(projects.data.messagesData.api)
+    implementation(projects.data.emojisData.api)
     implementation(projects.core.utils)
     implementation(projects.core.moduleInjector)
 

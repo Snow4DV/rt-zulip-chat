@@ -1,25 +1,28 @@
 package ru.snowadv.chat_impl.presentation.chat.elm
 
+import dagger.Reusable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import ru.snowadv.chat_api.domain.navigation.ChatRouter
 import ru.snowadv.chat_impl.domain.use_case.AddReactionUseCase
 import ru.snowadv.chat_impl.domain.use_case.GetCurrentMessagesUseCase
-import ru.snowadv.chat.domain.use_case.ListenToChatEventsUseCase
-import ru.snowadv.chat.domain.use_case.LoadMoreMessagesUseCase
-import ru.snowadv.chat.domain.use_case.RemoveReactionUseCase
-import ru.snowadv.chat.domain.use_case.SendMessageUseCase
-import ru.snowadv.chat.presentation.util.ChatMappers.toElmEvent
+import ru.snowadv.chat_impl.domain.use_case.ListenToChatEventsUseCase
+import ru.snowadv.chat_impl.domain.use_case.LoadMoreMessagesUseCase
+import ru.snowadv.chat_impl.domain.use_case.RemoveReactionUseCase
+import ru.snowadv.chat_impl.domain.use_case.SendMessageUseCase
+import ru.snowadv.chat_impl.presentation.util.ChatMappers.toElmEvent
 import ru.snowadv.model.Resource
 import vivid.money.elmslie.core.store.Actor
+import javax.inject.Inject
 
-internal class ChatActorElm(
-    private val router: ru.snowadv.chat_api.domain.navigation.ChatRouter,
-    private val addReactionUseCase: ru.snowadv.chat_impl.domain.use_case.AddReactionUseCase,
+@Reusable
+internal class ChatActorElm @Inject constructor(
+    private val router: ChatRouter,
+    private val addReactionUseCase: AddReactionUseCase,
     private val removeReactionUseCase: RemoveReactionUseCase,
     private val sendMessageUseCase: SendMessageUseCase,
-    private val getMessagesUseCase: ru.snowadv.chat_impl.domain.use_case.GetCurrentMessagesUseCase,
+    private val getMessagesUseCase: GetCurrentMessagesUseCase,
     private val listenToChatEventsUseCase: ListenToChatEventsUseCase,
     private val loadMoreMessagesUseCase: LoadMoreMessagesUseCase,
 ) : Actor<ChatCommandElm, ChatEventElm>() {

@@ -5,8 +5,8 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
-import ru.snowadv.chat.R
-import ru.snowadv.chat.databinding.ItemMessageViewOutgoingBinding
+import ru.snowadv.chat_impl.R
+import ru.snowadv.chat_impl.databinding.ItemMessageViewOutgoingBinding
 import ru.snowadv.presentation.view.dimToPx
 import kotlin.math.max
 import androidx.core.content.res.use

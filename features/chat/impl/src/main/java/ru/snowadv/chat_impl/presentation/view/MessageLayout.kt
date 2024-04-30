@@ -10,8 +10,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import androidx.core.view.children
-import ru.snowadv.chat.databinding.ItemReactionBinding
-import ru.snowadv.chat.presentation.model.ChatReaction
+import ru.snowadv.chat_impl.databinding.ItemReactionBinding
+import ru.snowadv.chat_impl.presentation.model.ChatReaction
 import ru.snowadv.presentation.view.ViewInvalidatingProperty
 import ru.snowadv.presentation.view.dimToPx
 

@@ -1,5 +1,6 @@
 package ru.snowadv.home_impl.presentation.home.elm
 
+import dagger.Reusable
 import ru.snowadv.home_impl.presentation.home.elm.HomeEffectElm
 import ru.snowadv.home_impl.presentation.home.elm.HomeEventElm
 import ru.snowadv.home_impl.presentation.home.elm.HomeActorElm
@@ -9,9 +10,11 @@ import vivid.money.elmslie.core.store.Actor
 import vivid.money.elmslie.core.store.ElmStore
 import vivid.money.elmslie.core.store.Store
 import vivid.money.elmslie.core.store.dsl.ScreenDslReducer
+import javax.inject.Inject
 import javax.inject.Provider
 
-internal class HomeStoreFactoryElm(
+@Reusable
+internal class HomeStoreFactoryElm @Inject constructor(
     private val actor: Actor<HomeCommandElm, HomeEventElm>,
     private val reducer: Provider<ScreenDslReducer<HomeEventElm, HomeEventElm.Ui, HomeEventElm.Internal, HomeStateElm, HomeEffectElm, HomeCommandElm>>,
 ) {

@@ -9,8 +9,8 @@ import android.view.View
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.children
-import ru.snowadv.chat.R
-import ru.snowadv.chat.databinding.ItemMessageViewIncomingBinding
+import ru.snowadv.chat_impl.R
+import ru.snowadv.chat_impl.databinding.ItemMessageViewIncomingBinding
 import ru.snowadv.presentation.view.ViewInvalidatingProperty
 import ru.snowadv.presentation.view.dimToPx
 import kotlin.math.max

@@ -34,6 +34,7 @@ android {
 
 dependencies {
     implementation(projects.data.eventsData.api)
+    implementation(projects.data.usersData.api)
     implementation(projects.core.utils)
     implementation(projects.core.moduleInjector)
 

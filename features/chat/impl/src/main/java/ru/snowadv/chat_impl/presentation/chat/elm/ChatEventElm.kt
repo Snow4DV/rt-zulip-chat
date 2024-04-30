@@ -1,10 +1,10 @@
 package ru.snowadv.chat_impl.presentation.chat.elm
 
 import ru.snowadv.chat_api.domain.model.ChatPaginatedMessages
-import ru.snowadv.chat.presentation.model.ChatEmoji
-import ru.snowadv.chat.presentation.model.ChatMessage
+import ru.snowadv.chat_impl.presentation.model.ChatEmoji
+import ru.snowadv.chat_impl.presentation.model.ChatMessage
 import ru.snowadv.event_api.helper.EventInfoHolder
-import ru.snowadv.event_api.model.EventSenderType
+import ru.snowadv.events_data_api.model.EventSenderType
 
 internal sealed interface ChatEventElm {
 

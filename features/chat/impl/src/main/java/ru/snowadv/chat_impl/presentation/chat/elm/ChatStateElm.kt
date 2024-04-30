@@ -1,10 +1,7 @@
 package ru.snowadv.chat_impl.presentation.chat.elm
 
-import ru.snowadv.chat.presentation.model.ChatEmoji
-import ru.snowadv.chat.presentation.model.ChatMessage
-import ru.snowadv.chat.presentation.model.ChatPaginationStatus
-import ru.snowadv.chat.presentation.model.ChatReaction
-import ru.snowadv.chat.presentation.util.AdapterUtils.mapToAdapterMessagesAndDates
+import ru.snowadv.chat_impl.presentation.model.ChatMessage
+import ru.snowadv.chat_impl.presentation.model.ChatPaginationStatus
 import ru.snowadv.event_api.helper.EventQueueProperties
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.presentation.model.ScreenState

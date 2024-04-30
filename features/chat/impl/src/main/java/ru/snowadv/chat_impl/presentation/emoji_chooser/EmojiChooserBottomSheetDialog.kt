@@ -8,13 +8,14 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
-import ru.snowadv.chat.R
-import ru.snowadv.chat.databinding.FragmentEmojiChooserBinding
-import ru.snowadv.chat.presentation.emoji_chooser.elm.EmojiChooserEffectElm
-import ru.snowadv.chat.presentation.emoji_chooser.elm.EmojiChooserEventElm
-import ru.snowadv.chat.presentation.emoji_chooser.elm.EmojiChooserStateElm
-import ru.snowadv.chat.presentation.emoji_chooser.elm.EmojiChooserStateFactoryElm
-import ru.snowadv.chat.presentation.model.ChatEmoji
+import ru.snowadv.chat_impl.R
+import ru.snowadv.chat_impl.databinding.FragmentEmojiChooserBinding
+import ru.snowadv.chat_impl.di.ChatFeatureComponentHolder
+import ru.snowadv.chat_impl.presentation.emoji_chooser.elm.EmojiChooserEffectElm
+import ru.snowadv.chat_impl.presentation.emoji_chooser.elm.EmojiChooserEventElm
+import ru.snowadv.chat_impl.presentation.emoji_chooser.elm.EmojiChooserStateElm
+import ru.snowadv.chat_impl.presentation.emoji_chooser.elm.EmojiChooserStoreFactoryElm
+import ru.snowadv.chat_impl.presentation.model.ChatEmoji
 import ru.snowadv.presentation.elm.BaseBottomSheetDialogFragment
 import ru.snowadv.presentation.fragment.ElmFragmentRenderer
 import vivid.money.elmslie.android.renderer.elmStoreWithRenderer
@@ -61,9 +62,7 @@ internal class EmojiChooserBottomSheetDialog : BaseBottomSheetDialogFragment<Emo
     private val binding get() = requireNotNull(_binding) { "Binding wasn't initialized" }
 
     override val store: Store<EmojiChooserEventElm, EmojiChooserEffectElm, EmojiChooserStateElm> by elmStoreWithRenderer(elmRenderer = this) {
-        EmojiChooserStateFactoryElm(
-            actor = ru.snowadv.chat_impl.di.ChatGraph.emojiChooserActorElm,
-        ).create()
+        ChatFeatureComponentHolder.getComponent().emojiChooserStoreFactory.create()
     }
 
     override fun onCreateView(

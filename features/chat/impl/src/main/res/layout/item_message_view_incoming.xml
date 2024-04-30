@@ -63,7 +63,7 @@
         tools:layout_marginTop="74sp"
         tools:text="02:46 12.04.2012" />
 
-    <ru.snowadv.chat.presentation.view.FlexBoxLayout
+    <ru.snowadv.chat_impl.presentation.view.FlexBoxLayout
         android:id="@+id/reactions_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -9,7 +9,7 @@ import android.text.TextPaint
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
-import ru.snowadv.chat.R
+import ru.snowadv.chat_impl.R
 import ru.snowadv.presentation.view.ViewInvalidatingProperty
 import ru.snowadv.presentation.view.dimToPx
 import kotlin.math.max

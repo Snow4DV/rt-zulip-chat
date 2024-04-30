@@ -34,6 +34,9 @@ android {
 
 dependencies {
     implementation(projects.core.moduleInjector)
+    implementation(projects.features.channels.api)
+    implementation(projects.features.people.api)
+    implementation(projects.features.profile.api)
 
     implementation(libs.androidx.appcompat)
 }

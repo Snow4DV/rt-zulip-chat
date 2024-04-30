@@ -7,14 +7,14 @@ import ru.snowadv.voiceapp.navigation.Screens
 import javax.inject.Inject
 
 @Reusable
-class ChatRouterImpl @Inject constructor(private val ciceroneRouter: Router):
-    ru.snowadv.chat_api.domain.navigation.ChatRouter {
+class ChatRouterImpl @Inject constructor(private val ciceroneRouter: Router, private val screens: Screens):
+    ChatRouter {
     override fun goBack() {
         ciceroneRouter.exit()
     }
 
     override fun openProfile(profileId: Long) {
-        ciceroneRouter.navigateTo(Screens.Profile(profileId))
+        ciceroneRouter.navigateTo(screens.Profile(profileId))
     }
 
 

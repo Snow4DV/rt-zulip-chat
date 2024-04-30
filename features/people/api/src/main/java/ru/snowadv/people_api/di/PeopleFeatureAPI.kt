@@ -4,5 +4,5 @@ import ru.snowadv.module_injector.module.BaseModuleAPI
 import ru.snowadv.people_api.presentation.PeopleScreenFactory
 
 interface PeopleFeatureAPI : BaseModuleAPI {
-    val peopleScreenFactory: PeopleScreenFactory
+    val screenFactory: PeopleScreenFactory
 }

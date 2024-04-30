@@ -44,7 +44,8 @@ dependencies {
     implementation(projects.core.moduleInjector)
 
     implementation(projects.data.eventsData.api)
-    
+    implementation(projects.data.usersData.api)
+
     implementation(projects.features.profile.api)
 
     implementation(libs.dagger)

@@ -5,9 +5,8 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import ru.snowadv.chat.R
-import ru.snowadv.chat.presentation.model.ChatDate
-import ru.snowadv.chat.presentation.model.ChatPaginationStatus
+import ru.snowadv.chat_impl.R
+import ru.snowadv.chat_impl.presentation.model.ChatPaginationStatus
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.presentation.adapter.DelegationItemAdapterDelegate
 

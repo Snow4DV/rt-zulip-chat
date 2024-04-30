@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 @Reusable
 class ProfileRouterImpl @Inject constructor(private val ciceroneRouter: Router):
-    ru.snowadv.profile_api.domain.navigation.ProfileRouter {
+    ProfileRouter {
 
     override fun goBack() {
         ciceroneRouter.exit()
