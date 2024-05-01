@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.snowadv.chat_impl.R
 import ru.snowadv.chat_impl.databinding.FragmentChatBinding
+import ru.snowadv.chat_impl.di.ChatFeatureComponentHolder
 import ru.snowadv.chat_impl.presentation.adapter.DateSplitterAdapterDelegate
 import ru.snowadv.chat_impl.presentation.adapter.IncomingMessageAdapterDelegate
 import ru.snowadv.chat_impl.presentation.adapter.OutgoingMessageAdapterDelegate
@@ -19,6 +20,7 @@ import ru.snowadv.chat_impl.presentation.chat.elm.ChatStateElm
 import ru.snowadv.chat_impl.presentation.emoji_chooser.EmojiChooserBottomSheetDialog
 import ru.snowadv.chat_impl.presentation.model.ChatAction
 import ru.snowadv.chat_impl.presentation.model.ChatPaginationStatus
+import ru.snowadv.chat_impl.presentation.util.AdapterUtils.submitListAndKeepScrolledToBottom
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.presentation.adapter.impl.AdapterDelegatesManager
 import ru.snowadv.presentation.adapter.impl.DiffDelegationAdapter
@@ -32,28 +34,32 @@ import ru.snowadv.presentation.util.impl.DayDateFormatter
 import ru.snowadv.presentation.util.impl.LocalizedDateTimeFormatter
 import ru.snowadv.presentation.view.setTextIfEmpty
 import vivid.money.elmslie.core.store.Store
+import javax.inject.Inject
 import kotlin.math.abs
 
 internal class ChatFragmentRenderer :
     ElmFragmentRenderer<ChatFragment, FragmentChatBinding, ChatEventElm, ChatEffectElm, ChatStateElm> {
 
     private var _adapter: DiffDelegationAdapter? = null
-    private var _splitterDateFormatter: DateFormatter? = null
-    private var _dateTimeFormatter: DateTimeFormatter? = null
-
     private val adapter get() = requireNotNull(_adapter) { "Adapter wasn't initialized" }
-    private val splitterDateFormatter get() = requireNotNull(_splitterDateFormatter) { "Splitter date formatter wasnt initialized" }
-    private val dateTimeFormatter get() = requireNotNull(_dateTimeFormatter) { "Date time formatter wasn't initialized" }
+
+    @Inject
+    internal lateinit var splitterDateFormatter: DateFormatter
+    @Inject
+    internal lateinit var dateTimeFormatter: DateTimeFormatter
 
     companion object {
         const val EMOJI_CHOOSER_REQUEST_KEY = "emoji_chooser_request"
+    }
+
+    init {
+        ChatFeatureComponentHolder.getComponent().inject(this)
     }
 
     override fun ChatFragment.onRendererViewCreated(
         binding: FragmentChatBinding,
         store: Store<ChatEventElm, ChatEffectElm, ChatStateElm>
     ) {
-        initDateTimeFormatters(requireContext())
         initEmojiChooserResultListener(this, store)
         _adapter = initDelegateAdapter(store).also {
             setAdapterToRecyclerView(
@@ -84,7 +90,10 @@ internal class ChatFragmentRenderer :
         )
         bottomBar.sendOrAddAttachmentButton.isVisible = state.isActionButtonVisible
 
-        adapter.submitList(listOf(state.paginationStatus) + (state.screenState.getCurrentData() ?: emptyList())) {
+        adapter.submitListAndKeepScrolledToBottom(
+            recycler = binding.messagesRecycler,
+            list = listOf(state.paginationStatus) + (state.screenState.getCurrentData() ?: emptyList()),
+        ) {
             stateBox.inflateState(state.screenState, R.layout.fragment_chat_shimmer)
         }
 
@@ -148,8 +157,6 @@ internal class ChatFragmentRenderer :
 
     override fun ChatFragment.onDestroyRendererView() {
         _adapter = null
-        _dateTimeFormatter = null
-        _splitterDateFormatter = null
     }
 
     private fun setAdapterToRecyclerView(
@@ -266,11 +273,6 @@ internal class ChatFragmentRenderer :
 
     private fun initDelegateAdapter(store: Store<ChatEventElm, ChatEffectElm, ChatStateElm>): DiffDelegationAdapter {
         return DiffDelegationAdapter(initDelegatesManager(store))
-    }
-
-    private fun initDateTimeFormatters(context: Context) {
-        _dateTimeFormatter = LocalizedDateTimeFormatter(context)
-        _splitterDateFormatter = DayDateFormatter(context)
     }
 
     private fun initEmojiChooserResultListener(

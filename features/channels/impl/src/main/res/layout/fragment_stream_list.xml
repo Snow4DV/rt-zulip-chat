@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="@style/Theme.ZulipChat.Channels"
-    tools:context="ru.snowadv.channels.presentation.stream_list.StreamListFragment">
+    android:theme="@style/Theme.ZulipChat.Channels">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/streams_recycler"

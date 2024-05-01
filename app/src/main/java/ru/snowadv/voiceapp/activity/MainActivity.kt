@@ -2,8 +2,8 @@ package ru.snowadv.voiceapp.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.github.terrakok.cicerone.NavigatorHolder
 import com.github.terrakok.cicerone.androidx.AppNavigator
-import ru.snowadv.navigation.activity.NavigatorHolder
 import ru.snowadv.voiceapp.R
 import ru.snowadv.voiceapp.databinding.ActivityMainBinding
 import ru.snowadv.voiceapp.di.holder.AppModuleComponentHolder
@@ -12,7 +12,7 @@ import javax.inject.Inject
 internal class MainActivity : AppCompatActivity() {
 
     @Inject
-    internal lateinit var navigatorHolder: com.github.terrakok.cicerone.NavigatorHolder
+    internal lateinit var navigatorHolder: NavigatorHolder
 
     private val navigator: AppNavigator = AppNavigator(this, R.id.fragment_container)
     private lateinit var binding: ActivityMainBinding

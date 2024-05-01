@@ -30,4 +30,17 @@ internal object AdapterUtils {
             }
         }
     }
+
+    fun <T, VH : RecyclerView.ViewHolder?> ListAdapter<T, VH>.submitListAndKeepScrolledToBottom(recycler: RecyclerView, list: List<T?>?, commitCallback: Runnable) {
+
+        val shouldScrollToBottom = (recycler.layoutManager as? LinearLayoutManager)?.let { layoutManager ->
+            layoutManager.findLastCompletelyVisibleItemPosition() == currentList.lastIndex
+        } ?: true
+        this@submitListAndKeepScrolledToBottom.submitList(list) {
+            if (shouldScrollToBottom && list != null) {
+                recycler.smoothScrollToPosition(list.lastIndex)
+            }
+            commitCallback.run()
+        }
+    }
 }

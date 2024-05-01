@@ -137,6 +137,7 @@ internal object ModulesInjector {
                     override val messageDataRepo: MessageDataRepository = msgsApi.messageDataRepo
                     override val eventRepository: EventRepository = eventApi.eventRepo
                     override val dispatcherProvider: DispatcherProvider = appApi.dispatcherProvider
+                    override val appContext: Context = appContext
                     override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
                 }
             }.dependencies

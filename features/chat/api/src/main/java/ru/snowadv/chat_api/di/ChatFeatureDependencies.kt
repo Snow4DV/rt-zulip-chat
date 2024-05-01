@@ -1,5 +1,6 @@
 package ru.snowadv.chat_api.di
 
+import android.content.Context
 import kotlinx.coroutines.CoroutineDispatcher
 import ru.snowadv.chat_api.domain.navigation.ChatRouter
 import ru.snowadv.chat_api.domain.repository.EmojiRepository
@@ -16,4 +17,5 @@ interface ChatFeatureDependencies : BaseModuleDependencies {
     val messageDataRepo: MessageDataRepository
     val eventRepository: EventRepository
     val dispatcherProvider: DispatcherProvider
+    val appContext: Context
 }

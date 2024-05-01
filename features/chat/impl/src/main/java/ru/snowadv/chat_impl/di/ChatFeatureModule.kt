@@ -1,7 +1,9 @@
 package ru.snowadv.chat_impl.di
 
+import android.content.Context
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import ru.snowadv.chat_api.domain.repository.EmojiRepository
 import ru.snowadv.chat_api.domain.repository.MessageRepository
 import ru.snowadv.chat_api.presentation.ChatScreenFactory
@@ -19,6 +21,10 @@ import ru.snowadv.chat_impl.presentation.emoji_chooser.elm.EmojiChooserEventElm
 import ru.snowadv.chat_impl.presentation.emoji_chooser.elm.EmojiChooserReducerElm
 import ru.snowadv.chat_impl.presentation.emoji_chooser.elm.EmojiChooserStateElm
 import ru.snowadv.chat_impl.presentation.feature.ChatScreenFactoryImpl
+import ru.snowadv.presentation.util.DateFormatter
+import ru.snowadv.presentation.util.DateTimeFormatter
+import ru.snowadv.presentation.util.impl.DayDateFormatter
+import ru.snowadv.presentation.util.impl.LocalizedDateTimeFormatter
 import vivid.money.elmslie.core.store.Actor
 import vivid.money.elmslie.core.store.dsl.ScreenDslReducer
 
@@ -38,4 +44,15 @@ internal interface ChatFeatureModule {
     fun bindMessageRepoImpl(messageRepoImpl: ChatRepositoryImpl): MessageRepository
     @Binds
     fun bindEmojiRepoImpl(messageRepoImpl: ChatRepositoryImpl): EmojiRepository
+
+    companion object {
+        @Provides
+        fun provideSplitterDateFormatter(appContext: Context): DateFormatter {
+            return DayDateFormatter(appContext)
+        }
+        @Provides
+        fun provideLocalizedDateTimeFormatter(appContext: Context): DateTimeFormatter {
+            return LocalizedDateTimeFormatter(appContext)
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package ru.snowadv.profile_impl.presentation.profile
 
 import android.view.View
+import androidx.core.view.isVisible
 import coil.load
 import ru.snowadv.presentation.fragment.ElmFragmentRenderer
 import ru.snowadv.profile_impl.presentation.profile.elm.ProfileStateElm
@@ -39,7 +40,8 @@ internal class ProfileFragmentRenderer :
         binding: FragmentProfileBinding
     ): Unit = with(binding) {
         stateBox.inflateState(state.screenState, R.layout.fragment_profile_shimmer)
-        topBar.root.visibility = if (state.isOwner) View.GONE else View.VISIBLE
+        topBar.root.isVisible = !state.isOwner
+        userAvatar.isVisible = state.screenState.getCurrentData() != null
         state.screenState.getCurrentData()?.let {  person ->
             userStatus.text = getString(person.status.displayNameResId)
             userStatus.setTextColor(resources.getColor(person.status.colorResId, context?.theme))

@@ -10,7 +10,7 @@
     <ImageButton
         android:id="@+id/back_button"
         android:layout_width="@dimen/top_bar_margin_between_button_and_text"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         style="@style/Theme.ZulipChat.ActionBarImageButton"
         android:contentDescription="@string/back_button_description"
         android:src="@drawable/ic_back_arrow"
@@ -20,7 +20,7 @@
 
     <TextView
         android:id="@+id/bar_title"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/top_bar_margin_between_button_and_text"
         android:textColor="@color/white"
