@@ -5,7 +5,6 @@ import ru.snowadv.events_data_api.EventRepository
 import ru.snowadv.model.DispatcherProvider
 import ru.snowadv.module_injector.module.BaseModuleDependencies
 import ru.snowadv.people_api.domain.navigation.PeopleRouter
-import ru.snowadv.people_api.domain.repository.PeopleRepository
 import ru.snowadv.users_data_api.UserDataRepository
 
 interface PeopleFeatureDependencies : BaseModuleDependencies {

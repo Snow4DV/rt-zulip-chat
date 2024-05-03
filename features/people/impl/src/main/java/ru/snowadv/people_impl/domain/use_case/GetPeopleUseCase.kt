@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.map
 import ru.snowadv.model.DispatcherProvider
 import ru.snowadv.model.Resource
 import ru.snowadv.model.map
-import ru.snowadv.people_api.domain.model.Person
-import ru.snowadv.people_api.domain.repository.PeopleRepository
+import ru.snowadv.people_impl.domain.model.Person
+import ru.snowadv.people_impl.domain.repository.PeopleRepository
 import javax.inject.Inject
 
 @Reusable

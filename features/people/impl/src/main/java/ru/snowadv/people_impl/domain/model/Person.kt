@@ -1,4 +1,4 @@
-package ru.snowadv.profile_api.domain.model
+package ru.snowadv.people_impl.domain.model
 
 data class Person(
     val id: Long,

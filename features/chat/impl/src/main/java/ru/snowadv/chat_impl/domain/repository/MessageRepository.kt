@@ -1,8 +1,8 @@
-package ru.snowadv.chat_api.domain.repository
+package ru.snowadv.chat_impl.domain.repository
 
 import kotlinx.coroutines.flow.Flow
-import ru.snowadv.chat_api.domain.model.ChatMessage
-import ru.snowadv.chat_api.domain.model.ChatPaginatedMessages
+import ru.snowadv.chat_impl.domain.model.ChatMessage
+import ru.snowadv.chat_impl.domain.model.ChatPaginatedMessages
 import ru.snowadv.model.Resource
 
 interface MessageRepository {

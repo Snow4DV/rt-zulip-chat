@@ -1,9 +1,9 @@
 package ru.snowadv.chat_impl.domain.util
 
-import ru.snowadv.chat_api.domain.model.ChatEmoji
-import ru.snowadv.chat_api.domain.model.ChatMessage
-import ru.snowadv.chat_api.domain.model.ChatPaginatedMessages
-import ru.snowadv.chat_api.domain.model.ChatReaction
+import ru.snowadv.chat_impl.domain.model.ChatEmoji
+import ru.snowadv.chat_impl.domain.model.ChatMessage
+import ru.snowadv.chat_impl.domain.model.ChatPaginatedMessages
+import ru.snowadv.chat_impl.domain.model.ChatReaction
 import ru.snowadv.emojis_data_api.model.model.DataEmoji
 import ru.snowadv.messages_data_api.model.DataMessage
 import ru.snowadv.messages_data_api.model.DataPaginatedMessages

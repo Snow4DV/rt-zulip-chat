@@ -2,7 +2,7 @@ package ru.snowadv.profile_impl.domain.util
 
 import ru.snowadv.users_data_api.model.DataUser
 import ru.snowadv.users_data_api.model.DataUserStatus
-import ru.snowadv.profile_api.domain.model.Person as ProfilePerson
+import ru.snowadv.profile_impl.domain.model.Person as ProfilePerson
 
 internal object UsersDataMappers {
 

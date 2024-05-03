@@ -7,7 +7,7 @@ import ru.snowadv.chat_impl.presentation.model.ChatDate
 import ru.snowadv.chat_impl.presentation.model.ChatMessage
 import ru.snowadv.chat_impl.presentation.util.ChatMappers.toUiChatMessage
 import ru.snowadv.presentation.adapter.DelegateItem
-import ru.snowadv.chat_api.domain.model.ChatMessage as DomainChatMessage
+import ru.snowadv.chat_impl.domain.model.ChatMessage as DomainChatMessage
 
 internal object AdapterUtils {
     fun List<DomainChatMessage>.mapToUiAdapterMessagesAndDates(): List<DelegateItem> {

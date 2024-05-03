@@ -1,4 +1,4 @@
-package ru.snowadv.chat_api.domain.model
+package ru.snowadv.chat_impl.domain.model
 
 data class ChatReaction(
     val name: String,

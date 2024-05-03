@@ -1,6 +1,6 @@
 package ru.snowadv.chat_impl.presentation.chat.elm
 
-import ru.snowadv.chat_api.domain.model.ChatPaginatedMessages
+import ru.snowadv.chat_impl.domain.model.ChatPaginatedMessages
 import ru.snowadv.chat_impl.presentation.model.ChatEmoji
 import ru.snowadv.chat_impl.presentation.model.ChatMessage
 import ru.snowadv.event_api.helper.EventInfoHolder
@@ -26,8 +26,8 @@ internal sealed interface ChatEventElm {
     }
 
     sealed interface Internal : ChatEventElm {
-        data class InitialChatLoaded(val messages: ru.snowadv.chat_api.domain.model.ChatPaginatedMessages) : Internal
-        data class MoreMessagesLoaded(val messages: ru.snowadv.chat_api.domain.model.ChatPaginatedMessages) : Internal
+        data class InitialChatLoaded(val messages: ChatPaginatedMessages) : Internal
+        data class MoreMessagesLoaded(val messages: ChatPaginatedMessages) : Internal
 
         data class Error(val throwable: Throwable) : Internal
         data object PaginationError : Internal

@@ -4,11 +4,12 @@ import dagger.Reusable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import ru.snowadv.channels_api.domain.model.Stream
-import ru.snowadv.channels_api.domain.model.Topic
-import ru.snowadv.channels_api.domain.repository.StreamRepository
+import ru.snowadv.channels_impl.domain.model.Stream
+import ru.snowadv.channels_impl.domain.model.Topic
+import ru.snowadv.channels_impl.domain.repository.StreamRepository
 import ru.snowadv.channels_data_api.StreamDataRepository
 import ru.snowadv.channels_data_api.TopicDataRepository
+import ru.snowadv.channels_impl.domain.repository.TopicRepository
 import ru.snowadv.channels_impl.domain.util.ChannelsDataMappers.toChannelStream
 import ru.snowadv.channels_impl.domain.util.ChannelsDataMappers.toChannelTopic
 import ru.snowadv.model.DispatcherProvider
@@ -23,7 +24,7 @@ class ChannelsRepositoryImpl @Inject constructor(
     private val topicDataRepository: TopicDataRepository,
     private val dispatcherProvider: DispatcherProvider,
 ): StreamRepository,
-    ru.snowadv.channels_api.domain.repository.TopicRepository {
+    TopicRepository {
     override fun getStreams(): Flow<Resource<List<Stream>>> {
         return streamDataRepository.getStreams()
             .map { res -> res.mapListContent { it.toChannelStream() } }

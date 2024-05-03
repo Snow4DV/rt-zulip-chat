@@ -1,6 +1,6 @@
 package ru.snowadv.channels_impl.presentation.stream_list.elm
 
-import ru.snowadv.channels_api.domain.model.StreamType
+import ru.snowadv.channels_impl.domain.model.StreamType
 import ru.snowadv.channels_impl.presentation.model.Stream
 import ru.snowadv.channels_impl.presentation.model.StreamUnreadMessages
 import ru.snowadv.event_api.helper.EventQueueProperties

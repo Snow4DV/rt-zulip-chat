@@ -2,7 +2,7 @@ package ru.snowadv.people_impl.di
 
 import dagger.Binds
 import dagger.Module
-import ru.snowadv.people_api.domain.repository.PeopleRepository
+import ru.snowadv.people_impl.domain.repository.PeopleRepository
 import ru.snowadv.people_api.presentation.PeopleScreenFactory
 import ru.snowadv.people_impl.data.repository.PeopleRepositoryImpl
 import ru.snowadv.people_impl.presentation.feature.PeopleScreenFactoryImpl

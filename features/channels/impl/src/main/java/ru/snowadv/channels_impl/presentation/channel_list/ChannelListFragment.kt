@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
 import ru.snowadv.channels_impl.databinding.FragmentChannelListBinding
-import ru.snowadv.channels_api.domain.model.StreamType
+import ru.snowadv.channels_impl.domain.model.StreamType
 import ru.snowadv.channels_impl.di.ChannelsFeatureComponentHolder
 import ru.snowadv.channels_impl.presentation.channel_list.api.SearchHolder
 import ru.snowadv.channels_impl.presentation.channel_list.elm.ChannelListEffectElm
@@ -88,7 +88,7 @@ internal class ChannelListFragment : BaseFragment<ChannelListEventElm, ChannelLi
 
     private fun setupPagerTabLayoutMediator() {
         TabLayoutMediator(binding.tabsStreamTypes, binding.streamTypesPager) { tab, position ->
-            tab.text = ru.snowadv.channels_api.domain.model.StreamType.entries[position].toLocalizedString(requireContext())
+            tab.text = StreamType.entries[position].toLocalizedString(requireContext())
         }.attach()
     }
 }

@@ -1,6 +1,6 @@
 package ru.snowadv.channels_impl.presentation.stream_list.elm
 
-import ru.snowadv.channels_api.domain.model.StreamType
+import ru.snowadv.channels_impl.domain.model.StreamType
 import ru.snowadv.channels_impl.presentation.model.ShimmerTopic
 import ru.snowadv.channels_impl.presentation.model.Stream
 import ru.snowadv.channels_impl.presentation.model.StreamIdContainer
@@ -127,7 +127,7 @@ internal class StreamListReducerElm @Inject constructor():
 
             is StreamListEventElm.Internal.ServerEvent.StreamsAddedEvent -> {
                 state {
-                    if (state.streamType == ru.snowadv.channels_api.domain.model.StreamType.ALL) {
+                    if (state.streamType == StreamType.ALL) {
                         addStreams(event.streams, event.eventId)
                     } else {
                         copy(eventQueueData = eventQueueData?.copy(lastEventId = event.eventId))
@@ -143,7 +143,7 @@ internal class StreamListReducerElm @Inject constructor():
             }
             is StreamListEventElm.Internal.ServerEvent.UserSubscriptionsAddedEvent -> {
                 state {
-                    if (state.streamType == ru.snowadv.channels_api.domain.model.StreamType.SUBSCRIBED) {
+                    if (state.streamType == StreamType.SUBSCRIBED) {
                         addStreams(event.changedStreams, event.eventId)
                     } else {
                         copy(eventQueueData = eventQueueData?.copy(lastEventId = event.eventId))
@@ -153,7 +153,7 @@ internal class StreamListReducerElm @Inject constructor():
             }
             is StreamListEventElm.Internal.ServerEvent.UserSubscriptionsRemovedEvent -> {
                 state {
-                    if (state.streamType == ru.snowadv.channels_api.domain.model.StreamType.SUBSCRIBED) {
+                    if (state.streamType == StreamType.SUBSCRIBED) {
                         addStreams(event.changedStreams, event.eventId)
                     } else {
                         copy(eventQueueData = eventQueueData?.copy(lastEventId = event.eventId))

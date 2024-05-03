@@ -2,7 +2,7 @@ package ru.snowadv.channels_impl.presentation.util
 
 import android.content.Context
 import ru.snowadv.channels_impl.R
-import ru.snowadv.channels_api.domain.model.StreamType
+import ru.snowadv.channels_impl.domain.model.StreamType
 import ru.snowadv.channels_impl.presentation.model.Stream
 import ru.snowadv.channels_impl.presentation.model.StreamUnreadMessages
 import ru.snowadv.channels_impl.presentation.model.Topic
@@ -13,8 +13,8 @@ import ru.snowadv.events_data_api.model.DomainEvent
 import ru.snowadv.events_data_api.model.EventStream
 import ru.snowadv.events_data_api.model.EventStreamUpdateFlagsMessages
 import ru.snowadv.events_data_api.model.EventTopicUpdateFlagsMessages
-import ru.snowadv.channels_api.domain.model.Stream as DomainStream
-import ru.snowadv.channels_api.domain.model.Topic as DomainTopic
+import ru.snowadv.channels_impl.domain.model.Stream as DomainStream
+import ru.snowadv.channels_impl.domain.model.Topic as DomainTopic
 
 internal object ChannelsMapper {
     fun DomainStream.toUiModel(expandedStreamId: Long? = null): Stream {
@@ -38,12 +38,12 @@ internal object ChannelsMapper {
         return map { topic -> topic.toUiModel() }
     }
 
-    fun ru.snowadv.channels_api.domain.model.StreamType.toLocalizedString(context: Context): String {
+    fun StreamType.toLocalizedString(context: Context): String {
         return when(this) {
-            ru.snowadv.channels_api.domain.model.StreamType.SUBSCRIBED -> {
+            StreamType.SUBSCRIBED -> {
                 context.getString(R.string.subscribed)
             }
-            ru.snowadv.channels_api.domain.model.StreamType.ALL -> {
+            StreamType.ALL -> {
                 context.getString(R.string.all_streams)
             }
         }

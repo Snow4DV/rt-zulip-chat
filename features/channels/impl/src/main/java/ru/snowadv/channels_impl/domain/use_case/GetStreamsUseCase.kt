@@ -1,9 +1,9 @@
 package ru.snowadv.channels_impl.domain.use_case
 
 import kotlinx.coroutines.flow.Flow
-import ru.snowadv.channels_api.domain.model.Stream
-import ru.snowadv.channels_api.domain.model.StreamType
-import ru.snowadv.channels_api.domain.repository.StreamRepository
+import ru.snowadv.channels_impl.domain.model.Stream
+import ru.snowadv.channels_impl.domain.model.StreamType
+import ru.snowadv.channels_impl.domain.repository.StreamRepository
 import ru.snowadv.model.Resource
 import javax.inject.Inject
 

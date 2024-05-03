@@ -1,7 +1,7 @@
-package ru.snowadv.channels_api.domain.repository
+package ru.snowadv.channels_impl.domain.repository
 
 import kotlinx.coroutines.flow.Flow
-import ru.snowadv.channels_api.domain.model.Stream
+import ru.snowadv.channels_impl.domain.model.Stream
 import ru.snowadv.model.Resource
 
 interface StreamRepository {

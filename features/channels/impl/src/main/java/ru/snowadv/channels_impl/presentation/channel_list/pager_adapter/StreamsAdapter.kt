@@ -4,7 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import ru.snowadv.channels_api.domain.model.StreamType
+import ru.snowadv.channels_impl.domain.model.StreamType
 import ru.snowadv.channels_impl.presentation.stream_list.StreamListFragment
 
 internal class StreamsAdapter(

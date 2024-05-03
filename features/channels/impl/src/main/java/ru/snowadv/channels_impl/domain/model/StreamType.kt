@@ -1,4 +1,4 @@
-package ru.snowadv.channels_api.domain.model
+package ru.snowadv.channels_impl.domain.model
 
 enum class StreamType {
     SUBSCRIBED,

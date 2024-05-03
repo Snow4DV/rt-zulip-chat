@@ -3,8 +3,8 @@ package ru.snowadv.profile_impl.domain.use_case
 import dagger.Reusable
 import kotlinx.coroutines.flow.Flow
 import ru.snowadv.model.Resource
-import ru.snowadv.profile_api.domain.model.Person
-import ru.snowadv.profile_api.domain.repository.ProfileRepository
+import ru.snowadv.profile_impl.domain.model.Person
+import ru.snowadv.profile_impl.domain.repository.ProfileRepository
 import javax.inject.Inject
 
 @Reusable

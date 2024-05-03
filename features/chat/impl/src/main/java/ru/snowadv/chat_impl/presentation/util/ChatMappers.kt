@@ -2,10 +2,10 @@ package ru.snowadv.chat_impl.presentation.util
 
 import ru.snowadv.chat_impl.presentation.chat.elm.ChatEventElm
 import ru.snowadv.chat_impl.presentation.model.ChatEmoji
-import ru.snowadv.chat_api.domain.model.ChatEmoji as ModelChatEmoji
-import ru.snowadv.chat_api.domain.model.ChatReaction as DomainChatReaction
+import ru.snowadv.chat_impl.domain.model.ChatEmoji as ModelChatEmoji
+import ru.snowadv.chat_impl.domain.model.ChatReaction as DomainChatReaction
 import ru.snowadv.chat_impl.presentation.model.ChatEmoji as UiChatEmoji
-import ru.snowadv.chat_api.domain.model.ChatMessage as DomainChatMessage
+import ru.snowadv.chat_impl.domain.model.ChatMessage as DomainChatMessage
 import ru.snowadv.chat_impl.presentation.model.ChatMessage
 import ru.snowadv.chat_impl.presentation.model.ChatMessageType
 import ru.snowadv.chat_impl.presentation.model.ChatReaction

@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import ru.snowadv.channels_impl.databinding.FragmentStreamListBinding
-import ru.snowadv.channels_api.domain.model.StreamType
+import ru.snowadv.channels_impl.domain.model.StreamType
 import ru.snowadv.channels_impl.di.ChannelsFeatureComponentHolder
 import ru.snowadv.channels_impl.presentation.channel_list.api.SearchHolder
 import ru.snowadv.channels_impl.presentation.stream_list.elm.StreamListEffectElm
@@ -28,7 +28,7 @@ internal class StreamListFragment : BaseFragment<StreamListEventElm, StreamListE
     companion object {
         const val ARG_STREAMS_TYPE_KEY = "arg_streams_type"
         const val DEFAULT_STREAM_TYPE = "ALL"
-        fun newInstance(streamsType: ru.snowadv.channels_api.domain.model.StreamType) = StreamListFragment().apply {
+        fun newInstance(streamsType: StreamType) = StreamListFragment().apply {
             arguments = bundleOf(
                 ARG_STREAMS_TYPE_KEY to streamsType.toString()
             )
@@ -39,8 +39,8 @@ internal class StreamListFragment : BaseFragment<StreamListEventElm, StreamListE
     private val binding get() = requireNotNull(_binding) {"Binding wasn't initialized"}
     val parentSearchQueryFlow get() = (requireParentFragment() as SearchHolder).searchQuery
 
-    private val streamsType: ru.snowadv.channels_api.domain.model.StreamType by lazy {
-        ru.snowadv.channels_api.domain.model.StreamType.valueOf(
+    private val streamsType: StreamType by lazy {
+        StreamType.valueOf(
             arguments?.getString(
                 ARG_STREAMS_TYPE_KEY,
                 DEFAULT_STREAM_TYPE

@@ -3,8 +3,8 @@ package ru.snowadv.chat_impl.domain.use_case
 import dagger.Reusable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import ru.snowadv.chat_api.domain.model.ChatEmoji
-import ru.snowadv.chat_api.domain.repository.EmojiRepository
+import ru.snowadv.chat_impl.domain.model.ChatEmoji
+import ru.snowadv.chat_impl.domain.repository.EmojiRepository
 import ru.snowadv.model.Resource
 import ru.snowadv.model.map
 import javax.inject.Inject

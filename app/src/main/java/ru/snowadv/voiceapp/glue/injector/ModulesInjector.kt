@@ -53,13 +53,13 @@ import ru.snowadv.network.di.holder.NetworkModuleDependencies
 import ru.snowadv.people_api.di.PeopleFeatureAPI
 import ru.snowadv.people_api.di.PeopleFeatureDependencies
 import ru.snowadv.people_api.domain.navigation.PeopleRouter
-import ru.snowadv.people_api.domain.repository.PeopleRepository
+import ru.snowadv.people_impl.domain.repository.PeopleRepository
 import ru.snowadv.people_api.presentation.PeopleScreenFactory
 import ru.snowadv.people_impl.di.PeopleFeatureComponentHolder
 import ru.snowadv.profile_api.di.ProfileFeatureAPI
 import ru.snowadv.profile_api.di.ProfileFeatureDependencies
 import ru.snowadv.profile_api.domain.navigation.ProfileRouter
-import ru.snowadv.profile_api.domain.repository.ProfileRepository
+import ru.snowadv.profile_impl.domain.repository.ProfileRepository
 import ru.snowadv.profile_api.presentation.ProfileScreenFactory
 import ru.snowadv.profile_impl.di.ProfileFeatureComponentHolder
 import ru.snowadv.properties_provider_api.AuthUserPropertyRepository

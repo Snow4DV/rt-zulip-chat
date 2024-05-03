@@ -4,8 +4,8 @@ import ru.snowadv.events_data_api.model.DomainEvent
 import ru.snowadv.events_data_api.model.EventPresence
 import ru.snowadv.people_impl.presentation.model.Person
 import ru.snowadv.people_impl.presentation.people_list.elm.PeopleListEventElm
-import ru.snowadv.people_api.domain.model.Person as DomainPerson
-import ru.snowadv.people_api.domain.model.Person.Status as DomainPersonStatus
+import ru.snowadv.people_impl.domain.model.Person as DomainPerson
+import ru.snowadv.people_impl.domain.model.Person.Status as DomainPersonStatus
 
 internal object PeopleMappers {
     fun DomainPersonStatus.toUiModel(): Person.Status {

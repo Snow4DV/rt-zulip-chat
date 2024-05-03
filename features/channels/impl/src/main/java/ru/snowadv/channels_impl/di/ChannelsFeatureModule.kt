@@ -2,8 +2,8 @@ package ru.snowadv.channels_impl.di
 
 import dagger.Binds
 import dagger.Module
-import ru.snowadv.channels_api.domain.repository.StreamRepository
-import ru.snowadv.channels_api.domain.repository.TopicRepository
+import ru.snowadv.channels_impl.domain.repository.StreamRepository
+import ru.snowadv.channels_impl.domain.repository.TopicRepository
 import ru.snowadv.channels_api.presentation.ChannelsScreenFactory
 import ru.snowadv.channels_impl.data.repository.ChannelsRepositoryImpl
 import ru.snowadv.channels_impl.presentation.channel_list.elm.ChannelListActorElm

@@ -1,7 +1,7 @@
 package ru.snowadv.channels_impl.presentation.stream_list.elm
 
 import dagger.Reusable
-import ru.snowadv.channels_api.domain.model.StreamType
+import ru.snowadv.channels_impl.domain.model.StreamType
 import vivid.money.elmslie.core.store.Actor
 import vivid.money.elmslie.core.store.ElmStore
 import vivid.money.elmslie.core.store.Store

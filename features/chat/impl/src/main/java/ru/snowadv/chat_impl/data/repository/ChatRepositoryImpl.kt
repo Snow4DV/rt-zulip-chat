@@ -4,10 +4,10 @@ import dagger.Reusable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import ru.snowadv.chat_api.domain.model.ChatEmoji
-import ru.snowadv.chat_api.domain.model.ChatPaginatedMessages
-import ru.snowadv.chat_api.domain.repository.EmojiRepository
-import ru.snowadv.chat_api.domain.repository.MessageRepository
+import ru.snowadv.chat_impl.domain.model.ChatEmoji
+import ru.snowadv.chat_impl.domain.model.ChatPaginatedMessages
+import ru.snowadv.chat_impl.domain.repository.EmojiRepository
+import ru.snowadv.chat_impl.domain.repository.MessageRepository
 import ru.snowadv.chat_impl.domain.util.MessageDataMappers.toChatEmoji
 import ru.snowadv.chat_impl.domain.util.MessageDataMappers.toChatPaginatedMessages
 import ru.snowadv.emojis_data_api.model.EmojiDataRepository

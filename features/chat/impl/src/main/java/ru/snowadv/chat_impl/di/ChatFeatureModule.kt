@@ -4,8 +4,8 @@ import android.content.Context
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import ru.snowadv.chat_api.domain.repository.EmojiRepository
-import ru.snowadv.chat_api.domain.repository.MessageRepository
+import ru.snowadv.chat_impl.domain.repository.EmojiRepository
+import ru.snowadv.chat_impl.domain.repository.MessageRepository
 import ru.snowadv.chat_api.presentation.ChatScreenFactory
 import ru.snowadv.chat_impl.data.repository.ChatRepositoryImpl
 import ru.snowadv.chat_impl.presentation.chat.elm.ChatActorElm

@@ -2,7 +2,7 @@ package ru.snowadv.people_impl.domain.util
 
 import ru.snowadv.users_data_api.model.DataUser
 import ru.snowadv.users_data_api.model.DataUserStatus
-import ru.snowadv.people_api.domain.model.Person as PeoplePerson
+import ru.snowadv.people_impl.domain.model.Person as PeoplePerson
 
 internal object UsersDataMappers {
     fun DataUser.toPeoplePerson(): PeoplePerson {
