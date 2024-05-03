@@ -8,8 +8,8 @@ import ru.snowadv.chat_impl.domain.model.ChatEmoji
 import ru.snowadv.chat_impl.domain.model.ChatPaginatedMessages
 import ru.snowadv.chat_impl.domain.repository.EmojiRepository
 import ru.snowadv.chat_impl.domain.repository.MessageRepository
-import ru.snowadv.chat_impl.domain.util.MessageDataMappers.toChatEmoji
-import ru.snowadv.chat_impl.domain.util.MessageDataMappers.toChatPaginatedMessages
+import ru.snowadv.chat_impl.data.util.MessageDataMappers.toChatEmoji
+import ru.snowadv.chat_impl.data.util.MessageDataMappers.toChatPaginatedMessages
 import ru.snowadv.emojis_data_api.model.EmojiDataRepository
 import ru.snowadv.messages_data_api.MessageDataRepository
 import ru.snowadv.model.DispatcherProvider

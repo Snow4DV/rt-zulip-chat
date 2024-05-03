@@ -1,4 +1,4 @@
-package ru.snowadv.chat_impl.domain.util
+package ru.snowadv.chat_impl.data.util
 
 import ru.snowadv.chat_impl.domain.model.ChatEmoji
 import ru.snowadv.chat_impl.domain.model.ChatMessage

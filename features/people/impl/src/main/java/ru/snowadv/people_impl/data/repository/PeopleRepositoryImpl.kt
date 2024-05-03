@@ -9,7 +9,7 @@ import ru.snowadv.model.Resource
 import ru.snowadv.model.map
 import ru.snowadv.people_impl.domain.model.Person
 import ru.snowadv.people_impl.domain.repository.PeopleRepository
-import ru.snowadv.people_impl.domain.util.UsersDataMappers.toPeoplePerson
+import ru.snowadv.people_impl.data.util.UsersDataMappers.toPeoplePerson
 import ru.snowadv.users_data_api.UserDataRepository
 import javax.inject.Inject
 

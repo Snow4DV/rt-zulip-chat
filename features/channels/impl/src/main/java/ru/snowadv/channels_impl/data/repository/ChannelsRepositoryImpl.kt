@@ -10,11 +10,10 @@ import ru.snowadv.channels_impl.domain.repository.StreamRepository
 import ru.snowadv.channels_data_api.StreamDataRepository
 import ru.snowadv.channels_data_api.TopicDataRepository
 import ru.snowadv.channels_impl.domain.repository.TopicRepository
-import ru.snowadv.channels_impl.domain.util.ChannelsDataMappers.toChannelStream
-import ru.snowadv.channels_impl.domain.util.ChannelsDataMappers.toChannelTopic
+import ru.snowadv.channels_impl.data.util.ChannelsDataMappers.toChannelStream
+import ru.snowadv.channels_impl.data.util.ChannelsDataMappers.toChannelTopic
 import ru.snowadv.model.DispatcherProvider
 import ru.snowadv.model.Resource
-import ru.snowadv.model.map
 import ru.snowadv.utils.CommonMappers.mapListContent
 import javax.inject.Inject
 

@@ -1,4 +1,4 @@
-package ru.snowadv.channels_impl.domain.util
+package ru.snowadv.channels_impl.data.util
 
 import ru.snowadv.channels_impl.domain.model.Stream
 import ru.snowadv.channels_impl.domain.model.Topic

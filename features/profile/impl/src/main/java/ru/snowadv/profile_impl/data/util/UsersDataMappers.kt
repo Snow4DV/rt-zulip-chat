@@ -1,4 +1,4 @@
-package ru.snowadv.profile_impl.domain.util
+package ru.snowadv.profile_impl.data.util
 
 import ru.snowadv.users_data_api.model.DataUser
 import ru.snowadv.users_data_api.model.DataUserStatus
