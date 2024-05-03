@@ -1,4 +1,4 @@
-package ru.snowadv.events_impl.util
+package ru.snowadv.events_impl.data.util
 
 import ru.snowadv.events_api.domain.model.DomainEvent
 import ru.snowadv.events_api.domain.model.EventMessage

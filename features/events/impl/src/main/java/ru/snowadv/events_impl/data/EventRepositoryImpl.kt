@@ -1,4 +1,4 @@
-package ru.snowadv.events_impl
+package ru.snowadv.events_impl.data
 
 import dagger.Reusable
 import kotlinx.coroutines.delay
@@ -10,10 +10,10 @@ import ru.snowadv.events_api.domain.model.DomainEvent
 import ru.snowadv.events_api.domain.model.EventNarrow
 import ru.snowadv.events_api.domain.model.EventQueueProperties
 import ru.snowadv.events_api.domain.model.EventType
-import ru.snowadv.events_impl.util.EventMapper.toDataEvent
-import ru.snowadv.events_impl.util.EventMapper.toEventTypesDto
-import ru.snowadv.events_impl.util.EventMapper.toNarrow2DArrayDto
-import ru.snowadv.events_impl.util.EventMapper.toRegisteredQueueEvent
+import ru.snowadv.events_impl.data.util.EventMapper.toDataEvent
+import ru.snowadv.events_impl.data.util.EventMapper.toEventTypesDto
+import ru.snowadv.events_impl.data.util.EventMapper.toNarrow2DArrayDto
+import ru.snowadv.events_impl.data.util.EventMapper.toRegisteredQueueEvent
 import ru.snowadv.model.DispatcherProvider
 import ru.snowadv.network.api.ZulipApi
 import ru.snowadv.network.utils.NetworkUtils.getHttpExceptionCode

@@ -1,4 +1,4 @@
-package ru.snowadv.events_impl.exception
+package ru.snowadv.events_impl.data.exception
 
 import java.io.IOException
 
