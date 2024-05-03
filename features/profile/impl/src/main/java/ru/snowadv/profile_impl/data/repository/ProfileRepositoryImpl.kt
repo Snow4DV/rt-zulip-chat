@@ -1,4 +1,4 @@
-package ru.snowadv.profile_impl.domain.repository
+package ru.snowadv.profile_impl.data.repository
 
 import dagger.Reusable
 import kotlinx.coroutines.flow.Flow

@@ -1,4 +1,4 @@
-package ru.snowadv.chat_impl.domain.repository
+package ru.snowadv.chat_impl.data.repository
 
 import dagger.Reusable
 import kotlinx.coroutines.flow.Flow

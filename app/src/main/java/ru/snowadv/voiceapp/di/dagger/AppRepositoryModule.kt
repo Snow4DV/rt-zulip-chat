@@ -2,10 +2,10 @@ package ru.snowadv.voiceapp.di.dagger
 
 import dagger.Binds
 import dagger.Module
-import ru.snowadv.channels_impl.domain.repository.ChannelsRepositoryImpl
-import ru.snowadv.chat_impl.domain.repository.ChatRepositoryImpl
-import ru.snowadv.people_impl.domain.repository.PeopleRepositoryImpl
-import ru.snowadv.profile_impl.domain.repository.ProfileRepositoryImpl
+import ru.snowadv.channels_impl.data.repository.ChannelsRepositoryImpl
+import ru.snowadv.chat_impl.data.repository.ChatRepositoryImpl
+import ru.snowadv.people_impl.data.repository.PeopleRepositoryImpl
+import ru.snowadv.profile_impl.data.repository.ProfileRepositoryImpl
 
 @Module
 interface AppRepositoryModule {

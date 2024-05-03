@@ -1,4 +1,4 @@
-package ru.snowadv.channels_impl.domain.repository
+package ru.snowadv.channels_impl.data.repository
 
 import dagger.Reusable
 import kotlinx.coroutines.flow.Flow

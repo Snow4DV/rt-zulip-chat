@@ -12,7 +12,7 @@ import ru.snowadv.profile_impl.domain.use_case.ListenToPresenceEventsUseCase
 import ru.snowadv.profile_impl.presentation.profile.elm.ProfileActorElm
 import ru.snowadv.profile_impl.presentation.profile.elm.ProfileReducerElm
 import ru.snowadv.profile_api.presentation.ProfileScreenFactory
-import ru.snowadv.profile_impl.domain.repository.ProfileRepositoryImpl
+import ru.snowadv.profile_impl.data.repository.ProfileRepositoryImpl
 import ru.snowadv.profile_impl.presentation.feature.ProfileScreenFactoryImpl
 import ru.snowadv.profile_impl.presentation.profile.elm.ProfileCommandElm
 import ru.snowadv.profile_impl.presentation.profile.elm.ProfileEffectElm

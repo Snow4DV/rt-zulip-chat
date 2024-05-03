@@ -7,7 +7,7 @@ import dagger.Provides
 import ru.snowadv.chat_api.domain.repository.EmojiRepository
 import ru.snowadv.chat_api.domain.repository.MessageRepository
 import ru.snowadv.chat_api.presentation.ChatScreenFactory
-import ru.snowadv.chat_impl.domain.repository.ChatRepositoryImpl
+import ru.snowadv.chat_impl.data.repository.ChatRepositoryImpl
 import ru.snowadv.chat_impl.presentation.chat.elm.ChatActorElm
 import ru.snowadv.chat_impl.presentation.chat.elm.ChatCommandElm
 import ru.snowadv.chat_impl.presentation.chat.elm.ChatEffectElm
