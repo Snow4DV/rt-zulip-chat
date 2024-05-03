@@ -7,8 +7,8 @@ import ru.snowadv.chat_impl.presentation.model.ChatReaction
 import ru.snowadv.chat_impl.presentation.util.AdapterUtils.mapToAdapterMessagesAndDates
 import ru.snowadv.chat_impl.presentation.util.AdapterUtils.mapToUiAdapterMessagesAndDates
 import ru.snowadv.chat_impl.presentation.util.ChatMappers.toUiChatMessage
-import ru.snowadv.event_api.helper.EventQueueProperties
-import ru.snowadv.event_api.helper.StateMachineQueueHelper
+import ru.snowadv.events_api.domain.model.EventQueueProperties
+import ru.snowadv.events_api.domain.helper.StateMachineQueueHelper
 import ru.snowadv.presentation.model.ScreenState
 import ru.snowadv.presentation.util.toScreenStateListMapper
 import vivid.money.elmslie.core.store.dsl.ScreenDslReducer

@@ -3,10 +3,10 @@ package ru.snowadv.profile_impl.domain.use_case
 import dagger.Reusable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
-import ru.snowadv.event_api.helper.EventQueueProperties
-import ru.snowadv.events_data_api.EventRepository
-import ru.snowadv.events_data_api.model.DomainEvent
-import ru.snowadv.events_data_api.model.EventType
+import ru.snowadv.events_api.domain.model.EventQueueProperties
+import ru.snowadv.events_api.domain.EventRepository
+import ru.snowadv.events_api.domain.model.DomainEvent
+import ru.snowadv.events_api.domain.model.EventType
 import javax.inject.Inject
 
 @Reusable

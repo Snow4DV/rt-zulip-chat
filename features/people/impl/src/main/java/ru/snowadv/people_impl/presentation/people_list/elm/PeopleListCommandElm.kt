@@ -1,6 +1,6 @@
 package ru.snowadv.people_impl.presentation.people_list.elm
 
-import ru.snowadv.event_api.helper.EventQueueProperties
+import ru.snowadv.events_api.domain.model.EventQueueProperties
 
 internal sealed interface PeopleListCommandElm {
     data object LoadData : PeopleListCommandElm

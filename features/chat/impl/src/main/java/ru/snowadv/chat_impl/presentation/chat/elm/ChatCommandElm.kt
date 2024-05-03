@@ -1,6 +1,6 @@
 package ru.snowadv.chat_impl.presentation.chat.elm
 
-import ru.snowadv.event_api.helper.EventQueueProperties
+import ru.snowadv.events_api.domain.model.EventQueueProperties
 
 sealed interface ChatCommandElm { // commands to actor
     data class LoadInitialMessages(

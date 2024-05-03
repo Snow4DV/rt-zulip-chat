@@ -1,8 +1,8 @@
 package ru.snowadv.people_impl.presentation.people_list.elm
 
 import kotlinx.coroutines.flow.flow
-import ru.snowadv.event_api.helper.EventQueueProperties
-import ru.snowadv.event_api.helper.StateMachineQueueHelper
+import ru.snowadv.events_api.domain.model.EventQueueProperties
+import ru.snowadv.events_api.domain.helper.StateMachineQueueHelper
 import ru.snowadv.model.Resource
 import ru.snowadv.model.map
 import ru.snowadv.people_impl.presentation.model.Person

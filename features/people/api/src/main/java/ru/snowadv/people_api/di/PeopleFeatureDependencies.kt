@@ -1,7 +1,6 @@
 package ru.snowadv.people_api.di
 
-import kotlinx.coroutines.CoroutineDispatcher
-import ru.snowadv.events_data_api.EventRepository
+import ru.snowadv.events_api.domain.EventRepository
 import ru.snowadv.model.DispatcherProvider
 import ru.snowadv.module_injector.module.BaseModuleDependencies
 import ru.snowadv.people_api.domain.navigation.PeopleRouter

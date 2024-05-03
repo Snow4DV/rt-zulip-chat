@@ -43,7 +43,8 @@ dependencies {
     implementation(projects.core.utils)
     implementation(projects.core.moduleInjector)
 
-    implementation(projects.data.eventsData.api)
+    implementation(projects.features.events.api)
+
     implementation(projects.data.messagesData.api)
     implementation(projects.data.emojisData.api)
 

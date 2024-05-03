@@ -33,7 +33,7 @@ android {
 }
 
 dependencies {
-    implementation(projects.data.eventsData.api)
+    implementation(projects.features.events.api)
     implementation(projects.data.messagesData.api)
     implementation(projects.data.emojisData.api)
     implementation(projects.core.utils)

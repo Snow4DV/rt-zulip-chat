@@ -44,8 +44,8 @@ android {
 dependencies {
     implementation(projects.data.channelsData.api)
     implementation(projects.data.channelsData.impl)
-    implementation(projects.data.eventsData.api)
-    implementation(projects.data.eventsData.impl)
+    implementation(projects.features.events.api)
+    implementation(projects.features.events.impl)
     implementation(projects.data.messagesData.api)
     implementation(projects.data.messagesData.impl)
     implementation(projects.data.usersData.api)

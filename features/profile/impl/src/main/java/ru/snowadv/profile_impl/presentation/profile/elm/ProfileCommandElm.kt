@@ -1,6 +1,6 @@
 package ru.snowadv.profile_impl.presentation.profile.elm
 
-import ru.snowadv.event_api.helper.EventQueueProperties
+import ru.snowadv.events_api.domain.model.EventQueueProperties
 
 internal sealed interface ProfileCommandElm { // commands to actor
     data class LoadData(val profileId: Long?) : ProfileCommandElm

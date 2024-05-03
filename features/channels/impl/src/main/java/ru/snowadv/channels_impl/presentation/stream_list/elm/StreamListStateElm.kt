@@ -3,7 +3,7 @@ package ru.snowadv.channels_impl.presentation.stream_list.elm
 import ru.snowadv.channels_impl.domain.model.StreamType
 import ru.snowadv.channels_impl.presentation.model.Stream
 import ru.snowadv.channels_impl.presentation.model.StreamUnreadMessages
-import ru.snowadv.event_api.helper.EventQueueProperties
+import ru.snowadv.events_api.domain.model.EventQueueProperties
 import ru.snowadv.model.Resource
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.presentation.model.ScreenState

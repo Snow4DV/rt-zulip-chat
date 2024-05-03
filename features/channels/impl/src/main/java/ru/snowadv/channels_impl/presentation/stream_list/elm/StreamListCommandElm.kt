@@ -1,7 +1,7 @@
 package ru.snowadv.channels_impl.presentation.stream_list.elm
 
 import ru.snowadv.channels_impl.domain.model.StreamType
-import ru.snowadv.event_api.helper.EventQueueProperties
+import ru.snowadv.events_api.domain.model.EventQueueProperties
 
 internal sealed interface StreamListCommandElm {
     data class LoadStreams(val type: StreamType) : StreamListCommandElm

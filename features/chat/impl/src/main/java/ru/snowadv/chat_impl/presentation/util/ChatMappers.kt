@@ -9,9 +9,9 @@ import ru.snowadv.chat_impl.domain.model.ChatMessage as DomainChatMessage
 import ru.snowadv.chat_impl.presentation.model.ChatMessage
 import ru.snowadv.chat_impl.presentation.model.ChatMessageType
 import ru.snowadv.chat_impl.presentation.model.ChatReaction
-import ru.snowadv.events_data_api.model.DomainEvent
-import ru.snowadv.events_data_api.model.EventMessage
-import ru.snowadv.events_data_api.model.EventReaction
+import ru.snowadv.events_api.domain.model.DomainEvent
+import ru.snowadv.events_api.domain.model.EventMessage
+import ru.snowadv.events_api.domain.model.EventReaction
 import ru.snowadv.presentation.util.toLocalDateTimeWithCurrentZone
 import ru.snowadv.utils.EmojiUtils
 

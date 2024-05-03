@@ -24,10 +24,10 @@ import ru.snowadv.emojis_data_api.model.EmojiDataRepository
 import ru.snowadv.emojis_data_api.model.di.EmojisDataModuleAPI
 import ru.snowadv.emojis_data_api.model.di.EmojisDataModuleDependencies
 import ru.snowadv.emojis_data_impl.di.EmojisDataModuleComponentHolder
-import ru.snowadv.events_data_api.EventRepository
-import ru.snowadv.events_data_api.di.EventsDataModuleAPI
-import ru.snowadv.events_data_api.di.EventsDataModuleDependencies
-import ru.snowadv.events_data_impl.di.EventsDataModuleComponentHolder
+import ru.snowadv.events_api.di.EventsFeatureModuleAPI
+import ru.snowadv.events_api.di.EventsFeatureModuleDependencies
+import ru.snowadv.events_api.domain.EventRepository
+import ru.snowadv.events_impl.di.EventsDataModuleComponentHolder
 import ru.snowadv.home_api.di.HomeFeatureDependencies
 import ru.snowadv.home_impl.di.HomeFeatureComponentHolder
 import ru.snowadv.messages_data_api.MessageDataRepository
@@ -38,12 +38,9 @@ import ru.snowadv.model.DispatcherProvider
 import ru.snowadv.module_injector.dependency_holder.BaseDependencyHolder
 import ru.snowadv.module_injector.dependency_holder.DependencyHolder0
 import ru.snowadv.module_injector.dependency_holder.DependencyHolder1
-import ru.snowadv.module_injector.dependency_holder.DependencyHolder10
-import ru.snowadv.module_injector.dependency_holder.DependencyHolder11
 import ru.snowadv.module_injector.dependency_holder.DependencyHolder2
 import ru.snowadv.module_injector.dependency_holder.DependencyHolder3
 import ru.snowadv.module_injector.dependency_holder.DependencyHolder4
-import ru.snowadv.module_injector.dependency_holder.DependencyHolder6
 import ru.snowadv.module_injector.module.BaseModuleDependencies
 import ru.snowadv.network.api.BadAuthBehavior
 import ru.snowadv.network.api.ZulipApi
@@ -53,13 +50,11 @@ import ru.snowadv.network.di.holder.NetworkModuleDependencies
 import ru.snowadv.people_api.di.PeopleFeatureAPI
 import ru.snowadv.people_api.di.PeopleFeatureDependencies
 import ru.snowadv.people_api.domain.navigation.PeopleRouter
-import ru.snowadv.people_impl.domain.repository.PeopleRepository
 import ru.snowadv.people_api.presentation.PeopleScreenFactory
 import ru.snowadv.people_impl.di.PeopleFeatureComponentHolder
 import ru.snowadv.profile_api.di.ProfileFeatureAPI
 import ru.snowadv.profile_api.di.ProfileFeatureDependencies
 import ru.snowadv.profile_api.domain.navigation.ProfileRouter
-import ru.snowadv.profile_impl.domain.repository.ProfileRepository
 import ru.snowadv.profile_api.presentation.ProfileScreenFactory
 import ru.snowadv.profile_impl.di.ProfileFeatureComponentHolder
 import ru.snowadv.properties_provider_api.AuthUserPropertyRepository
@@ -100,8 +95,8 @@ internal object ModulesInjector {
 
         ChannelsFeatureComponentHolder.dependencyProvider = {
             class ChannelsFeatureDependencyHolder(
-                override val block: (BaseDependencyHolder<ChannelsFeatureDependencies>, AppModuleAPI, EventsDataModuleAPI, ChannelsDataModuleAPI) -> ChannelsFeatureDependencies
-            ) : DependencyHolder3<AppModuleAPI, EventsDataModuleAPI, ChannelsDataModuleAPI, ChannelsFeatureDependencies>(
+                override val block: (BaseDependencyHolder<ChannelsFeatureDependencies>, AppModuleAPI, EventsFeatureModuleAPI, ChannelsDataModuleAPI) -> ChannelsFeatureDependencies
+            ) : DependencyHolder3<AppModuleAPI, EventsFeatureModuleAPI, ChannelsDataModuleAPI, ChannelsFeatureDependencies>(
                 api1 = AppModuleComponentHolder.get(),
                 api2 = EventsDataModuleComponentHolder.get(),
                 api3 = ChannelsDataModuleComponentHolder.get(),
@@ -122,8 +117,8 @@ internal object ModulesInjector {
 
         ChatFeatureComponentHolder.dependencyProvider = {
             class ChatFeatureDependencyHolder(
-                override val block: (BaseDependencyHolder<ChatFeatureDependencies>, AppModuleAPI, EmojisDataModuleAPI, MessagesDataModuleAPI, EventsDataModuleAPI) -> ChatFeatureDependencies
-            ) : DependencyHolder4<AppModuleAPI, EmojisDataModuleAPI, MessagesDataModuleAPI, EventsDataModuleAPI, ChatFeatureDependencies>(
+                override val block: (BaseDependencyHolder<ChatFeatureDependencies>, AppModuleAPI, EmojisDataModuleAPI, MessagesDataModuleAPI, EventsFeatureModuleAPI) -> ChatFeatureDependencies
+            ) : DependencyHolder4<AppModuleAPI, EmojisDataModuleAPI, MessagesDataModuleAPI, EventsFeatureModuleAPI, ChatFeatureDependencies>(
                 api1 = AppModuleComponentHolder.get(),
                 api2 = EmojisDataModuleComponentHolder.get(),
                 api3 = MessagesDataModuleComponentHolder.get(),
@@ -165,8 +160,8 @@ internal object ModulesInjector {
 
         PeopleFeatureComponentHolder.dependencyProvider = {
             class PeopleFeatureDependencyHolder(
-                override val block: (BaseDependencyHolder<PeopleFeatureDependencies>, AppModuleAPI, EventsDataModuleAPI, UsersDataModuleAPI) -> PeopleFeatureDependencies
-            ) : DependencyHolder3<AppModuleAPI, EventsDataModuleAPI, UsersDataModuleAPI, PeopleFeatureDependencies>(
+                override val block: (BaseDependencyHolder<PeopleFeatureDependencies>, AppModuleAPI, EventsFeatureModuleAPI, UsersDataModuleAPI) -> PeopleFeatureDependencies
+            ) : DependencyHolder3<AppModuleAPI, EventsFeatureModuleAPI, UsersDataModuleAPI, PeopleFeatureDependencies>(
                 api1 = AppModuleComponentHolder.get(),
                 api2 = EventsDataModuleComponentHolder.get(),
                 api3 = UsersDataModuleComponentHolder.get(),
@@ -185,8 +180,8 @@ internal object ModulesInjector {
 
         ProfileFeatureComponentHolder.dependencyProvider = {
             class ProfileFeatureDependencyHolder(
-                override val block: (BaseDependencyHolder<ProfileFeatureDependencies>, AppModuleAPI, EventsDataModuleAPI, UsersDataModuleAPI) -> ProfileFeatureDependencies
-            ) : DependencyHolder3<AppModuleAPI, EventsDataModuleAPI, UsersDataModuleAPI, ProfileFeatureDependencies>(
+                override val block: (BaseDependencyHolder<ProfileFeatureDependencies>, AppModuleAPI, EventsFeatureModuleAPI, UsersDataModuleAPI) -> ProfileFeatureDependencies
+            ) : DependencyHolder3<AppModuleAPI, EventsFeatureModuleAPI, UsersDataModuleAPI, ProfileFeatureDependencies>(
                 api1 = AppModuleComponentHolder.get(),
                 api2 = EventsDataModuleComponentHolder.get(),
                 api3 = UsersDataModuleComponentHolder.get(),
@@ -269,16 +264,16 @@ internal object ModulesInjector {
 
         EventsDataModuleComponentHolder.dependencyProvider = {
             class EventsDependencyHolder(
-                override val block: (BaseDependencyHolder<EventsDataModuleDependencies>, AppModuleAPI, NetworkModuleAPI) -> EventsDataModuleDependencies
+                override val block: (BaseDependencyHolder<EventsFeatureModuleDependencies>, AppModuleAPI, NetworkModuleAPI) -> EventsFeatureModuleDependencies
 
-            ) : DependencyHolder2<AppModuleAPI, NetworkModuleAPI, EventsDataModuleDependencies>(
+            ) : DependencyHolder2<AppModuleAPI, NetworkModuleAPI, EventsFeatureModuleDependencies>(
                 api1 = AppModuleComponentHolder.get(),
                 api2 = NetworkModuleComponentHolder.get(),
             )
 
 
             EventsDependencyHolder { dependencyHolder, appApi, networkApi ->
-                object : EventsDataModuleDependencies {
+                object : EventsFeatureModuleDependencies {
                     override val dispatcherProvider: DispatcherProvider = appApi.dispatcherProvider
                     override val api: ZulipApi = networkApi.zulipApi
                     override val authProvider: AuthProvider = appApi.authProvider

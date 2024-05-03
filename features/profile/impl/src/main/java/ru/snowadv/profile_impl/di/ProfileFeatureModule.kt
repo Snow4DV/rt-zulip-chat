@@ -2,13 +2,7 @@ package ru.snowadv.profile_impl.di
 
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
-import dagger.Reusable
-import ru.snowadv.events_data_api.EventRepository
-import ru.snowadv.profile_api.domain.navigation.ProfileRouter
 import ru.snowadv.profile_impl.domain.repository.ProfileRepository
-import ru.snowadv.profile_impl.domain.use_case.GetProfileUseCase
-import ru.snowadv.profile_impl.domain.use_case.ListenToPresenceEventsUseCase
 import ru.snowadv.profile_impl.presentation.profile.elm.ProfileActorElm
 import ru.snowadv.profile_impl.presentation.profile.elm.ProfileReducerElm
 import ru.snowadv.profile_api.presentation.ProfileScreenFactory

@@ -1,6 +1,6 @@
 package ru.snowadv.profile_impl.presentation.profile.elm
 
-import ru.snowadv.event_api.helper.EventQueueProperties
+import ru.snowadv.events_api.domain.model.EventQueueProperties
 import ru.snowadv.profile_impl.presentation.model.Person
 import ru.snowadv.presentation.model.ScreenState
 

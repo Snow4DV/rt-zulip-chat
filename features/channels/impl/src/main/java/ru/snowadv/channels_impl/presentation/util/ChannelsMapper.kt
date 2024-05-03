@@ -8,11 +8,10 @@ import ru.snowadv.channels_impl.presentation.model.StreamUnreadMessages
 import ru.snowadv.channels_impl.presentation.model.Topic
 import ru.snowadv.channels_impl.presentation.model.TopicUnreadMessages
 import ru.snowadv.channels_impl.presentation.stream_list.elm.StreamListEventElm
-import ru.snowadv.channels_impl.presentation.util.ChannelsMapper.toUiModel
-import ru.snowadv.events_data_api.model.DomainEvent
-import ru.snowadv.events_data_api.model.EventStream
-import ru.snowadv.events_data_api.model.EventStreamUpdateFlagsMessages
-import ru.snowadv.events_data_api.model.EventTopicUpdateFlagsMessages
+import ru.snowadv.events_api.domain.model.DomainEvent
+import ru.snowadv.events_api.domain.model.EventStream
+import ru.snowadv.events_api.domain.model.EventStreamUpdateFlagsMessages
+import ru.snowadv.events_api.domain.model.EventTopicUpdateFlagsMessages
 import ru.snowadv.channels_impl.domain.model.Stream as DomainStream
 import ru.snowadv.channels_impl.domain.model.Topic as DomainTopic
 

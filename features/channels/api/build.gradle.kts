@@ -33,7 +33,7 @@ android {
 }
 
 dependencies {
-    implementation(projects.data.eventsData.api)
+    implementation(projects.features.events.api)
     implementation(projects.data.channelsData.api)
     implementation(projects.core.utils)
     implementation(projects.core.moduleInjector)
