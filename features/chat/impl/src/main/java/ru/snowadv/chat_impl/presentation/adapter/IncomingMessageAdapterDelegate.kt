@@ -73,7 +73,7 @@ internal class IncomingMessageAdapterDelegate(
         }
 
         private fun bindReactions(reactions: List<ChatReaction>) = with(messageLayout) {
-            replaceReactions(reactions)
+            updateReactionsWithAsyncDiffUtil(reactions)
         }
     }
 

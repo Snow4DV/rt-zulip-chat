@@ -93,7 +93,6 @@ internal class ReactionView @JvmOverloads constructor(
         val desiredTextHeightInPx: Int
         val desiredTextWidthInPx: Int
 
-        // This hacky solution adjusts size of plus button height so it has the same height as one with emoji (with same text size)
         if (isPlus) {
             textPaint.getTextBounds(DEFAULT_TEXT_TO_DRAW, 0, DEFAULT_TEXT_TO_DRAW.length, textRect)
             desiredTextHeightInPx = textRect.height()
@@ -151,6 +150,4 @@ internal class ReactionView @JvmOverloads constructor(
                 )
             }
     }
-
-
 }

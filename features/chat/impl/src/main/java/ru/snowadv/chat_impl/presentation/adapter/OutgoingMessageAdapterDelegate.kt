@@ -32,9 +32,10 @@ internal class OutgoingMessageAdapterDelegate(
             messageLayout.onReactionClickListener = { count, emojiCode, userReacted ->
                 if (adapterPosition != RecyclerView.NO_POSITION) {
                     getItemAtPosition(getCurrentList(), adapterPosition)?.let { message ->
-                        message.reactions.firstOrNull { it.emojiCode == emojiCode }?.let { reaction ->
-                            onReactionClickListener?.invoke(reaction, message)
-                        }
+                        message.reactions.firstOrNull { it.emojiCode == emojiCode }
+                            ?.let { reaction ->
+                                onReactionClickListener?.invoke(reaction, message)
+                            }
                     }
                 }
             }
@@ -61,8 +62,8 @@ internal class OutgoingMessageAdapterDelegate(
             }
         }
 
-        private fun bindReactions(reactions: List<ChatReaction>) = with(messageLayout) {
-            replaceReactions(reactions)
+        fun bindReactions(reactions: List<ChatReaction>?) = with(messageLayout) {
+            updateReactionsWithAsyncDiffUtil(reactions)
         }
     }
 
@@ -72,7 +73,7 @@ internal class OutgoingMessageAdapterDelegate(
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
-        getCurrentList: () -> List<DelegateItem>
+        getCurrentList: () -> List<DelegateItem>,
     ): ViewHolder {
         val holder = OutgoingMessageViewHolder(getNewOutgoingMessageLayout(parent))
         holder.initClickListeners(getCurrentList)
@@ -88,6 +89,32 @@ internal class OutgoingMessageAdapterDelegate(
             holder.bind(item)
         } else payloads.forEach {
             holder.handlePayload(it)
+        }
+    }
+
+    /*
+       This is important because there's an edgecase when async differ is trying to dispatch updates
+       after view is detached.
+        */
+    override fun genericOnViewAttachedToWindow(
+        holder: OutgoingMessageAdapterDelegate.OutgoingMessageViewHolder,
+        getCurrentList: () -> List<DelegateItem>
+    ) {
+        if (holder.adapterPosition != RecyclerView.NO_POSITION) {
+            getItemAtPosition(getCurrentList(), holder.adapterPosition)?.let { message ->
+                holder.bindReactions(message.reactions)
+            }
+        }
+    }
+
+    override fun genericOnViewDetachedFromWindow(
+        holder: OutgoingMessageAdapterDelegate.OutgoingMessageViewHolder,
+        getCurrentList: () -> List<DelegateItem>
+    ) {
+        if (holder.adapterPosition != RecyclerView.NO_POSITION) {
+            getItemAtPosition(getCurrentList(), holder.adapterPosition)?.let { message ->
+                holder.bindReactions(null)
+            }
         }
     }
 

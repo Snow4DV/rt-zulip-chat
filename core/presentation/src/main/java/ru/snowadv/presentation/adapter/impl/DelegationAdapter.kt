@@ -18,12 +18,23 @@ sealed class DelegationAdapter<T>(
         onBindViewHolder(holder, position, emptyList())
     }
 
+
     override fun onBindViewHolder(
         holder: RecyclerView.ViewHolder,
         position: Int,
         payloads: List<Any>
     ) {
         delegatesManager.onBindViewHolder(currentList, position, holder, payloads)
+    }
+
+    override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
+        super.onViewAttachedToWindow(holder)
+        delegatesManager.onViewAttachedToWindow(holder, ::getCurrentList)
+    }
+
+    override fun onViewDetachedFromWindow(holder: RecyclerView.ViewHolder) {
+        delegatesManager.onViewDetachedFromWindow(holder, ::getCurrentList)
+        super.onViewDetachedFromWindow(holder)
     }
 
     override fun getItemViewType(position: Int): Int {

@@ -7,4 +7,6 @@ interface AdapterDelegate<T> {
     fun isForViewType(items: List<T>, position: Int): Boolean
     fun onCreateViewHolder(parent: ViewGroup, getCurrentList: () -> List<T>): RecyclerView.ViewHolder
     fun onBindViewHolder(holder: RecyclerView.ViewHolder, items: List<T>, position: Int, payloads: List<Any>)
+    fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder, getCurrentList: () -> List<T>)
+    fun onViewDetachedFromWindow(holder: RecyclerView.ViewHolder, getCurrentList: () -> List<T>)
 }

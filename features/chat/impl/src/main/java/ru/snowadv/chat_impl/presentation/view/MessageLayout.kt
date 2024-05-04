@@ -1,7 +1,6 @@
 package ru.snowadv.chat_impl.presentation.view
 
 import android.content.Context
-import android.text.Html
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -10,6 +9,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import androidx.core.view.children
+import androidx.recyclerview.widget.AsyncDifferConfig
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListUpdateCallback
 import ru.snowadv.chat_impl.databinding.ItemReactionBinding
 import ru.snowadv.chat_impl.presentation.model.ChatReaction
 import ru.snowadv.presentation.view.ViewInvalidatingProperty
@@ -25,9 +28,9 @@ internal abstract class MessageLayout @JvmOverloads constructor(
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0,
 ) :
-    ViewGroup(context, attrs, defStyleAttr, defStyleRes) {
+    ViewGroup(context, attrs, defStyleAttr, defStyleRes),
+    ListUpdateCallback {
 
-    protected val reactions = HashMap<String, ReactionView>() // Emoji code to ReactionView
     protected val layoutInflater: LayoutInflater = LayoutInflater.from(context)
 
     protected abstract val reactionsContainer: FlexBoxLayout
@@ -41,8 +44,14 @@ internal abstract class MessageLayout @JvmOverloads constructor(
         const val DEFAULT_MESSAGE_TEXT = ""
         const val DEFAULT_TIMESTAMP_TEXT = ""
         const val DEFAULT_MAX_WIDTH_OF_PARENT = 0.85f
+
+        private val diffUtilChatReactionCallback by lazy { ChatReactionDiffUtilCallback() }
     }
 
+    private val asyncReactionsDiffer = AsyncListDiffer<ChatReaction>(this,
+        AsyncDifferConfig.Builder(diffUtilChatReactionCallback).build())
+
+    val reactions get() = asyncReactionsDiffer.currentList
     var onMessageLongClickListener: OnMessageLongClickListener? = null
     var onReactionClickListener: OnReactionClickListener? = null
     var onAddReactionClickListener: OnAddReactionClickListener? = null
@@ -60,7 +69,8 @@ internal abstract class MessageLayout @JvmOverloads constructor(
     var messageText: CharSequence
         get() = messageTextView.text
         set(value) {
-            messageTextView.text = HtmlCompat.fromHtml(value.toString(), HtmlCompat.FROM_HTML_MODE_COMPACT)
+            messageTextView.text =
+                HtmlCompat.fromHtml(value.toString(), HtmlCompat.FROM_HTML_MODE_COMPACT)
             requestLayout()
         }
     var timestampText: CharSequence
@@ -76,127 +86,59 @@ internal abstract class MessageLayout @JvmOverloads constructor(
             requestLayout()
         }
 
-    /**
-     * This function changes info about reaction in container layout
-     * It creates new view if count of votes >= 1
-     * It updates view if count of votes >= 1
-     * It removes view if count < 1
-     */
-    private fun addUpdateRemoveReaction(reaction: ChatReaction) {
-        addUpdateRemoveReaction(
-            reaction.emojiCode,
-            reaction.count,
-            reaction.userReacted
-        )
+    fun updateReactionsWithAsyncDiffUtil(newList: List<ChatReaction>?) {
+        asyncReactionsDiffer.submitList(newList)
     }
 
-    /**
-     * This function changes info about reaction in container layout
-     * It creates new view if count of votes >= 1
-     * It updates view if count of votes >= 1
-     * It removes view if count < 1
-     */
-    private fun addUpdateRemoveReaction(
-        emojiCode: String,
-        count: Int,
-        userReacted: Boolean
-    ) {
-        addUpdateRemoveReaction(emojiCode, count, userReacted, true)
-    }
-
-    private fun addUpdateRemoveReaction(reaction: ChatReaction, requestLayout: Boolean) {
-        addUpdateRemoveReaction(
-            reaction.emojiCode,
-            reaction.count,
-            reaction.userReacted,
-            requestLayout
-        )
-    }
-
-    private fun addUpdateRemoveReaction(
-        emojiCode: String,
-        count: Int,
-        userReacted: Boolean,
-        requestLayout: Boolean
-    ) {
-        if (count <= 0) {
-            reactions[emojiCode]?.let {
-                reactionsContainer.removeView(it)
-            }
-        } else {
-            updateReactionView(
-                view = reactions[emojiCode] ?: ItemReactionBinding.inflate(
-                    layoutInflater,
-                    reactionsContainer,
-                    false
-                ).root
-                    .also { reactions[emojiCode] = it }
-                    .also { reactionsContainer.addView(it) },
-                emojiCode = emojiCode,
-                count = count,
-                userReacted = userReacted,
-                requestLayout = requestLayout
-            )
+    override fun onInserted(position: Int, count: Int) {
+        for (i in position until position + count) {
+            reactionsContainer.addView(createReactionView(reactions[i]), i)
         }
+        addOrRemoveAddReactionButton(
+            oldCount = reactions.size - count,
+            newCount = reactions.size,
+        )
+        if (count > 0) requestLayout()
     }
 
-    fun clearReactions() {
-        reactions.clear()
-        reactionsContainer.removeAllViews()
+    override fun onRemoved(position: Int, count: Int) {
+        for (i in position until position + count) {
+            reactionsContainer.removeViewAt(position)
+        }
+        addOrRemoveAddReactionButton(
+            oldCount = reactions.size + count,
+            newCount = reactions.size,
+        )
+        if (count > 0) requestLayout()
+    }
+
+    override fun onChanged(position: Int, count: Int, payload: Any?) {
+        (payload as? ChatReaction.Payload)?.let {
+            for (i in position until position + count) {
+                handlePayload(i, it)
+            }
+        } ?: run {
+            for (i in position until position + count) {
+                updateReactionView(getReactionViewAt(i), reactions[i])
+            }
+        }
+        if (count > 0) requestLayout()
+    }
+
+    override fun onMoved(fromPosition: Int, toPosition: Int) {
+        updateReactionView(getReactionViewAt(fromPosition), reactions[fromPosition])
+        updateReactionView(getReactionViewAt(toPosition), reactions[toPosition])
         requestLayout()
     }
 
-
-    /**
-     * This function replaces reactions by making least amount of replaces possible
-     */
-    fun replaceReactions(reactions: List<ChatReaction>) {
-        // Update views to match new reactions list
-        val reactionsSet =
-            reactions.asSequence().filter { it.count > 0 }.map { it.emojiCode }.toSet()
-
-        this.reactions.keys.filter { it !in reactionsSet }.forEach {
-            removeReactionView(it, false)
-        }
-
-        reactions.forEach {
-            addUpdateRemoveReaction(it, false)
-        }
-
-        // Reorder views
-        val viewsMap = reactionsContainer.children
-            .mapNotNull { it as? ReactionView }
-            .filter { !it.isPlus && it.visibility != GONE }
-            .associateBy { it.emojiCode }
-
-        reactionsContainer.removeAllViews()
-
-        reactions.forEach {
-            viewsMap[it.emojiCode]?.let { reactionView ->
-                reactionsContainer.addView(reactionView)
-            }
-        }
-
-        // Add plus at the end if reactionsSet is not empty
-        if (reactionsSet.isNotEmpty()) {
-            reactionsContainer.addView(getAddReactionButtonView().also { plusView ->
-                plusView.setOnClickListener {
-                    onAddReactionClickListener?.invoke()
-                }
-            })
-        }
-    }
-
-    private fun removeReactionView(reaction: ChatReaction, requestLayout: Boolean = true) {
-        removeReactionView(reaction.emojiCode, requestLayout)
-    }
-
-    private fun removeReactionView(emojiCode: String, requestLayout: Boolean = true) {
-        reactions[emojiCode]?.let {
-            reactionsContainer.removeView(it)
-            reactions.remove(it.emojiCode)
-        }
-        if (requestLayout) requestLayout()
+    private fun getReactionViewAt(index: Int): ReactionView {
+        return (reactionsContainer.getChildAt(index) as? ReactionView) ?: error(
+            "Expected reaction in $index inside msg $this but ${
+                reactionsContainer.getChildAt(
+                    index
+                )
+            } was found"
+        )
     }
 
     private fun updateReactionView(view: ReactionView, reaction: ChatReaction): ReactionView {
@@ -208,7 +150,6 @@ internal abstract class MessageLayout @JvmOverloads constructor(
         emojiCode: String,
         count: Int,
         userReacted: Boolean,
-        requestLayout: Boolean = true
     ): ReactionView {
         view.isSelected = userReacted
         view.count = count
@@ -216,16 +157,70 @@ internal abstract class MessageLayout @JvmOverloads constructor(
         view.setOnClickListener {
             onReactionClickListener?.invoke(count, emojiCode, userReacted)
         }
-        if (requestLayout) requestLayout()
         return view
     }
 
-    private fun getAddReactionButtonView(): ReactionView {
+    private fun addOrRemoveAddReactionButton(
+        oldCount: Int,
+        newCount: Int,
+    ) {
+        val buttonAlreadyExists = oldCount > 0
+        val buttonShouldExist = newCount > 0
+
+        if (buttonAlreadyExists && !buttonShouldExist
+            && (reactionsContainer.children.lastOrNull() as? ReactionView)?.isPlus == true) {
+            reactionsContainer.removeViewAt(reactionsContainer.childCount - 1)
+        } else if (!buttonAlreadyExists && buttonShouldExist) {
+            reactionsContainer.addView(createAddReactionButtonView())
+        }
+    }
+
+    private fun createAddReactionButtonView(): ReactionView {
         return ItemReactionBinding.inflate(
             layoutInflater,
             reactionsContainer,
             false
         ).root
-            .also { it.isPlus = true }
+            .also {
+                it.isPlus = true
+                it.setOnClickListener {
+                    onAddReactionClickListener?.invoke()
+                }
+            }
     }
+
+    private fun createReactionView(chatReaction: ChatReaction): ReactionView {
+        return ItemReactionBinding.inflate(
+            layoutInflater,
+            reactionsContainer,
+            false
+        ).root
+            .also {
+                updateReactionView(it, chatReaction)
+            }
+    }
+
+    private fun handlePayload(index: Int, payload: ChatReaction.Payload) {
+        getReactionViewAt(index).let { reactionView ->
+            when (payload) {
+                is ChatReaction.Payload.ChangedCount -> reactionView.count = payload.newCount
+                is ChatReaction.Payload.ChangedUserReacted -> reactionView.isSelected =
+                    payload.newUserReacted
+            }
+        }
+    }
+
+    private class ChatReactionDiffUtilCallback : DiffUtil.ItemCallback<ChatReaction>() {
+        override fun areItemsTheSame(oldItem: ChatReaction, newItem: ChatReaction): Boolean {
+            return oldItem.id == newItem.id
+        }
+        override fun areContentsTheSame(oldItem: ChatReaction, newItem: ChatReaction): Boolean {
+            return oldItem == newItem
+        }
+        override fun getChangePayload(oldItem: ChatReaction, newItem: ChatReaction): Any? {
+            return newItem.getPayload(oldItem)
+        }
+    }
+
+
 }
