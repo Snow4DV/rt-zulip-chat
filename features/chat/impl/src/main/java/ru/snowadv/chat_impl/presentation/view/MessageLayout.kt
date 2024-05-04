@@ -17,6 +17,8 @@ import ru.snowadv.chat_impl.databinding.ItemReactionBinding
 import ru.snowadv.chat_impl.presentation.model.ChatReaction
 import ru.snowadv.presentation.view.ViewInvalidatingProperty
 import ru.snowadv.presentation.view.dimToPx
+import kotlin.math.max
+import kotlin.math.min
 
 typealias OnReactionClickListener = (count: Int, emojiCode: String, userReacted: Boolean) -> Unit
 typealias OnMessageLongClickListener = () -> Unit
@@ -98,7 +100,7 @@ internal abstract class MessageLayout @JvmOverloads constructor(
             oldCount = reactions.size - count,
             newCount = reactions.size,
         )
-        if (count > 0) requestLayout()
+        requestLayout()
     }
 
     override fun onRemoved(position: Int, count: Int) {
@@ -109,36 +111,49 @@ internal abstract class MessageLayout @JvmOverloads constructor(
             oldCount = reactions.size + count,
             newCount = reactions.size,
         )
-        if (count > 0) requestLayout()
+        requestLayout()
     }
 
     override fun onChanged(position: Int, count: Int, payload: Any?) {
+        onChangedWithoutRequestLayout(position, count, payload)
+        requestLayout()
+    }
+
+    private fun onChangedWithoutRequestLayout(position: Int, count: Int, payload: Any?) {
         (payload as? ChatReaction.Payload)?.let {
             for (i in position until position + count) {
                 handlePayload(i, it)
             }
         } ?: run {
             for (i in position until position + count) {
-                updateReactionView(getReactionViewAt(i), reactions[i])
+                updateReactionView(getReactionViewByCode(reactions[i].emojiCode), reactions[i])
             }
         }
-        if (count > 0) requestLayout()
     }
 
     override fun onMoved(fromPosition: Int, toPosition: Int) {
-        updateReactionView(getReactionViewAt(fromPosition), reactions[fromPosition])
-        updateReactionView(getReactionViewAt(toPosition), reactions[toPosition])
-        requestLayout()
+        val leftPos = min(fromPosition, toPosition)
+        val rightPos = max(fromPosition, toPosition)
+
+        val leftView = reactionsContainer.getChildAt(leftPos)
+        val rightView = reactionsContainer.getChildAt(rightPos)
+
+        reactionsContainer.removeViewAt(rightPos)
+        reactionsContainer.removeViewAt(leftPos)
+
+        reactionsContainer.addView(rightView, leftPos)
+        reactionsContainer.addView(leftView, rightPos)
+
+        /* By some reason in some cases onChanged is called before onMoved so that's
+        why this is required
+         */
+        onChangedWithoutRequestLayout(fromPosition, 1, null)
+        onChangedWithoutRequestLayout(toPosition, 1, null)
     }
 
-    private fun getReactionViewAt(index: Int): ReactionView {
-        return (reactionsContainer.getChildAt(index) as? ReactionView) ?: error(
-            "Expected reaction in $index inside msg $this but ${
-                reactionsContainer.getChildAt(
-                    index
-                )
-            } was found"
-        )
+    private fun getReactionViewByCode(emojiCode: String): ReactionView {
+        return (reactionsContainer.children.filterIsInstance<ReactionView>().firstOrNull { it.emojiCode == emojiCode })
+            ?: error("Reaction with emojiCode $emojiCode is not found in msg $this ")
     }
 
     private fun updateReactionView(view: ReactionView, reaction: ChatReaction): ReactionView {
@@ -168,9 +183,10 @@ internal abstract class MessageLayout @JvmOverloads constructor(
         val buttonShouldExist = newCount > 0
 
         if (buttonAlreadyExists && !buttonShouldExist
-            && (reactionsContainer.children.lastOrNull() as? ReactionView)?.isPlus == true) {
+                && (reactionsContainer.children.lastOrNull() as? ReactionView)?.isPlus == true) {
             reactionsContainer.removeViewAt(reactionsContainer.childCount - 1)
-        } else if (!buttonAlreadyExists && buttonShouldExist) {
+        } else if (!buttonAlreadyExists && buttonShouldExist
+                && (reactionsContainer.children.lastOrNull() as? ReactionView)?.isPlus == false) {
             reactionsContainer.addView(createAddReactionButtonView())
         }
     }
@@ -201,11 +217,16 @@ internal abstract class MessageLayout @JvmOverloads constructor(
     }
 
     private fun handlePayload(index: Int, payload: ChatReaction.Payload) {
-        getReactionViewAt(index).let { reactionView ->
+        getReactionViewByCode(reactions[index].emojiCode).let { reactionView ->
             when (payload) {
                 is ChatReaction.Payload.ChangedCount -> reactionView.count = payload.newCount
                 is ChatReaction.Payload.ChangedUserReacted -> reactionView.isSelected =
                     payload.newUserReacted
+
+                is ChatReaction.Payload.ChangedUserReactedAndCount -> {
+                    reactionView.count = payload.newCount
+                    reactionView.isSelected = payload.newUserReacted
+                }
             }
         }
     }
@@ -221,6 +242,4 @@ internal abstract class MessageLayout @JvmOverloads constructor(
             return newItem.getPayload(oldItem)
         }
     }
-
-
 }

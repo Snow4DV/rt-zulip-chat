@@ -396,7 +396,7 @@ internal class ChatReducerElm @Inject constructor():
                         }
                     } else {
                         message.reactions + newReaction
-                    }).filter { it.count > 0 })
+                    }).filter { it.count > 0 }.sortedWith(compareBy({-it.count}, {it.name})))
                 } else {
                     message
                 }

@@ -21,6 +21,10 @@ internal data class ChatReaction(
             && oldItem.userReacted != userReacted && oldItem.emojiString == emojiString
             && oldItem.count == count) {
             Payload.ChangedUserReacted(userReacted)
+        } else if (oldItem.name == name && oldItem.emojiCode == emojiCode
+            && oldItem.userReacted != userReacted && oldItem.emojiString == emojiString
+            && oldItem.count != count) {
+            Payload.ChangedUserReactedAndCount(count, userReacted)
         } else {
             null
         }
@@ -29,5 +33,6 @@ internal data class ChatReaction(
     sealed interface Payload {
         class ChangedCount(val newCount: Int): Payload
         class ChangedUserReacted(val newUserReacted: Boolean): Payload
+        class ChangedUserReactedAndCount(val newCount: Int, val newUserReacted: Boolean): Payload
     }
 }
