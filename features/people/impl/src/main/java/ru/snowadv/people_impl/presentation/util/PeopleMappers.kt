@@ -17,7 +17,7 @@ internal object PeopleMappers {
     }
 
     fun EventPresence.toUiModel(): Person.Status {
-        return Person.Status.entries[ordinal]
+        return Person.Status.valueOf(toString())
     }
 
     fun DomainEvent.toUpdateQueueDataElmEvent(): PeopleListEventElm.Internal.ServerEvent.EventQueueUpdated {

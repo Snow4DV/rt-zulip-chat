@@ -15,6 +15,4 @@ data class UserEntity(
     val email: String,
     @ColumnInfo(name = "avatar_url")
     val avatarUrl: String?,
-    @ColumnInfo(name = "timestamp")
-    val timestampEpochSeconds: Long,
 )

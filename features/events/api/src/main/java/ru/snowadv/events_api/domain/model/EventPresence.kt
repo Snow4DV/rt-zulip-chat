@@ -5,7 +5,8 @@ import java.time.Instant
 enum class EventPresence(val apiName: String) {
     ONLINE("active"),
     IDLE("idle"),
-    OFFLINE("offline");
+    OFFLINE("offline"),
+    UNKNOWN("");
 
     companion object {
         // This variable describes how long can user be inactive to still be considered online/idle

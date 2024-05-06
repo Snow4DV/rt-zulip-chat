@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "8f89fba1dad6dcd1742052c6c946c71c",
+    "identityHash": "b8848ecc52fa3ee56fb624c171cc9f5b",
     "entities": [
       {
         "tableName": "emojis",
@@ -182,7 +182,7 @@
       },
       {
         "tableName": "users",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` INTEGER NOT NULL, `full_name` TEXT NOT NULL, `email` TEXT NOT NULL, `avatar_url` TEXT, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`user_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` INTEGER NOT NULL, `full_name` TEXT NOT NULL, `email` TEXT NOT NULL, `avatar_url` TEXT, PRIMARY KEY(`user_id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -207,12 +207,6 @@
             "columnName": "avatar_url",
             "affinity": "TEXT",
             "notNull": false
-          },
-          {
-            "fieldPath": "timestampEpochSeconds",
-            "columnName": "timestamp",
-            "affinity": "INTEGER",
-            "notNull": true
           }
         ],
         "primaryKey": {
@@ -260,7 +254,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8f89fba1dad6dcd1742052c6c946c71c')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b8848ecc52fa3ee56fb624c171cc9f5b')"
     ]
   }
 }

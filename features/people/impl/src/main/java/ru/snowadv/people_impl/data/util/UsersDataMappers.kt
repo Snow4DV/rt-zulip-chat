@@ -14,6 +14,7 @@ internal object UsersDataMappers {
             DataUserStatus.ONLINE -> PeoplePerson.Status.ONLINE
             DataUserStatus.IDLE -> PeoplePerson.Status.IDLE
             DataUserStatus.OFFLINE -> PeoplePerson.Status.OFFLINE
+            DataUserStatus.UNKNOWN -> PeoplePerson.Status.UNKNOWN
         }
     }
 }

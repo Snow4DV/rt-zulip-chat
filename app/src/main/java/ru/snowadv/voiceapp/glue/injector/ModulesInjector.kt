@@ -28,6 +28,7 @@ import ru.snowadv.database.dao.EmojisDao
 import ru.snowadv.database.dao.MessagesDao
 import ru.snowadv.database.dao.StreamsDao
 import ru.snowadv.database.dao.TopicsDao
+import ru.snowadv.database.dao.UsersDao
 import ru.snowadv.database.di.holder.DatabaseLibAPI
 import ru.snowadv.database.di.holder.DatabaseLibComponentHolder
 import ru.snowadv.database.di.holder.DatabaseLibDependencies
@@ -341,20 +342,22 @@ internal object ModulesInjector {
 
         UsersDataModuleComponentHolder.dependencyProvider = {
             class UsersDependenciesHolder(
-                override val block: (BaseDependencyHolder<UsersDataModuleDependencies>, AppModuleAPI, NetworkLibAPI, AuthDataModuleAPI) -> UsersDataModuleDependencies
+                override val block: (BaseDependencyHolder<UsersDataModuleDependencies>, AppModuleAPI, NetworkLibAPI, AuthDataModuleAPI, DatabaseLibAPI) -> UsersDataModuleDependencies
 
-            ) : DependencyHolder3<AppModuleAPI, NetworkLibAPI, AuthDataModuleAPI, UsersDataModuleDependencies>(
+            ) : DependencyHolder4<AppModuleAPI, NetworkLibAPI, AuthDataModuleAPI, DatabaseLibAPI, UsersDataModuleDependencies>(
                 api1 = AppModuleComponentHolder.get(),
                 api2 = NetworkLibComponentHolder.get(),
                 api3 = AuthDataModuleComponentHolder.get(),
+                api4 = DatabaseLibComponentHolder.get(),
             )
 
 
-            UsersDependenciesHolder { dependencyHolder, appApi, networkApi, authDataApi ->
+            UsersDependenciesHolder { dependencyHolder, appApi, networkApi, authDataApi, dbApi ->
                 object : UsersDataModuleDependencies {
                     override val dispatcherProvider: DispatcherProvider = appApi.dispatcherProvider
                     override val api: ZulipApi = networkApi.zulipApi
                     override val authProvider: AuthProvider = authDataApi.authProvider
+                    override val usersDao: UsersDao = dbApi.usersDao
                     override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> =
                         dependencyHolder
 

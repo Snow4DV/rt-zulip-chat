@@ -39,7 +39,7 @@ internal class ProfileFragmentRenderer :
         state: ProfileStateElm,
         binding: FragmentProfileBinding
     ): Unit = with(binding) {
-        stateBox.inflateState(state.screenState, R.layout.fragment_profile_shimmer)
+        stateBox.inflateState(state.screenState, R.layout.fragment_profile_shimmer, topStateBox)
         topBar.root.isVisible = !state.isOwner
         userAvatar.isVisible = state.screenState.getCurrentData() != null
         state.screenState.getCurrentData()?.let {  person ->

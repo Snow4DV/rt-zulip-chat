@@ -1,5 +1,6 @@
 package ru.snowadv.users_data_impl.util
 
+import ru.snowadv.database.entity.UserEntity
 import ru.snowadv.network.model.AllUsersResponseDto
 import ru.snowadv.network.model.AllUsersPresenceDto
 import ru.snowadv.network.model.SingleUserResponseDto
@@ -31,7 +32,7 @@ internal object UsersMapper {
     ): DataUser {
         return user.toDataUser(
             status = if (presenceDto == null) {
-                DataUserStatus.OFFLINE
+                DataUserStatus.UNKNOWN
             } else if (hasOfflineStatus) {
                 DataUserStatus.fromStatus(presenceDto.presence.aggregated.status)
             } else {
@@ -40,6 +41,34 @@ internal object UsersMapper {
                     presenceDto.presence.aggregated.status,
                 )
             }
+        )
+    }
+
+    fun UserEntity.toDataUser(): DataUser {
+        return DataUser(
+            id = id,
+            fullName = fullName,
+            email = email,
+            avatarUrl = avatarUrl,
+            status = DataUserStatus.UNKNOWN,
+        )
+    }
+
+    fun DataUser.toUserEntity(): UserEntity {
+        return UserEntity(
+            id = id,
+            fullName = fullName,
+            email = email,
+            avatarUrl = avatarUrl,
+        )
+    }
+
+    fun SingleUserResponseDto.toUserEntity(): UserEntity {
+        return UserEntity(
+            id = this.user.id,
+            fullName = this.user.name,
+            email = this.user.email,
+            avatarUrl = this.user.avatarUrl,
         )
     }
 }

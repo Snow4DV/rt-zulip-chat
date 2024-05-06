@@ -51,7 +51,7 @@ internal class PeopleListRenderer :
         state: PeopleListStateElm,
         binding: FragmentPeopleBinding,
     ) = with(binding) {
-        stateBox.inflateState(state.screenState, R.layout.fragment_people_shimmer)
+        stateBox.inflateState(state.screenState, R.layout.fragment_people_shimmer, topStateBox)
         adapter.submitList(state.screenState.getCurrentData())
         searchBar.searchEditText.setTextIfChanged(state.searchQuery)
     }
