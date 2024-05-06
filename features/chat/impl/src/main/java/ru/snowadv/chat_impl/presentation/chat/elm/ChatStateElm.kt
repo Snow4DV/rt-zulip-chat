@@ -11,7 +11,7 @@ internal data class ChatStateElm(
     val changingReaction: Boolean = false,
     val stream: String,
     val topic: String,
-    val screenState: ScreenState<List<DelegateItem>> = ScreenState.Loading,
+    val screenState: ScreenState<List<DelegateItem>> = ScreenState.Loading(),
     val messages: List<ChatMessage> = emptyList(),
     val messageField: String = "",
     val actionButtonType: ActionButtonType = ActionButtonType.ADD_ATTACHMENT,

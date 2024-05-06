@@ -4,7 +4,7 @@ import dagger.Reusable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import ru.snowadv.data.api.AuthProvider
+import ru.snowadv.auth_data_api.AuthProvider
 import ru.snowadv.events_api.domain.EventRepository
 import ru.snowadv.events_api.domain.model.DomainEvent
 import ru.snowadv.events_api.domain.model.EventNarrow

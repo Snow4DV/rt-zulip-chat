@@ -15,8 +15,8 @@ internal sealed interface ProfileEventElm {
     }
 
     sealed interface Internal : ProfileEventElm {
-        data class PersonLoaded(val person: Person) : Internal
-        data class Error(val throwable: Throwable) : Internal
+        data class PersonLoaded(val person: Person, val cached: Boolean) : Internal
+        data class Error(val throwable: Throwable, val cachedPerson: Person?) : Internal
         data object Loading : Internal
 
         sealed class ServerEvent : Internal, EventInfoHolder {

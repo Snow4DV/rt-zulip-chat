@@ -8,7 +8,7 @@ import ru.snowadv.voiceapp.navigation.Screens
 import javax.inject.Inject
 
 @Reusable
-class ChannelsRouterImpl @Inject constructor(private val ciceroneRouter: Router, private val screens: Screens):
+internal class ChannelsRouterImpl @Inject constructor(private val ciceroneRouter: Router, private val screens: Screens):
     ChannelsRouter {
     override fun openTopic(streamName: String, topicName: String) {
         ciceroneRouter.navigateTo(screens.Chat(streamName, topicName))

@@ -16,6 +16,7 @@ import javax.inject.Singleton
 @Singleton
 internal interface AppComponent : AppModuleAPI {
     fun inject(mainActivity: MainActivity)
+    fun inject(app: ChatApp)
 
     @Component.Factory
     interface Factory {

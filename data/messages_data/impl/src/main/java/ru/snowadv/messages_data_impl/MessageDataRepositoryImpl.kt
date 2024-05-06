@@ -1,14 +1,15 @@
 package ru.snowadv.messages_data_impl
 
 import dagger.Reusable
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import ru.snowadv.data.api.AuthProvider
+import ru.snowadv.auth_data_api.AuthProvider
+import ru.snowadv.database.dao.MessagesDao
 import ru.snowadv.messages_data_api.MessageDataRepository
 import ru.snowadv.messages_data_api.model.DataPaginatedMessages
 import ru.snowadv.messages_data_impl.util.MessagesMapper.toDataPaginatedMessages
+import ru.snowadv.messages_data_impl.util.MessagesMapper.toEntityMessages
 import ru.snowadv.model.DispatcherProvider
 import ru.snowadv.model.Resource
 import ru.snowadv.network.api.ZulipApi
@@ -23,33 +24,68 @@ class MessageDataRepositoryImpl @Inject constructor(
     private val dispatcherProvider: DispatcherProvider,
     private val authProvider: AuthProvider,
     private val api: ZulipApi,
+    private val messagesDao: MessagesDao,
 ) : MessageDataRepository {
     companion object {
         const val NEWEST_MESSAGE_ANCHOR = "newest"
     }
+
     private val currentUserId get() = authProvider.getAuthorizedUser().id
     override fun getMessages(
         streamName: String,
         topicName: String,
         includeAnchorMessage: Boolean,
         countOfMessages: Int,
-        anchorMessageId: Long?
+        anchorMessageId: Long?,
+        showAndUpdateCache: Boolean,
     ): Flow<Resource<DataPaginatedMessages>> =
         flow {
-            emit(Resource.Loading)
-            api.getMessages(
+
+            val cachedData = if (showAndUpdateCache) {
+                messagesDao.getMessagesFromTopic(streamName, topicName)
+                    .ifEmpty { null }
+                    ?.toDataPaginatedMessages(
+                        currentUserId,
+                        anchorMessageId,
+                        includeAnchorMessage
+                    )
+            } else { null }
+
+            emit(Resource.Loading(cachedData))
+
+
+            val remoteMessages = api.getMessages(
                 numBefore = countOfMessages,
-                narrow = NarrowListRequestDto(NarrowRequestDto.ofStreamAndTopic(streamName, topicName)),
+                narrow = NarrowListRequestDto(
+                    NarrowRequestDto.ofStreamAndTopic(
+                        streamName,
+                        topicName
+                    )
+                ),
                 numAfter = 0,
                 anchor = anchorMessageId?.toString() ?: NEWEST_MESSAGE_ANCHOR
             )
-                .foldToResource { messagesDto ->
+
+            remoteMessages.getOrNull()?.let { remoteMsgs ->
+                if (showAndUpdateCache) {
+                    messagesDao.updateMessagesForTopicIfChanged(
+                        streamName = streamName,
+                        topicName = topicName,
+                        messages = remoteMsgs.toEntityMessages(streamName),
+                    )
+                }
+            }
+
+            remoteMessages.foldToResource(
+                cachedData = cachedData,
+                mapper = { messagesDto ->
                     messagesDto.toDataPaginatedMessages(
                         currentUserId,
                         anchorMessageId,
                         includeAnchorMessage
                     )
-                }
+                },
+            )
                 .let { res -> emit(res) }
         }.flowOn(dispatcherProvider.io)
 
@@ -58,13 +94,13 @@ class MessageDataRepositoryImpl @Inject constructor(
         topicName: String,
         text: String
     ): Flow<Resource<Unit>> = flow {
-        emit(Resource.Loading)
+        emit(Resource.Loading())
         emit(api.sendMessage(stream = streamName, topic = topicName, content = text).toResource())
     }.flowOn(dispatcherProvider.io)
 
     override fun addReactionToMessage(messageId: Long, reactionName: String): Flow<Resource<Unit>> =
         flow {
-            emit(Resource.Loading)
+            emit(Resource.Loading())
             emit(api.addReaction(messageId, reactionName).toResource())
         }.flowOn(dispatcherProvider.io)
 
@@ -72,7 +108,7 @@ class MessageDataRepositoryImpl @Inject constructor(
         messageId: Long,
         reactionName: String
     ): Flow<Resource<Unit>> = flow {
-        emit(Resource.Loading)
+        emit(Resource.Loading())
         emit(api.removeReaction(messageId, reactionName).toResource())
     }.flowOn(dispatcherProvider.io)
 }

@@ -6,7 +6,7 @@ import ru.snowadv.profile_api.domain.navigation.ProfileRouter
 import javax.inject.Inject
 
 @Reusable
-class ProfileRouterImpl @Inject constructor(private val ciceroneRouter: Router):
+internal class ProfileRouterImpl @Inject constructor(private val ciceroneRouter: Router):
     ProfileRouter {
 
     override fun goBack() {

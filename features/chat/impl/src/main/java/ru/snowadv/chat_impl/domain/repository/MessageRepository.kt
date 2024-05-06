@@ -15,6 +15,7 @@ interface MessageRepository {
         includeAnchorMessage: Boolean,
         anchorMessageId: Long? = null,
         countOfMessages: Int,
+        saveToCache: Boolean = false,
     ): Flow<Resource<ChatPaginatedMessages>>
 
     fun sendMessage(

@@ -65,13 +65,14 @@ dependencies {
     implementation(projects.features.people.impl)
     implementation(projects.features.profile.api)
     implementation(projects.features.profile.impl)
+    implementation(projects.features.auth.api)
+    implementation(projects.features.auth.impl)
 
     implementation(projects.core.utils)
-    implementation(projects.core.data)
-    implementation(projects.core.network)
 
-    implementation(projects.core.propertiesProvider.api)
-    implementation(projects.core.propertiesProvider.impl)
+    implementation(projects.lib.network)
+    implementation(projects.lib.networkAuthorizer)
+    implementation(projects.lib.database)
 
     implementation(projects.core.moduleInjector)
 
@@ -85,7 +86,6 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.cicerone)
-    api(projects.navigation)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

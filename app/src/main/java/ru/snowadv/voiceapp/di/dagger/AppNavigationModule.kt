@@ -7,6 +7,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
+import ru.snowadv.auth_api.domain.navigation.AuthRouter
 import ru.snowadv.channels_api.domain.navigation.ChannelsRouter
 import ru.snowadv.chat_api.domain.navigation.ChatRouter
 import ru.snowadv.home_api.presentation.local_navigation.InnerHomeScreenFactory
@@ -15,12 +16,13 @@ import ru.snowadv.voiceapp.glue.navigation.ChatRouterImpl
 import ru.snowadv.home_impl.presentation.feature.InnerHomeScreenFactoryImpl
 import ru.snowadv.people_api.domain.navigation.PeopleRouter
 import ru.snowadv.profile_api.domain.navigation.ProfileRouter
+import ru.snowadv.voiceapp.glue.navigation.AuthRouterImpl
 import ru.snowadv.voiceapp.glue.navigation.PeopleRouterImpl
 import ru.snowadv.voiceapp.glue.navigation.ProfileRouterImpl
 import javax.inject.Singleton
 
 @Module
-interface AppNavigationModule {
+internal interface AppNavigationModule {
     @Binds
     fun bindChannelsRouterImpl(channelsRouterImpl: ChannelsRouterImpl): ChannelsRouter
     @Binds
@@ -31,6 +33,8 @@ interface AppNavigationModule {
     fun bindPeopleRouterImpl(peopleRouterImpl: PeopleRouterImpl): PeopleRouter
     @Binds
     fun bindProfileRouterImpl(profileRouterImpl: ProfileRouterImpl): ProfileRouter
+    @Binds
+    fun bindAuthRouterImpl(authRouterImpl: AuthRouterImpl): AuthRouter
 
     companion object {
         @Singleton

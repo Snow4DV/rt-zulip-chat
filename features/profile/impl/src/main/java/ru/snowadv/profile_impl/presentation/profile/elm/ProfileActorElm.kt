@@ -16,24 +16,43 @@ import vivid.money.elmslie.core.store.Actor
 import javax.inject.Inject
 
 @Reusable
-internal class ProfileActorElm @Inject constructor( // actor that interacts with domain layer
+internal class ProfileActorElm @Inject constructor(
+    // actor that interacts with domain layer
     private val router: ProfileRouter,
     private val getProfileUseCase: GetProfileUseCase,
     private val listenToPresenceEventsUseCase: ListenToPresenceEventsUseCase,
-): Actor<ProfileCommandElm, ProfileEventElm>() {
-    override fun execute(command: ProfileCommandElm): Flow<ProfileEventElm> = when(command) {
+) : Actor<ProfileCommandElm, ProfileEventElm>() {
+    override fun execute(command: ProfileCommandElm): Flow<ProfileEventElm> = when (command) {
         is ProfileCommandElm.LoadData -> {
             getProfileUseCase.invoke(command.profileId).map { res ->
-                when(res) {
-                    is Resource.Error -> ProfileEventElm.Internal.Error(res.throwable)
-                    is Resource.Loading -> ProfileEventElm.Internal.Loading
-                    is Resource.Success -> ProfileEventElm.Internal.PersonLoaded(res.data.toUiModel())
+                when (res) {
+                    is Resource.Error -> ProfileEventElm.Internal.Error(
+                        res.throwable,
+                        res.data?.toUiModel(),
+                    )
+
+                    is Resource.Loading -> res.data?.let { data ->
+                        ProfileEventElm.Internal.PersonLoaded(
+                            data.toUiModel(),
+                            true,
+                        )
+                    } ?: ProfileEventElm.Internal.Loading
+
+                    is Resource.Success -> ProfileEventElm.Internal.PersonLoaded(
+                        res.data.toUiModel(),
+                        false,
+                    )
                 }
             }
         }
+
         is ProfileCommandElm.ObservePresence -> {
-            listenToPresenceEventsUseCase.invoke(command.profileId, command.isRestart, command.queueProps).map { event ->
-                when(event) {
+            listenToPresenceEventsUseCase.invoke(
+                command.profileId,
+                command.isRestart,
+                command.queueProps
+            ).map { event ->
+                when (event) {
                     is DomainEvent.PresenceDomainEvent -> event.toElmEvent()
                     is DomainEvent.RegisteredNewQueueEvent -> event.toElmEvent()
                     is DomainEvent.FailedFetchingQueueEvent -> event.toElmEvent()

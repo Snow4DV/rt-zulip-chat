@@ -1,5 +1,0 @@
-package ru.snowadv.properties_provider_api.di
-
-import ru.snowadv.module_injector.module.BaseModuleDependencies
-
-interface PropertiesProviderModuleDependencies : BaseModuleDependencies

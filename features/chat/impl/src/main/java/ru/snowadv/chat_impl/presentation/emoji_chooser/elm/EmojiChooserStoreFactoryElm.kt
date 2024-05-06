@@ -17,7 +17,7 @@ internal class EmojiChooserStoreFactoryElm @Inject constructor(
 
     fun create(): Store<EmojiChooserEventElm, EmojiChooserEffectElm, EmojiChooserStateElm> {
         return ElmStore(
-            initialState = EmojiChooserStateElm(screenState = ScreenState.Loading),
+            initialState = EmojiChooserStateElm(screenState = ScreenState.Loading()),
             actor = actor,
             reducer = reducer.get(),
             startEvent = EmojiChooserEventElm.Ui.Init,

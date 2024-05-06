@@ -19,6 +19,14 @@ class SnackbarErrorHandlingFragment: ErrorHandlingFragment {
         showSnackbar(rootView, getString(R.string.internet_error), action)
     }
 
+    override fun Fragment.showErrorWithRetryAndCustomText(
+        rootView: View,
+        action: () -> Unit,
+        textResId: Int
+    ) {
+        showSnackbar(rootView, getString(textResId), action)
+    }
+
     override fun Fragment.showActionInternetErrorWithRetry(rootView: View, action: () -> Unit) {
         showSnackbar(rootView, getString(R.string.action_internet_error), action)
     }

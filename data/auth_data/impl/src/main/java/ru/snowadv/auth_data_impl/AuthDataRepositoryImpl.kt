@@ -1,9 +1,15 @@
 package ru.snowadv.auth_data_impl
 
-import dagger.Reusable
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import ru.snowadv.auth_data_api.AuthDataRepository
 import ru.snowadv.auth_data_api.model.DataAuthUser
-import ru.snowadv.properties_provider_api.AuthUserPropertyRepository
+import ru.snowadv.auth_data_impl.util.AuthMapper.toAuthUserEntity
+import ru.snowadv.auth_data_impl.util.AuthMapper.toDataAuthUser
+import ru.snowadv.database.dao.AuthDao
+import ru.snowadv.model.Resource
+import ru.snowadv.network_authorizer.api.ZulipAuthApi
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -17,17 +23,40 @@ import javax.inject.Singleton
  */
 @Singleton
 internal class AuthDataRepositoryImpl @Inject constructor(
-    private val authProviderPropertyRepository: AuthUserPropertyRepository,
+    private val authDao: AuthDao,
+    private val authApi: ZulipAuthApi,
 ): AuthDataRepository {
-    override fun getCurrentUser(): DataAuthUser {
-        return with(authProviderPropertyRepository.getUser()) {
-            DataAuthUser(
-                id = id,
-                email = email,
-                apiKey = apiKey,
-            )
+    private var user: DataAuthUser? = null
+
+    override fun getCurrentUser(): DataAuthUser? {
+        return user
+    }
+
+    override suspend fun loadAuthFromDatabase(): DataAuthUser? {
+        user = authDao.getCurrentAuth()?.toDataAuthUser()
+        return user
+    }
+
+    override fun auth(username: String, password: String): Flow<Resource<DataAuthUser>> = flow {
+        emit(Resource.Loading())
+        authApi.authorize(username, password).fold(
+            onSuccess = {
+                Resource.Success(it.toDataAuthUser())
+            },
+            onFailure = {
+                Resource.Error(it)
+            },
+        ).let { res ->
+            res.getDataOrNull()?.let {
+                goodUser -> authDao.replaceAuthUser(goodUser.toAuthUserEntity())
+                user = goodUser
+            }
+            emit(res)
         }
     }
 
-
+    override suspend fun clearAuth() {
+        authDao.clearAuth()
+        user = null
+    }
 }

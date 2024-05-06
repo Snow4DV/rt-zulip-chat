@@ -30,7 +30,7 @@ internal class StreamListRenderer :
     }
 
     private var _adapter: DiffDelegationAdapter? = null
-    private val adapter get() = requireNotNull(_adapter) {"Adapter wasn't initialized"}
+    private val adapter get() = requireNotNull(_adapter) { "Adapter wasn't initialized" }
 
     override fun StreamListFragment.onRendererViewCreated(
         binding: FragmentStreamListBinding,
@@ -42,14 +42,19 @@ internal class StreamListRenderer :
         }
         parentSearchQueryFlow.onEach {
             store.accept(StreamListEventElm.Ui.ChangedQuery(it))
-        }.flowWithLifecycle(viewLifecycleOwner.lifecycle).launchIn(viewLifecycleOwner.lifecycleScope)
+        }.flowWithLifecycle(viewLifecycleOwner.lifecycle)
+            .launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
     override fun StreamListFragment.renderStateByRenderer(
         state: StreamListStateElm,
         binding: FragmentStreamListBinding
     ) = with(binding) {
-        stateBox.inflateState(screenState = state.screenState, shimmerLayout = R.layout.fragment_stream_list_shimmer)
+        stateBox.inflateState(
+            screenState = state.screenState,
+            shimmerLayout = R.layout.fragment_stream_list_shimmer,
+            cacheStateBinding = topStateBox,
+        )
         adapter.submitList(state.screenState.getCurrentData() ?: emptyList())
     }
 

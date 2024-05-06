@@ -47,5 +47,8 @@
     <color name="offline">#f44336</color>
     <color name="idle">#FF9800</color>
 
+    <color name="error">#F4655A</color>
+    <color name="info">@color/light_gray_3</color>
+
     <color name="listener_error">#cf6679</color>
 </resources>

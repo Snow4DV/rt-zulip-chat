@@ -14,7 +14,7 @@ import ru.snowadv.profile_impl.data.repository.ProfileRepositoryImpl
 import ru.snowadv.profile_impl.domain.repository.ProfileRepository
 
 @Module
-interface AppRepositoryModule {
+internal interface AppRepositoryModule {
     @Binds
     fun bindStreamRepositoryImpl(channelsRepositoryImpl: ChannelsRepositoryImpl): StreamRepository
     @Binds

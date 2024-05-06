@@ -1,6 +1,7 @@
 package ru.snowadv.presentation.util
 
 import ru.snowadv.model.Resource
+import ru.snowadv.model.map
 import ru.snowadv.presentation.model.ScreenState
 
 fun <T> Array<T>.mapInPlace(transform: (T) -> T): Array<T> {
@@ -17,31 +18,20 @@ fun IntArray.mapInPlace(transform: (Int) -> Int): IntArray {
     return this
 }
 
-fun <T, E> Resource<T>.toScreenState(mapper: (T) -> E, isEmptyChecker: ((T) -> Boolean)? = null): ScreenState<E> {
-    return when(this) {
-        is Resource.Error -> {
-            ScreenState.Error(this.throwable)
-        }
-        is Resource.Loading -> {
-            ScreenState.Loading
-        }
-        is Resource.Success -> {
-            if (isEmptyChecker?.invoke(this.data) == true) {
-                ScreenState.Empty
-            } else {
-                ScreenState.Success(mapper(this.data))
-            }
-        }
-    }
-}
-
 fun <T> Resource<List<T>>.toScreenState(): ScreenState<List<T>> {
     return when(this) {
-        is Resource.Error -> {
-            ScreenState.Error(this.throwable)
+        is Resource.Error -> if (data?.isNotEmpty() == true) {
+            ScreenState.Error(throwable, data)
+        } else {
+            ScreenState.Error(throwable)
         }
+
         is Resource.Loading -> {
-            ScreenState.Loading
+            if (data?.isNotEmpty() == true) {
+                ScreenState.Loading(data)
+            } else {
+                ScreenState.Loading()
+            }
         }
         is Resource.Success -> {
             if (data.isEmpty()) {
@@ -50,14 +40,6 @@ fun <T> Resource<List<T>>.toScreenState(): ScreenState<List<T>> {
                 ScreenState.Success(data)
             }
         }
-    }
-}
-
-fun <T, E> List<T>.toScreenState(mapper: (T) -> E): ScreenState<List<E>> {
-    return if (this.isEmpty()) {
-        ScreenState.Empty
-    } else {
-        ScreenState.Success(map(mapper))
     }
 }
 
@@ -80,15 +62,16 @@ fun <T> List<T>.toScreenState() : ScreenState<List<T>> {
 fun <T> ScreenState<List<T>>.filterList(predicate: (T) -> Boolean ) : ScreenState<List<T>> {
     return when(this) {
         ScreenState.Empty -> this
-        is ScreenState.Error -> this
-        ScreenState.Loading -> this
+        is ScreenState.Error -> ScreenState.Error(error, data?.filter(predicate))
         is ScreenState.Success -> {
-            val filteredList = data.filter { predicate(it) }
+            val filteredList = data.filter(predicate)
             if (filteredList.isEmpty()) {
                 ScreenState.Empty
             } else {
                 ScreenState.Success(filteredList)
             }
         }
+
+        is ScreenState.Loading -> ScreenState.Loading(data)
     }
 }

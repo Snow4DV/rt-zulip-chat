@@ -5,18 +5,14 @@ import dagger.Module
 import dagger.Provides
 import dagger.Reusable
 import kotlinx.serialization.json.Json
-import ru.snowadv.data.api.AuthProvider
 import ru.snowadv.model.DispatcherProvider
 import ru.snowadv.network.api.BadAuthBehavior
-import ru.snowadv.voiceapp.glue.auth.AuthProviderImpl
 import ru.snowadv.voiceapp.glue.auth.BadAuthBehaviorImpl
 import ru.snowadv.voiceapp.glue.coroutines.DispatcherProviderImpl
 
 @Module
-interface AppModule {
+internal interface AppModule {
 
-    @Binds
-    fun bindAuthProviderImpl(authProviderImpl: AuthProviderImpl): AuthProvider
     @Binds
     fun bindDispatcherProviderImpl(dispatcherProviderImpl: DispatcherProviderImpl): DispatcherProvider
     @Binds

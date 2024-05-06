@@ -5,7 +5,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import ru.snowadv.data.api.AuthProvider
+import ru.snowadv.auth_data_api.AuthProvider
 import ru.snowadv.model.DispatcherProvider
 import ru.snowadv.model.Resource
 import ru.snowadv.network.api.ZulipApi
@@ -38,7 +38,7 @@ class UserDataRepositoryImpl @Inject constructor(
                         emit(Resource.Success(usersDto.toUsersListWithPresences(usersPresenceDto)))
                     },
                     onFailure = {
-                        emit(Resource.Error(it))
+                        emit(Resource.Error(it, null))
                     },
                 )
             },

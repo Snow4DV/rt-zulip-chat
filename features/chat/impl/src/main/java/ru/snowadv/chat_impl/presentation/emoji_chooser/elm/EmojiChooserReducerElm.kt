@@ -11,11 +11,11 @@ internal class EmojiChooserReducerElm @Inject constructor():
     ) {
     override fun Result.internal(event: EmojiChooserEventElm.Internal) {
         when(event) {
-            EmojiChooserEventElm.Internal.EmojiLoadError -> state {
-                copy(screenState = ScreenState.Error())
+            is EmojiChooserEventElm.Internal.EmojiLoadError -> state {
+                copy(screenState = ScreenState.Error(event.error))
             }
             EmojiChooserEventElm.Internal.EmojiLoading -> state {
-                copy(screenState = ScreenState.Loading)
+                copy(screenState = ScreenState.Loading())
             }
             is EmojiChooserEventElm.Internal.LoadedEmojis -> state {
                 copy(screenState = ScreenState.Success(event.emojis))

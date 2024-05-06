@@ -31,7 +31,7 @@ internal class ChatReducerElm @Inject constructor():
 
             is ChatEventElm.Internal.Error -> state {
                 copy(
-                    screenState = ScreenState.Error(event.throwable),
+                    screenState = ScreenState.Error(event.throwable, event.cachedMessages?.messages?.mapToUiAdapterMessagesAndDates()),
                     messages = emptyList(),
                     paginationStatus = ChatPaginationStatus.None,
                     eventQueueData = null,
@@ -50,13 +50,15 @@ internal class ChatReducerElm @Inject constructor():
                         eventQueueData = null,
                     )
                 }
-                commands {
-                    commandObserve()
+                if (!event.cached) {
+                    commands {
+                        commandObserve()
+                    }
                 }
             }
 
             ChatEventElm.Internal.Loading -> state {
-                copy(screenState = ScreenState.Loading)
+                copy(screenState = ScreenState.Loading())
             }
 
             ChatEventElm.Internal.MessageSent -> state {

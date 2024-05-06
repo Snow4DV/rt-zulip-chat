@@ -5,6 +5,5 @@ import ru.snowadv.auth_data_api.AuthDataRepository
 import ru.snowadv.module_injector.module.BaseModuleDependencies
 
 interface AppModuleDependencies : BaseModuleDependencies {
-    val authDataRepository: AuthDataRepository
     val appContext: Context
 }

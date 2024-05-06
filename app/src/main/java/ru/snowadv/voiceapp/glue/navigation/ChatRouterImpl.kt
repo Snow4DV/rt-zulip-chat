@@ -7,7 +7,7 @@ import ru.snowadv.voiceapp.navigation.Screens
 import javax.inject.Inject
 
 @Reusable
-class ChatRouterImpl @Inject constructor(private val ciceroneRouter: Router, private val screens: Screens):
+internal class ChatRouterImpl @Inject constructor(private val ciceroneRouter: Router, private val screens: Screens):
     ChatRouter {
     override fun goBack() {
         ciceroneRouter.exit()

@@ -19,6 +19,7 @@ internal class GetCurrentMessagesUseCase @Inject constructor(private val message
             topicName = topicName,
             includeAnchorMessage = true,
             countOfMessages = MESSAGES_COUNT_PER_FETCH,
+            saveToCache = true,
         )
     }
 }

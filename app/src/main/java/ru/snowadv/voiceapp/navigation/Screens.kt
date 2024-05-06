@@ -2,6 +2,7 @@ package ru.snowadv.voiceapp.navigation
 
 import com.github.terrakok.cicerone.androidx.FragmentScreen
 import dagger.Reusable
+import ru.snowadv.auth_impl.di.AuthFeatureComponentHolder
 import ru.snowadv.channels_api.presentation.ChannelsScreenFactory
 import ru.snowadv.channels_impl.di.ChannelsFeatureComponentHolder
 import ru.snowadv.chat_api.presentation.ChatScreenFactory
@@ -24,4 +25,5 @@ class Screens @Inject constructor(){
     fun People() = FragmentScreen { PeopleFeatureComponentHolder.get().screenFactory.create() }
     fun Profile(userId: Long?) = FragmentScreen { ProfileFeatureComponentHolder.get().screenFactory.create(profileId = userId) }
     fun Home() = FragmentScreen { HomeFeatureComponentHolder.get().screenFactory.create() }
+    fun Login() = FragmentScreen { AuthFeatureComponentHolder.get().screenFactory.create() }
 }

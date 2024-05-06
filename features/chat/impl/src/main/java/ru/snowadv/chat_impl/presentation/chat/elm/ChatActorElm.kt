@@ -33,9 +33,11 @@ internal class ChatActorElm @Inject constructor(
             command.topicName
         ).map { res ->
             when (res) {
-                is Resource.Error -> ChatEventElm.Internal.Error(res.throwable)
-                Resource.Loading -> ChatEventElm.Internal.Loading
-                is Resource.Success -> ChatEventElm.Internal.InitialChatLoaded(res.data)
+                is Resource.Error -> ChatEventElm.Internal.Error(res.throwable, res.data)
+                is Resource.Loading -> res.getDataOrNull()
+                    ?.let { ChatEventElm.Internal.InitialChatLoaded(it, true) }
+                    ?: ChatEventElm.Internal.Loading
+                is Resource.Success -> ChatEventElm.Internal.InitialChatLoaded(res.data, false)
             }
         }
 
@@ -48,7 +50,7 @@ internal class ChatActorElm @Inject constructor(
             ).map { res ->
                 when (res) {
                     is Resource.Error -> ChatEventElm.Internal.PaginationError
-                    Resource.Loading -> ChatEventElm.Internal.PaginationLoading
+                    is Resource.Loading -> ChatEventElm.Internal.PaginationLoading
                     is Resource.Success -> ChatEventElm.Internal.MoreMessagesLoaded(res.data)
                 }
             }
@@ -73,7 +75,7 @@ internal class ChatActorElm @Inject constructor(
                         )
                     )
 
-                    Resource.Loading -> ChatEventElm.Internal.ChangingReaction
+                    is Resource.Loading -> ChatEventElm.Internal.ChangingReaction
                     is Resource.Success -> ChatEventElm.Internal.ReactionChanged
                 }
             }
@@ -90,16 +92,17 @@ internal class ChatActorElm @Inject constructor(
                         )
                     )
 
-                    Resource.Loading -> ChatEventElm.Internal.ChangingReaction
+                    is Resource.Loading -> ChatEventElm.Internal.ChangingReaction
                     is Resource.Success -> ChatEventElm.Internal.ReactionChanged
                 }
             }
         }
+
         is ChatCommandElm.SendMessage -> {
             sendMessageUseCase(command.streamName, command.topicName, command.text).map { res ->
                 when (res) {
                     is Resource.Error -> ChatEventElm.Internal.SendingMessageError
-                    Resource.Loading -> ChatEventElm.Internal.SendingMessage
+                    is Resource.Loading -> ChatEventElm.Internal.SendingMessage
                     is Resource.Success -> ChatEventElm.Internal.MessageSent
                 }
             }

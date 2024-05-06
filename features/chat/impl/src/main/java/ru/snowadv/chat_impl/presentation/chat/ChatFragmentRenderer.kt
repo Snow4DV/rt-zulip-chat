@@ -94,7 +94,7 @@ internal class ChatFragmentRenderer :
             recycler = binding.messagesRecycler,
             list = listOf(state.paginationStatus) + (state.screenState.getCurrentData() ?: emptyList()),
         ) {
-            stateBox.inflateState(state.screenState, R.layout.fragment_chat_shimmer)
+            stateBox.inflateState(state.screenState, R.layout.fragment_chat_shimmer, topStateBox)
         }
 
         binding.bottomBar.messageEditText.setTextIfEmpty(state.messageField)
@@ -183,9 +183,6 @@ internal class ChatFragmentRenderer :
         }
         binding.stateBox.setOnRetryClickListener {
             store.accept(ChatEventElm.Ui.ReloadClicked)
-        }
-        binding.messagesRecycler.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-
         }
     }
 

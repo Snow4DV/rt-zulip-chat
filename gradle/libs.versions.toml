@@ -34,6 +34,7 @@ retrofit = "2.11.0"
 retrofitResultConverter = "1.0.9"
 okhttp-interceptor ="4.12.0"
 elmslie = "3.0.0-alpha10"
+room = "2.6.1"
 
 
 [libraries]
@@ -47,7 +48,7 @@ androidx-activity = { group = "androidx.activity", name = "activity", version.re
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-corutuines" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinx-corutuines" }
-androidx-annotation-jvm = { group = "androidx.annotation", name = "annotation-jvm", version.ref = "annotationJvm" }
+androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotationJvm" }
 androidx-legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacySupportV4" }
 androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
@@ -67,6 +68,9 @@ elmslie-core = {group="com.github.vivid-money.elmslie", name="elmslie-core", ver
 elmslie-android = {group="com.github.vivid-money.elmslie", name="elmslie-android", version.ref="elmslie"}
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
+androidX-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+androidX-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+androidX-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 
 
 
@@ -79,6 +83,7 @@ kotlinParcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = 
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 java-library = { id = "java-library" }
+androidX-room = { id = "androidx.room", version.ref = "room" }
 
 
 

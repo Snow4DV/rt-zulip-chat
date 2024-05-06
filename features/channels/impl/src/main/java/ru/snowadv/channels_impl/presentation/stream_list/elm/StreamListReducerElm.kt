@@ -31,16 +31,16 @@ internal class StreamListReducerElm @Inject constructor():
         when (event) {
             is StreamListEventElm.Internal.Error -> state {
                 copy(
-                    screenState = ScreenState.Error(event.throwable),
-                    screenUnfilteredDataRes = Resource.Error(event.throwable),
+                    screenState = ScreenState.Error(event.throwable, event.cachedStreams),
+                    screenUnfilteredDataRes = Resource.Error(event.throwable, event.cachedStreams),
                     eventQueueData = null,
                 )
             }
 
             StreamListEventElm.Internal.Loading -> state {
                 copy(
-                    screenState = ScreenState.Loading,
-                    screenUnfilteredDataRes = Resource.Loading,
+                    screenState = ScreenState.Loading(),
+                    screenUnfilteredDataRes = Resource.Loading(),
                     eventQueueData = null,
                 )
             }
@@ -163,14 +163,16 @@ internal class StreamListReducerElm @Inject constructor():
             }
             is StreamListEventElm.Internal.StreamsLoaded -> {
                 state {
-                    val newData = Resource.Success(event.streams)
+                    val newData = if (event.cached) Resource.Success(event.streams) else Resource.Success(event.streams)
                     copy(
                         screenUnfilteredDataRes = newData,
                         screenState = newData.toScreenState(),
                         eventQueueData = null,
                     )
                 }
-                commandObserve()
+                if (!event.cached) {
+                    commandObserve()
+                }
             }
 
             is StreamListEventElm.Internal.TopicsLoaded -> state {
@@ -179,6 +181,12 @@ internal class StreamListReducerElm @Inject constructor():
 
             is StreamListEventElm.Internal.TopicsLoading -> state {
                 loadTopics(event.streamId, ShimmerTopic.generateShimmers(event.streamId))
+            }
+
+            is StreamListEventElm.Internal.TopicsLoadingErrorWithCachedTopics -> {
+                state {
+                    loadTopics(event.streamId, event.cachedTopics)
+                }
             }
 
             is StreamListEventElm.Internal.TopicsLoadingError -> {

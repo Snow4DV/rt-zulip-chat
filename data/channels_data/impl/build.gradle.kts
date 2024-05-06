@@ -38,7 +38,8 @@ dependencies {
     implementation(projects.core.utils)
     implementation(projects.core.moduleInjector)
     implementation(projects.data.channelsData.api)
-    implementation(projects.core.network)
+    implementation(projects.lib.network)
+    implementation(projects.lib.database)
 
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)

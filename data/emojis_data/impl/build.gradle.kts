@@ -37,7 +37,8 @@ android {
 dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(projects.core.utils)
-    implementation(projects.core.network)
+    implementation(projects.lib.network)
+    implementation(projects.lib.database)
 
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)

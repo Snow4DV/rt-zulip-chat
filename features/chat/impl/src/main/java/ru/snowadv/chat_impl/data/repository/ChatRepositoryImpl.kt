@@ -41,14 +41,16 @@ class ChatRepositoryImpl @Inject constructor(
         topicName: String,
         includeAnchorMessage: Boolean,
         anchorMessageId: Long?,
-        countOfMessages: Int
+        countOfMessages: Int,
+        saveToCache: Boolean,
     ): Flow<Resource<ChatPaginatedMessages>> {
         return messageDataRepository.getMessages(
             streamName = streamName,
             topicName = topicName,
             includeAnchorMessage = includeAnchorMessage,
             countOfMessages = countOfMessages,
-            anchorMessageId = anchorMessageId
+            anchorMessageId = anchorMessageId,
+            showAndUpdateCache = saveToCache,
         ).map { res ->
             res.map { dataPagMes ->
                 dataPagMes.toChatPaginatedMessages()

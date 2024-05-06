@@ -16,6 +16,7 @@ interface MessageDataRepository {
         includeAnchorMessage: Boolean,
         countOfMessages: Int,
         anchorMessageId: Long? = null,
+        showAndUpdateCache: Boolean = false,
     ): Flow<Resource<DataPaginatedMessages>>
     fun sendMessage(
         streamName: String,

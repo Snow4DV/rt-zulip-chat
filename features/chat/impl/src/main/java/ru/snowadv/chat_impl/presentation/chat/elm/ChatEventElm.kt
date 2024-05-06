@@ -26,10 +26,10 @@ internal sealed interface ChatEventElm {
     }
 
     sealed interface Internal : ChatEventElm {
-        data class InitialChatLoaded(val messages: ChatPaginatedMessages) : Internal
+        data class InitialChatLoaded(val messages: ChatPaginatedMessages, val cached: Boolean) : Internal
         data class MoreMessagesLoaded(val messages: ChatPaginatedMessages) : Internal
 
-        data class Error(val throwable: Throwable) : Internal
+        data class Error(val throwable: Throwable, val cachedMessages: ChatPaginatedMessages?) : Internal
         data object PaginationError : Internal
 
         data object Loading : Internal

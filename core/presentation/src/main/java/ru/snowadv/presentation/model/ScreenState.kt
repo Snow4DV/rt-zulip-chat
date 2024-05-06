@@ -1,23 +1,26 @@
 package ru.snowadv.presentation.model
 
 sealed class ScreenState<out T> {
-    class Success<T>(val data: T) : ScreenState<T>()
-    data object Loading : ScreenState<Nothing>()
-    class Error(val error: Throwable? = null) : ScreenState<Nothing>()
-    data object Empty : ScreenState<Nothing>()
+    abstract val data: T?
+    class Success<T>(override val data: T) : ScreenState<T>()
+    class Loading<T>(override val data: T? = null) : ScreenState<T>()
+    class Error<T>(val error: Throwable, override val data: T? = null) : ScreenState<T>()
+    data object Empty: ScreenState<Nothing>() {
+        override val data: Nothing? = null
+    }
 
     val isLoading get() = this is Loading
 
     fun getCurrentData(): T? {
-        return if (this is Success) this.data else null
+        return data
     }
 
     fun <R> map(mapper: (T) -> R): ScreenState<R> {
         return when (this) {
-            is Empty -> this
-            is Loading -> this
-            is Error -> this
-            is Success -> ScreenState.Success(mapper(data))
+            is Empty -> Empty
+            is Loading -> Loading(data?.let { mapper(it) })
+            is Error -> Error(error, data?.let { mapper(it) })
+            is Success -> Success(mapper(data))
         }
     }
 }

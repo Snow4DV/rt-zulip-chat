@@ -15,7 +15,7 @@ internal class ProfileReducerElm @Inject constructor()  : ScreenDslReducer<Profi
         when (event) {
             is ProfileEventElm.Internal.Error -> state {
                 copy(
-                    screenState = ScreenState.Error(event.throwable),
+                    screenState = ScreenState.Error(event.throwable, event.cachedPerson),
                     eventQueueData = null,
                 )
             }
@@ -27,6 +27,9 @@ internal class ProfileReducerElm @Inject constructor()  : ScreenDslReducer<Profi
                         eventQueueData = null,
                     )
                 }
+
+                if (event.cached) return
+
                 commands {
                     +ProfileCommandElm.ObservePresence(
                         profileId = state.profileId,
@@ -38,7 +41,7 @@ internal class ProfileReducerElm @Inject constructor()  : ScreenDslReducer<Profi
 
             ProfileEventElm.Internal.Loading -> state {
                 copy(
-                    screenState = ScreenState.Loading,
+                    screenState = ScreenState.Loading(),
                     eventQueueData = null,
                 )
             }
