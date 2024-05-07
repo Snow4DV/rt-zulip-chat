@@ -12,6 +12,7 @@ internal sealed interface ProfileEventElm {
         data object Resumed : Ui
         data object ClickedOnRetry : Ui
         data object ClickedOnBack : Ui
+        data object ClickedOnLogout : Ui
     }
 
     sealed interface Internal : ProfileEventElm {

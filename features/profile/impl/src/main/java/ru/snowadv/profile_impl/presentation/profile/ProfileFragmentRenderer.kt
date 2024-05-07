@@ -33,6 +33,9 @@ internal class ProfileFragmentRenderer :
         binding.stateBox.setOnRetryClickListener {
             store.accept(ProfileEventElm.Ui.ClickedOnRetry)
         }
+        binding.buttonLogout.setOnClickListener {
+            store.accept(ProfileEventElm.Ui.ClickedOnLogout)
+        }
     }
 
     override fun ProfileFragment.renderStateByRenderer(
@@ -54,5 +57,6 @@ internal class ProfileFragmentRenderer :
             userName.text = person.fullName
             userEmail.text = person.email
         }
+        buttonLogout.isVisible = state.isOwner
     }
 }

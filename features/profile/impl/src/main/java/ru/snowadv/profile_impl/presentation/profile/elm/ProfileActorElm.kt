@@ -64,6 +64,10 @@ internal class ProfileActorElm @Inject constructor(
         ProfileCommandElm.GoBack -> flow {
             router.goBack()
         }
+
+        ProfileCommandElm.Logout -> flow {
+            router.logOut()
+        }
     }
 
 }

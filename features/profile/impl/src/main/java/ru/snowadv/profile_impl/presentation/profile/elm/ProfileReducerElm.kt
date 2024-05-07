@@ -114,6 +114,10 @@ internal class ProfileReducerElm @Inject constructor()  : ScreenDslReducer<Profi
                 }
                 observeCommand()
             }
+
+            ProfileEventElm.Ui.ClickedOnLogout -> commands {
+                +ProfileCommandElm.Logout
+            }
         }
 
     private fun Result.observeCommand() {

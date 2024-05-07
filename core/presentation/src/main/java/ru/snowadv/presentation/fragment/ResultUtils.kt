@@ -19,12 +19,12 @@ object ResultUtils {
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
             val uri = result.data?.data
-            val ctx = context
-            if (result.resultCode == Activity.RESULT_OK && uri != null && ctx != null) {
-                val mimeType = ctx.contentResolver.getType(uri)
+            val appCtx = context?.applicationContext // Use application context to prevent leaks!
+            if (result.resultCode == Activity.RESULT_OK && uri != null && appCtx != null) {
+                val mimeType = appCtx.contentResolver.getType(uri)
                 val extension = MimeTypeMap.getSingleton()?.getExtensionFromMimeType(mimeType)
 
-                ctx.contentResolver.getInputStreamOpener(uri).let { inputStream ->
+                appCtx.contentResolver.getInputStreamOpener(uri).let { inputStream ->
                     onSuccess(mimeType, inputStream, extension)
                 }
             } else {
