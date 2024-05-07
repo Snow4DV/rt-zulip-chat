@@ -35,6 +35,7 @@ retrofitResultConverter = "1.0.9"
 okhttp-interceptor ="4.12.0"
 elmslie = "3.0.0-alpha10"
 room = "2.6.1"
+markwon = "4.6.2"
 
 
 [libraries]
@@ -71,8 +72,12 @@ dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = 
 androidX-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidX-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidX-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
-
-
+markwon-core = { module = "io.noties.markwon:core", version.ref = "markwon" }
+markwon-latex = { module = "io.noties.markwon:ext-latex", version.ref = "markwon" }
+markwon-coil = { module = "io.noties.markwon:image-coil", version.ref = "markwon" }
+markwon-strikethrough = { module = "io.noties.markwon:ext-strikethrough", version.ref = "markwon" }
+markwon-tables = { module = "io.noties.markwon:ext-tables", version.ref = "markwon" }
+markwon-html = { module = "io.noties.markwon:html", version.ref = "markwon" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

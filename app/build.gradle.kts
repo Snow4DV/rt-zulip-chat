@@ -73,6 +73,7 @@ dependencies {
     implementation(projects.lib.network)
     implementation(projects.lib.networkAuthorizer)
     implementation(projects.lib.database)
+    implementation(projects.lib.imageLoader)
 
     implementation(projects.core.moduleInjector)
 
@@ -86,6 +87,8 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.cicerone)
+    implementation(libs.retrofit.core)
+    implementation(libs.coil)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

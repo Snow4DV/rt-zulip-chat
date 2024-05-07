@@ -10,6 +10,7 @@ import ru.snowadv.chat_impl.domain.use_case.GetCurrentMessagesUseCase
 import ru.snowadv.chat_impl.domain.use_case.ListenToChatEventsUseCase
 import ru.snowadv.chat_impl.domain.use_case.LoadMoreMessagesUseCase
 import ru.snowadv.chat_impl.domain.use_case.RemoveReactionUseCase
+import ru.snowadv.chat_impl.domain.use_case.SendFileUseCase
 import ru.snowadv.chat_impl.domain.use_case.SendMessageUseCase
 import ru.snowadv.chat_impl.presentation.util.ChatMappers.toElmEvent
 import ru.snowadv.model.Resource
@@ -25,6 +26,7 @@ internal class ChatActorElm @Inject constructor(
     private val getMessagesUseCase: GetCurrentMessagesUseCase,
     private val listenToChatEventsUseCase: ListenToChatEventsUseCase,
     private val loadMoreMessagesUseCase: LoadMoreMessagesUseCase,
+    private val sendFileUseCase: SendFileUseCase,
 ) : Actor<ChatCommandElm, ChatEventElm>() {
     override fun execute(command: ChatCommandElm): Flow<ChatEventElm> = when (command) {
         ChatCommandElm.GoBack -> flow { router.goBack() }
@@ -37,6 +39,7 @@ internal class ChatActorElm @Inject constructor(
                 is Resource.Loading -> res.getDataOrNull()
                     ?.let { ChatEventElm.Internal.InitialChatLoaded(it, true) }
                     ?: ChatEventElm.Internal.Loading
+
                 is Resource.Success -> ChatEventElm.Internal.InitialChatLoaded(res.data, false)
             }
         }
@@ -101,9 +104,39 @@ internal class ChatActorElm @Inject constructor(
         is ChatCommandElm.SendMessage -> {
             sendMessageUseCase(command.streamName, command.topicName, command.text).map { res ->
                 when (res) {
-                    is Resource.Error -> ChatEventElm.Internal.SendingMessageError
+                    is Resource.Error -> ChatEventElm.Internal.SendingMessageError(
+                        ChatCommandElm.SendMessage(
+                            command.streamName,
+                            command.topicName,
+                            command.text,
+                        )
+                    )
+
                     is Resource.Loading -> ChatEventElm.Internal.SendingMessage
                     is Resource.Success -> ChatEventElm.Internal.MessageSent
+                }
+            }
+        }
+
+        is ChatCommandElm.AddAttachment -> {
+            sendFileUseCase(
+                command.streamName,
+                command.topicName,
+                command.inputStreamOpener,
+                command.mimeType,
+                command.extension
+            ).map { res ->
+                when (res) {
+                    is Resource.Error -> ChatEventElm.Internal.UploadingFileError(
+                        ChatEventElm.Ui.FileWasChosen(
+                            command.mimeType,
+                            command.inputStreamOpener,
+                            command.extension,
+                        )
+                    )
+
+                    is Resource.Loading -> ChatEventElm.Internal.UploadingFile
+                    is Resource.Success -> ChatEventElm.Internal.FileUploaded
                 }
             }
         }

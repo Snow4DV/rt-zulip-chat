@@ -1,7 +1,9 @@
 package ru.snowadv.voiceapp.glue.injector
 
 import android.content.Context
+import coil.ImageLoader
 import kotlinx.serialization.json.Json
+import okhttp3.OkHttpClient
 import ru.snowadv.auth_api.di.AuthFeatureDependencies
 import ru.snowadv.auth_api.domain.navigation.AuthRouter
 import ru.snowadv.auth_data_api.AuthDataRepository
@@ -42,6 +44,9 @@ import ru.snowadv.events_api.domain.EventRepository
 import ru.snowadv.events_impl.di.EventsDataModuleComponentHolder
 import ru.snowadv.home_api.di.HomeFeatureDependencies
 import ru.snowadv.home_impl.di.HomeFeatureComponentHolder
+import ru.snowadv.image_loader.di.holder.ImageLoaderLibAPI
+import ru.snowadv.image_loader.di.holder.ImageLoaderLibComponentHolder
+import ru.snowadv.image_loader.di.holder.ImageLoaderLibDependencies
 import ru.snowadv.messages_data_api.MessageDataRepository
 import ru.snowadv.messages_data_api.di.MessagesDataModuleAPI
 import ru.snowadv.messages_data_api.di.MessagesDataModuleDependencies
@@ -53,6 +58,7 @@ import ru.snowadv.module_injector.dependency_holder.DependencyHolder1
 import ru.snowadv.module_injector.dependency_holder.DependencyHolder2
 import ru.snowadv.module_injector.dependency_holder.DependencyHolder3
 import ru.snowadv.module_injector.dependency_holder.DependencyHolder4
+import ru.snowadv.module_injector.dependency_holder.DependencyHolder5
 import ru.snowadv.module_injector.module.BaseModuleDependencies
 import ru.snowadv.network.api.BadAuthBehavior
 import ru.snowadv.network.api.ZulipApi
@@ -143,15 +149,16 @@ internal object ModulesInjector {
 
         ChatFeatureComponentHolder.dependencyProvider = {
             class ChatFeatureDependencyHolder(
-                override val block: (BaseDependencyHolder<ChatFeatureDependencies>, AppModuleAPI, EmojisDataModuleAPI, MessagesDataModuleAPI, EventsFeatureModuleAPI) -> ChatFeatureDependencies
-            ) : DependencyHolder4<AppModuleAPI, EmojisDataModuleAPI, MessagesDataModuleAPI, EventsFeatureModuleAPI, ChatFeatureDependencies>(
+                override val block: (BaseDependencyHolder<ChatFeatureDependencies>, AppModuleAPI, EmojisDataModuleAPI, MessagesDataModuleAPI, EventsFeatureModuleAPI, ImageLoaderLibAPI) -> ChatFeatureDependencies
+            ) : DependencyHolder5<AppModuleAPI, EmojisDataModuleAPI, MessagesDataModuleAPI, EventsFeatureModuleAPI, ImageLoaderLibAPI, ChatFeatureDependencies>(
                 api1 = AppModuleComponentHolder.get(),
                 api2 = EmojisDataModuleComponentHolder.get(),
                 api3 = MessagesDataModuleComponentHolder.get(),
                 api4 = EventsDataModuleComponentHolder.get(),
+                api5 = ImageLoaderLibComponentHolder.get(),
             )
 
-            ChatFeatureDependencyHolder { dependencyHolder, appApi, emojisApi, msgsApi, eventApi ->
+            ChatFeatureDependencyHolder { dependencyHolder, appApi, emojisApi, msgsApi, eventApi, imageLoaderApi ->
                 object : ChatFeatureDependencies {
                     override val router: ChatRouter = appApi.chatRouter
                     override val emojiDataRepo: EmojiDataRepository = emojisApi.emojiDataRepo
@@ -159,6 +166,7 @@ internal object ModulesInjector {
                     override val eventRepository: EventRepository = eventApi.eventRepo
                     override val dispatcherProvider: DispatcherProvider = appApi.dispatcherProvider
                     override val appContext: Context = appContext
+                    override val coilImageLoader: ImageLoader = imageLoaderApi.coilImageLoader
                     override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
                 }
             }.dependencies
@@ -215,8 +223,7 @@ internal object ModulesInjector {
 
             ProfileFeatureDependencyHolder { dependencyHolder, appApi, eventApi, usersApi ->
                 object : ProfileFeatureDependencies {
-                    override val router: ProfileRouter =
-                        appApi.profileRouter
+                    override val router: ProfileRouter = appApi.profileRouter
                     override val userDataRepo: UserDataRepository = usersApi.userDataRepo
                     override val eventRepo: EventRepository = eventApi.eventRepo
                     override val dispatcherProvider: DispatcherProvider = appApi.dispatcherProvider
@@ -416,6 +423,23 @@ internal object ModulesInjector {
                     override val json: Json = appApi.json
                     override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> =
                         dependencyHolder
+
+                }
+            }.dependencies
+        }
+
+        ImageLoaderLibComponentHolder.dependencyProvider = {
+            class ImageLoaderLibDependencyHolder(
+                override val block: (BaseDependencyHolder<ImageLoaderLibDependencies>, NetworkLibAPI) -> ImageLoaderLibDependencies
+            ) : DependencyHolder1<NetworkLibAPI, ImageLoaderLibDependencies>(
+                api1 = NetworkLibComponentHolder.get(),
+            )
+
+            ImageLoaderLibDependencyHolder { dependencyHolder, networkApi ->
+                object : ImageLoaderLibDependencies {
+                    override val okHttpClient: OkHttpClient = networkApi.okHttpClient
+                    override val appContext: Context = appContext
+                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
 
                 }
             }.dependencies

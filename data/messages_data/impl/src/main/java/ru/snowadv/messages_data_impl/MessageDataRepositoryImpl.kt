@@ -11,12 +11,16 @@ import ru.snowadv.messages_data_api.model.DataPaginatedMessages
 import ru.snowadv.messages_data_impl.util.MessagesMapper.toDataPaginatedMessages
 import ru.snowadv.messages_data_impl.util.MessagesMapper.toEntityMessages
 import ru.snowadv.model.DispatcherProvider
+import ru.snowadv.model.InputStreamOpener
 import ru.snowadv.model.Resource
 import ru.snowadv.network.api.ZulipApi
+import ru.snowadv.network.api.uploadFile
 import ru.snowadv.network.model.NarrowRequestDto
 import ru.snowadv.network.model.NarrowListRequestDto
 import ru.snowadv.utils.foldToResource
 import ru.snowadv.utils.toResource
+import java.io.File
+import java.io.InputStream
 import javax.inject.Inject
 
 @Reusable
@@ -49,7 +53,9 @@ class MessageDataRepositoryImpl @Inject constructor(
                         anchorMessageId,
                         includeAnchorMessage
                     )
-            } else { null }
+            } else {
+                null
+            }
 
             emit(Resource.Loading(cachedData))
 
@@ -63,7 +69,8 @@ class MessageDataRepositoryImpl @Inject constructor(
                     )
                 ),
                 numAfter = 0,
-                anchor = anchorMessageId?.toString() ?: NEWEST_MESSAGE_ANCHOR
+                anchor = anchorMessageId?.toString() ?: NEWEST_MESSAGE_ANCHOR,
+                applyMarkdown = true,
             )
 
             remoteMessages.getOrNull()?.let { remoteMsgs ->
@@ -98,6 +105,30 @@ class MessageDataRepositoryImpl @Inject constructor(
         emit(api.sendMessage(stream = streamName, topic = topicName, content = text).toResource())
     }.flowOn(dispatcherProvider.io)
 
+    override fun sendFile(
+        streamName: String,
+        topicName: String,
+        mimeType: String?,
+        inputStreamOpener: InputStreamOpener,
+        extension: String?
+    ): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+
+        api.uploadFile(mimeType, inputStreamOpener, extension).fold(
+            onSuccess = { uploadFile ->
+                sendMessage(
+                    streamName = streamName,
+                    topicName = topicName,
+                    text = constructMessageWithAttachment(extension?.let { "attachment.$extension" }
+                        ?: "attachment", uploadFile.uri),
+                ).collect { sendMessageRes -> emit(sendMessageRes) }
+            },
+            onFailure = {
+                emit(Resource.Error(it))
+            }
+        )
+    }
+
     override fun addReactionToMessage(messageId: Long, reactionName: String): Flow<Resource<Unit>> =
         flow {
             emit(Resource.Loading())
@@ -111,4 +142,9 @@ class MessageDataRepositoryImpl @Inject constructor(
         emit(Resource.Loading())
         emit(api.removeReaction(messageId, reactionName).toResource())
     }.flowOn(dispatcherProvider.io)
+
+
+    private fun constructMessageWithAttachment(fileName: String, fileUri: String): String {
+        return "[$fileName]($fileUri)"
+    }
 }

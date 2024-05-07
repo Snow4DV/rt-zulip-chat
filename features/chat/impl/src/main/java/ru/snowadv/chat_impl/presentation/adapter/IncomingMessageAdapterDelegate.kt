@@ -4,6 +4,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import coil.load
+import io.noties.markwon.Markwon
 import ru.snowadv.chat_impl.presentation.view.IncomingMessageLayout
 import ru.snowadv.chat_impl.presentation.model.ChatReaction
 import ru.snowadv.chat_impl.presentation.model.ChatMessage
@@ -16,7 +17,8 @@ internal class IncomingMessageAdapterDelegate(
     private val onLongMessageClickListener: ((ChatMessage) -> Unit)? = null,
     private val onReactionClickListener: ((reaction: ChatReaction, message: ChatMessage) -> Unit)? = null,
     private val onAddReactionClickListener: ((ChatMessage) -> Unit)? = null,
-    private val timestampFormatter: DateTimeFormatter
+    private val timestampFormatter: DateTimeFormatter,
+    private val markwon: Markwon,
 ) :
     DelegationItemAdapterDelegate<ChatMessage, IncomingMessageAdapterDelegate.IncomingMessageViewHolder, ChatMessage.Payload>() {
 
@@ -51,7 +53,7 @@ internal class IncomingMessageAdapterDelegate(
 
         fun bind(message: ChatMessage) = with(messageLayout) {
             usernameText = message.senderName
-            messageText = message.text
+            setMarkdown(message.text, markwon)
             timestampText = timestampFormatter.format(message.sentAt)
             message.senderAvatarUrl?.let { url ->
                 avatarImageView.load(url) {
@@ -72,7 +74,7 @@ internal class IncomingMessageAdapterDelegate(
             }
         }
 
-        private fun bindReactions(reactions: List<ChatReaction>) = with(messageLayout) {
+        fun bindReactions(reactions: List<ChatReaction>?) = with(messageLayout) {
             updateReactionsWithAsyncDiffUtil(reactions)
         }
     }
@@ -100,6 +102,25 @@ internal class IncomingMessageAdapterDelegate(
         } else payloads.forEach {
             holder.handlePayload(it)
         }
+    }
+
+    override fun genericOnViewAttachedToWindow(
+        holder: IncomingMessageViewHolder,
+        getCurrentList: () -> List<DelegateItem>
+    ) {
+        holder.bindReactions(null)
+        if (holder.adapterPosition != RecyclerView.NO_POSITION) {
+            getItemAtPosition(getCurrentList(), holder.adapterPosition)?.let { message ->
+                holder.bindReactions(message.reactions)
+            }
+        }
+    }
+
+    override fun genericOnViewDetachedFromWindow(
+        holder: IncomingMessageViewHolder,
+        getCurrentList: () -> List<DelegateItem>
+    ) {
+        holder.bindReactions(null)
     }
 
     private fun getNewIncomingMessageLayout(parent: ViewGroup): IncomingMessageLayout {

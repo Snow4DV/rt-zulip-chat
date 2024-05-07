@@ -4,7 +4,7 @@
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primaryDark</item>
         <item name="colorSecondary">@color/secondary</item>
-        <item name="android:statusBarColor">@color/primaryDark</item>
+        <item name="android:statusBarColor">@color/on_surface</item>
         <item name="android:textColor">@color/black_0</item>
         <item name="buttonStyle">@style/Theme.ZulipChat.Button</item>
     </style>
@@ -15,4 +15,6 @@
     </style>
 
     <style name="Theme.ZulipChat" parent="Base.Theme.ZulipChat" />
+
+
 </resources>

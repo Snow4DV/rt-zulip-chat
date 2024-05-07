@@ -14,7 +14,7 @@ import ru.snowadv.presentation.util.toScreenStateListMapper
 import vivid.money.elmslie.core.store.dsl.ScreenDslReducer
 import javax.inject.Inject
 
-internal class ChatReducerElm @Inject constructor():
+internal class ChatReducerElm @Inject constructor() :
     ScreenDslReducer<ChatEventElm, ChatEventElm.Ui, ChatEventElm.Internal, ChatStateElm, ChatEffectElm, ChatCommandElm>(
         uiEventClass = ChatEventElm.Ui::class,
         internalEventClass = ChatEventElm.Internal::class,
@@ -31,7 +31,10 @@ internal class ChatReducerElm @Inject constructor():
 
             is ChatEventElm.Internal.Error -> state {
                 copy(
-                    screenState = ScreenState.Error(event.throwable, event.cachedMessages?.messages?.mapToUiAdapterMessagesAndDates()),
+                    screenState = ScreenState.Error(
+                        event.throwable,
+                        event.cachedMessages?.messages?.mapToUiAdapterMessagesAndDates()
+                    ),
                     messages = emptyList(),
                     paginationStatus = ChatPaginationStatus.None,
                     eventQueueData = null,
@@ -97,7 +100,7 @@ internal class ChatReducerElm @Inject constructor():
                 commands {
                     if (event.recreateQueue) {
                         +ChatCommandElm.LoadInitialMessages(state.stream, state.topic)
-                    } else if (state.resumed){
+                    } else if (state.resumed) {
                         +ChatCommandElm.ObserveEvents(
                             streamName = state.stream,
                             topicName = state.topic,
@@ -198,10 +201,19 @@ internal class ChatReducerElm @Inject constructor():
 
             is ChatEventElm.Internal.SendingMessageError -> {
                 effects {
-                    +ChatEffectElm.ExplainNotImplemented
+                    +ChatEffectElm.ShowActionErrorWithRetry(ChatEventElm.Ui.SendMessageAddAttachmentButtonClicked)
                 }
                 state {
                     copy(sendingMessage = false)
+                }
+            }
+
+            ChatEventElm.Internal.FileUploaded -> state { copy(uploadingFile = false) }
+            ChatEventElm.Internal.UploadingFile -> state { copy(uploadingFile = true) }
+            is ChatEventElm.Internal.UploadingFileError -> {
+                state { copy(uploadingFile = true) }
+                effects {
+                    +ChatEffectElm.ShowActionErrorWithRetry(event.retryEvent)
                 }
             }
         }
@@ -229,7 +241,8 @@ internal class ChatReducerElm @Inject constructor():
 
             is ChatEventElm.Ui.MessageFieldChanged -> state {
                 copy(
-                    messageField = event.text, actionButtonType = if (event.text.isEmpty()) {
+                    messageField = event.text,
+                    actionButtonType = if (event.text.isEmpty()) {
                         ChatStateElm.ActionButtonType.ADD_ATTACHMENT
                     } else {
                         ChatStateElm.ActionButtonType.SEND_MESSAGE
@@ -241,8 +254,11 @@ internal class ChatReducerElm @Inject constructor():
                 +ChatEffectElm.OpenMessageActionsChooser(event.messageId, event.userId)
             }
 
-            ChatEventElm.Ui.PaginationLoadMore, ChatEventElm.Ui.ScrolledToTop -> {
-                if (state.paginationStatus != ChatPaginationStatus.Loading) {
+            ChatEventElm.Ui.PaginationLoadMore, ChatEventElm.Ui.ScrolledToNTopMessages -> {
+                if (state.paginationStatus == ChatPaginationStatus.HasMore) {
+                    state {
+                        copy(paginationStatus = ChatPaginationStatus.Loading)
+                    }
                     commands {
                         +ChatCommandElm.LoadMoreMessages(
                             streamName = state.stream,
@@ -285,7 +301,7 @@ internal class ChatReducerElm @Inject constructor():
                     }
 
                     ChatStateElm.ActionButtonType.ADD_ATTACHMENT -> effects {
-                        +ChatEffectElm.ExplainNotImplemented
+                        +ChatEffectElm.OpenFileChooser
                     }
                 }
             }
@@ -297,11 +313,26 @@ internal class ChatReducerElm @Inject constructor():
             ChatEventElm.Ui.Paused -> state {
                 copy(resumed = false)
             }
+
             ChatEventElm.Ui.Resumed -> {
                 state {
                     copy(resumed = true)
                 }
                 commandObserve()
+            }
+
+            ChatEventElm.Ui.FileChoosingDismissed -> effects {
+                +ChatEffectElm.ShowActionError
+            }
+
+            is ChatEventElm.Ui.FileWasChosen -> commands {
+                +ChatCommandElm.AddAttachment(
+                    state.stream,
+                    state.topic,
+                    event.mimeType,
+                    event.inputStreamOpener,
+                    event.extension,
+                )
             }
         }
     }
@@ -398,7 +429,8 @@ internal class ChatReducerElm @Inject constructor():
                         }
                     } else {
                         message.reactions + newReaction
-                    }).filter { it.count > 0 }.sortedWith(compareBy({-it.count}, {it.name})))
+                    }).filter { it.count > 0 }.sortedWith(compareBy({ -it.count }, { it.name }))
+                    )
                 } else {
                     message
                 }

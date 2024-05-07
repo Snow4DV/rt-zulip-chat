@@ -1,7 +1,11 @@
 package ru.snowadv.network.api
 
+import android.content.ContentResolver
+import android.net.Uri
 import com.skydoves.retrofit.adapters.result.ResultCallAdapterFactory
+import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
+import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.create
@@ -10,10 +14,14 @@ import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
+import ru.snowadv.model.InputStreamOpener
+import ru.snowadv.network.file.InputStreamRequestBody
 import ru.snowadv.network.interceptor.BadAuthResponseInterceptor
 import ru.snowadv.network.interceptor.HeaderBasicAuthInterceptor
 import ru.snowadv.network.interceptor.TimeoutSetterInterceptor
@@ -32,6 +40,10 @@ import ru.snowadv.network.model.SingleUserResponseDto
 import ru.snowadv.network.model.SingleUserPresenceDto
 import ru.snowadv.network.model.SubscribedStreamsResponseDto
 import ru.snowadv.network.model.TopicsResponseDto
+import ru.snowadv.network.model.UploadFileResponseDto
+import java.io.File
+import java.io.InputStream
+import java.util.UUID
 
 interface ZulipApi {
 
@@ -73,8 +85,17 @@ interface ZulipApi {
         @Query(value = "num_after")
         numAfter: Int,
         @Query(value = "narrow")
-        narrow: NarrowListRequestDto
+        narrow: NarrowListRequestDto,
+        @Query(value = "apply_markdown")
+        applyMarkdown: Boolean,
     ): Result<MessagesResponseDto>
+
+    @Multipart
+    @POST("user_uploads")
+    suspend fun uploadFile(
+        @Part
+        file: MultipartBody.Part
+    ): Result<UploadFileResponseDto>
 
     @POST("messages")
     suspend fun sendMessage(
@@ -149,42 +170,23 @@ interface ZulipApi {
     }
 }
 
-internal fun ZulipApi(
-    headerBasicAuthInterceptor: HeaderBasicAuthInterceptor,
-    timeoutSetterInterceptor: TimeoutSetterInterceptor,
-    badAuthResponseInterceptor: BadAuthResponseInterceptor,
-    converterFactory: Converter.Factory,
-    resultCallAdapterFactory: ResultCallAdapterFactory,
-): ZulipApi {
-    return retrofit(
-        headerBasicAuthInterceptor = headerBasicAuthInterceptor,
-        timeoutSetterInterceptor = timeoutSetterInterceptor,
-        badAuthResponseInterceptor = badAuthResponseInterceptor,
-        converterFactory = converterFactory,
-        resultCallAdapterFactory = resultCallAdapterFactory,
-    ).create()
-}
+suspend fun ZulipApi.uploadFile(
+    mimeType: String?,
+    inputStreamOpener: InputStreamOpener,
+    extension: String?,
+): Result<UploadFileResponseDto> {
 
-private fun retrofit(
-    baseUrl: String = ZulipApi.BASE_URL,
-    okHttpClient: OkHttpClient? = null,
-    headerBasicAuthInterceptor: HeaderBasicAuthInterceptor,
-    timeoutSetterInterceptor: TimeoutSetterInterceptor,
-    badAuthResponseInterceptor: BadAuthResponseInterceptor,
-    converterFactory: Converter.Factory,
-    resultCallAdapterFactory: ResultCallAdapterFactory,
-): Retrofit {
+    val fileName = if (!extension.isNullOrBlank()) {
+        "${UUID.randomUUID()}.${extension.trim().replace(" ", "")}"
+    } else {
+        UUID.randomUUID().toString()
+    }
 
-    val newOkhttpClient = (okHttpClient?.newBuilder() ?: OkHttpClient.Builder())
-        .addInterceptor(headerBasicAuthInterceptor)
-        .addInterceptor(timeoutSetterInterceptor)
-        .addInterceptor(badAuthResponseInterceptor)
-        .build()
-
-    return Retrofit.Builder()
-        .baseUrl(baseUrl)
-        .addConverterFactory(converterFactory)
-        .addCallAdapterFactory(resultCallAdapterFactory)
-        .client(newOkhttpClient)
-        .build()
+    return uploadFile(
+        file = MultipartBody.Part.createFormData(
+            name = "file",
+            filename = fileName,
+            body = InputStreamRequestBody(mimeType, inputStreamOpener),
+        )
+    )
 }

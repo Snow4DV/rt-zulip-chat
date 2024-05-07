@@ -6,8 +6,11 @@ import dagger.Provides
 import dagger.Reusable
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
 import retrofit2.Converter
+import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
+import retrofit2.create
 import ru.snowadv.network.api.ZulipApi
 import ru.snowadv.network.interceptor.BadAuthResponseInterceptor
 import ru.snowadv.network.interceptor.HeaderBasicAuthInterceptor
@@ -19,19 +22,9 @@ internal class NetworkLibModule {
     @Reusable
     @Provides
     fun provideZulipApi(
-        headerBasicAuthInterceptor: HeaderBasicAuthInterceptor,
-        timeoutSetterInterceptor: TimeoutSetterInterceptor,
-        badAuthResponseInterceptor: BadAuthResponseInterceptor,
-        converterFactory: Converter.Factory,
-        resultCallAdapterFactory: ResultCallAdapterFactory,
+        retrofit: Retrofit,
     ): ZulipApi {
-        return ZulipApi(
-            headerBasicAuthInterceptor = headerBasicAuthInterceptor,
-            timeoutSetterInterceptor = timeoutSetterInterceptor,
-            badAuthResponseInterceptor = badAuthResponseInterceptor,
-            converterFactory = converterFactory,
-            resultCallAdapterFactory = resultCallAdapterFactory,
-        )
+        return retrofit.create()
     }
 
     @Reusable
@@ -44,5 +37,34 @@ internal class NetworkLibModule {
     @Provides
     fun provideResultCallFactory(): ResultCallAdapterFactory {
         return ResultCallAdapterFactory.create()
+    }
+
+    @Reusable
+    @Provides
+    fun provideOkHttpClient(
+        headerBasicAuthInterceptor: HeaderBasicAuthInterceptor,
+        timeoutSetterInterceptor: TimeoutSetterInterceptor,
+        badAuthResponseInterceptor: BadAuthResponseInterceptor,
+    ): OkHttpClient {
+        return OkHttpClient.Builder()
+            .addInterceptor(headerBasicAuthInterceptor)
+            .addInterceptor(timeoutSetterInterceptor)
+            .addInterceptor(badAuthResponseInterceptor)
+            .build()
+    }
+
+    @Reusable
+    @Provides
+    fun provideRetrofit(
+        converterFactory: Converter.Factory,
+        resultCallAdapterFactory: ResultCallAdapterFactory,
+        okHttpClient: OkHttpClient,
+    ): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(ZulipApi.BASE_URL)
+            .addConverterFactory(converterFactory)
+            .addCallAdapterFactory(resultCallAdapterFactory)
+            .client(okHttpClient)
+            .build()
     }
 }

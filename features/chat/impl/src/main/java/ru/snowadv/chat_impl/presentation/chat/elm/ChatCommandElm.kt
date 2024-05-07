@@ -1,6 +1,7 @@
 package ru.snowadv.chat_impl.presentation.chat.elm
 
 import ru.snowadv.events_api.domain.model.EventQueueProperties
+import ru.snowadv.model.InputStreamOpener
 
 sealed interface ChatCommandElm { // commands to actor
     data class LoadInitialMessages(
@@ -25,7 +26,16 @@ sealed interface ChatCommandElm { // commands to actor
 
     data object GoBack : ChatCommandElm
     data class GoToProfile(val profileId: Long) : ChatCommandElm
-    data class SendMessage(val streamName: String, val topicName: String, val text: String) : ChatCommandElm
+    data class SendMessage(val streamName: String, val topicName: String, val text: String) :
+        ChatCommandElm
+
     data class AddChosenReaction(val messageId: Long, val reactionName: String) : ChatCommandElm
     data class RemoveReaction(val messageId: Long, val reactionName: String) : ChatCommandElm
+    data class AddAttachment(
+        val streamName: String,
+        val topicName: String,
+        val mimeType: String?,
+        val inputStreamOpener: InputStreamOpener,
+        val extension: String?,
+    ) : ChatCommandElm
 }

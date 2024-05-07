@@ -5,6 +5,7 @@ import ru.snowadv.chat_impl.presentation.model.ChatEmoji
 import ru.snowadv.chat_impl.presentation.model.ChatMessage
 import ru.snowadv.events_api.domain.model.EventInfoHolder
 import ru.snowadv.events_api.domain.model.EventSenderType
+import ru.snowadv.model.InputStreamOpener
 
 internal sealed interface ChatEventElm {
 
@@ -22,7 +23,9 @@ internal sealed interface ChatEventElm {
         data object GoBackClicked : Ui
         data object ReloadClicked : Ui
         data object PaginationLoadMore : Ui
-        data object ScrolledToTop : Ui
+        data object ScrolledToNTopMessages : Ui
+        data object FileChoosingDismissed : Ui
+        data class FileWasChosen(val mimeType: String?, val inputStreamOpener: InputStreamOpener, val extension: String?) : Ui
     }
 
     sealed interface Internal : ChatEventElm {
@@ -32,12 +35,16 @@ internal sealed interface ChatEventElm {
         data class Error(val throwable: Throwable, val cachedMessages: ChatPaginatedMessages?) : Internal
         data object PaginationError : Internal
 
+        data object FileUploaded : Internal
+        data class UploadingFileError(val retryEvent: ChatEventElm) : Internal
+        data object UploadingFile: Internal
+
         data object Loading : Internal
         data object PaginationLoading : Internal
 
         data object SendingMessage : Internal
         data object ChangingReaction : Internal
-        data object SendingMessageError: Internal
+        data class SendingMessageError(val retryCommandElm: ChatCommandElm): Internal
         data class ChangingReactionError(val retryEvent: ChatEventElm) : Internal
         data object MessageSent : Internal
         data object ReactionChanged : Internal

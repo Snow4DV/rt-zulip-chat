@@ -7,12 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.text.HtmlCompat
 import androidx.core.view.children
 import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListUpdateCallback
+import io.noties.markwon.Markwon
 import ru.snowadv.chat_impl.databinding.ItemReactionBinding
 import ru.snowadv.chat_impl.presentation.model.ChatReaction
 import ru.snowadv.presentation.view.ViewInvalidatingProperty
@@ -50,7 +50,7 @@ internal abstract class MessageLayout @JvmOverloads constructor(
         private val diffUtilChatReactionCallback by lazy { ChatReactionDiffUtilCallback() }
     }
 
-    private val asyncReactionsDiffer = AsyncListDiffer<ChatReaction>(this,
+    private val asyncReactionsDiffer = AsyncListDiffer(this,
         AsyncDifferConfig.Builder(diffUtilChatReactionCallback).build())
 
     val reactions get() = asyncReactionsDiffer.currentList
@@ -71,8 +71,7 @@ internal abstract class MessageLayout @JvmOverloads constructor(
     var messageText: CharSequence
         get() = messageTextView.text
         set(value) {
-            messageTextView.text =
-                HtmlCompat.fromHtml(value.toString(), HtmlCompat.FROM_HTML_MODE_COMPACT)
+            messageTextView.text = value
             requestLayout()
         }
     var timestampText: CharSequence
@@ -93,6 +92,8 @@ internal abstract class MessageLayout @JvmOverloads constructor(
     }
 
     override fun onInserted(position: Int, count: Int) {
+        if (!isAttachedToWindow) return
+
         for (i in position until position + count) {
             reactionsContainer.addView(createReactionView(reactions[i]), i)
         }
@@ -104,8 +105,12 @@ internal abstract class MessageLayout @JvmOverloads constructor(
     }
 
     override fun onRemoved(position: Int, count: Int) {
+        if (!isAttachedToWindow) return
+
         for (i in position until position + count) {
-            reactionsContainer.removeViewAt(position)
+            if (position < reactionsContainer.childCount) {
+                reactionsContainer.removeViewAt(position)
+            }
         }
         addOrRemoveAddReactionButton(
             oldCount = reactions.size + count,
@@ -115,6 +120,7 @@ internal abstract class MessageLayout @JvmOverloads constructor(
     }
 
     override fun onChanged(position: Int, count: Int, payload: Any?) {
+        if (!isAttachedToWindow) return
         onChangedWithoutRequestLayout(position, count, payload)
         requestLayout()
     }
@@ -126,12 +132,14 @@ internal abstract class MessageLayout @JvmOverloads constructor(
             }
         } ?: run {
             for (i in position until position + count) {
-                updateReactionView(getReactionViewByCode(reactions[i].emojiCode), reactions[i])
+                getReactionViewByCode(reactions[i].emojiCode)?.let { updateReactionView(it, reactions[i]) }
             }
         }
     }
 
     override fun onMoved(fromPosition: Int, toPosition: Int) {
+        if (!isAttachedToWindow) return
+
         val leftPos = min(fromPosition, toPosition)
         val rightPos = max(fromPosition, toPosition)
 
@@ -151,9 +159,18 @@ internal abstract class MessageLayout @JvmOverloads constructor(
         onChangedWithoutRequestLayout(toPosition, 1, null)
     }
 
-    private fun getReactionViewByCode(emojiCode: String): ReactionView {
+    override fun onAttachedToWindow() {
+        asyncReactionsDiffer.submitList(null) // Cancel all pending updates from async differ
+        super.onAttachedToWindow()
+    }
+
+    override fun onDetachedFromWindow() {
+        asyncReactionsDiffer.submitList(null) // Cancel all pending updates from async differ
+        super.onDetachedFromWindow()
+    }
+
+    private fun getReactionViewByCode(emojiCode: String): ReactionView? {
         return (reactionsContainer.children.filterIsInstance<ReactionView>().firstOrNull { it.emojiCode == emojiCode })
-            ?: error("Reaction with emojiCode $emojiCode is not found in msg $this ")
     }
 
     private fun updateReactionView(view: ReactionView, reaction: ChatReaction): ReactionView {
@@ -183,10 +200,11 @@ internal abstract class MessageLayout @JvmOverloads constructor(
         val buttonShouldExist = newCount > 0
 
         if (buttonAlreadyExists && !buttonShouldExist
-                && (reactionsContainer.children.lastOrNull() as? ReactionView)?.isPlus == true) {
+                && (reactionsContainer.children.lastOrNull() as? ReactionView)?.isPlus == true
+                && reactionsContainer.childCount > 0) {
             reactionsContainer.removeViewAt(reactionsContainer.childCount - 1)
         } else if (!buttonAlreadyExists && buttonShouldExist
-                && (reactionsContainer.children.lastOrNull() as? ReactionView)?.isPlus == false) {
+                && (reactionsContainer.children.lastOrNull() as? ReactionView)?.isPlus != true) {
             reactionsContainer.addView(createAddReactionButtonView())
         }
     }
@@ -217,7 +235,9 @@ internal abstract class MessageLayout @JvmOverloads constructor(
     }
 
     private fun handlePayload(index: Int, payload: ChatReaction.Payload) {
-        getReactionViewByCode(reactions[index].emojiCode).let { reactionView ->
+        if (index !in reactions.indices) return
+
+        getReactionViewByCode(reactions[index].emojiCode)?.let { reactionView ->
             when (payload) {
                 is ChatReaction.Payload.ChangedCount -> reactionView.count = payload.newCount
                 is ChatReaction.Payload.ChangedUserReacted -> reactionView.isSelected =
@@ -241,5 +261,10 @@ internal abstract class MessageLayout @JvmOverloads constructor(
         override fun getChangePayload(oldItem: ChatReaction, newItem: ChatReaction): Any? {
             return newItem.getPayload(oldItem)
         }
+    }
+
+    fun setMarkdown(markdown: String, markwon: Markwon) {
+        markwon.setMarkdown(messageTextView, markdown)
+        requestLayout()
     }
 }

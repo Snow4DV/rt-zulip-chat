@@ -3,6 +3,7 @@ package ru.snowadv.chat_impl.presentation.adapter
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import io.noties.markwon.Markwon
 import ru.snowadv.chat_impl.presentation.view.OutgoingMessageLayout
 import ru.snowadv.chat_impl.presentation.model.ChatReaction
 import ru.snowadv.chat_impl.presentation.model.ChatMessage
@@ -15,7 +16,8 @@ internal class OutgoingMessageAdapterDelegate(
     private val onAddReactionClickListener: ((ChatMessage) -> Unit)? = null,
     private val onLongMessageClickListener: ((ChatMessage) -> Unit)? = null,
     private val onReactionClickListener: ((reaction: ChatReaction, message: ChatMessage) -> Unit)? = null,
-    private val timestampFormatter: DateTimeFormatter
+    private val timestampFormatter: DateTimeFormatter,
+    private val markwon: Markwon,
 ) :
     DelegationItemAdapterDelegate<ChatMessage, OutgoingMessageAdapterDelegate.OutgoingMessageViewHolder, ChatMessage.Payload>() {
     internal inner class OutgoingMessageViewHolder(val messageLayout: OutgoingMessageLayout) :
@@ -49,7 +51,7 @@ internal class OutgoingMessageAdapterDelegate(
         }
 
         fun bind(message: ChatMessage) = with(messageLayout) {
-            messageText = message.text
+            setMarkdown(message.text, markwon)
             timestampText = timestampFormatter.format(message.sentAt)
             bindReactions(message.reactions)
         }
@@ -100,6 +102,7 @@ internal class OutgoingMessageAdapterDelegate(
         holder: OutgoingMessageAdapterDelegate.OutgoingMessageViewHolder,
         getCurrentList: () -> List<DelegateItem>
     ) {
+        holder.bindReactions(null)
         if (holder.adapterPosition != RecyclerView.NO_POSITION) {
             getItemAtPosition(getCurrentList(), holder.adapterPosition)?.let { message ->
                 holder.bindReactions(message.reactions)
@@ -111,11 +114,7 @@ internal class OutgoingMessageAdapterDelegate(
         holder: OutgoingMessageAdapterDelegate.OutgoingMessageViewHolder,
         getCurrentList: () -> List<DelegateItem>
     ) {
-        if (holder.adapterPosition != RecyclerView.NO_POSITION) {
-            getItemAtPosition(getCurrentList(), holder.adapterPosition)?.let { message ->
-                holder.bindReactions(null)
-            }
-        }
+        holder.bindReactions(null)
     }
 
     private fun getNewOutgoingMessageLayout(parent: ViewGroup): OutgoingMessageLayout {

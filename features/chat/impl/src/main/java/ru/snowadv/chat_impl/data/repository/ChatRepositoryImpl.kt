@@ -13,6 +13,7 @@ import ru.snowadv.chat_impl.data.util.MessageDataMappers.toChatPaginatedMessages
 import ru.snowadv.emojis_data_api.model.EmojiDataRepository
 import ru.snowadv.messages_data_api.MessageDataRepository
 import ru.snowadv.model.DispatcherProvider
+import ru.snowadv.model.InputStreamOpener
 import ru.snowadv.model.Resource
 import ru.snowadv.model.map
 import javax.inject.Inject
@@ -72,5 +73,15 @@ class ChatRepositoryImpl @Inject constructor(
 
     override fun removeReaction(messageId: Long, reactionName: String): Flow<Resource<Unit>> {
         return messageDataRepository.removeReactionFromMessage(messageId, reactionName)
+    }
+
+    override fun sendFile(
+        streamName: String,
+        topicName: String,
+        inputStreamOpener: InputStreamOpener,
+        mimeType: String?,
+        extension: String?
+    ): Flow<Resource<Unit>> {
+        return messageDataRepository.sendFile(streamName, topicName, mimeType, inputStreamOpener, extension)
     }
 }

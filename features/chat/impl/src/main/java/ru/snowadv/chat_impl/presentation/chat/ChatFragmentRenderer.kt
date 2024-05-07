@@ -7,9 +7,11 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import io.noties.markwon.Markwon
 import ru.snowadv.chat_impl.R
 import ru.snowadv.chat_impl.databinding.FragmentChatBinding
 import ru.snowadv.chat_impl.di.ChatFeatureComponentHolder
+import ru.snowadv.chat_impl.domain.util.PaginationConfig
 import ru.snowadv.chat_impl.presentation.adapter.DateSplitterAdapterDelegate
 import ru.snowadv.chat_impl.presentation.adapter.IncomingMessageAdapterDelegate
 import ru.snowadv.chat_impl.presentation.adapter.OutgoingMessageAdapterDelegate
@@ -43,10 +45,16 @@ internal class ChatFragmentRenderer :
     private var _adapter: DiffDelegationAdapter? = null
     private val adapter get() = requireNotNull(_adapter) { "Adapter wasn't initialized" }
 
+    private var _messagesRecyclerLinearLayoutManager: LinearLayoutManager? = null
+    private val messagesRecyclerLinearLayoutManager: LinearLayoutManager get() =
+        requireNotNull(_messagesRecyclerLinearLayoutManager) { "Linear Layout Manager wasn't initialized for messages recycler" }
+
     @Inject
     internal lateinit var splitterDateFormatter: DateFormatter
     @Inject
     internal lateinit var dateTimeFormatter: DateTimeFormatter
+    @Inject
+    internal lateinit var markwon: Markwon
 
     companion object {
         const val EMOJI_CHOOSER_REQUEST_KEY = "emoji_chooser_request"
@@ -68,6 +76,8 @@ internal class ChatFragmentRenderer :
                 it
             )
         }
+        _messagesRecyclerLinearLayoutManager = binding.messagesRecycler.layoutManager as? LinearLayoutManager
+            ?: error("Wrong LinearLayoutManager is set to messages recycler")
         initListeners(binding, store)
     }
 
@@ -99,7 +109,7 @@ internal class ChatFragmentRenderer :
 
         binding.bottomBar.messageEditText.setTextIfEmpty(state.messageField)
 
-        actionProgressBar.isVisible = state.changingReaction || state.sendingMessage
+        actionProgressBar.isVisible = state.changingReaction || state.sendingMessage || state.uploadingFile
     }
 
     override fun ChatFragment.handleEffectByRenderer(
@@ -110,10 +120,6 @@ internal class ChatFragmentRenderer :
         when (effect) {
             is ChatEffectElm.OpenReactionChooser -> {
                 openReactionChooser(effect.destMessageId, this)
-            }
-
-            is ChatEffectElm.ExplainNotImplemented -> {
-                showErrorToast(this, R.string.not_supported)
             }
 
             is ChatEffectElm.ExplainReactionAlreadyExists -> {
@@ -129,7 +135,8 @@ internal class ChatFragmentRenderer :
                     ChatAction.createActionsForMessage(
                         effect.messageId,
                         effect.userId
-                    )
+
+                )
                 ) {
                     when (it) {
                         is ChatAction.AddReaction -> {
@@ -152,11 +159,14 @@ internal class ChatFragmentRenderer :
             ChatEffectElm.ShowActionError -> {
                 showErrorToast(this, ru.snowadv.presentation.R.string.action_internet_error)
             }
+
+            ChatEffectElm.OpenFileChooser -> openFilePicker()
         }
     }
 
     override fun ChatFragment.onDestroyRendererView() {
         _adapter = null
+        _messagesRecyclerLinearLayoutManager = null
     }
 
     private fun setAdapterToRecyclerView(
@@ -183,6 +193,13 @@ internal class ChatFragmentRenderer :
         }
         binding.stateBox.setOnRetryClickListener {
             store.accept(ChatEventElm.Ui.ReloadClicked)
+        }
+
+        binding.messagesRecycler.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+            if (messagesRecyclerLinearLayoutManager.findFirstVisibleItemPosition() < PaginationConfig.TOP_MESSAGES_TO_FETCH_COUNT
+                    && scrollY - oldScrollY < 0) {
+                store.accept(ChatEventElm.Ui.ScrolledToNTopMessages)
+            }
         }
     }
 
@@ -217,6 +234,7 @@ internal class ChatFragmentRenderer :
                 store.accept(ChatEventElm.Ui.AddReactionClicked(it.id))
             },
             timestampFormatter = dateTimeFormatter,
+            markwon = markwon,
         )
     }
 
@@ -241,6 +259,7 @@ internal class ChatFragmentRenderer :
             onAddReactionClickListener = {
                 store.accept(ChatEventElm.Ui.AddReactionClicked(it.id))
             },
+            markwon = markwon,
         )
     }
 
