@@ -42,40 +42,51 @@ android {
 }
 
 dependencies {
+    // New multi-layer features
+
+    // Auth feature
+    implementation(projects.features.authData)
+    implementation(projects.features.authDomainApi)
+    implementation(projects.features.authDomainImpl)
+    implementation(projects.features.authPresentation)
+    // Chat feature
+    implementation(projects.features.chatData)
+    implementation(projects.features.chatDomainApi)
+    implementation(projects.features.chatDomainImpl)
+    implementation(projects.features.chatPresentation)
+    // Events feature
+    implementation(projects.features.eventsData)
+    implementation(projects.features.eventsDomainApi)
+
+    // Old data TODO: Refactor
     implementation(projects.data.channelsData.api)
     implementation(projects.data.channelsData.impl)
-    implementation(projects.features.events.api)
-    implementation(projects.features.events.impl)
-    implementation(projects.data.messagesData.api)
-    implementation(projects.data.messagesData.impl)
+    implementation(projects.features.eventsDomainApi)
     implementation(projects.data.usersData.api)
     implementation(projects.data.usersData.impl)
-    implementation(projects.data.emojisData.api)
-    implementation(projects.data.emojisData.impl)
-    implementation(projects.data.authData.api)
-    implementation(projects.data.authData.impl)
 
+    // Old features TODO: Refactor
     implementation(projects.features.channels.api)
     implementation(projects.features.channels.impl)
-    implementation(projects.features.chat.api)
-    implementation(projects.features.chat.impl)
     implementation(projects.features.home.api)
     implementation(projects.features.home.impl)
     implementation(projects.features.people.api)
     implementation(projects.features.people.impl)
     implementation(projects.features.profile.api)
     implementation(projects.features.profile.impl)
-    implementation(projects.features.auth.api)
-    implementation(projects.features.auth.impl)
 
+    // Core
     implementation(projects.core.utils)
+    implementation(projects.core.moduleInjector)
 
+    // Libs
     implementation(projects.lib.network)
     implementation(projects.lib.networkAuthorizer)
     implementation(projects.lib.database)
     implementation(projects.lib.imageLoader)
+    implementation(projects.lib.authStorage)
 
-    implementation(projects.core.moduleInjector)
+
 
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)

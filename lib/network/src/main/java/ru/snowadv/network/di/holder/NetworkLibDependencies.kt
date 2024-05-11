@@ -1,7 +1,7 @@
 package ru.snowadv.network.di.holder
 
 import kotlinx.serialization.json.Json
-import ru.snowadv.auth_data_api.AuthProvider
+import ru.snowadv.auth_storage.provider.AuthProvider
 import ru.snowadv.module_injector.module.BaseModuleDependencies
 import ru.snowadv.network.api.BadAuthBehavior
 

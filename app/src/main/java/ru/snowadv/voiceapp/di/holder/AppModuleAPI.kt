@@ -1,9 +1,9 @@
 package ru.snowadv.voiceapp.di.holder
 
 import kotlinx.serialization.json.Json
-import ru.snowadv.auth_api.domain.navigation.AuthRouter
+import ru.snowadv.auth_presentation.navigation.AuthRouter
 import ru.snowadv.channels_api.domain.navigation.ChannelsRouter
-import ru.snowadv.chat_api.domain.navigation.ChatRouter
+import ru.snowadv.chat_presentation.navigation.ChatRouter
 import ru.snowadv.model.DispatcherProvider
 import ru.snowadv.module_injector.module.BaseModuleAPI
 import ru.snowadv.network.api.BadAuthBehavior

@@ -7,12 +7,12 @@ import ru.snowadv.channels_impl.presentation.model.StreamIdContainer
 import ru.snowadv.channels_impl.presentation.model.StreamUnreadMessages
 import ru.snowadv.channels_impl.presentation.model.Topic
 import ru.snowadv.channels_impl.presentation.model.TopicUnreadMessages
-import ru.snowadv.events_api.domain.model.EventQueueProperties
-import ru.snowadv.events_api.domain.helper.StateMachineQueueHelper
+import ru.snowadv.events_api.model.EventQueueProperties
+import ru.snowadv.events_api.helper.StateMachineQueueHelper
 import ru.snowadv.model.Resource
 import ru.snowadv.model.map
 import ru.snowadv.presentation.adapter.DelegateItem
-import ru.snowadv.presentation.model.ScreenState
+import ru.snowadv.model.ScreenState
 import ru.snowadv.presentation.util.filterList
 import ru.snowadv.presentation.util.toScreenState
 import vivid.money.elmslie.core.store.dsl.ScreenDslReducer

@@ -1,7 +1,7 @@
 package ru.snowadv.profile_impl.presentation.util
 
-import ru.snowadv.events_api.domain.model.DomainEvent
-import ru.snowadv.events_api.domain.model.EventPresence
+import ru.snowadv.events_api.model.DomainEvent
+import ru.snowadv.events_api.model.EventPresence
 import ru.snowadv.profile_impl.presentation.model.Person
 import ru.snowadv.profile_impl.presentation.profile.elm.ProfileEventElm
 import ru.snowadv.profile_impl.domain.model.Person as DomainPerson

@@ -1,6 +1,5 @@
 package ru.snowadv.home_impl.presentation.home.elm
 
-import ru.snowadv.presentation.model.ScreenState
 import vivid.money.elmslie.core.store.dsl.ScreenDslReducer
 import javax.inject.Inject
 

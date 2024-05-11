@@ -1,6 +1,6 @@
 package ru.snowadv.users_data_api.di
 
-import ru.snowadv.auth_data_api.AuthProvider
+import ru.snowadv.auth_storage.provider.AuthProvider
 import ru.snowadv.database.dao.UsersDao
 import ru.snowadv.model.DispatcherProvider
 import ru.snowadv.module_injector.module.BaseModuleDependencies

@@ -3,7 +3,7 @@ package ru.snowadv.network.interceptor
 import okhttp3.Credentials
 import okhttp3.Interceptor
 import okhttp3.Response
-import ru.snowadv.auth_data_api.AuthProvider
+import ru.snowadv.auth_storage.provider.AuthProvider
 import javax.inject.Inject
 
 

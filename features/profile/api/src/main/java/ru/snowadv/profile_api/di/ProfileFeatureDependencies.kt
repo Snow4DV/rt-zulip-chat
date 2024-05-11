@@ -1,6 +1,6 @@
 package ru.snowadv.profile_api.di
 
-import ru.snowadv.events_api.domain.EventRepository
+import ru.snowadv.events_api.repository.EventRepository
 import ru.snowadv.model.DispatcherProvider
 import ru.snowadv.module_injector.module.BaseModuleDependencies
 import ru.snowadv.profile_api.domain.navigation.ProfileRouter

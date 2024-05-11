@@ -1,10 +1,10 @@
 package ru.snowadv.channels_impl.domain.use_case
 
 import kotlinx.coroutines.flow.Flow
-import ru.snowadv.events_api.domain.EventRepository
-import ru.snowadv.events_api.domain.model.DomainEvent
-import ru.snowadv.events_api.domain.model.EventQueueProperties
-import ru.snowadv.events_api.domain.model.EventType
+import ru.snowadv.events_api.repository.EventRepository
+import ru.snowadv.events_api.model.DomainEvent
+import ru.snowadv.events_api.model.EventQueueProperties
+import ru.snowadv.events_api.model.EventType
 import javax.inject.Inject
 
 internal class ListenToStreamEventsUseCase @Inject constructor(

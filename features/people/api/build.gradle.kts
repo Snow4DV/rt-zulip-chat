@@ -33,7 +33,7 @@ android {
 }
 
 dependencies {
-    implementation(projects.features.events.api)
+    implementation(projects.features.eventsDomainApi)
     implementation(projects.data.usersData.api)
     implementation(projects.core.utils)
     implementation(projects.core.moduleInjector)

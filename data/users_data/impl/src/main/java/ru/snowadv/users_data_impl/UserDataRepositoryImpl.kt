@@ -1,11 +1,10 @@
 package ru.snowadv.users_data_impl
 
 import dagger.Reusable
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import ru.snowadv.auth_data_api.AuthProvider
+import ru.snowadv.auth_storage.provider.AuthProvider
 import ru.snowadv.database.dao.UsersDao
 import ru.snowadv.model.DispatcherProvider
 import ru.snowadv.model.Resource

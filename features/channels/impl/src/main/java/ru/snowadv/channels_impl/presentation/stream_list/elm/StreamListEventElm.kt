@@ -3,8 +3,8 @@ package ru.snowadv.channels_impl.presentation.stream_list.elm
 import ru.snowadv.channels_impl.presentation.model.Stream
 import ru.snowadv.channels_impl.presentation.model.StreamUnreadMessages
 import ru.snowadv.channels_impl.presentation.model.Topic
-import ru.snowadv.events_api.domain.model.EventInfoHolder
-import ru.snowadv.events_api.domain.model.EventSenderType
+import ru.snowadv.events_api.model.EventInfoHolder
+import ru.snowadv.events_api.model.EventSenderType
 
 internal sealed interface StreamListEventElm {
 

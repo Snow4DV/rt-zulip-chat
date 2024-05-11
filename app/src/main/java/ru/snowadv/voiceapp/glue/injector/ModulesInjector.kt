@@ -4,14 +4,28 @@ import android.content.Context
 import coil.ImageLoader
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
-import ru.snowadv.auth_api.di.AuthFeatureDependencies
-import ru.snowadv.auth_api.domain.navigation.AuthRouter
-import ru.snowadv.auth_data_api.AuthDataRepository
-import ru.snowadv.auth_data_api.AuthProvider
-import ru.snowadv.auth_data_api.di.AuthDataModuleAPI
-import ru.snowadv.auth_data_api.di.AuthDataModuleDependencies
-import ru.snowadv.auth_data_impl.di.AuthDataModuleComponentHolder
-import ru.snowadv.auth_impl.di.AuthFeatureComponentHolder
+import ru.snowadv.auth_data.di.holder.AuthDataAPI
+import ru.snowadv.auth_data.di.holder.AuthDataComponentHolder
+import ru.snowadv.auth_data.di.holder.AuthDataDependencies
+import ru.snowadv.auth_data.di.holder.ChatDataAPI
+import ru.snowadv.auth_data.di.holder.ChatDataComponentHolder
+import ru.snowadv.auth_data.di.holder.ChatDataDependencies
+import ru.snowadv.auth_domain_api.di.AuthDomainAPI
+import ru.snowadv.auth_domain_api.di.AuthDomainDependencies
+import ru.snowadv.auth_domain_api.repository.AuthRepository
+import ru.snowadv.auth_domain_api.use_case.AuthorizeUseCase
+import ru.snowadv.auth_domain_api.use_case.ClearAuthUseCase
+import ru.snowadv.auth_domain_api.use_case.ValidateEmailUseCase
+import ru.snowadv.auth_domain_api.use_case.ValidatePasswordUseCase
+import ru.snowadv.auth_domain_impl.di.AuthDomainComponentHolder
+import ru.snowadv.auth_presentation.di.holder.AuthPresentationComponentHolder
+import ru.snowadv.auth_presentation.di.holder.AuthPresentationDependencies
+import ru.snowadv.auth_presentation.navigation.AuthRouter
+import ru.snowadv.auth_storage.di.holder.AuthStorageAPI
+import ru.snowadv.auth_storage.di.holder.AuthStorageComponentHolder
+import ru.snowadv.auth_storage.di.holder.AuthStorageDependencies
+import ru.snowadv.auth_storage.provider.AuthProvider
+import ru.snowadv.auth_storage.repository.AuthStorageRepository
 import ru.snowadv.channels_api.di.ChannelsFeatureAPI
 import ru.snowadv.channels_api.di.ChannelsFeatureDependencies
 import ru.snowadv.channels_api.domain.navigation.ChannelsRouter
@@ -22,9 +36,22 @@ import ru.snowadv.channels_data_api.di.ChannelsDataModuleAPI
 import ru.snowadv.channels_data_api.di.ChannelsDataModuleDependencies
 import ru.snowadv.channels_data_impl.di.ChannelsDataModuleComponentHolder
 import ru.snowadv.channels_impl.di.ChannelsFeatureComponentHolder
-import ru.snowadv.chat_api.di.ChatFeatureDependencies
-import ru.snowadv.chat_api.domain.navigation.ChatRouter
-import ru.snowadv.chat_impl.di.ChatFeatureComponentHolder
+import ru.snowadv.chat_domain_api.di.ChatDomainAPI
+import ru.snowadv.chat_domain_api.di.ChatDomainDependencies
+import ru.snowadv.chat_domain_api.repository.EmojiRepository
+import ru.snowadv.chat_domain_api.repository.MessageRepository
+import ru.snowadv.chat_domain_api.use_case.AddReactionUseCase
+import ru.snowadv.chat_domain_api.use_case.GetCurrentMessagesUseCase
+import ru.snowadv.chat_domain_api.use_case.GetEmojisUseCase
+import ru.snowadv.chat_domain_api.use_case.ListenToChatEventsUseCase
+import ru.snowadv.chat_domain_api.use_case.LoadMoreMessagesUseCase
+import ru.snowadv.chat_domain_api.use_case.RemoveReactionUseCase
+import ru.snowadv.chat_domain_api.use_case.SendFileUseCase
+import ru.snowadv.chat_domain_api.use_case.SendMessageUseCase
+import ru.snowadv.chat_domain_impl.di.ChatDomainComponentHolder
+import ru.snowadv.chat_presentation.di.holder.ChatPresentationComponentHolder
+import ru.snowadv.chat_presentation.di.holder.ChatPresentationDependencies
+import ru.snowadv.chat_presentation.navigation.ChatRouter
 import ru.snowadv.database.dao.AuthDao
 import ru.snowadv.database.dao.EmojisDao
 import ru.snowadv.database.dao.MessagesDao
@@ -34,23 +61,15 @@ import ru.snowadv.database.dao.UsersDao
 import ru.snowadv.database.di.holder.DatabaseLibAPI
 import ru.snowadv.database.di.holder.DatabaseLibComponentHolder
 import ru.snowadv.database.di.holder.DatabaseLibDependencies
-import ru.snowadv.emojis_data_api.model.EmojiDataRepository
-import ru.snowadv.emojis_data_api.model.di.EmojisDataModuleAPI
-import ru.snowadv.emojis_data_api.model.di.EmojisDataModuleDependencies
-import ru.snowadv.emojis_data_impl.di.EmojisDataModuleComponentHolder
-import ru.snowadv.events_api.di.EventsFeatureModuleAPI
-import ru.snowadv.events_api.di.EventsFeatureModuleDependencies
-import ru.snowadv.events_api.domain.EventRepository
-import ru.snowadv.events_impl.di.EventsDataModuleComponentHolder
+import ru.snowadv.events_api.repository.EventRepository
+import ru.snowadv.events_impl.di.dagger.EventsDataModuleComponentHolder
+import ru.snowadv.events_impl.di.holder.EventsDataAPI
+import ru.snowadv.events_impl.di.holder.EventsDataDependencies
 import ru.snowadv.home_api.di.HomeFeatureDependencies
 import ru.snowadv.home_impl.di.HomeFeatureComponentHolder
 import ru.snowadv.image_loader.di.holder.ImageLoaderLibAPI
 import ru.snowadv.image_loader.di.holder.ImageLoaderLibComponentHolder
 import ru.snowadv.image_loader.di.holder.ImageLoaderLibDependencies
-import ru.snowadv.messages_data_api.MessageDataRepository
-import ru.snowadv.messages_data_api.di.MessagesDataModuleAPI
-import ru.snowadv.messages_data_api.di.MessagesDataModuleDependencies
-import ru.snowadv.messages_data_impl.di.MessagesDataModuleComponentHolder
 import ru.snowadv.model.DispatcherProvider
 import ru.snowadv.module_injector.dependency_holder.BaseDependencyHolder
 import ru.snowadv.module_injector.dependency_holder.DependencyHolder0
@@ -93,8 +112,8 @@ import ru.snowadv.voiceapp.di.holder.AppModuleDependencies
 internal object ModulesInjector {
 
     fun inject(appContext: Context) {
+        // App
         AppModuleComponentHolder.dependencyProvider = {
-            // App
             class AppModuleDependencyHolder(
                 override val block: (BaseDependencyHolder<AppModuleDependencies>) -> AppModuleDependencies
             ) : DependencyHolder0<AppModuleDependencies>()
@@ -106,29 +125,139 @@ internal object ModulesInjector {
                 }
             }.dependencies
         }
-        // Features
 
-        AuthFeatureComponentHolder.dependencyProvider = {
-            class AuthFeatureDependencyHolder(
-                override val block: (BaseDependencyHolder<AuthFeatureDependencies>, AppModuleAPI, AuthDataModuleAPI) -> AuthFeatureDependencies
-            ) : DependencyHolder2<AppModuleAPI, AuthDataModuleAPI, AuthFeatureDependencies>(
-                api1 = AppModuleComponentHolder.get(),
-                api2 = AuthDataModuleComponentHolder.get(),
+        /*
+        New features
+         */
+
+        // Auth
+        AuthDataComponentHolder.dependencyProvider = {
+            class AuthDataDependencyHolder(
+                override val block: (BaseDependencyHolder<AuthDataDependencies>, AuthStorageAPI) -> AuthDataDependencies
+            ) : DependencyHolder1<AuthStorageAPI, AuthDataDependencies>(
+                api1 = AuthStorageComponentHolder.get(),
             )
 
-            AuthFeatureDependencyHolder { dependencyHolder, appApi, authDataApi ->
-                object : AuthFeatureDependencies {
-                    override val router: AuthRouter = appApi.authRouter
-                    override val authDataRepo: AuthDataRepository = authDataApi.authDataRepo
+
+            AuthDataDependencyHolder { dependencyHolder, authStorageApi ->
+                object : AuthDataDependencies {
+                    override val authStorageRepository: AuthStorageRepository = authStorageApi.authStorageRepository
                     override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
                 }
             }.dependencies
         }
 
+        AuthDomainComponentHolder.dependencyProvider = {
+            class AuthDomainDependencyHolder(
+                override val block: (BaseDependencyHolder<AuthDomainDependencies>, AuthDataAPI) -> AuthDomainDependencies
+            ) : DependencyHolder1<AuthDataAPI, AuthDomainDependencies>(
+                api1 = AuthDataComponentHolder.get(),
+            )
+
+            AuthDomainDependencyHolder { dependencyHolder, authDataApi ->
+                object : AuthDomainDependencies {
+                    override val repo: AuthRepository = authDataApi.authRepo
+                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
+                }
+            }.dependencies
+        }
+
+        AuthPresentationComponentHolder.dependencyProvider = {
+            class AuthPresentationDependencyHolder(
+                override val block: (BaseDependencyHolder<AuthPresentationDependencies>, AppModuleAPI, AuthDomainAPI) -> AuthPresentationDependencies
+            ) : DependencyHolder2<AppModuleAPI, AuthDomainAPI, AuthPresentationDependencies>(
+                api1 = AppModuleComponentHolder.get() ,
+                api2 = AuthDomainComponentHolder.get(),
+            )
+
+            AuthPresentationDependencyHolder { dependencyHolder, appApi, authApi ->
+                object : AuthPresentationDependencies {
+                    override val authUseCase: AuthorizeUseCase = authApi.authUseCase
+                    override val clearAuthUseCase: ClearAuthUseCase = authApi.clearAuthUseCase
+                    override val validateEmailUseCase: ValidateEmailUseCase = authApi.validateEmailUseCase
+                    override val validatePasswordUseCase: ValidatePasswordUseCase = authApi.validatePasswordUseCase
+                    override val authRouter: AuthRouter = appApi.authRouter
+                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
+                }
+            }.dependencies
+        }
+
+        // Chat
+        ChatDataComponentHolder.dependencyProvider = {
+            class ChatDataDependencyHolder(
+                override val block: (BaseDependencyHolder<ChatDataDependencies>, NetworkLibAPI, DatabaseLibAPI, AuthStorageAPI, AppModuleAPI) -> ChatDataDependencies
+            ) : DependencyHolder4<NetworkLibAPI, DatabaseLibAPI, AuthStorageAPI, AppModuleAPI, ChatDataDependencies>(
+                api1 = NetworkLibComponentHolder.get(),
+                api2 = DatabaseLibComponentHolder.get(),
+                api3 = AuthStorageComponentHolder.get(),
+                api4 = AppModuleComponentHolder.get(),
+            )
+
+
+            ChatDataDependencyHolder { dependencyHolder, networkApi,  dbApi, authApi, appApi ->
+                object : ChatDataDependencies {
+                    override val zulipApi: ZulipApi = networkApi.zulipApi
+                    override val emojisDao: EmojisDao = dbApi.emojisDao
+                    override val messagesDao: MessagesDao = dbApi.messagesDao
+                    override val dispatcherProvider: DispatcherProvider = appApi.dispatcherProvider
+                    override val authProvider: AuthProvider = authApi.authProvider
+                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
+                }
+            }.dependencies
+        }
+
+        ChatDomainComponentHolder.dependencyProvider = {
+            class ChatDomainDependencyHolder(
+                override val block: (BaseDependencyHolder<ChatDomainDependencies>, ChatDataAPI, EventsDataAPI) -> ChatDomainDependencies
+            ) : DependencyHolder2<ChatDataAPI, EventsDataAPI, ChatDomainDependencies>(
+                api1 = ChatDataComponentHolder.get(),
+                api2 = EventsDataModuleComponentHolder.get(),
+            )
+
+            ChatDomainDependencyHolder { dependencyHolder, chatDataApi, eventsDataApi ->
+                object : ChatDomainDependencies {
+                    override val emojiRepository: EmojiRepository = chatDataApi.emojiRepo
+                    override val messageRepository: MessageRepository = chatDataApi.messageRepo
+                    override val eventRepository: EventRepository = eventsDataApi.eventRepo
+                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
+                }
+            }.dependencies
+        }
+
+        ChatPresentationComponentHolder.dependencyProvider = {
+            class ChatPresentationDependencyHolder(
+                override val block: (BaseDependencyHolder<ChatPresentationDependencies>, AppModuleAPI, ChatDomainAPI, ImageLoaderLibAPI) -> ChatPresentationDependencies
+            ) : DependencyHolder3<AppModuleAPI, ChatDomainAPI, ImageLoaderLibAPI, ChatPresentationDependencies>(
+                api1 = AppModuleComponentHolder.get() ,
+                api2 = ChatDomainComponentHolder.get(),
+                api3 = ImageLoaderLibComponentHolder.get(),
+            )
+
+            ChatPresentationDependencyHolder { dependencyHolder, appApi, chatApi, imageLoaderApi ->
+                object : ChatPresentationDependencies {
+                    override val chatRouter: ChatRouter = appApi.chatRouter
+                    override val addReactionUseCase: AddReactionUseCase = chatApi.addReactionUseCase
+                    override val removeReactionUseCase: RemoveReactionUseCase = chatApi.removeReactionUseCase
+                    override val sendMessageUseCase: SendMessageUseCase = chatApi.sendMessageUseCase
+                    override val getMessagesUseCase: GetCurrentMessagesUseCase = chatApi.getCurrentMessagesUseCase
+                    override val listenToChatEventsUseCase: ListenToChatEventsUseCase = chatApi.listenToChatEventsUseCase
+                    override val loadMoreMessagesUseCase: LoadMoreMessagesUseCase = chatApi.loadMoreMessagesUseCase
+                    override val sendFileUseCase: SendFileUseCase = chatApi.sendFileUseCase
+                    override val getEmojisUseCase: GetEmojisUseCase = chatApi.getEmojisUseCase
+                    override val appContext: Context = appContext
+                    override val imageLoader: ImageLoader = imageLoaderApi.coilImageLoader
+                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
+                }
+            }.dependencies
+        }
+
+
+        // Old features
+
         ChannelsFeatureComponentHolder.dependencyProvider = {
             class ChannelsFeatureDependencyHolder(
-                override val block: (BaseDependencyHolder<ChannelsFeatureDependencies>, AppModuleAPI, EventsFeatureModuleAPI, ChannelsDataModuleAPI) -> ChannelsFeatureDependencies
-            ) : DependencyHolder3<AppModuleAPI, EventsFeatureModuleAPI, ChannelsDataModuleAPI, ChannelsFeatureDependencies>(
+                override val block: (BaseDependencyHolder<ChannelsFeatureDependencies>, AppModuleAPI, EventsDataAPI, ChannelsDataModuleAPI) -> ChannelsFeatureDependencies
+            ) : DependencyHolder3<AppModuleAPI, EventsDataAPI, ChannelsDataModuleAPI, ChannelsFeatureDependencies>(
                 api1 = AppModuleComponentHolder.get(),
                 api2 = EventsDataModuleComponentHolder.get(),
                 api3 = ChannelsDataModuleComponentHolder.get(),
@@ -143,31 +272,6 @@ internal object ModulesInjector {
                     override val dispatcherProvider: DispatcherProvider = appApi.dispatcherProvider
                     override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> =
                         dependencyHolder
-                }
-            }.dependencies
-        }
-
-        ChatFeatureComponentHolder.dependencyProvider = {
-            class ChatFeatureDependencyHolder(
-                override val block: (BaseDependencyHolder<ChatFeatureDependencies>, AppModuleAPI, EmojisDataModuleAPI, MessagesDataModuleAPI, EventsFeatureModuleAPI, ImageLoaderLibAPI) -> ChatFeatureDependencies
-            ) : DependencyHolder5<AppModuleAPI, EmojisDataModuleAPI, MessagesDataModuleAPI, EventsFeatureModuleAPI, ImageLoaderLibAPI, ChatFeatureDependencies>(
-                api1 = AppModuleComponentHolder.get(),
-                api2 = EmojisDataModuleComponentHolder.get(),
-                api3 = MessagesDataModuleComponentHolder.get(),
-                api4 = EventsDataModuleComponentHolder.get(),
-                api5 = ImageLoaderLibComponentHolder.get(),
-            )
-
-            ChatFeatureDependencyHolder { dependencyHolder, appApi, emojisApi, msgsApi, eventApi, imageLoaderApi ->
-                object : ChatFeatureDependencies {
-                    override val router: ChatRouter = appApi.chatRouter
-                    override val emojiDataRepo: EmojiDataRepository = emojisApi.emojiDataRepo
-                    override val messageDataRepo: MessageDataRepository = msgsApi.messageDataRepo
-                    override val eventRepository: EventRepository = eventApi.eventRepo
-                    override val dispatcherProvider: DispatcherProvider = appApi.dispatcherProvider
-                    override val appContext: Context = appContext
-                    override val coilImageLoader: ImageLoader = imageLoaderApi.coilImageLoader
-                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
                 }
             }.dependencies
         }
@@ -194,8 +298,8 @@ internal object ModulesInjector {
 
         PeopleFeatureComponentHolder.dependencyProvider = {
             class PeopleFeatureDependencyHolder(
-                override val block: (BaseDependencyHolder<PeopleFeatureDependencies>, AppModuleAPI, EventsFeatureModuleAPI, UsersDataModuleAPI) -> PeopleFeatureDependencies
-            ) : DependencyHolder3<AppModuleAPI, EventsFeatureModuleAPI, UsersDataModuleAPI, PeopleFeatureDependencies>(
+                override val block: (BaseDependencyHolder<PeopleFeatureDependencies>, AppModuleAPI, EventsDataAPI, UsersDataModuleAPI) -> PeopleFeatureDependencies
+            ) : DependencyHolder3<AppModuleAPI, EventsDataAPI, UsersDataModuleAPI, PeopleFeatureDependencies>(
                 api1 = AppModuleComponentHolder.get(),
                 api2 = EventsDataModuleComponentHolder.get(),
                 api3 = UsersDataModuleComponentHolder.get(),
@@ -214,8 +318,8 @@ internal object ModulesInjector {
 
         ProfileFeatureComponentHolder.dependencyProvider = {
             class ProfileFeatureDependencyHolder(
-                override val block: (BaseDependencyHolder<ProfileFeatureDependencies>, AppModuleAPI, EventsFeatureModuleAPI, UsersDataModuleAPI) -> ProfileFeatureDependencies
-            ) : DependencyHolder3<AppModuleAPI, EventsFeatureModuleAPI, UsersDataModuleAPI, ProfileFeatureDependencies>(
+                override val block: (BaseDependencyHolder<ProfileFeatureDependencies>, AppModuleAPI, EventsDataAPI, UsersDataModuleAPI) -> ProfileFeatureDependencies
+            ) : DependencyHolder3<AppModuleAPI, EventsDataAPI, UsersDataModuleAPI, ProfileFeatureDependencies>(
                 api1 = AppModuleComponentHolder.get(),
                 api2 = EventsDataModuleComponentHolder.get(),
                 api3 = UsersDataModuleComponentHolder.get(),
@@ -234,24 +338,6 @@ internal object ModulesInjector {
         }
 
         // Data
-
-        AuthDataModuleComponentHolder.dependencyProvider = {
-            class AuthModuleDependencyHolder(
-                override val block: (BaseDependencyHolder<AuthDataModuleDependencies>, NetworkAuthorizerLibAPI, DatabaseLibAPI) -> AuthDataModuleDependencies
-            ) : DependencyHolder2<NetworkAuthorizerLibAPI, DatabaseLibAPI, AuthDataModuleDependencies>(
-                api1 = NetworkAuthorizerLibComponentHolder.get(),
-                api2 = DatabaseLibComponentHolder.get(),
-            )
-
-
-            AuthModuleDependencyHolder { dependencyHolder, networkApi, dbApi ->
-                object : AuthDataModuleDependencies {
-                    override val authApi: ZulipAuthApi = networkApi.zulipAuthApi
-                    override val authDao: AuthDao = dbApi.authDao
-                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
-                }
-            }.dependencies
-        }
 
         ChannelsDataModuleComponentHolder.dependencyProvider = {
             class ChannelsDependencyHolder(
@@ -276,24 +362,26 @@ internal object ModulesInjector {
             }.dependencies
         }
 
-        EmojisDataModuleComponentHolder.dependencyProvider = {
-            class EmojisDependencyHolder(
-                override val block: (BaseDependencyHolder<EmojisDataModuleDependencies>, AppModuleAPI, NetworkLibAPI, DatabaseLibAPI) -> EmojisDataModuleDependencies
+        ChatDataComponentHolder.dependencyProvider = {
+            class ChatDataDependencyHolder(
+                override val block: (BaseDependencyHolder<ChatDataDependencies>, AppModuleAPI, NetworkLibAPI, DatabaseLibAPI, AuthStorageAPI) -> ChatDataDependencies
 
-            ) : DependencyHolder3<AppModuleAPI, NetworkLibAPI, DatabaseLibAPI, EmojisDataModuleDependencies>(
+            ) : DependencyHolder4<AppModuleAPI, NetworkLibAPI, DatabaseLibAPI, AuthStorageAPI, ChatDataDependencies>(
                 api1 = AppModuleComponentHolder.get(),
                 api2 = NetworkLibComponentHolder.get(),
                 api3 = DatabaseLibComponentHolder.get(),
+                api4 = AuthStorageComponentHolder.get(),
             )
 
 
-            EmojisDependencyHolder { dependencyHolder, appApi, networkApi, dbApi ->
-                object : EmojisDataModuleDependencies {
+            ChatDataDependencyHolder { dependencyHolder, appApi, networkApi, dbApi, authStorageApi ->
+                object : ChatDataDependencies {
                     override val dispatcherProvider: DispatcherProvider = appApi.dispatcherProvider
-                    override val api: ZulipApi = networkApi.zulipApi
+                    override val authProvider: AuthProvider = authStorageApi.authProvider
+                    override val zulipApi: ZulipApi = networkApi.zulipApi
                     override val emojisDao: EmojisDao = dbApi.emojisDao
-                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> =
-                        dependencyHolder
+                    override val messagesDao: MessagesDao = dbApi.messagesDao
+                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
 
                 }
             }.dependencies
@@ -301,60 +389,35 @@ internal object ModulesInjector {
 
         EventsDataModuleComponentHolder.dependencyProvider = {
             class EventsDependencyHolder(
-                override val block: (BaseDependencyHolder<EventsFeatureModuleDependencies>, AppModuleAPI, NetworkLibAPI, AuthDataModuleAPI) -> EventsFeatureModuleDependencies
+                override val block: (BaseDependencyHolder<EventsDataDependencies>, AppModuleAPI, NetworkLibAPI, AuthStorageAPI) -> EventsDataDependencies
 
-            ) : DependencyHolder3<AppModuleAPI, NetworkLibAPI, AuthDataModuleAPI, EventsFeatureModuleDependencies>(
+            ) : DependencyHolder3<AppModuleAPI, NetworkLibAPI, AuthStorageAPI, EventsDataDependencies>(
                 api1 = AppModuleComponentHolder.get(),
                 api2 = NetworkLibComponentHolder.get(),
-                api3 = AuthDataModuleComponentHolder.get(),
+                api3 = AuthStorageComponentHolder.get(),
             )
 
 
-            EventsDependencyHolder { dependencyHolder, appApi, networkApi, authDataApi ->
-                object : EventsFeatureModuleDependencies {
+            EventsDependencyHolder { dependencyHolder, appApi, networkApi, authStorageApi ->
+                object : EventsDataDependencies {
                     override val dispatcherProvider: DispatcherProvider = appApi.dispatcherProvider
                     override val api: ZulipApi = networkApi.zulipApi
-                    override val authProvider: AuthProvider = authDataApi.authProvider
-                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> =
-                        dependencyHolder
+                    override val authProvider: AuthProvider = authStorageApi.authProvider
+                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
 
                 }
             }.dependencies
         }
 
-        MessagesDataModuleComponentHolder.dependencyProvider = {
-            class MessagesDependencyHolder(
-                override val block: (BaseDependencyHolder<MessagesDataModuleDependencies>, AppModuleAPI, NetworkLibAPI, AuthDataModuleAPI, DatabaseLibAPI) -> MessagesDataModuleDependencies
-
-            ) : DependencyHolder4<AppModuleAPI, NetworkLibAPI, AuthDataModuleAPI, DatabaseLibAPI, MessagesDataModuleDependencies>(
-                api1 = AppModuleComponentHolder.get(),
-                api2 = NetworkLibComponentHolder.get(),
-                api3 = AuthDataModuleComponentHolder.get(),
-                api4 = DatabaseLibComponentHolder.get(),
-            )
-
-
-            MessagesDependencyHolder { dependencyHolder, appApi, networkApi, authDataApi, dbApi ->
-                object : MessagesDataModuleDependencies {
-                    override val dispatcherProvider: DispatcherProvider = appApi.dispatcherProvider
-                    override val api: ZulipApi = networkApi.zulipApi
-                    override val authProvider: AuthProvider = authDataApi.authProvider
-                    override val messagesDao: MessagesDao = dbApi.messagesDao
-                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> =
-                        dependencyHolder
-
-                }
-            }.dependencies
-        }
 
         UsersDataModuleComponentHolder.dependencyProvider = {
             class UsersDependenciesHolder(
-                override val block: (BaseDependencyHolder<UsersDataModuleDependencies>, AppModuleAPI, NetworkLibAPI, AuthDataModuleAPI, DatabaseLibAPI) -> UsersDataModuleDependencies
+                override val block: (BaseDependencyHolder<UsersDataModuleDependencies>, AppModuleAPI, NetworkLibAPI, AuthStorageAPI, DatabaseLibAPI) -> UsersDataModuleDependencies
 
-            ) : DependencyHolder4<AppModuleAPI, NetworkLibAPI, AuthDataModuleAPI, DatabaseLibAPI, UsersDataModuleDependencies>(
+            ) : DependencyHolder4<AppModuleAPI, NetworkLibAPI, AuthStorageAPI, DatabaseLibAPI, UsersDataModuleDependencies>(
                 api1 = AppModuleComponentHolder.get(),
                 api2 = NetworkLibComponentHolder.get(),
-                api3 = AuthDataModuleComponentHolder.get(),
+                api3 = AuthStorageComponentHolder.get(),
                 api4 = DatabaseLibComponentHolder.get(),
             )
 
@@ -375,10 +438,10 @@ internal object ModulesInjector {
         // Lib
         NetworkLibComponentHolder.dependencyProvider = {
             class NetworkLibDependencyHolder(
-                override val block: (BaseDependencyHolder<NetworkLibDependencies>, AppModuleAPI, AuthDataModuleAPI) -> NetworkLibDependencies
-            ) : DependencyHolder2<AppModuleAPI, AuthDataModuleAPI, NetworkLibDependencies>(
+                override val block: (BaseDependencyHolder<NetworkLibDependencies>, AppModuleAPI, AuthStorageAPI) -> NetworkLibDependencies
+            ) : DependencyHolder2<AppModuleAPI, AuthStorageAPI, NetworkLibDependencies>(
                 api1 = AppModuleComponentHolder.get(),
-                api2 = AuthDataModuleComponentHolder.get(),
+                api2 = AuthStorageComponentHolder.get(),
             )
 
             NetworkLibDependencyHolder { dependencyHolder, appApi, authDataApi ->
@@ -440,6 +503,25 @@ internal object ModulesInjector {
                     override val okHttpClient: OkHttpClient = networkApi.okHttpClient
                     override val appContext: Context = appContext
                     override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
+
+                }
+            }.dependencies
+        }
+
+        AuthStorageComponentHolder.dependencyProvider = {
+            class AuthStorageLibDependencyHolder(
+                override val block: (BaseDependencyHolder<AuthStorageDependencies>, NetworkAuthorizerLibAPI, DatabaseLibAPI) -> AuthStorageDependencies
+            ) : DependencyHolder2<NetworkAuthorizerLibAPI, DatabaseLibAPI, AuthStorageDependencies>(
+                api1 = NetworkAuthorizerLibComponentHolder.get(),
+                api2 = DatabaseLibComponentHolder.get(),
+            )
+
+            AuthStorageLibDependencyHolder { dependencyHolder, authApi, dbApi ->
+                object : AuthStorageDependencies {
+                    override val zulipAuthApi: ZulipAuthApi = authApi.zulipAuthApi
+                    override val authDao: AuthDao = dbApi.authDao
+                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> =
+                        dependencyHolder
 
                 }
             }.dependencies

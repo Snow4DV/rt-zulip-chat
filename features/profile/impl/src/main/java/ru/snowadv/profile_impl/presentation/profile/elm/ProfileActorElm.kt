@@ -4,7 +4,7 @@ import dagger.Reusable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import ru.snowadv.events_api.domain.model.DomainEvent
+import ru.snowadv.events_api.model.DomainEvent
 import ru.snowadv.model.Resource
 import ru.snowadv.profile_api.domain.navigation.ProfileRouter
 import ru.snowadv.profile_impl.domain.use_case.GetProfileUseCase

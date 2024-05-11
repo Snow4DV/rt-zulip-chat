@@ -1,7 +1,7 @@
 package ru.snowadv.profile_impl.presentation.profile.elm
 
-import ru.snowadv.events_api.domain.model.EventInfoHolder
-import ru.snowadv.events_api.domain.model.EventSenderType
+import ru.snowadv.events_api.model.EventInfoHolder
+import ru.snowadv.events_api.model.EventSenderType
 import ru.snowadv.profile_impl.presentation.model.Person
 
 internal sealed interface ProfileEventElm {

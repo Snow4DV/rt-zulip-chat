@@ -43,7 +43,7 @@ dependencies {
     implementation(projects.core.utils)
 
     implementation(projects.data.channelsData.api)
-    implementation(projects.features.events.api)
+    implementation(projects.features.eventsDomainApi)
 
     implementation(projects.core.moduleInjector)
     implementation(projects.features.channels.api)

@@ -6,10 +6,9 @@ import com.github.terrakok.cicerone.Router
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import dagger.Reusable
-import ru.snowadv.auth_api.domain.navigation.AuthRouter
+import ru.snowadv.auth_presentation.navigation.AuthRouter
 import ru.snowadv.channels_api.domain.navigation.ChannelsRouter
-import ru.snowadv.chat_api.domain.navigation.ChatRouter
+import ru.snowadv.chat_presentation.navigation.ChatRouter
 import ru.snowadv.home_api.presentation.local_navigation.InnerHomeScreenFactory
 import ru.snowadv.voiceapp.glue.navigation.ChannelsRouterImpl
 import ru.snowadv.voiceapp.glue.navigation.ChatRouterImpl

@@ -14,7 +14,7 @@ import ru.snowadv.presentation.databinding.ItemLoadingWithCachedDataBinding
 import ru.snowadv.presentation.databinding.ItemStateBoxBinding
 import ru.snowadv.presentation.databinding.ItemTopBarWithBackBinding
 import ru.snowadv.presentation.databinding.ItemTopStateBoxBinding
-import ru.snowadv.presentation.model.ScreenState
+import ru.snowadv.model.ScreenState
 
 fun ItemStateBoxBinding.inflateState(screenState: ScreenState<*>, shimmerLayout: Int? = null, cacheStateBinding: ItemTopStateBoxBinding? = null) = with(root) {
     when(screenState) {

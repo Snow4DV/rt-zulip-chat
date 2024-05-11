@@ -1,8 +1,7 @@
 package ru.snowadv.presentation.util
 
 import ru.snowadv.model.Resource
-import ru.snowadv.model.map
-import ru.snowadv.presentation.model.ScreenState
+import ru.snowadv.model.ScreenState
 
 fun <T> Array<T>.mapInPlace(transform: (T) -> T): Array<T> {
     for (i in this.indices) {

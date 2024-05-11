@@ -1,7 +1,7 @@
 package ru.snowadv.people_impl.presentation.people_list.elm
 
-import ru.snowadv.events_api.domain.model.EventInfoHolder
-import ru.snowadv.events_api.domain.model.EventSenderType
+import ru.snowadv.events_api.model.EventInfoHolder
+import ru.snowadv.events_api.model.EventSenderType
 import ru.snowadv.people_impl.presentation.model.Person
 
 internal sealed interface PeopleListEventElm {

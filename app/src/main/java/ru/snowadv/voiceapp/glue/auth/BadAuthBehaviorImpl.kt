@@ -3,7 +3,6 @@ package ru.snowadv.voiceapp.glue.auth
 import com.github.terrakok.cicerone.Cicerone
 import com.github.terrakok.cicerone.Router
 import dagger.Reusable
-import ru.snowadv.auth_data_api.AuthDataRepository
 import ru.snowadv.network.api.BadAuthBehavior
 import ru.snowadv.voiceapp.navigation.Screens
 import javax.inject.Inject

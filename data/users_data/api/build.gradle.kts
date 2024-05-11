@@ -36,11 +36,13 @@ android {
 
 dependencies {
     implementation(projects.core.moduleInjector)
-    implementation(projects.data.authData.api)
+    implementation(projects.core.utils)
+    
 
     implementation(projects.lib.network)
     implementation(projects.lib.database)
-    implementation(projects.core.utils)
+    implementation(projects.lib.authStorage)
+
     implementation(libs.kotlinx.coroutines.core)
 
     coreLibraryDesugaring(libs.desugar.jdk.libs)

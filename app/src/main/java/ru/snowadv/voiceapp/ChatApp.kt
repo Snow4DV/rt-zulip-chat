@@ -8,8 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import ru.snowadv.auth_data_api.AuthDataRepository
-import ru.snowadv.auth_data_impl.di.AuthDataModuleComponentHolder
+import ru.snowadv.auth_storage.di.holder.AuthStorageComponentHolder
 import ru.snowadv.voiceapp.di.dagger.AppComponent
 import ru.snowadv.voiceapp.di.holder.AppModuleComponentHolder
 import ru.snowadv.voiceapp.glue.injector.ModulesInjector
@@ -24,14 +23,14 @@ internal class ChatApp: Application() {
     @Inject
     internal lateinit var screens: Screens
 
-    private val authDataRepo by lazy(mode = LazyThreadSafetyMode.NONE) { AuthDataModuleComponentHolder.get().authDataRepo }
+    private val authStorageRepo by lazy(mode = LazyThreadSafetyMode.NONE) { AuthStorageComponentHolder.get().authStorageRepository }
 
     override fun onCreate() {
         ModulesInjector.inject(this)
         AppModuleComponentHolder.getComponent().inject(this)
         super.onCreate()
         authScope.launch {
-            authDataRepo.loadAuthFromDatabase()?.let {
+            authStorageRepo.loadAuthFromDatabase()?.let {
                 router.newRootScreen(screens.Home())
             } ?: run {
                 router.newRootScreen(screens.Login())

@@ -1,12 +1,11 @@
 package ru.snowadv.people_impl.presentation.people_list.elm
 
-import kotlinx.coroutines.flow.flow
-import ru.snowadv.events_api.domain.model.EventQueueProperties
-import ru.snowadv.events_api.domain.helper.StateMachineQueueHelper
+import ru.snowadv.events_api.model.EventQueueProperties
+import ru.snowadv.events_api.helper.StateMachineQueueHelper
 import ru.snowadv.model.Resource
 import ru.snowadv.model.map
 import ru.snowadv.people_impl.presentation.model.Person
-import ru.snowadv.presentation.model.ScreenState
+import ru.snowadv.model.ScreenState
 import ru.snowadv.presentation.util.toScreenState
 import vivid.money.elmslie.core.store.dsl.ScreenDslReducer
 import javax.inject.Inject

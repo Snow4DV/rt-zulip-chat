@@ -1,8 +1,8 @@
 package ru.snowadv.profile_impl.presentation.profile.elm
 
-import ru.snowadv.events_api.domain.helper.StateMachineQueueHelper
-import ru.snowadv.events_api.domain.model.EventQueueProperties
-import ru.snowadv.presentation.model.ScreenState
+import ru.snowadv.events_api.helper.StateMachineQueueHelper
+import ru.snowadv.events_api.model.EventQueueProperties
+import ru.snowadv.model.ScreenState
 import vivid.money.elmslie.core.store.dsl.ScreenDslReducer
 import javax.inject.Inject
 
