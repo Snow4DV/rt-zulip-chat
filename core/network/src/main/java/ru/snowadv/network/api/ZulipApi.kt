@@ -7,6 +7,7 @@ import kotlinx.serialization.modules.SerializersModule
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.create
@@ -20,6 +21,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 import ru.snowadv.data.api.AuthProvider
+import ru.snowadv.network.interceptor.BadAuthResponseInterceptor
 import ru.snowadv.network.interceptor.HeaderBasicAuthInterceptor
 import ru.snowadv.network.interceptor.TimeoutSetterInterceptor
 import ru.snowadv.network.interceptor.TimeoutSetterInterceptor.Companion.READ_TIMEOUT_HEADER
@@ -155,45 +157,42 @@ interface ZulipApi { // Will add annotations later, at this moment it is used wi
     }
 }
 
-fun ZulipApi(
-    baseUrl: String = ZulipApi.BASE_URL,
-    authProvider: AuthProvider,
-    okHttpClient: OkHttpClient? = null,
-    json: Json = defaultJson(),
+internal fun ZulipApi(
+    headerBasicAuthInterceptor: HeaderBasicAuthInterceptor,
+    timeoutSetterInterceptor: TimeoutSetterInterceptor,
+    badAuthResponseInterceptor: BadAuthResponseInterceptor,
+    converterFactory: Converter.Factory,
+    resultCallAdapterFactory: ResultCallAdapterFactory,
 ): ZulipApi {
-    return retrofit(baseUrl, authProvider, okHttpClient, json).create()
-}
-
-fun ZulipApi(authProvider: AuthProvider): ZulipApi {
-    return retrofit(authProvider = authProvider).create()
+    return retrofit(
+        headerBasicAuthInterceptor = headerBasicAuthInterceptor,
+        timeoutSetterInterceptor = timeoutSetterInterceptor,
+        badAuthResponseInterceptor = badAuthResponseInterceptor,
+        converterFactory = converterFactory,
+        resultCallAdapterFactory = resultCallAdapterFactory,
+    ).create()
 }
 
 private fun retrofit(
     baseUrl: String = ZulipApi.BASE_URL,
-    authProvider: AuthProvider,
     okHttpClient: OkHttpClient? = null,
-    json: Json = defaultJson(),
+    headerBasicAuthInterceptor: HeaderBasicAuthInterceptor,
+    timeoutSetterInterceptor: TimeoutSetterInterceptor,
+    badAuthResponseInterceptor: BadAuthResponseInterceptor,
+    converterFactory: Converter.Factory,
+    resultCallAdapterFactory: ResultCallAdapterFactory,
 ): Retrofit {
 
     val newOkhttpClient = (okHttpClient?.newBuilder() ?: OkHttpClient.Builder())
-        .addInterceptor(HeaderBasicAuthInterceptor(authProvider))
-        .addInterceptor(TimeoutSetterInterceptor())
+        .addInterceptor(headerBasicAuthInterceptor)
+        .addInterceptor(timeoutSetterInterceptor)
+        .addInterceptor(badAuthResponseInterceptor)
         .build()
 
     return Retrofit.Builder()
         .baseUrl(baseUrl)
-        .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
-        .addCallAdapterFactory(ResultCallAdapterFactory.create())
+        .addConverterFactory(converterFactory)
+        .addCallAdapterFactory(resultCallAdapterFactory)
         .client(newOkhttpClient)
         .build()
 }
-
-private fun defaultJson(): Json {
-    return Json {
-        ignoreUnknownKeys = true
-        serializersModule = SerializersModule {
-            contextual(NarrowListRequestDto::class, NarrowListDtoSerializer)
-        }
-    }
-}
-

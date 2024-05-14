@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.kotlin.kapt)
 }
 
 android {
@@ -41,25 +42,43 @@ android {
 }
 
 dependencies {
-    implementation(projects.data.channelsData)
-    implementation(projects.data.eventsData)
-    implementation(projects.data.messagesData)
-    implementation(projects.data.usersData)
-    implementation(projects.data.emojisData)
-    implementation(projects.data.authData)
+    implementation(projects.data.channelsData.api)
+    implementation(projects.data.channelsData.impl)
+    implementation(projects.features.events.api)
+    implementation(projects.features.events.impl)
+    implementation(projects.data.messagesData.api)
+    implementation(projects.data.messagesData.impl)
+    implementation(projects.data.usersData.api)
+    implementation(projects.data.usersData.impl)
+    implementation(projects.data.emojisData.api)
+    implementation(projects.data.emojisData.impl)
+    implementation(projects.data.authData.api)
+    implementation(projects.data.authData.impl)
 
-    implementation(projects.features.channels)
-    implementation(projects.features.chat)
-    implementation(projects.features.home)
-    implementation(projects.features.people)
-    implementation(projects.features.profile)
+    implementation(projects.features.channels.api)
+    implementation(projects.features.channels.impl)
+    implementation(projects.features.chat.api)
+    implementation(projects.features.chat.impl)
+    implementation(projects.features.home.api)
+    implementation(projects.features.home.impl)
+    implementation(projects.features.people.api)
+    implementation(projects.features.people.impl)
+    implementation(projects.features.profile.api)
+    implementation(projects.features.profile.impl)
 
     implementation(projects.core.utils)
     implementation(projects.core.data)
     implementation(projects.core.network)
-    implementation(projects.core.propertiesProvider)
-    implementation(projects.core.eventApi)
 
+    implementation(projects.core.propertiesProvider.api)
+    implementation(projects.core.propertiesProvider.impl)
+
+    implementation(projects.core.moduleInjector)
+
+    implementation(libs.dagger)
+    kapt(libs.dagger.compiler)
+
+    implementation(libs.kotlinSerialization.json)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

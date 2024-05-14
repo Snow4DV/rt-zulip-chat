@@ -6,17 +6,18 @@ compileSdk = "34"
 targetSdk = "34"
 
 # Plugins
-agp = "8.3.1"
+agp = "8.3.2"
 kotlin = "1.9.22"
+dagger = "2.51.1"
 
 # Libraries
-coreKtx = "1.12.0"
+coreKtx = "1.13.0"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
 appcompat = "1.6.1"
 material = "1.11.0"
-activity = "1.8.2"
+activity = "1.9.0"
 constraintlayout = "2.1.4"
 kotlinx-corutuines = "1.8.0"
 annotationJvm = "1.7.1"
@@ -64,6 +65,8 @@ retrofit-resultConverter = {group="com.github.skydoves", name="retrofit-adapters
 okhttp-logging-interceptor = {group="com.squareup.okhttp3", name="logging-interceptor", version.ref="okhttp-interceptor"}
 elmslie-core = {group="com.github.vivid-money.elmslie", name="elmslie-core", version.ref="elmslie"}
 elmslie-android = {group="com.github.vivid-money.elmslie", name="elmslie-android", version.ref="elmslie"}
+dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
+dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
 
 
 
@@ -74,4 +77,8 @@ androidLibrary = { id = "com.android.library", version.ref = "agp" }
 jetbrainsKotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinParcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+java-library = { id = "java-library" }
+
+
 

@@ -10,10 +10,21 @@ object NetworkUtils {
         return this is HttpException && this.code() == code
     }
 
-    fun Throwable.isHttpExceptionWithCode(serverCode: String): Boolean? {
+    fun Throwable.isHttpExceptionWithCode(serverCode: String): Boolean {
         (this as? HttpException)?.response()?.errorBody()?.string()?.let {
             return try {
                 json.decodeFromString<ErrorResponseDto>(it).code == serverCode
+            } catch (e: Exception) {
+                false
+            }
+        }
+        return false
+    }
+
+    fun Throwable.isHttpExceptionWithCodes(serverCodes: Set<String>): Boolean {
+        (this as? HttpException)?.response()?.errorBody()?.string()?.let {
+            return try {
+                json.decodeFromString<ErrorResponseDto>(it).code in serverCodes
             } catch (e: Exception) {
                 false
             }

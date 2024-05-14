@@ -1,11 +1,14 @@
 package ru.snowadv.voiceapp.glue.auth
 
-import ru.snowadv.auth_data.api.AuthDataRepository
+import dagger.Reusable
+import ru.snowadv.auth_data_api.AuthDataRepository
 import ru.snowadv.data.api.AuthProvider
 import ru.snowadv.data.model.AuthUser
 import ru.snowadv.exception.UserNotAuthorizedException
+import javax.inject.Inject
 
-class AuthProviderImpl(
+@Reusable
+class AuthProviderImpl @Inject constructor(
     private val dataRepository: AuthDataRepository,
 ): AuthProvider {
     override fun getAuthorizedUser(): AuthUser {

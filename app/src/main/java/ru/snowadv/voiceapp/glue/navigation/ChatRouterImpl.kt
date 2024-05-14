@@ -1,16 +1,20 @@
 package ru.snowadv.voiceapp.glue.navigation
 
 import com.github.terrakok.cicerone.Router
-import ru.snowadv.chat.domain.navigation.ChatRouter
+import dagger.Reusable
+import ru.snowadv.chat_api.domain.navigation.ChatRouter
 import ru.snowadv.voiceapp.navigation.Screens
+import javax.inject.Inject
 
-class ChatRouterImpl(private val ciceroneRouter: Router): ChatRouter {
+@Reusable
+class ChatRouterImpl @Inject constructor(private val ciceroneRouter: Router, private val screens: Screens):
+    ChatRouter {
     override fun goBack() {
         ciceroneRouter.exit()
     }
 
     override fun openProfile(profileId: Long) {
-        ciceroneRouter.navigateTo(Screens.Profile(profileId))
+        ciceroneRouter.navigateTo(screens.Profile(profileId))
     }
 
 
