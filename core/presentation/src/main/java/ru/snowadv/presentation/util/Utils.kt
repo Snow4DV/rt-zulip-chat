@@ -34,3 +34,61 @@ fun <T, E> Resource<T>.toScreenState(mapper: (T) -> E, isEmptyChecker: ((T) -> B
         }
     }
 }
+
+fun <T> Resource<List<T>>.toScreenState(): ScreenState<List<T>> {
+    return when(this) {
+        is Resource.Error -> {
+            ScreenState.Error(this.throwable)
+        }
+        is Resource.Loading -> {
+            ScreenState.Loading
+        }
+        is Resource.Success -> {
+            if (data.isEmpty()) {
+                ScreenState.Empty
+            } else {
+                ScreenState.Success(data)
+            }
+        }
+    }
+}
+
+fun <T, E> List<T>.toScreenState(mapper: (T) -> E): ScreenState<List<E>> {
+    return if (this.isEmpty()) {
+        ScreenState.Empty
+    } else {
+        ScreenState.Success(map(mapper))
+    }
+}
+
+fun <T, E> List<T>.toScreenStateListMapper(mapper: (List<T>) -> List<E>): ScreenState<List<E>> {
+    return if (this.isEmpty()) {
+        ScreenState.Empty
+    } else {
+        ScreenState.Success(mapper(this))
+    }
+}
+
+fun <T> List<T>.toScreenState() : ScreenState<List<T>> {
+    return if (this.isEmpty()) {
+        ScreenState.Empty
+    } else {
+        ScreenState.Success(this)
+    }
+}
+
+fun <T> ScreenState<List<T>>.filterList(predicate: (T) -> Boolean ) : ScreenState<List<T>> {
+    return when(this) {
+        ScreenState.Empty -> this
+        is ScreenState.Error -> this
+        ScreenState.Loading -> this
+        is ScreenState.Success -> {
+            val filteredList = data.filter { predicate(it) }
+            if (filteredList.isEmpty()) {
+                ScreenState.Empty
+            } else {
+                ScreenState.Success(filteredList)
+            }
+        }
+    }
+}

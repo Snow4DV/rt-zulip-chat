@@ -8,8 +8,7 @@ import ru.snowadv.voiceapp.R
 import ru.snowadv.voiceapp.databinding.ActivityMainBinding
 
 internal class MainActivity : AppCompatActivity(), NavigatorHolder {
-    override val navigator: AppNavigator
-        get() = AppNavigator(this, R.id.fragment_container)
+    override val navigator: AppNavigator = AppNavigator(this, R.id.fragment_container)
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {

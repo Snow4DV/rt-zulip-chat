@@ -30,3 +30,9 @@ fun EditText.setTextIfChanged(text: String) {
         this.setText(text)
     }
 }
+
+fun EditText.setTextIfEmpty(text: String) {
+    if (this.text.toString().isEmpty()) {
+        this.setText(text)
+    }
+}

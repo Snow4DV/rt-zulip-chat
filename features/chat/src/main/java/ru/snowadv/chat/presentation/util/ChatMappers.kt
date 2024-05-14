@@ -1,5 +1,6 @@
 package ru.snowadv.chat.presentation.util
 
+import ru.snowadv.chat.presentation.chat.elm.ChatEventElm
 import ru.snowadv.chat.presentation.model.ChatEmoji
 import ru.snowadv.chat.domain.model.ChatEmoji as ModelChatEmoji
 import ru.snowadv.chat.domain.model.ChatReaction as DomainChatReaction
@@ -29,7 +30,7 @@ internal object ChatMappers {
         )
     }
 
-    fun DomainChatReaction.toUiChatReaction(): ChatReaction {
+    private fun DomainChatReaction.toUiChatReaction(): ChatReaction {
         return ChatReaction(
             name = name,
             emojiCode = emojiCode,
@@ -47,7 +48,7 @@ internal object ChatMappers {
         )
     }
 
-    fun EventReaction.toChatReaction(): ChatReaction {
+    private fun EventReaction.toChatReaction(): ChatReaction {
         return ChatReaction(
             name = name,
             emojiCode = emojiCode,
@@ -76,6 +77,61 @@ internal object ChatMappers {
             reactions = reactions.map { it.toChatReaction() },
             messageType = if (owner) ChatMessageType.OUTGOING else ChatMessageType.INCOMING
         )
+    }
+
+    fun DomainEvent.toElmEvent(): ChatEventElm {
+        return when(this) {
+            is DomainEvent.DeleteMessageDomainEvent -> ChatEventElm.Internal.ServerEvent.MessageDeleted(
+                eventId = id,
+                queueId = queueId,
+                messageId = messageId,
+            )
+            is DomainEvent.FailedFetchingQueueEvent -> ChatEventElm.Internal.ServerEvent.EventQueueFailed(
+                queueId = queueId,
+                eventId = id,
+                recreateQueue = isQueueBad,
+            )
+            is DomainEvent.MessageDomainEvent -> ChatEventElm.Internal.ServerEvent.NewMessage(
+                queueId = queueId,
+                eventId = id,
+                message = eventMessage.toUiChatMessage(),
+            )
+            is DomainEvent.ReactionDomainEvent -> this.toElmEvent()
+            is DomainEvent.RegisteredNewQueueEvent -> ChatEventElm.Internal.ServerEvent.EventQueueRegistered(
+                queueId = queueId,
+                eventId = id,
+                timeoutSeconds = timeoutSeconds,
+            )
+            is DomainEvent.UpdateMessageDomainEvent -> ChatEventElm.Internal.ServerEvent.MessageUpdated(
+                queueId = queueId,
+                eventId = id,
+                messageId = messageId,
+                newContent = content,
+            )
+            else -> ChatEventElm.Internal.ServerEvent.EventQueueUpdated(
+                queueId = queueId,
+                eventId = id,
+            )
+        }
+    }
+
+    fun DomainEvent.ReactionDomainEvent.toElmEvent(): ChatEventElm {
+        return when(op) {
+            DomainEvent.ReactionDomainEvent.OperationType.ADD -> ChatEventElm.Internal.ServerEvent.ReactionAdded(
+                queueId = queueId,
+                eventId = id,
+                messageId = messageId,
+                emoji = toUiChatEmoji(),
+                currentUserReaction = currentUserReaction,
+            )
+            DomainEvent.ReactionDomainEvent.OperationType.REMOVE -> ChatEventElm.Internal.ServerEvent.ReactionRemoved(
+                queueId = queueId,
+                eventId = id,
+                messageId = messageId,
+                emoji = toUiChatEmoji(),
+                currentUserReaction = currentUserReaction,
+            )
+        }
     }
 
 }

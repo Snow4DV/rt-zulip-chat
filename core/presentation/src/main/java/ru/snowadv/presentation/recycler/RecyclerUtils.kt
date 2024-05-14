@@ -1,6 +1,6 @@
 package ru.snowadv.presentation.recycler
 
-import android.content.Context
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.snowadv.presentation.R
 import ru.snowadv.presentation.adapter.util.PaddingItemDecorator
@@ -21,8 +21,6 @@ fun RecyclerView.setupDecorator(
         )
     )
 }
-
-
 private fun RecyclerView.getDefaultItemDecoration(): PaddingItemDecorator {
     return PaddingItemDecorator(
         context,

@@ -9,6 +9,9 @@ import ru.snowadv.event_api.model.EventStream
 import ru.snowadv.event_api.model.EventStreamUpdateFlagsMessages
 import ru.snowadv.event_api.model.EventTopicUpdateFlagsMessages
 import ru.snowadv.event_api.model.EventType
+import ru.snowadv.events_data.util.EventMapper.toEventTopicUnreadMessages
+import ru.snowadv.events_data.util.EventMapper.toRegisteredQueueEvent
+import ru.snowadv.network.model.EventQueueResponseDto
 import ru.snowadv.network.model.EventResponseDto
 import ru.snowadv.network.model.EventTypesRequestDto
 import ru.snowadv.network.model.MessageResponseDto
@@ -22,7 +25,7 @@ import ru.snowadv.utils.DateUtils
 
 
 internal object EventMapper {
-    fun MessageResponseDto.toEventMessage(currentUserId: Long): EventMessage {
+    private fun MessageResponseDto.toEventMessage(currentUserId: Long): EventMessage {
         return EventMessage(
             id = id,
             content = content,
@@ -35,31 +38,98 @@ internal object EventMapper {
             type = type,
             streamId = streamId,
             subject = subject,
+            flags = flags.toSet(),
         )
     }
 
-    fun UserPresenceDto.toEventPresence(serverTimestamp: Double): EventPresence {
+    private fun UserPresenceDto.toEventPresence(serverTimestamp: Double): EventPresence {
         return EventPresence.fromTimestampAndStatus(timestamp.toLong(), status, serverTimestamp.toLong())
     }
 
-    fun StreamResponseDto.toEventStream(): EventStream {
+    private fun StreamResponseDto.toEventStream(): EventStream {
         return EventStream(id, name)
     }
 
-    fun EventResponseDto.toDataEvent(currentUserId: Long): DomainEvent {
+    fun EventResponseDto.toDataEvent(currentUserId: Long, queueId: String): DomainEvent {
         return when (this) {
-            is EventResponseDto.MessageEventDto -> DomainEvent.MessageDomainEvent(id, message.toEventMessage(currentUserId))
-            is EventResponseDto.HeartbeatEventDto -> DomainEvent.HeartbeatDomainEvent(id)
-            is EventResponseDto.RealmEventDto -> DomainEvent.RealmDomainEvent(id, op)
-            is EventResponseDto.DeleteMessageEventDto -> DomainEvent.DeleteMessageDomainEvent(id, messageId)
-            is EventResponseDto.PresenceEventDto -> DomainEvent.PresenceDomainEvent(id, presence.website.toEventPresence(serverTimestamp), userId, email, userId == currentUserId)
-            is EventResponseDto.ReactionEventDto -> DomainEvent.ReactionDomainEvent(id, op, emojiCode, emojiName, messageId, reactionType, userId, userId == currentUserId)
-            is EventResponseDto.StreamEventDto -> DomainEvent.StreamDomainEvent(id, op, streams?.map { it.toEventStream() }, streamName, streamId)
-            is EventResponseDto.TypingEventDto -> DomainEvent.TypingDomainEvent(id, op, messageType, streamId, topic, sender.userId, sender.email)
-            is EventResponseDto.UpdateMessageEventDto -> DomainEvent.UpdateMessageDomainEvent(id, messageId, content)
-            is EventResponseDto.UserStatusEventDto -> DomainEvent.UserStatusDomainEvent(id, emojiCode, emojiName, reactionType, statusText, userId)
-            is EventResponseDto.UserSubscriptionEventDto -> DomainEvent.UserSubscriptionDomainEvent(id, op, subscriptions?.map { it.toEventStream() })
-            is EventResponseDto.UpdateMessageFlagsEventDto -> this.toAddOrRemoveFlagsEvent()
+            is EventResponseDto.MessageEventDto -> DomainEvent.MessageDomainEvent(
+                id = id,
+                eventMessage = message.toEventMessage(currentUserId),
+                queueId = queueId,
+            )
+            is EventResponseDto.HeartbeatEventDto -> DomainEvent.HeartbeatDomainEvent(
+                id = id,
+                queueId = queueId,
+            )
+            is EventResponseDto.RealmEventDto -> DomainEvent.RealmDomainEvent(
+                id = id,
+                op = DomainEvent.RealmDomainEvent.OperationType.valueOf(op.toString()),
+                queueId = queueId,
+            )
+            is EventResponseDto.DeleteMessageEventDto -> DomainEvent.DeleteMessageDomainEvent(
+                id = id,
+                messageId = messageId,
+                queueId = queueId,
+            )
+            is EventResponseDto.PresenceEventDto -> DomainEvent.PresenceDomainEvent(
+                id = id,
+                queueId = queueId,
+                presence = presence.website.toEventPresence(serverTimestamp),
+                userId = userId,
+                email = email,
+                currentUser = userId == currentUserId,
+                )
+            is EventResponseDto.ReactionEventDto -> DomainEvent.ReactionDomainEvent(
+                id = id,
+                queueId = queueId,
+                op = DomainEvent.ReactionDomainEvent.OperationType.valueOf(op.toString()),
+                emojiCode = emojiCode,
+                emojiName = emojiName,
+                messageId = messageId,
+                reactionType = reactionType,
+                userId = userId,
+                currentUserReaction = userId == currentUserId,
+            )
+            is EventResponseDto.StreamEventDto -> DomainEvent.StreamDomainEvent(
+                id = id,
+                queueId = queueId,
+                op = DomainEvent.StreamDomainEvent.OperationType.valueOf(op.toString()),
+                streams = streams?.map { it.toEventStream() },
+                streamName = streamName,
+                streamId = streamId,
+            )
+            is EventResponseDto.TypingEventDto -> DomainEvent.TypingDomainEvent(
+                id = id,
+                queueId = queueId,
+                op = DomainEvent.TypingDomainEvent.OperationType.valueOf(op.toString()),
+                messageType = messageType,
+                streamId = streamId,
+                topic = topic,
+                userId = sender.userId,
+                userEmail = sender.email,
+            )
+            is EventResponseDto.UpdateMessageEventDto -> DomainEvent.UpdateMessageDomainEvent(
+                id = id,
+                messageId = messageId,
+                content = content,
+                queueId = queueId,
+            )
+            is EventResponseDto.UserStatusEventDto -> DomainEvent.UserStatusDomainEvent(
+                id = id,
+                queueId = queueId,
+                emojiCode = emojiCode,
+                emojiName = emojiName,
+                reactionType = reactionType,
+                statusText = statusText,
+                userId = userId,
+            )
+            is EventResponseDto.UserSubscriptionEventDto -> DomainEvent.UserSubscriptionDomainEvent(
+                id = id,
+                queueId = queueId,
+                op = DomainEvent.UserSubscriptionDomainEvent.OperationType.valueOf(op.toString()),
+                subscriptions = subscriptions?.map { it.toEventStream() },
+            )
+            is EventResponseDto.UpdateMessageFlagsEventDto -> this.toAddOrRemoveFlagsEvent(queueId)
         }
     }
 
@@ -67,14 +137,17 @@ internal object EventMapper {
         return EventTypesRequestDto(map { it.apiName })
     }
 
-    fun EventResponseDto.UpdateMessageFlagsEventDto.toAddOrRemoveFlagsEvent(): DomainEvent {
-        val t = messageIdToMessageDetails?.entries
-            ?.filter { it.value.streamId != null && it.value.topic != null && it.value.type == "stream" }
-            ?.groupBy { it.value.streamId ?: error("Malformed json: streamId is null in $this but type is stream") }
-            ?.mapValues { it.value.groupBy { it.value.topic ?: error("Malformed json: topic is null but type is stream") } }
+    fun Set<EventType>.toEventTypesDto(): EventTypesRequestDto {
+        return EventTypesRequestDto(map { it.apiName })
+    }
+
+
+    private fun EventResponseDto.UpdateMessageFlagsEventDto.toAddOrRemoveFlagsEvent(queueId: String): DomainEvent {
         return when {
-            op == "add" && flag == "read" -> DomainEvent.AddReadMessageFlagEvent(id, messagesIds)
-            op == "remove" && flag == "read" && messageIdToMessageDetails != null -> {
+            op == EventResponseDto.UpdateMessageFlagsEventDto.OperationType.ADD
+                    && flag == "read" -> DomainEvent.AddReadMessageFlagEvent(id, messagesIds, queueId)
+            op == EventResponseDto.UpdateMessageFlagsEventDto.OperationType.REMOVE
+                    && flag == "read" && messageIdToMessageDetails != null -> {
                 DomainEvent.RemoveReadMessageFlagEvent(
                     id = id,
                     removeFlagMessagesIds = messagesIds,
@@ -88,16 +161,17 @@ internal object EventMapper {
                                 topicName = it.key,
                                 unreadMessagesIds = it.value.map { it.key.toLong() }
                             ) }
-                        ) } ?: error("Missing message details but type is read")
+                        ) } ?: error("Missing message details but type is read"),
+                    queueId = queueId,
                 )
             }
-            op == "add" -> DomainEvent.AddMessageFlagEvent(id, flag, messagesIds)
-            op == "remove" -> DomainEvent.RemoveMessageFlagEvent(id, flag, messagesIds)
-            else -> error("Illegal event flag = $flag: $this")
+            op == EventResponseDto.UpdateMessageFlagsEventDto.OperationType.ADD  -> DomainEvent.AddMessageFlagEvent(id, queueId, flag, messagesIds)
+            op == EventResponseDto.UpdateMessageFlagsEventDto.OperationType.REMOVE  -> DomainEvent.RemoveMessageFlagEvent(id, queueId, flag, messagesIds)
+            else -> error("Illegal event: $this")
         }
     }
 
-    fun EventNarrow.toNarrowDto(): NarrowRequestDto {
+    private fun EventNarrow.toNarrowDto(): NarrowRequestDto {
         return NarrowRequestDto(operator = operator, operand = operand)
     }
 
@@ -105,7 +179,11 @@ internal object EventMapper {
         return Narrow2DArrayRequestDto(map { it.toNarrowDto() })
     }
 
-    fun List<ReactionResponseDto>.toDataReactionList(currentUserId: Long): List<EventReaction> {
+    fun Set<EventNarrow>.toNarrow2DArrayDto(): Narrow2DArrayRequestDto {
+        return Narrow2DArrayRequestDto(map { it.toNarrowDto() })
+    }
+
+    private fun List<ReactionResponseDto>.toDataReactionList(currentUserId: Long): List<EventReaction> {
         return buildList {
             this@toDataReactionList.groupBy { it.emojiName }.asSequence().map { it.value }.forEach {
                 add(
@@ -123,5 +201,17 @@ internal object EventMapper {
 
     fun StreamTopicUnreadMessagesResponseDto.toEventTopicUnreadMessages(): EventTopicUpdateFlagsMessages {
         return EventTopicUpdateFlagsMessages(topicName, unreadMessagesIds)
+    }
+
+    fun List<StreamTopicUnreadMessagesResponseDto>.toEventStreamMessages(): List<EventStreamUpdateFlagsMessages> {
+        return groupBy { it.streamId }.map {
+            EventStreamUpdateFlagsMessages(
+                it.key,
+                it.value.map { streamTopicUnreadMessagesDto -> streamTopicUnreadMessagesDto.toEventTopicUnreadMessages() })
+        }
+    }
+
+    fun EventQueueResponseDto.toRegisteredQueueEvent(): DomainEvent.RegisteredNewQueueEvent {
+        return DomainEvent.RegisteredNewQueueEvent(queueId, lastEventId, longPollTimeoutSeconds, unreadMessages?.streams?.toEventStreamMessages())
     }
 }

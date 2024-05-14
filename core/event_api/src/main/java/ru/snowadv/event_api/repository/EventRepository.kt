@@ -1,12 +1,11 @@
 package ru.snowadv.event_api.repository
 
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import ru.snowadv.event_api.helper.MutableEventQueueListenerBag
 import ru.snowadv.event_api.model.DomainEvent
 import ru.snowadv.event_api.model.EventNarrow
+import ru.snowadv.event_api.helper.EventQueueProperties
 import ru.snowadv.event_api.model.EventType
-import kotlin.coroutines.CoroutineContext
 
 interface EventRepository {
     /**
@@ -44,5 +43,13 @@ interface EventRepository {
         types: List<EventType>,
         narrows: List<EventNarrow>,
         reloadAction: suspend () -> Unit
+    ): Flow<DomainEvent>
+
+
+    fun listenEvents(
+        types: Set<EventType>,
+        narrows: Set<EventNarrow>,
+        eventQueueProps: EventQueueProperties?,
+        delayBeforeObtain: Boolean = false,
     ): Flow<DomainEvent>
 }

@@ -2,7 +2,7 @@ package ru.snowadv.model
 
 sealed class Resource<out T> {
     data object Loading: Resource<Nothing>()
-    class Error(val throwable: Throwable? = null): Resource<Nothing>()
+    class Error(val throwable: Throwable): Resource<Nothing>()
     class Success<T>(val data: T): Resource<T>()
 
     fun getDataOrNull(): T? = if (this is Success) this.data else null
@@ -27,6 +27,8 @@ fun <T, R> Resource<T>.map(mapper: (T) -> R): Resource<R> {
         is Resource.Error -> this
     }
 }
+
+
 
 fun Resource<*>.toUnitResource(): Resource<Unit> {
     return when(this) {

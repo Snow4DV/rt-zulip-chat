@@ -22,6 +22,7 @@ import retrofit2.http.Query
 import ru.snowadv.data.api.AuthProvider
 import ru.snowadv.network.interceptor.HeaderBasicAuthInterceptor
 import ru.snowadv.network.interceptor.TimeoutSetterInterceptor
+import ru.snowadv.network.interceptor.TimeoutSetterInterceptor.Companion.READ_TIMEOUT_HEADER
 import ru.snowadv.network.model.AllStreamsResponseDto
 import ru.snowadv.network.model.AllUsersResponseDto
 import ru.snowadv.network.model.AllUsersPresenceDto
@@ -144,7 +145,7 @@ interface ZulipApi { // Will add annotations later, at this moment it is used wi
     suspend fun getEventsFromEventQueue(
         @Query("queue_id") queueId: String,
         @Query("last_event_id") lastEventId: Long,
-        @Header("READ_TIMEOUT") readTimeout: Long,
+        @Header(READ_TIMEOUT_HEADER) readTimeout: Long,
     ): Result<EventsResponseDto>
 
     companion object {
@@ -177,9 +178,6 @@ private fun retrofit(
     val newOkhttpClient = (okHttpClient?.newBuilder() ?: OkHttpClient.Builder())
         .addInterceptor(HeaderBasicAuthInterceptor(authProvider))
         .addInterceptor(TimeoutSetterInterceptor())
-        .addInterceptor(HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        })
         .build()
 
     return Retrofit.Builder()
