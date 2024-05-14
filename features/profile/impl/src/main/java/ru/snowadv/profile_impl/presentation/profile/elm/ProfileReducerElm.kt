@@ -48,6 +48,9 @@ internal class ProfileReducerElm @Inject constructor()  : ScreenDslReducer<Profi
 
             is ProfileEventElm.Internal.ServerEvent.EventQueueFailed -> {
                 if (event.recreateQueue) {
+                    state {
+                        copy(eventQueueData = null)
+                    }
                     commands {
                         +ProfileCommandElm.LoadData(state.profileId)
                     }

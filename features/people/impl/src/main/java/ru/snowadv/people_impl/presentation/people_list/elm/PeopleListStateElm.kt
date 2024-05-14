@@ -5,7 +5,7 @@ import ru.snowadv.model.Resource
 import ru.snowadv.people_impl.presentation.model.Person
 import ru.snowadv.model.ScreenState
 
-internal data class PeopleListStateElm(
+data class PeopleListStateElm(
     val screenState: ScreenState<List<Person>> = ScreenState.Loading(),
     val peopleRes: Resource<List<Person>> = Resource.Loading(),
     val isResumed: Boolean,

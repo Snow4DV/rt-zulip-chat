@@ -26,8 +26,8 @@ internal data class ChatStateUiElm(
 
     val isActionButtonVisible = !screenState.isLoading && !sendingMessage && !uploadingFile
 
-    enum class ActionButtonType (val buttonResId: Int) {
-        SEND_MESSAGE(R.drawable.ic_send),
-        ADD_ATTACHMENT(R.drawable.ic_add_attachment),
+    enum class ActionButtonType (val buttonResId: Int, val hintTextResId: Int) {
+        SEND_MESSAGE(R.drawable.ic_send, R.string.send_message_hint),
+        ADD_ATTACHMENT(R.drawable.ic_add_attachment, R.string.add_attachment_hint),
     }
 }

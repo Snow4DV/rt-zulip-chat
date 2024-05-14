@@ -12,6 +12,7 @@ android {
         minSdk = 24
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -25,15 +26,19 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-        isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         viewBinding = true
+    }
+    testOptions {
+        unitTests.all { it.useJUnitPlatform() }
+        animationsDisabled = true
     }
 }
 
@@ -74,5 +79,36 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.fragment.ktx)
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
+    
+
+    // JUnit
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+
+    // Kotest
+    testImplementation(libs.kotest.junit)
+    testImplementation(libs.kotest.assertions)
+    testImplementation(libs.kotest.property)
+
+    // Hamcrest Matchers
+    androidTestImplementation(libs.hamcrest)
+
+    // Kaspresso
+    androidTestImplementation(libs.kaspresso)
+
+    // Espresso Intents
+    androidTestImplementation(libs.androidx.espresso.intents)
+
+    // Wiremock
+    debugImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.httpclient.android)
+    androidTestImplementation(libs.wiremock) {
+        exclude(group = "org.apache.httpcomponents", module = "httpclient")
+    }
+
+    // Test utils
+    testImplementation(projects.core.testUtils)
+
+    // Instrument tests
+    androidTestImplementation(libs.androidx.fragment.testing)
 }

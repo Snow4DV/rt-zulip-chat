@@ -11,6 +11,7 @@ import ru.snowadv.chat_domain_api.use_case.RemoveReactionUseCase
 import ru.snowadv.chat_domain_api.use_case.SendFileUseCase
 import ru.snowadv.chat_domain_api.use_case.SendMessageUseCase
 import ru.snowadv.chat_presentation.navigation.ChatRouter
+import ru.snowadv.model.BaseUrlProvider
 import ru.snowadv.module_injector.module.BaseModuleDependencies
 
 interface ChatPresentationDependencies : BaseModuleDependencies {
@@ -27,4 +28,5 @@ interface ChatPresentationDependencies : BaseModuleDependencies {
 
     val appContext: Context
     val imageLoader: ImageLoader
+    val baseUrlProvider: BaseUrlProvider
 }

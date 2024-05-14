@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "ru.snowadv.voiceapp"
+    namespace = "ru.snowadv.chatapp"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "ru.snowadv.voiceapp"
+        applicationId = "ru.snowadv.chatapp"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
@@ -28,12 +28,12 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-        isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+        
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 
     buildFeatures {
@@ -42,6 +42,39 @@ android {
 }
 
 dependencies {
+    // Andriod Test Rules
+    androidTestImplementation(libs.androidx.test.rules)
+    // JUnit
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+
+    // Kotest
+    testImplementation(libs.kotest.junit)
+    testImplementation(libs.kotest.assertions)
+    testImplementation(libs.kotest.property)
+
+    // Hamcrest Matchers
+    androidTestImplementation(libs.hamcrest)
+
+    // Kaspresso
+    androidTestImplementation(libs.kaspresso)
+
+    // Espresso Intents
+    androidTestImplementation(libs.androidx.espresso.intents)
+
+    // Wiremock
+    debugImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.httpclient.android)
+    androidTestImplementation(libs.wiremock) {
+        exclude(group = "org.apache.httpcomponents", module = "httpclient")
+    }
+
+    // Test utils
+    testImplementation(projects.core.testUtils)
+
+    // Instrument tests
+    implementation(libs.androidx.fragment.testing)
+
     // New multi-layer features
 
     // Auth feature
@@ -78,6 +111,7 @@ dependencies {
     // Core
     implementation(projects.core.utils)
     implementation(projects.core.moduleInjector)
+    implementation(projects.core.presentation)
 
     // Libs
     implementation(projects.lib.network)
@@ -103,5 +137,5 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
+    
 }

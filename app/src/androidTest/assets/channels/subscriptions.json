@@ -1,0 +1,23 @@
+{
+  "result": "success",
+  "msg": "",
+  "subscriptions": [
+    {
+      "can_remove_subscribers_group": 505981,
+      "creator_id": 709343,
+      "date_created": 1713199266,
+      "description": "",
+      "first_message_id": 433338497,
+      "history_public_to_subscribers": true,
+      "invite_only": false,
+      "is_web_public": false,
+      "message_retention_days": null,
+      "name": "Subscription stream",
+      "rendered_description": "",
+      "stream_id": 433635,
+      "stream_post_policy": 1,
+      "is_announcement_only": false,
+      "stream_weekly_traffic": 28
+    }
+  ]
+}

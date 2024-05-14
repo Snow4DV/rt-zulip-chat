@@ -45,6 +45,7 @@ internal class ChatReducerElm @Inject constructor() :
                         screenState = event.messages.messages.toScreenState(),
                         messages = event.messages.messages,
                         paginationStatus = when {
+                            event.cached -> ChatPaginationStatus.None
                             event.messages.foundOldest -> ChatPaginationStatus.LoadedAll
                             else -> ChatPaginationStatus.HasMore
                         },
@@ -66,20 +67,22 @@ internal class ChatReducerElm @Inject constructor() :
             }
 
             is ChatEventElm.Internal.MoreMessagesLoaded -> {
-                val messagesList = buildList {
-                    addAll(event.messages.messages)
-                    addAll(state.messages)
-                }
-                state {
-                    copy(
-                        paginationStatus = if (event.messages.foundOldest) {
-                            ChatPaginationStatus.LoadedAll
-                        } else {
-                            ChatPaginationStatus.HasMore
-                        },
-                        messages = messagesList,
-                        screenState = messagesList.toScreenState(),
-                    )
+                if (state.screenState.data != null) {
+                    val messagesList = buildList {
+                        addAll(event.messages.messages)
+                        addAll(state.messages)
+                    }
+                    state {
+                        copy(
+                            paginationStatus = if (event.messages.foundOldest) {
+                                ChatPaginationStatus.LoadedAll
+                            } else {
+                                ChatPaginationStatus.HasMore
+                            },
+                            messages = messagesList,
+                            screenState = messagesList.toScreenState(),
+                        )
+                    }
                 }
             }
 
@@ -206,7 +209,7 @@ internal class ChatReducerElm @Inject constructor() :
             ChatEventElm.Internal.FileUploaded -> state { copy(uploadingFile = false) }
             ChatEventElm.Internal.UploadingFile -> state { copy(uploadingFile = true) }
             is ChatEventElm.Internal.UploadingFileError -> {
-                state { copy(uploadingFile = true) }
+                state { copy(uploadingFile = false) }
                 effects {
                     +ChatEffectElm.ShowActionErrorWithRetry(event.retryEvent)
                 }

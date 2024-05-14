@@ -18,7 +18,7 @@ import ru.snowadv.profile_impl.databinding.FragmentProfileBinding
 import vivid.money.elmslie.android.renderer.elmStoreWithRenderer
 import vivid.money.elmslie.core.store.Store
 
-internal class ProfileFragment : BaseFragment<ProfileEventElm, ProfileEffectElm, ProfileStateElm>(),
+class ProfileFragment : BaseFragment<ProfileEventElm, ProfileEffectElm, ProfileStateElm>(),
     ElmFragmentRenderer<ProfileFragment, FragmentProfileBinding, ProfileEventElm, ProfileEffectElm, ProfileStateElm> by ProfileFragmentRenderer() {
     companion object {
         const val ARG_PROFILE_ID_KEY = "profile_id"

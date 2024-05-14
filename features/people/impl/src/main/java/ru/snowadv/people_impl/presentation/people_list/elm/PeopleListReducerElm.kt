@@ -10,7 +10,7 @@ import ru.snowadv.presentation.util.toScreenState
 import vivid.money.elmslie.core.store.dsl.ScreenDslReducer
 import javax.inject.Inject
 
-internal class PeopleListReducerElm @Inject constructor():
+internal class PeopleListReducerElm @Inject constructor() :
     ScreenDslReducer<PeopleListEventElm, PeopleListEventElm.Ui, PeopleListEventElm.Internal, PeopleListStateElm, PeopleListEffectElm, PeopleListCommandElm>(
         uiEventClass = PeopleListEventElm.Ui::class,
         internalEventClass = PeopleListEventElm.Internal::class,
@@ -40,7 +40,8 @@ internal class PeopleListReducerElm @Inject constructor():
             is PeopleListEventElm.Internal.PeopleLoaded -> {
                 state {
                     copy(
-                        screenState = event.people.toScreenState().filterBySearchQuery(state.searchQuery),
+                        screenState = event.people.toScreenState()
+                            .filterBySearchQuery(state.searchQuery),
                         peopleRes = Resource.Success(event.people),
                     )
                 }
@@ -50,10 +51,11 @@ internal class PeopleListReducerElm @Inject constructor():
             }
 
             is PeopleListEventElm.Internal.ServerEvent.EventQueueFailed -> {
-                commands {
-                    if (event.recreateQueue) {
-                        +PeopleListCommandElm.LoadData
-                    } else if (state.isResumed){
+                if (event.recreateQueue) {
+                    state { copy(eventQueueData = null) }
+                    commands { +PeopleListCommandElm.LoadData }
+                } else if (state.isResumed) {
+                    commands {
                         +PeopleListCommandElm.ObservePresence(
                             isRestart = true,
                             queueProps = state.eventQueueData,
@@ -61,6 +63,7 @@ internal class PeopleListReducerElm @Inject constructor():
                     }
                 }
             }
+
             is PeopleListEventElm.Internal.ServerEvent.EventQueueRegistered -> {
                 state {
                     copy(
@@ -71,15 +74,21 @@ internal class PeopleListReducerElm @Inject constructor():
                 }
                 observeCommand()
             }
+
             is PeopleListEventElm.Internal.ServerEvent.EventQueueUpdated -> {
                 state {
                     copy(eventQueueData = eventQueueData?.copy(lastEventId = event.eventId))
                 }
                 observeCommand()
             }
+
             is PeopleListEventElm.Internal.ServerEvent.PresenceUpdated -> {
                 state {
-                    updateStatus(userId = event.userId, status = event.newStatus, eventId = event.eventId)
+                    updateStatus(
+                        userId = event.userId,
+                        status = event.newStatus,
+                        eventId = event.eventId
+                    )
                 }
                 observeCommand()
             }
@@ -87,13 +96,15 @@ internal class PeopleListReducerElm @Inject constructor():
     }
 
     override fun Result.ui(event: PeopleListEventElm.Ui) {
-        when(event) {
+        when (event) {
             PeopleListEventElm.Ui.ClickedOnRetry, PeopleListEventElm.Ui.Init -> commands {
                 +PeopleListCommandElm.LoadData
             }
+
             PeopleListEventElm.Ui.Paused -> state {
                 copy(isResumed = false)
             }
+
             PeopleListEventElm.Ui.Resumed -> {
                 state {
                     copy(isResumed = true)
@@ -115,6 +126,7 @@ internal class PeopleListReducerElm @Inject constructor():
                     event.userId
                 )
             }
+
             PeopleListEventElm.Ui.ClickedOnSearchIcon -> effects {
                 +PeopleListEffectElm.FocusOnSearchFieldAndOpenKeyboard
             }
@@ -137,7 +149,11 @@ internal class PeopleListReducerElm @Inject constructor():
             ?.let { if (it.isEmpty()) ScreenState.Empty else ScreenState.Success(it) } ?: this
     }
 
-    private fun PeopleListStateElm.updateStatus(userId: Long, status: Person.Status, eventId: Long): PeopleListStateElm {
+    private fun PeopleListStateElm.updateStatus(
+        userId: Long,
+        status: Person.Status,
+        eventId: Long
+    ): PeopleListStateElm {
         val peopleRes = peopleRes.map { people ->
             people.map { person ->
                 if (person.id == userId) {

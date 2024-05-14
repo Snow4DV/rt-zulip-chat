@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/pagination_has_more"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -13,13 +14,15 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
+        android:id="@+id/more_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/load_more_messages"
         android:gravity="center_horizontal"
+        android:text="@string/load_more_messages"
         android:textColor="@color/text"
-        app:layout_constraintTop_toBottomOf="@id/more_icon"/>
+        app:layout_constraintTop_toBottomOf="@id/more_icon" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

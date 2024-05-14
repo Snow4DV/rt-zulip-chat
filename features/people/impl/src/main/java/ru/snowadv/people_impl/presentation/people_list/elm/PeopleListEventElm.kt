@@ -4,7 +4,7 @@ import ru.snowadv.events_api.model.EventInfoHolder
 import ru.snowadv.events_api.model.EventSenderType
 import ru.snowadv.people_impl.presentation.model.Person
 
-internal sealed interface PeopleListEventElm {
+sealed interface PeopleListEventElm {
 
     sealed interface Ui : PeopleListEventElm {
         data object Init : Ui

@@ -22,7 +22,7 @@ import ru.snowadv.chat_presentation.databinding.ItemMessageViewIncomingBinding
  * This view draws message with name, text, timestamp, avatar and emojis flexbox for incoming
  * message
  */
-internal class IncomingMessageLayout @JvmOverloads constructor(
+class IncomingMessageLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.outgoingMessageLayoutStyle,
@@ -74,6 +74,7 @@ internal class IncomingMessageLayout @JvmOverloads constructor(
         }
 
     init {
+        id = R.id.incoming_message
         initAttributes(attrs, defStyleAttr, defStyleRes)
         initLongClickListener()
     }

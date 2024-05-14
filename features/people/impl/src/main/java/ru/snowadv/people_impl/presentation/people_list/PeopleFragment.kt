@@ -18,7 +18,7 @@ import ru.snowadv.presentation.fragment.ElmFragmentRenderer
 import vivid.money.elmslie.android.renderer.elmStoreWithRenderer
 import vivid.money.elmslie.core.store.Store
 
-internal class PeopleFragment : BaseFragment<PeopleListEventElm, PeopleListEffectElm, PeopleListStateElm>(),
+class PeopleFragment : BaseFragment<PeopleListEventElm, PeopleListEffectElm, PeopleListStateElm>(),
     ElmFragmentRenderer<PeopleFragment, FragmentPeopleBinding, PeopleListEventElm, PeopleListEffectElm, PeopleListStateElm>
     by PeopleListRenderer() {
 

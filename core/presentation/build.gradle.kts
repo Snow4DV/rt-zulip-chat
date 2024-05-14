@@ -24,12 +24,12 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-        isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+        
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 
     buildFeatures {
@@ -41,8 +41,8 @@ dependencies {
     implementation(projects.core.utils)
 
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.elmslie.core)
-    implementation(libs.elmslie.android)
+    api(libs.elmslie.core)
+    api(libs.elmslie.android)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -50,5 +50,5 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
+    
 }

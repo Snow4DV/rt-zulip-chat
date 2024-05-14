@@ -24,7 +24,7 @@ import ru.snowadv.chat_presentation.R
  * 4) Supports margins & paddings
  * 5) If mirror is enabled - views will be placed starting from the right side
  */
-internal class FlexBoxLayout @JvmOverloads constructor(
+class FlexBoxLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.flexBoxStyle,

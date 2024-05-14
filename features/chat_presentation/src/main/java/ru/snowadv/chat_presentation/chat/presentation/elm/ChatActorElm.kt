@@ -18,7 +18,7 @@ import vivid.money.elmslie.core.store.Actor
 import javax.inject.Inject
 
 @Reusable
-internal class ChatActorElm @Inject constructor(
+class ChatActorElm @Inject constructor(
     private val router: ChatRouter,
     private val addReactionUseCase: AddReactionUseCase,
     private val removeReactionUseCase: RemoveReactionUseCase,
@@ -104,14 +104,7 @@ internal class ChatActorElm @Inject constructor(
         is ChatCommandElm.SendMessage -> {
             sendMessageUseCase(command.streamName, command.topicName, command.text).map { res ->
                 when (res) {
-                    is Resource.Error -> ChatEventElm.Internal.SendingMessageError(
-                        ChatCommandElm.SendMessage(
-                            command.streamName,
-                            command.topicName,
-                            command.text,
-                        )
-                    )
-
+                    is Resource.Error -> ChatEventElm.Internal.SendingMessageError
                     is Resource.Loading -> ChatEventElm.Internal.SendingMessage
                     is Resource.Success -> ChatEventElm.Internal.MessageSent
                 }

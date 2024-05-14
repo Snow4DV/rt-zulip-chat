@@ -32,7 +32,6 @@
             android:background="@color/light_gray_3" />
 
         <TextView
-            android:id="@+id/topic_name_text"
             android:layout_width="150dp"
             android:background="@drawable/bg_loading_text"
             android:layout_height="wrap_content"

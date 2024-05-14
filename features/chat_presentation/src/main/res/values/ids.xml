@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="outgoing_message" type="id"/>
+    <item name="incoming_message" type="id"/>
+    <item name="reaction_view" type="id"/>
+    <item name="flexbox_layout" type="id"/>
+</resources>

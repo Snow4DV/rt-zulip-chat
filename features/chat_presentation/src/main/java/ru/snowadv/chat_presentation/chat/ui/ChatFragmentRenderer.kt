@@ -95,6 +95,8 @@ internal class ChatFragmentRenderer :
         )
         bottomBar.sendOrAddAttachmentButton.setImageResource(mappedState.actionButtonType.buttonResId)
         bottomBar.sendOrAddAttachmentButton.isVisible = mappedState.isActionButtonVisible
+        bottomBar.sendOrAddAttachmentButton.contentDescription = getString(mappedState.actionButtonType.hintTextResId)
+        bottomBar.sendOrAddAttachmentButton.tag = getString(mappedState.actionButtonType.hintTextResId)
 
         adapter.submitListAndKeepScrolledToBottom(
             recycler = binding.messagesRecycler,

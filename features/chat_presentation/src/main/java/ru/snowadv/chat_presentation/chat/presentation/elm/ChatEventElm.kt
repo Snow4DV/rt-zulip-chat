@@ -7,7 +7,7 @@ import ru.snowadv.events_api.model.EventInfoHolder
 import ru.snowadv.events_api.model.EventSenderType
 import ru.snowadv.model.InputStreamOpener
 
-internal sealed interface ChatEventElm {
+sealed interface ChatEventElm {
 
     sealed interface Ui : ChatEventElm {
         data object Init : Ui
@@ -47,7 +47,7 @@ internal sealed interface ChatEventElm {
 
         data object SendingMessage : Internal
         data object ChangingReaction : Internal
-        data class SendingMessageError(val retryCommandElm: ChatCommandElm): Internal
+        data object SendingMessageError: Internal
         data class ChangingReactionError(val retryEvent: ChatEventElm) : Internal
         data object MessageSent : Internal
         data object ReactionChanged : Internal

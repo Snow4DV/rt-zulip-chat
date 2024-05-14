@@ -27,7 +27,7 @@ import ru.snowadv.presentation.fragment.impl.SnackbarErrorHandlingFragment
 import vivid.money.elmslie.android.renderer.elmStoreWithRenderer
 import vivid.money.elmslie.core.store.Store
 
-internal class ChannelListFragment : BaseFragment<ChannelListEventElm, ChannelListEffectElm, ChannelListStateElm>(),
+class ChannelListFragment : BaseFragment<ChannelListEventElm, ChannelListEffectElm, ChannelListStateElm>(),
     ErrorHandlingFragment by SnackbarErrorHandlingFragment(),
     ElmFragmentRenderer<ChannelListFragment, FragmentChannelListBinding, ChannelListEventElm, ChannelListEffectElm, ChannelListStateElm>
     by ChannelListFragmentRenderer(), SearchHolder {

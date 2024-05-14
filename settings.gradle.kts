@@ -16,7 +16,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-
         maven("https://jitpack.io")
     }
 }
@@ -71,3 +70,4 @@ include(":features:auth_data")
 include(":features:chat_presentation")
 include(":features:chat_domain_api")
 include(":lib:auth_storage")
+include(":core:test_utils")

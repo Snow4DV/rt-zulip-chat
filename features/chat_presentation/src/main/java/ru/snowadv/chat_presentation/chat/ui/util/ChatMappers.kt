@@ -131,7 +131,7 @@ internal object ChatMappers {
             sentAt = sentAt,
             senderId = senderId,
             senderName = senderFullName,
-            senderAvatarUrl = senderFullName,
+            senderAvatarUrl = avatarUrl,
             reactions = reactions.map { it.toChatReaction() },
             owner = this.owner,
         )

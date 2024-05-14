@@ -27,7 +27,7 @@ import ru.snowadv.presentation.fragment.setTopBarColor
 import vivid.money.elmslie.android.renderer.elmStoreWithRenderer
 import vivid.money.elmslie.core.store.Store
 
-internal class ChatFragment : BaseFragment<ChatEventElm, ChatEffectElm, ChatStateElm>(),
+class ChatFragment : BaseFragment<ChatEventElm, ChatEffectElm, ChatStateElm>(),
     ElmFragmentRenderer<ChatFragment, FragmentChatBinding, ChatEventElm, ChatEffectElm, ChatStateElm>
     by ChatFragmentRenderer(),
     ErrorHandlingFragment by SnackbarErrorHandlingFragment() {

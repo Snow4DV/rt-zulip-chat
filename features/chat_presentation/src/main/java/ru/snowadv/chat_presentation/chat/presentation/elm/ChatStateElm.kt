@@ -5,7 +5,7 @@ import ru.snowadv.chat_domain_api.model.ChatPaginationStatus
 import ru.snowadv.events_api.model.EventQueueProperties
 import ru.snowadv.model.ScreenState
 
-internal data class ChatStateElm(
+data class ChatStateElm(
     val sendingMessage: Boolean = false,
     val changingReaction: Boolean = false,
     val uploadingFile: Boolean = false,

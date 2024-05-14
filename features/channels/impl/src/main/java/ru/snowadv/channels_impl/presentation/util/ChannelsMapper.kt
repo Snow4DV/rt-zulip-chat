@@ -101,7 +101,7 @@ internal object ChannelsMapper {
                 timeoutSeconds = timeoutSeconds,
                 streamsUnreadMessages = streamUnreadMessages?.map {
                         updateMsgFlags -> updateMsgFlags.toUiModel()
-                } ?: error ("Wrong event queue registered. Check event types in use case"),
+                } ?: emptyList(),
             )
             is DomainEvent.RemoveReadMessageFlagEvent -> {
                 StreamListEventElm.Internal.ServerEvent.MessagesUnread(

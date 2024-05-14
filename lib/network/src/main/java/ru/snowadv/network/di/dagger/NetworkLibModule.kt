@@ -1,5 +1,6 @@
 package ru.snowadv.network.di.dagger
 
+import android.content.pm.ApplicationInfo
 import com.skydoves.retrofit.adapters.result.ResultCallAdapterFactory
 import dagger.Module
 import dagger.Provides
@@ -7,10 +8,12 @@ import dagger.Reusable
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.create
+import ru.snowadv.model.BaseUrlProvider
 import ru.snowadv.network.api.ZulipApi
 import ru.snowadv.network.interceptor.BadAuthResponseInterceptor
 import ru.snowadv.network.interceptor.HeaderBasicAuthInterceptor
@@ -46,10 +49,12 @@ internal class NetworkLibModule {
         timeoutSetterInterceptor: TimeoutSetterInterceptor,
         badAuthResponseInterceptor: BadAuthResponseInterceptor,
     ): OkHttpClient {
+
         return OkHttpClient.Builder()
             .addInterceptor(headerBasicAuthInterceptor)
             .addInterceptor(timeoutSetterInterceptor)
             .addInterceptor(badAuthResponseInterceptor)
+            .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
             .build()
     }
 
@@ -59,9 +64,10 @@ internal class NetworkLibModule {
         converterFactory: Converter.Factory,
         resultCallAdapterFactory: ResultCallAdapterFactory,
         okHttpClient: OkHttpClient,
+        baseUrlProvider: BaseUrlProvider,
     ): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(ZulipApi.BASE_URL)
+            .baseUrl(baseUrlProvider.apiUrl)
             .addConverterFactory(converterFactory)
             .addCallAdapterFactory(resultCallAdapterFactory)
             .client(okHttpClient)

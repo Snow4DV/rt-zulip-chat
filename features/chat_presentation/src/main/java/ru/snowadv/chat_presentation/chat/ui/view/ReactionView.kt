@@ -19,7 +19,7 @@ import ru.snowadv.utils.EmojiUtils
 /**
  * This view draws button with emoji and count inside. Uses background with ripple effect.
  */
-internal class ReactionView @JvmOverloads constructor(
+class ReactionView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.reactionButtonStyle,
@@ -82,6 +82,7 @@ internal class ReactionView @JvmOverloads constructor(
 
 
     init {
+        id = R.id.reaction_view
         initAttributes(attrs, defStyleAttr, defStyleRes)
     }
 

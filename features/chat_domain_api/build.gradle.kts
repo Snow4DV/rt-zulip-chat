@@ -24,12 +24,12 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-        isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+        
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         viewBinding = true
@@ -44,5 +44,5 @@ dependencies {
     implementation(projects.core.moduleInjector)
 
     implementation(libs.androidx.core.ktx)
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
+    
 }

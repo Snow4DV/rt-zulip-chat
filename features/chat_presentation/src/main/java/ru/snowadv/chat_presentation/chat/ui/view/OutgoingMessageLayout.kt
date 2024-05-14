@@ -14,7 +14,7 @@ import androidx.core.content.res.use
 /**
  * This view draws message with text, timestamp and emojis flexbox for outgoing message
  */
-internal class OutgoingMessageLayout @JvmOverloads constructor(
+class OutgoingMessageLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.outgoingMessageLayoutStyle,
@@ -31,6 +31,7 @@ internal class OutgoingMessageLayout @JvmOverloads constructor(
     override val timestampTextView: TextView = binding.messageTimestamp
 
     init {
+        id = R.id.outgoing_message
         initAttributes(attrs, defStyleAttr, defStyleRes)
         initLongClickListener()
     }
@@ -140,6 +141,8 @@ internal class OutgoingMessageLayout @JvmOverloads constructor(
                 )
             }
     }
+
+
 
     private fun initLongClickListener() {
         messageBackgroundView.setOnClickListener {

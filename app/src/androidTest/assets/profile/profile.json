@@ -1,0 +1,21 @@
+{
+  "result": "success",
+  "msg": "",
+  "user": {
+    "email": "user708835@tinkoff-android-spring-2024.zulipchat.com",
+    "user_id": 708835,
+    "avatar_version": 1,
+    "is_admin": false,
+    "is_owner": false,
+    "is_guest": false,
+    "is_billing_admin": false,
+    "role": 400,
+    "is_bot": false,
+    "full_name": "Mikhail Loginov",
+    "timezone": "Europe/Moscow",
+    "is_active": true,
+    "date_joined": "2024-04-09T17:14:13.300215+00:00",
+    "delivery_email": "log.mihail2003@gmail.com",
+    "avatar_url": "https://secure.gravatar.com/avatar/5a6f33b04b8f6d352dd5e1d09873809f?d=identicon&version=1"
+  }
+}

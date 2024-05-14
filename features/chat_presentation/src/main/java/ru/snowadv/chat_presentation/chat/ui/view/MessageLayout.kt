@@ -24,7 +24,7 @@ typealias OnReactionClickListener = (count: Int, emojiCode: String, userReacted:
 typealias OnMessageLongClickListener = () -> Unit
 typealias OnAddReactionClickListener = () -> Unit
 
-internal abstract class MessageLayout @JvmOverloads constructor(
+abstract class MessageLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
@@ -53,7 +53,7 @@ internal abstract class MessageLayout @JvmOverloads constructor(
     private val asyncReactionsDiffer = AsyncListDiffer(this,
         AsyncDifferConfig.Builder(diffUtilChatReactionCallback).build())
 
-    val reactions get() = asyncReactionsDiffer.currentList
+    internal val reactions get() = asyncReactionsDiffer.currentList
     var onMessageLongClickListener: OnMessageLongClickListener? = null
     var onReactionClickListener: OnReactionClickListener? = null
     var onAddReactionClickListener: OnAddReactionClickListener? = null
@@ -87,7 +87,7 @@ internal abstract class MessageLayout @JvmOverloads constructor(
             requestLayout()
         }
 
-    fun updateReactionsWithAsyncDiffUtil(newList: List<ChatReaction>?) {
+    internal fun updateReactionsWithAsyncDiffUtil(newList: List<ChatReaction>?) {
         asyncReactionsDiffer.submitList(newList)
     }
 
