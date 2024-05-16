@@ -8,7 +8,6 @@ object ChatDataComponentHolder :
     ComponentHolder<ChatDataAPI, ChatDataDependencies> {
 
     private val componentHolderDelegate = ComponentHolderDelegate<ChatDataAPI, ChatDataDependencies, ChatDataComponent>(
-        isSingleton = true,
         componentFactory = { deps -> ChatDataComponent.initAndGet(deps) },
     )
     override var dependencyProvider: (() -> ChatDataDependencies)? by componentHolderDelegate::dependencyProvider

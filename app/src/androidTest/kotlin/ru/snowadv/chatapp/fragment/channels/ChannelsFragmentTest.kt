@@ -66,7 +66,7 @@ internal class ChannelsFragmentTest : TestCase() {
             step("Проверяем, что стрим отображается") {
                 flakySafely {
                     channelsPager.childAt<ChannelsFragmentScreen.KStreamsRecyclerItem>(0) {
-                        streamsRecycler.firstChild<ChannelsFragmentScreen.KStreamItem> {
+                        streamsRecycler.childAt<ChannelsFragmentScreen.KStreamItem>(0) {
                             streamNameText.hasText("#Subscription stream")
                         }
                     }

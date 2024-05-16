@@ -4,6 +4,7 @@ import android.view.View
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.kaspersky.kaspresso.screens.KScreen
 import io.github.kakaocup.kakao.common.views.KView
+import io.github.kakaocup.kakao.image.KImageView
 import io.github.kakaocup.kakao.pager2.KViewPager2
 import io.github.kakaocup.kakao.pager2.KViewPagerItem
 import io.github.kakaocup.kakao.recycler.KRecyclerItem
@@ -44,6 +45,7 @@ internal object ChannelsFragmentScreen : KScreen<ChannelsFragmentScreen>() {
     class KStreamItem(parent: Matcher<View>): KRecyclerItem<KStreamItem>(parent) {
         val stream = KView(parent) { withId(ru.snowadv.channels_impl.R.id.stream_item) }
         val streamNameText = KTextView(parent) { withId(ru.snowadv.channels_impl.R.id.stream_name_text) }
+        val expandButton = KImageView(parent) { withId(ru.snowadv.channels_impl.R.id.expand_stream_button) }
     }
 
     class KTopicItem(parent: Matcher<View>): KRecyclerItem<KTopicItem>(parent) {

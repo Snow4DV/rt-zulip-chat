@@ -12,6 +12,7 @@ import org.junit.runner.RunWith
 import ru.snowadv.chatapp.R
 import ru.snowadv.chatapp.di.AuthorizedTestModulesInjector
 import ru.snowadv.chatapp.fragment.profile.screen.ProfileFragmentScreen
+import ru.snowadv.chatapp.rule.FakeAuthDepsInjectingRule
 import ru.snowadv.chatapp.rule.WiremockTestRule
 import ru.snowadv.people_impl.presentation.people_list.PeopleFragment
 import ru.snowadv.profile_impl.presentation.profile.ProfileFragment
@@ -22,13 +23,12 @@ internal class ProfileFragmentTest : TestCase() {
 
     @get:Rule
     val wiremockRule = WiremockTestRule()
+    @get:Rule
+    val fakeDepsRule = FakeAuthDepsInjectingRule()
 
     @Test
     fun launchMyProfile() = run {
-        AuthorizedTestModulesInjector.inject(ApplicationProvider.getApplicationContext())
-
-        val scenario = launchProfileFragment(null)
-
+        launchProfileFragment(null)
 
         flakySafely {
             step("Проверяем, что отображается профиль текущего пользователя") {
@@ -37,6 +37,8 @@ internal class ProfileFragmentTest : TestCase() {
                     userEmail.hasText("user708835@tinkoff-android-spring-2024.zulipchat.com")
                 }
             }
+        }
+        flakySafely {
             step("Проверяем, что отображается кнопка выхода из профиля") {
                 ProfileFragmentScreen {
                     logoutButton.isVisible()
@@ -47,9 +49,7 @@ internal class ProfileFragmentTest : TestCase() {
 
     @Test
     fun launchOtherProfile() = run {
-        AuthorizedTestModulesInjector.inject(ApplicationProvider.getApplicationContext())
-
-        val scenario = launchProfileFragment(1)
+        launchProfileFragment(1)
 
 
         flakySafely {
@@ -59,6 +59,8 @@ internal class ProfileFragmentTest : TestCase() {
                     userEmail.hasText("user708835@tinkoff-android-spring-2024.zulipchat.com")
                 }
             }
+        }
+        flakySafely {
             step("Проверяем, что кнопка выхода скрыта") {
                 ProfileFragmentScreen {
                     logoutButton.isGone()

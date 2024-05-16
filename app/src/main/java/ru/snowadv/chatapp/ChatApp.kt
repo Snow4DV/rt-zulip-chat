@@ -13,31 +13,4 @@ import ru.snowadv.chatapp.glue.injector.ReleaseModulesInjector
 import ru.snowadv.chatapp.navigation.Screens
 import javax.inject.Inject
 
-class ChatApp: Application() {
-    private val authScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
-
-    @Inject
-    internal lateinit var router: Router
-    @Inject
-    internal lateinit var screens: Screens
-
-    private val authStorageRepo by lazy(mode = LazyThreadSafetyMode.NONE) { AuthStorageComponentHolder.get().authStorageRepository }
-
-    override fun onCreate() {
-        ReleaseModulesInjector.inject(this)
-        AppModuleComponentHolder.getComponent().inject(this)
-        super.onCreate()
-        authScope.launch {
-            authStorageRepo.loadAuthFromDatabase()?.let {
-                router.newRootScreen(screens.Home())
-            } ?: run {
-                router.newRootScreen(screens.Login())
-            }
-        }
-    }
-
-    override fun onTerminate() {
-        authScope.cancel()
-        super.onTerminate()
-    }
-}
+class ChatApp: Application()

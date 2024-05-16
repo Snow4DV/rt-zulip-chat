@@ -84,6 +84,7 @@ internal object ChannelsMapper {
                 queueId = queueId,
                 eventId = id,
                 recreateQueue = isQueueBad,
+                reason = reason,
             )
             is DomainEvent.MessageDomainEvent -> {
                 StreamListEventElm.Internal.ServerEvent.NewMessage(

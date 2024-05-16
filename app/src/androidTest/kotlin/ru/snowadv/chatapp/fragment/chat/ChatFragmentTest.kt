@@ -2,8 +2,6 @@ package ru.snowadv.chatapp.fragment.chat
 
 import android.content.Context
 import androidx.core.os.bundleOf
-import androidx.fragment.app.testing.FragmentScenario
-import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.tomakehurst.wiremock.client.WireMock
@@ -15,23 +13,23 @@ import org.junit.runner.RunWith
 import ru.snowadv.chat_presentation.R
 import ru.snowadv.chat_presentation.chat.ui.ChatFragment
 import ru.snowadv.chatapp.fragment.chat.screen.ChatFragmentScreen
-import ru.snowadv.chatapp.di.AuthorizedTestModulesInjector
-import ru.snowadv.chatapp.rule.WiremockTestRule
 import ru.snowadv.chatapp.data.MockData
+import ru.snowadv.chatapp.rule.FragmentTestRule
 
 @RunWith(AndroidJUnit4::class)
 internal class ChatFragmentTest : TestCase() {
-
-
     @get:Rule
-    val wiremockRule = WiremockTestRule()
+    val fragmentTestRule = FragmentTestRule(
+        fragmentClass = ChatFragment::class.java,
+        themeResId = R.style.Theme_ZulipChat_Chat,
+        fragmentArgs = bundleOf(
+            ChatFragment.ARG_STREAM_NAME_KEY to "general",
+            ChatFragment.ARG_TOPIC_NAME_KEY to "testing",
+        ),
+    )
 
     @Test
     fun messagesShowUp() = run {
-        AuthorizedTestModulesInjector.inject(ApplicationProvider.getApplicationContext())
-
-        val scenario = launchChatFragment("general", "testing")
-
         ChatFragmentScreen {
             step("Проверяем, что отображаются название топика и название стрима") {
                 streamTitle {
@@ -41,14 +39,17 @@ internal class ChatFragmentTest : TestCase() {
                     hasText("Topic: #testing")
                 }
             }
-            flakySafely {
-                step("Проверяем, что был вызов метода получения сообщений") {
-                    wiremockRule.wiremock.verify(WireMock.getRequestedFor(urlPathMatching(".*messages.*")))
+            step("Проверяем, что был вызов метода получения сообщений") {
+                flakySafely {
+                    fragmentTestRule.wiremockRule.wiremock.verify(
+                        WireMock.getRequestedFor(
+                            urlPathMatching("/api/v1/messages.*")
+                        )
+                    )
                 }
             }
 
             flakySafely {
-
                 step("Проверяем, что загрузка завершилась") {
                     progressBar {
                         isGone()
@@ -72,10 +73,10 @@ internal class ChatFragmentTest : TestCase() {
                             recyclerIndex
                         ) {
                             usernameText {
-                                hasText(MockData.initialMessages.messages[index].senderFullName)
+                                hasText(MockData.messages.messages[index].senderFullName)
                             }
                             content {
-                                hasText(MockData.initialMessages.messages[index].content)
+                                hasText(MockData.messages.messages[index].content)
                             }
                         }
                     }
@@ -88,21 +89,14 @@ internal class ChatFragmentTest : TestCase() {
     @Test
     fun sendMessage() = run {
         val appContext = ApplicationProvider.getApplicationContext<Context>()
-        AuthorizedTestModulesInjector.inject(appContext)
-
-        val scenario = launchChatFragment("general", "testing")
-
         ChatFragmentScreen {
-
             flakySafely {
-
                 step("Проверяем, что загрузка завершилась") {
                     progressBar {
                         isGone()
                     }
                 }
             }
-
             flakySafely {
                 step("Проверяем, что не отображаются сообщения об ошибке/о загрузке из кэша") {
                     states.forEach {
@@ -111,54 +105,47 @@ internal class ChatFragmentTest : TestCase() {
                 }
 
             }
-
             step("Вводим текст '123' в поле ввода") {
                 messageEditText.typeText("123")
             }
-
-            flakySafely {
-                step("Проверяем, что отображается кнопка отправки сообщения") {
+            step("Проверяем, что отображается кнопка отправки сообщения") {
+                flakySafely {
                     sendOrAddAttachmentButton.hasTag(appContext.getString(R.string.send_message_hint))
                 }
             }
-            flakySafely {
-                step("Отправляем сообщение") {
+            step("Отправляем сообщение") {
+                flakySafely {
                     sendOrAddAttachmentButton.perform { click() }
                 }
             }
-            flakySafely {
-                step("Проверяем, что был вызов метода отправки сообщения") {
-                    wiremockRule.wiremock.verify(WireMock.postRequestedFor(urlPathMatching(".*messages.*")))
+            step("Проверяем, что был вызов метода отправки сообщения") {
+                flakySafely {
+
+                    fragmentTestRule.wiremockRule.wiremock.verify(
+                        WireMock.postRequestedFor(
+                            urlPathMatching("/api/v1/messages.*")
+                        )
+                    )
                 }
             }
-        }
-        flakySafely {
-            ChatFragmentScreen {
-
-                step("Проверяем, что последнее сообщение содержит текст `123`") {
-
-                    messagesRecycler.lastChild<ChatFragmentScreen.KOutgoingMessageItem>() {
+            step("Проверяем, что последнее сообщение содержит текст `123`") {
+                flakySafely {
+                    messagesRecycler.childAt<ChatFragmentScreen.KOutgoingMessageItem>(
+                        messagesRecycler.getSize() - 1
+                    ) {
                         content {
                             hasText("123")
                         }
                     }
                 }
             }
-
         }
     }
 
     @Test
     fun addReaction() = run {
-        val appContext = ApplicationProvider.getApplicationContext<Context>()
-        AuthorizedTestModulesInjector.inject(appContext)
-
-        val scenario = launchChatFragment("general", "testing")
-
         ChatFragmentScreen {
-
             flakySafely {
-
                 step("Проверяем, что загрузка завершилась") {
                     progressBar {
                         isGone()
@@ -197,11 +184,17 @@ internal class ChatFragmentTest : TestCase() {
 
                 }
             }
+
             flakySafely {
-                step("Проверяем, что был вызов метода добавления реакции") {
-                    wiremockRule.wiremock.verify(WireMock.postRequestedFor(urlPathMatching(".*reactions.*")))
+                step("Проверяем, что был вызов метода получения сообщений") {
+                    fragmentTestRule.wiremockRule.wiremock.verify(
+                        WireMock.postRequestedFor(
+                            urlPathMatching("/api/v1/messages/[0-9]+/reactions.*")
+                        )
+                    )
                 }
             }
+
             flakySafely {
                 step("Проверяем, что реакция появилась") {
                     messagesRecycler.lastChild<ChatFragmentScreen.KIncomingMessageItem>() {
@@ -221,18 +214,5 @@ internal class ChatFragmentTest : TestCase() {
                 }
             }
         }
-    }
-
-
-    private fun launchChatFragment(
-        streamName: String,
-        topicName: String
-    ): FragmentScenario<ChatFragment> {
-        return launchFragmentInContainer<ChatFragment>(
-            bundleOf(
-                ChatFragment.ARG_STREAM_NAME_KEY to streamName,
-                ChatFragment.ARG_TOPIC_NAME_KEY to topicName,
-            ), ru.snowadv.chat_presentation.R.style.Theme_ZulipChat_Chat
-        )
     }
 }

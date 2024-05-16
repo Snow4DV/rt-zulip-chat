@@ -8,4 +8,5 @@ object DummyAuth {
         email = "email@example.com",
         apiKey = "123",
     )
+    val userName = "User 1"
 }

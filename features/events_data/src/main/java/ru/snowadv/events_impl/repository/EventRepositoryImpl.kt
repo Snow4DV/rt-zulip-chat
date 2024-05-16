@@ -66,6 +66,7 @@ class EventRepositoryImpl @Inject constructor(
                                 id = eventQueueProps.lastEventId,
                                 queueId = eventQueueProps.queueId,
                                 isQueueBad = true,
+                                reason = it,
                             ))
                         }
                         else -> {
@@ -74,6 +75,7 @@ class EventRepositoryImpl @Inject constructor(
                                 id = eventQueueProps.lastEventId,
                                 queueId = eventQueueProps.queueId,
                                 isQueueBad = false,
+                                reason = it,
                             ))
                         }
                     }
@@ -85,7 +87,7 @@ class EventRepositoryImpl @Inject constructor(
                 eventTypes = (types + EventType.HEARTBEAT + EventType.REALM).toEventTypesDto(),
                 narrow = narrows.toNarrow2DArrayDto(),
             ).getOrElse {
-                emit(DomainEvent.FailedFetchingQueueEvent(-1, null, true))
+                emit(DomainEvent.FailedFetchingQueueEvent(-1, null, it, true))
                 return@flow
             }.let { eventsDto ->
                 emit(eventsDto.toRegisteredQueueEvent())

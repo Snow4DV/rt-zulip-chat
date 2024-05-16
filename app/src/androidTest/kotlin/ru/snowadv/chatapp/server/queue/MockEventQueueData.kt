@@ -10,4 +10,8 @@ internal data class MockEventQueueData(
     fun hasNewEvent(): Boolean {
         return (events.lastOrNull()?.id ?: -1) > lastCollectedId
     }
+
+    fun markEventsAsViewed(): MockEventQueueData {
+        return copy(lastCollectedId = events.last().id)
+    }
 }

@@ -9,6 +9,8 @@ import ru.snowadv.model.DispatcherProvider
 import ru.snowadv.network.api.BadAuthBehavior
 import ru.snowadv.chatapp.glue.auth.BadAuthBehaviorImpl
 import ru.snowadv.chatapp.glue.coroutines.DispatcherProviderImpl
+import ru.snowadv.chatapp.glue.network.ReleaseLoggerToggle
+import ru.snowadv.network.api.LoggerToggle
 
 @Module
 internal interface AppModule {
@@ -17,6 +19,8 @@ internal interface AppModule {
     fun bindDispatcherProviderImpl(dispatcherProviderImpl: DispatcherProviderImpl): DispatcherProvider
     @Binds
     fun bindBadAuthBehaviorImpl(badAuthBehaviorImpl: BadAuthBehaviorImpl): BadAuthBehavior
+    @Binds
+    fun bindLoggerToggleImpl(impl: ReleaseLoggerToggle): LoggerToggle
 
     companion object {
         @Reusable

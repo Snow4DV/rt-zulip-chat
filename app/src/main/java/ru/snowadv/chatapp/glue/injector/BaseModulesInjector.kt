@@ -105,6 +105,7 @@ import ru.snowadv.users_data_impl.di.UsersDataModuleComponentHolder
 import ru.snowadv.chatapp.di.holder.AppModuleAPI
 import ru.snowadv.chatapp.di.holder.AppModuleComponentHolder
 import ru.snowadv.chatapp.di.holder.AppModuleDependencies
+import ru.snowadv.network.api.LoggerToggle
 
 /**
  * This injector injects dependencies into other modules' component holders
@@ -451,6 +452,7 @@ abstract class BaseModulesInjector {
                     override val authProvider: AuthProvider = authDataApi.authProvider
                     override val json: Json = appApi.json
                     override val baseUrlProvider: BaseUrlProvider = appApi.baseUrlProvider
+                    override val loggerToggle: LoggerToggle = appApi.networkLoggerToggle
                     override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> =
                         dependencyHolder
 

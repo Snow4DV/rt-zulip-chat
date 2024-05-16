@@ -9,18 +9,18 @@ import com.github.tomakehurst.wiremock.http.Request
 import com.github.tomakehurst.wiremock.http.RequestMethod
 import com.github.tomakehurst.wiremock.http.Response
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import ru.snowadv.chatapp.auth_mock.DummyAuth
+import ru.snowadv.chatapp.data.EmojiData
+import ru.snowadv.chatapp.data.MockData
+import ru.snowadv.chatapp.model.ErrorResponseDto
 import ru.snowadv.chatapp.server.queue.MockEventQueueData
-import ru.snowadv.chatapp.util.AssetsUtils.fromAssets
 import ru.snowadv.network.model.EventQueueResponseDto
 import ru.snowadv.network.model.EventResponseDto
 import ru.snowadv.network.model.EventsResponseDto
 import ru.snowadv.network.model.MessageResponseDto
-import ru.snowadv.network.model.MessagesResponseDto
 import ru.snowadv.network.model.ReactionResponseDto
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -28,23 +28,25 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
 internal class ChatServerResponseTransformer : ResponseTransformer() {
-    
-    private val json = Json { ignoreUnknownKeys = true }
     companion object {
         const val NAME = "chat_server_response_transformer"
-        const val STREAM_NAME = "stream"
-        const val TOPIC_NAME = "topic"
+        const val STREAM_NAME = "general"
+        const val TOPIC_NAME = "testing"
         const val STREAM_ID = 1L
-        val currentUserId = DummyAuth.user.id
-        const val CURRENT_USER_NAME = "User 1"
-        val addReaction =
-            ReactionResponseDto(currentUserId, "stuck_out_tongue", "1f61b", "unicode_emoji")
+
+        val totalRegex by lazy { ".*/api/v1/(messages|register|events).*".toRegex() }
+
+        private val currentUserId = DummyAuth.user.id
+        private val CURRENT_USER_NAME = DummyAuth.userName
+        private val headerContentType by lazy { HttpHeader("Content-Type", "application/json") }
     }
 
 
-    private val chatMessages = MutableStateFlow(getInitMessages())
+    private val json by lazy { Json { ignoreUnknownKeys = true } }
+    private var chatMessages = MockData.messages
     private val queues = ConcurrentHashMap<String, MockEventQueueData>() // queue id to queue data
     private val lastQueueId = AtomicInteger(0)
+
     override fun getName(): String {
         return NAME
     }
@@ -56,85 +58,77 @@ internal class ChatServerResponseTransformer : ResponseTransformer() {
         parameters: Parameters?
     ): Response {
         return Response.Builder.like(response)
-            .status(200)
-            .headers(
-                (response?.headers ?: HttpHeaders()).plus(
-                    HttpHeader("Content-Type", "application/json")
-                )
-            )
-            .apply { if (request != null) processRequest(request) else error("Request is null!") }
+            .headers((response?.headers ?: HttpHeaders()).plus(headerContentType))
+            .apply { request?.let { processRequest(request) } ?: run { error("Request is null!") } }
             .build()
     }
 
+    @Synchronized
     private fun Response.Builder.processRequest(request: Request): Response.Builder {
         return when {
-            request.url.contains("/api/v1/messages") && request.method == RequestMethod.GET -> {
-                body(json.encodeToString(chatMessages.value))
+            request.url.matches("/api/v1/messages.*".toRegex()) && request.method == RequestMethod.GET -> {
+                body(json.encodeToString(chatMessages)).status(200)
             }
 
-            request.url.contains("/api/v1/register") && request.method == RequestMethod.POST -> {
-                body(json.encodeToString(registerNewQueue()))
+            request.url.matches("/api/v1/register.*".toRegex()) && request.method == RequestMethod.POST -> {
+                body(json.encodeToString(registerNewQueue())).status(200)
             }
 
-            request.url.contains("/api/v1/events") && request.method == RequestMethod.GET -> {
-                body(
-                    json.encodeToString(
-                        EventsResponseDto(
-                            events = getEvents(
-                                queueId = request.queryParameter("queue_id").values().first()
-                            ),
-                        )
-                    )
+            request.url.matches("/api/v1/events.*".toRegex()) && request.method == RequestMethod.GET -> {
+                getEvents(
+                    queueId = request.queryParameter("queue_id").values().first()
+                )?.let { events ->
+                    body(json.encodeToString(EventsResponseDto(events))).status(200)
+                } ?: run {
+                    status(400).body(json.encodeToString(getBadRequestError("Wrong queue id")))
+                }
+            }
+
+            request.url.matches("/api/v1/messages/[0-9]+/reactions.*".toRegex()) && request.method == RequestMethod.POST -> {
+
+                val result = addReactionToMessage(
+                    reactionName = request.getBodyParamOrThrow("emoji_name"),
+                    messageId = request.getUrlParamByRegexFirstGroup("/api/v1/messages/([0-9]+)/reactions.*".toRegex())
+                        .toLong(),
+                    userId = currentUserId,
                 )
+                if (result) {
+                    status(200)
+                } else {
+                    status(400).body(json.encodeToString(getBadRequestError("Reaction already exists.")))
+                }
             }
 
-            request.url.contains("reactions") && request.method == RequestMethod.POST -> {
-                addReactionToLastMessageByCurrentUser()
-                this
+            request.url.matches("/api/v1/messages/[0-9]+/reactions.*".toRegex()) && request.method == RequestMethod.DELETE -> {
+
+                val result = removeReactionFromMessage(
+                    reactionName = request.getBodyParamOrThrow("emoji_name"),
+                    messageId = request.getUrlParamByRegexFirstGroup("/api/v1/messages/([0-9]+)/reactions.*".toRegex())
+                        .toLong(),
+                    userId = currentUserId,
+                )
+                if (result) {
+                    status(200)
+                } else {
+                    status(400).body(json.encodeToString(getBadRequestError("Reaction doesn't exist.")))
+                }
             }
 
-            request.url.contains("/api/v1/messages") && request.method == RequestMethod.POST -> {
-                sendMessage(request.queryParameter("content").values().first())
-                this
+            request.url.matches("/api/v1/messages.*".toRegex()) && request.method == RequestMethod.POST -> {
+                sendMessage(request.getQueryParamOrThrow("content"))
+                status(200)
             }
 
-            request.url.contains("streams") && request.method == RequestMethod.GET -> {
-                body(fromAssets("channels/streams.json"))
-            }
-
-            request.url.contains("subscriptions") && request.method == RequestMethod.GET -> {
-                body(fromAssets("channels/subscriptions.json"))
-            }
-
-            request.url.contains("topics") && request.method == RequestMethod.GET -> {
-                body(fromAssets("channels/topics.json"))
-            }
-
-            request.url.endsWith("users") && request.method == RequestMethod.GET -> {
-                body(fromAssets("people/people.json"))
-            }
-
-            request.url.contains("realm/presence") && request.method == RequestMethod.GET -> {
-                body(fromAssets("people/realm_presence.json"))
-            }
-
-            request.url.contains("users/") && request.method == RequestMethod.GET -> {
-                body(fromAssets("profile/profile.json"))
-            }
-
-            request.url.contains("/presence") && request.method == RequestMethod.GET -> {
-                body(fromAssets("profile/presence.json"))
-            }
-
-            else -> error("Url  '${request.url}' didn't match")
+            else -> this
         }
     }
 
-    private fun getEvents(delay: Long = 500, queueId: String): List<EventResponseDto> =
+    private fun getEvents(delay: Long = 500, queueId: String): List<EventResponseDto>? =
         runBlocking {
             delay(delay)
-            val queue = queues[queueId] ?: error("queue not found")
+            val queue = queues[queueId] ?: return@runBlocking null
             return@runBlocking if (queue.hasNewEvent()) {
+                queues[queueId] = queue.markEventsAsViewed()
                 queue.events.filterIndexed { index, _ ->
                     index in (queue.lastCollectedId + 1 until queue.events.size)
                 }
@@ -143,35 +137,54 @@ internal class ChatServerResponseTransformer : ResponseTransformer() {
             }
         }
 
-    @Synchronized
     private fun sendMessage(content: String) {
-        chatMessages.value.let { messagesDto ->
-            val newMessage = getNewMessage(content, messagesDto.messages.last().id + 1)
-            chatMessages.tryEmit(
-                messagesDto.copy(
-                    messages = messagesDto.messages + newMessage,
-                )
-            )
-            addNewMessageToEventQueues(newMessage)
-        }
+        val newMessage = getNewMessage(content, chatMessages.messages.last().id + 1)
+        chatMessages = chatMessages.copy(
+            messages = chatMessages.messages + newMessage,
+        )
+        addNewMessageToEventQueues(newMessage)
     }
 
-    @Synchronized
-    private fun addReactionToLastMessageByCurrentUser() {
-        chatMessages.value.let { messagesDto ->
-            val lastMessage = messagesDto.messages.last()
-            val updatedLastMessage = lastMessage.copy(
-                reactions = lastMessage.reactions + addReaction
-            )
-            chatMessages.tryEmit(
-                messagesDto.copy(
-                    messages = messagesDto.messages - lastMessage + updatedLastMessage,
-                )
-            )
-            addReactionAddedToEventQueues(addReaction, lastMessage.id, currentUserId)
-        }
+    private fun addReactionToMessage(reactionName: String, messageId: Long, userId: Long): Boolean {
+        chatMessages = chatMessages.copy(
+            messages = chatMessages.messages.map { messageDto ->
+                if (messageDto.id == messageId) {
+                    if (messageDto.reactions.any { it.userId == userId && it.emojiName == reactionName }) return false
+                    val newReaction = createReactionWithNameByUser(reactionName, userId)
+                    addReactionChangedToEventQueues(
+                        reaction = newReaction,
+                        messageId = messageId,
+                        userId = userId,
+                        op = EventResponseDto.ReactionEventDto.OperationType.ADD,
+                    )
+                    messageDto.copy(reactions = messageDto.reactions + newReaction)
+                } else {
+                    messageDto
+                }
+            }
+        )
+        return true
     }
 
+    private fun removeReactionFromMessage(reactionName: String, messageId: Long, userId: Long): Boolean {
+        chatMessages = chatMessages.copy(
+            messages = chatMessages.messages.map { messageDto ->
+                if (messageDto.id == messageId) {
+                    val reaction = messageDto.reactions.firstOrNull { it.userId == userId && it.emojiName == reactionName } ?: return false
+                    addReactionChangedToEventQueues(
+                        reaction = reaction,
+                        messageId = messageId,
+                        userId = userId,
+                        op = EventResponseDto.ReactionEventDto.OperationType.REMOVE,
+                    )
+                    messageDto.copy(reactions = messageDto.reactions - reaction)
+                } else {
+                    messageDto
+                }
+            }
+        )
+        return true
+    }
 
     private fun getHeartbeatEventAndAddToQueue(queueId: String): EventResponseDto {
         queues[queueId]?.let { queue ->
@@ -186,31 +199,31 @@ internal class ChatServerResponseTransformer : ResponseTransformer() {
         } ?: error("queue not found")
     }
 
-    @Synchronized
     private fun addNewMessageToEventQueues(message: MessageResponseDto) {
         queues.entries.forEach {
             queues[it.key] = it.value.copy(
                 events = it.value.events + getNewEventForMessage(
                     message = message,
-                    lastEventId = it.value.events.getIdForNewEvent(),
+                    eventId = it.value.events.getIdForNewEvent(),
                 )
             )
         }
     }
 
-    @Synchronized
-    private fun addReactionAddedToEventQueues(
+    private fun addReactionChangedToEventQueues(
         reaction: ReactionResponseDto,
         messageId: Long,
         userId: Long,
+        op: EventResponseDto.ReactionEventDto.OperationType,
     ) {
         queues.entries.forEach {
             queues[it.key] = it.value.copy(
-                events = it.value.events + getNewEventForReactionAdded(
-                    lastEventId = it.value.events.getIdForNewEvent(),
+                events = it.value.events + getNewEventForReactionChanged(
+                    newEventId = it.value.events.getIdForNewEvent(),
                     reaction = reaction,
                     messageId = messageId,
                     userId = userId,
+                    op = op,
                 )
             )
         }
@@ -221,26 +234,41 @@ internal class ChatServerResponseTransformer : ResponseTransformer() {
         return (lastOrNull()?.id ?: -1L) + 1
     }
 
+    private fun Request.getQueryParamOrThrow(name: String): String {
+        return queryParameter(name).values().first()
+    }
+
+    private fun Request.getBodyParamOrThrow(name: String): String {
+        val queryParamRegex = "$name=([^\\r\\n\\t ]+)".toRegex()
+        return queryParamRegex.find(bodyAsString)?.groups?.get(1)?.value ?: error("Query param $name not found")
+    }
+
+    private fun Request.getUrlParamByRegexFirstGroup(regex: Regex): String {
+        return regex.find(url)?.groups?.get(1)?.value
+            ?: throw NoSuchElementException("Group that matches regex $regex wasn't found")
+    }
+
 
     private fun getNewEventForMessage(
         message: MessageResponseDto,
-        lastEventId: Long
+        eventId: Long
     ): EventResponseDto.MessageEventDto {
         return EventResponseDto.MessageEventDto(
-            id = lastEventId + 1,
+            id = eventId,
             message = message,
         )
     }
 
-    private fun getNewEventForReactionAdded(
+    private fun getNewEventForReactionChanged(
         reaction: ReactionResponseDto,
         messageId: Long,
         userId: Long,
-        lastEventId: Long
+        newEventId: Long,
+        op: EventResponseDto.ReactionEventDto.OperationType,
     ): EventResponseDto.ReactionEventDto {
         return EventResponseDto.ReactionEventDto(
-            id = lastEventId + 1,
-            op = EventResponseDto.ReactionEventDto.OperationType.ADD,
+            id = newEventId,
+            op = op,
             emojiCode = reaction.emojiCode,
             emojiName = reaction.emojiName,
             messageId = messageId,
@@ -277,7 +305,16 @@ internal class ChatServerResponseTransformer : ResponseTransformer() {
         )
     }
 
-    private fun getInitMessages(): MessagesResponseDto {
-        return json.decodeFromString(fromAssets("chat/messages.json"))
+    private fun createReactionWithNameByUser(name: String, userId: Long): ReactionResponseDto {
+        return ReactionResponseDto(
+            userId = currentUserId,
+            emojiName = name,
+            emojiCode = EmojiData.emojisByName[name]?.code ?: EmojiData.emojisByName.values.random().code,
+            reactionType = "unicode_emoji",
+        )
+    }
+
+    private fun getBadRequestError(message: String): ErrorResponseDto {
+        return ErrorResponseDto(msg = message)
     }
 }

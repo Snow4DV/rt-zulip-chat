@@ -37,6 +37,7 @@ import ru.snowadv.network.di.holder.NetworkLibComponentHolder
 import ru.snowadv.network.di.holder.NetworkLibDependencies
 import ru.snowadv.chatapp.config.WiremockBaseUrlProviderImpl
 import ru.snowadv.chatapp.auth_mock.AuthStorageMockRepository
+import ru.snowadv.chatapp.config.DebugLoggerToggle
 import ru.snowadv.chatapp.di.holder.AppModuleAPI
 import ru.snowadv.chatapp.di.holder.AppModuleComponentHolder
 import ru.snowadv.chatapp.glue.injector.BaseModulesInjector
@@ -49,6 +50,7 @@ import ru.snowadv.events_impl.di.dagger.EventsDataModuleComponentHolder
 import ru.snowadv.events_impl.di.holder.EventsDataDependencies
 import ru.snowadv.model.DispatcherProvider
 import ru.snowadv.module_injector.dependency_holder.DependencyHolder1
+import ru.snowadv.network.api.LoggerToggle
 import ru.snowadv.network.api.ZulipApi
 import ru.snowadv.network.di.holder.NetworkLibAPI
 import ru.snowadv.users_data_api.di.UsersDataModuleDependencies
@@ -117,6 +119,7 @@ internal object AuthorizedTestModulesInjector: BaseModulesInjector() {
                     override val authProvider: AuthProvider = AuthProviderMock
                     override val json: Json = appApi.json
                     override val baseUrlProvider: BaseUrlProvider = WiremockBaseUrlProviderImpl
+                    override val loggerToggle: LoggerToggle = DebugLoggerToggle
                     override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> =
                         dependencyHolder
 

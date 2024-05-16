@@ -10,7 +10,7 @@ sealed class DomainEvent {
     data class FailedFetchingQueueEvent(
         override val id: Long,
         override val queueId: String?,
-
+        val reason: Throwable,
         val isQueueBad: Boolean, // this determines if queue id should be erased from state
     ): DomainEvent() {
         override val senderType: EventSenderType

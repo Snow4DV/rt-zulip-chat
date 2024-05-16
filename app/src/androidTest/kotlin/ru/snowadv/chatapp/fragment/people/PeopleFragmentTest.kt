@@ -10,22 +10,22 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import ru.snowadv.chatapp.di.AuthorizedTestModulesInjector
 import ru.snowadv.chatapp.fragment.people.screen.PeopleFragmentScreen
+import ru.snowadv.chatapp.rule.FakeAuthDepsInjectingRule
+import ru.snowadv.chatapp.rule.FragmentTestRule
 import ru.snowadv.chatapp.rule.WiremockTestRule
 import ru.snowadv.people_impl.presentation.people_list.PeopleFragment
 
 @RunWith(AndroidJUnit4::class)
 internal class PeopleFragmentTest : TestCase() {
 
-
     @get:Rule
-    val wiremockRule = WiremockTestRule()
+    val fragmentTestRule = FragmentTestRule(
+        fragmentClass = PeopleFragment::class.java,
+        themeResId = ru.snowadv.people_impl.R.style.Theme_ZulipChat_People,
+    )
 
     @Test
     fun peopleShowUp() = run {
-        AuthorizedTestModulesInjector.inject(ApplicationProvider.getApplicationContext())
-
-        val scenario = launchPeopleFragment()
-
         flakySafely {
             step("Проверяем, что отображаются два пользователя: `Lev` и `Богдан 2`") {
                 PeopleFragmentScreen {
@@ -40,10 +40,5 @@ internal class PeopleFragmentTest : TestCase() {
                 }
             }
         }
-    }
-
-
-    private fun launchPeopleFragment(): FragmentScenario<PeopleFragment> {
-        return launchFragmentInContainer<PeopleFragment>(themeResId = ru.snowadv.people_impl.R.style.Theme_ZulipChat_People)
     }
 }

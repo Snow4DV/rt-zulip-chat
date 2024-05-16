@@ -43,6 +43,7 @@ internal sealed interface StreamListEventElm {
                 override val queueId: String?,
                 override val eventId: Long,
                 val recreateQueue: Boolean,
+                val reason: Throwable,
             ) : ServerEvent() {
                 override val senderType: EventSenderType
                     get() = EventSenderType.SYNTHETIC_FAIL
