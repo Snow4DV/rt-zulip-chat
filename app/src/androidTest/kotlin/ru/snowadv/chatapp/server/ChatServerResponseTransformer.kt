@@ -27,7 +27,10 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
-internal class ChatServerResponseTransformer @Inject constructor(private val data: MockData) :
+internal class ChatServerResponseTransformer @Inject constructor(
+    private val data: MockData,
+    private val emojiData: EmojiData,
+) :
     ResponseTransformer() {
     companion object {
         const val NAME = "chat_server_response_transformer"
@@ -312,8 +315,8 @@ internal class ChatServerResponseTransformer @Inject constructor(private val dat
         return ReactionResponseDto(
             userId = data.user.id,
             emojiName = name,
-            emojiCode = EmojiData.emojisByName[name]?.code
-                ?: EmojiData.emojisByName.values.random().code,
+            emojiCode = emojiData.emojisByName[name]?.code
+                ?: emojiData.emojisByName.values.random().code,
             reactionType = "unicode_emoji",
         )
     }

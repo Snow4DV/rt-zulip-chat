@@ -1,8 +1,11 @@
 package ru.snowadv.chatapp.data
 
+import dagger.Reusable
 import ru.snowadv.chatapp.model.ServerEmoji
+import javax.inject.Inject
 
-internal object EmojiData {
+@Reusable
+internal class EmojiData @Inject constructor() {
     // Smileys & Emotion
     val emojisByName by lazy {
         listOf(
