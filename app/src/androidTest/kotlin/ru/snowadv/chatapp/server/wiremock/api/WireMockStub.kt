@@ -1,4 +1,4 @@
-package ru.snowadv.chatapp.wiremock
+package ru.snowadv.chatapp.server.wiremock.api
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule
 

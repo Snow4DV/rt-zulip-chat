@@ -1,11 +1,9 @@
-package ru.snowadv.chatapp.wiremock
+package ru.snowadv.chatapp.server.wiremock
 
-import com.github.tomakehurst.wiremock.client.MappingBuilder
 import com.github.tomakehurst.wiremock.client.WireMock
-import com.github.tomakehurst.wiremock.http.RequestMethod
 import com.github.tomakehurst.wiremock.junit.WireMockRule
-import com.github.tomakehurst.wiremock.matching.UrlPattern
 import ru.snowadv.chatapp.server.ChatServerResponseTransformer
+import ru.snowadv.chatapp.server.wiremock.api.WireMockStub
 
 internal class ChatTransformerStub : WireMockStub {
     override fun applyToWiremock(rule: WireMockRule) {

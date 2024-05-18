@@ -1,16 +1,15 @@
-package ru.snowadv.chatapp.wiremock
+package ru.snowadv.chatapp.server.wiremock
 
 import com.github.tomakehurst.wiremock.client.MappingBuilder
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.http.RequestMethod
 import com.github.tomakehurst.wiremock.junit.WireMockRule
 import com.github.tomakehurst.wiremock.matching.UrlPattern
-import org.intellij.lang.annotations.RegExp
-import ru.snowadv.chatapp.util.AssetsUtils
+import ru.snowadv.chatapp.server.wiremock.api.WireMockStub
 import ru.snowadv.chatapp.util.AssetsUtils.fromAssets
-import javax.annotation.RegEx
 
-internal data class AssetStubMatcher(val urlRegex: String, val assetsPath: String, val method: RequestMethod) : WireMockStub {
+internal data class AssetStubMatcher(val urlRegex: String, val assetsPath: String, val method: RequestMethod) :
+    WireMockStub {
     override fun applyToWiremock(rule: WireMockRule) {
         val pattern = WireMock.urlPathMatching(urlRegex)
         val matcher = matcherForPatternAndMethod(pattern, method)

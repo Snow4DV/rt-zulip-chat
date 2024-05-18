@@ -9,16 +9,16 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import ru.snowadv.channels_impl.presentation.channel_list.ChannelListFragment
-import ru.snowadv.chatapp.di.AuthorizedTestModulesInjector
-import ru.snowadv.chatapp.rule.WiremockTestRule
+import ru.snowadv.chatapp.di.glue.AuthorizedTestModulesInjector
 import ru.snowadv.chatapp.fragment.channels.screen.ChannelsFragmentScreen
+import ru.snowadv.chatapp.rule.FragmentTestRule
 
 @RunWith(AndroidJUnit4::class)
 internal class ChannelsFragmentTest : TestCase() {
 
 
     @get:Rule
-    val wiremockRule = WiremockTestRule()
+    val fragmentRule = FragmentTestRule<ChannelListFragment>()
 
     @Test
     fun streamsShowUp() = run {
@@ -28,26 +28,26 @@ internal class ChannelsFragmentTest : TestCase() {
 
         ChannelsFragmentScreen {
             step("Проверяем, что стрим с подпиской отображается") {
-                flakySafely {
+                flakySafely(intervalMs = 200) {
                     channelsPager.childAt<ChannelsFragmentScreen.KStreamsRecyclerItem>(0) {
                         streamsRecycler.firstChild<ChannelsFragmentScreen.KStreamItem> {
-                            streamNameText.hasText("#Subscription stream")
+                            streamNameText.hasText("#${fragmentRule.mockDataRule.data.subscriptionsDto.subscriptions.first().name}")
                         }
                     }
                 }
             }
 
             step("Смахиваем от правого края к левому") {
-                flakySafely {
+                flakySafely(intervalMs = 200) {
                     channelsPager.swipeRight()
                 }
             }
 
             step("Проверяем, что стрим без подписки отображается") {
-                flakySafely {
+                flakySafely(intervalMs = 200) {
                     channelsPager.childAt<ChannelsFragmentScreen.KStreamsRecyclerItem>(1) {
                         streamsRecycler.firstChild<ChannelsFragmentScreen.KStreamItem> {
-                            streamNameText.hasText("#Stream")
+                            streamNameText.hasText("#${fragmentRule.mockDataRule.data.streamsDto.streams.first().name}")
                         }
                     }
                 }
@@ -64,7 +64,7 @@ internal class ChannelsFragmentTest : TestCase() {
 
         ChannelsFragmentScreen {
             step("Проверяем, что стрим отображается") {
-                flakySafely {
+                flakySafely(intervalMs = 200) {
                     channelsPager.childAt<ChannelsFragmentScreen.KStreamsRecyclerItem>(0) {
                         streamsRecycler.childAt<ChannelsFragmentScreen.KStreamItem>(0) {
                             streamNameText.hasText("#Subscription stream")
@@ -73,7 +73,7 @@ internal class ChannelsFragmentTest : TestCase() {
                 }
             }
             step("Нажимаем на стрим") {
-                flakySafely {
+                flakySafely(intervalMs = 200) {
                     channelsPager.childAt<ChannelsFragmentScreen.KStreamsRecyclerItem>(0) {
                         streamsRecycler.firstChild<ChannelsFragmentScreen.KStreamItem> {
                             streamNameText.click()
@@ -82,7 +82,7 @@ internal class ChannelsFragmentTest : TestCase() {
                 }
             }
             step("Проверяем, что топик отображается") {
-                flakySafely {
+                flakySafely(intervalMs = 200) {
                     channelsPager.childAt<ChannelsFragmentScreen.KStreamsRecyclerItem>(0) {
                         streamsRecycler.childAt<ChannelsFragmentScreen.KTopicItem>(1) {
                             topicNameText.hasText("Topic")

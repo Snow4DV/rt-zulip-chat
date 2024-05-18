@@ -12,7 +12,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import ru.snowadv.chatapp.auth_mock.DummyAuth
 import ru.snowadv.chatapp.data.EmojiData
 import ru.snowadv.chatapp.data.MockData
 import ru.snowadv.chatapp.model.ErrorResponseDto
@@ -26,24 +25,22 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
+import javax.inject.Inject
 
-internal class ChatServerResponseTransformer : ResponseTransformer() {
+internal class ChatServerResponseTransformer @Inject constructor(private val data: MockData) :
+    ResponseTransformer() {
     companion object {
         const val NAME = "chat_server_response_transformer"
         const val STREAM_NAME = "general"
         const val TOPIC_NAME = "testing"
         const val STREAM_ID = 1L
-
         val totalRegex by lazy { ".*/api/v1/(messages|register|events).*".toRegex() }
-
-        private val currentUserId = DummyAuth.user.id
-        private val CURRENT_USER_NAME = DummyAuth.userName
         private val headerContentType by lazy { HttpHeader("Content-Type", "application/json") }
     }
 
 
     private val json by lazy { Json { ignoreUnknownKeys = true } }
-    private var chatMessages = MockData.messages
+    private var chatMessages = data.messagesDto
     private val queues = ConcurrentHashMap<String, MockEventQueueData>() // queue id to queue data
     private val lastQueueId = AtomicInteger(0)
 
@@ -90,7 +87,7 @@ internal class ChatServerResponseTransformer : ResponseTransformer() {
                     reactionName = request.getBodyParamOrThrow("emoji_name"),
                     messageId = request.getUrlParamByRegexFirstGroup("/api/v1/messages/([0-9]+)/reactions.*".toRegex())
                         .toLong(),
-                    userId = currentUserId,
+                    userId = data.user.id,
                 )
                 if (result) {
                     status(200)
@@ -105,7 +102,7 @@ internal class ChatServerResponseTransformer : ResponseTransformer() {
                     reactionName = request.getBodyParamOrThrow("emoji_name"),
                     messageId = request.getUrlParamByRegexFirstGroup("/api/v1/messages/([0-9]+)/reactions.*".toRegex())
                         .toLong(),
-                    userId = currentUserId,
+                    userId = data.user.id,
                 )
                 if (result) {
                     status(200)
@@ -123,19 +120,18 @@ internal class ChatServerResponseTransformer : ResponseTransformer() {
         }
     }
 
-    private fun getEvents(delay: Long = 500, queueId: String): List<EventResponseDto>? =
-        runBlocking {
-            delay(delay)
-            val queue = queues[queueId] ?: return@runBlocking null
-            return@runBlocking if (queue.hasNewEvent()) {
-                queues[queueId] = queue.markEventsAsViewed()
-                queue.events.filterIndexed { index, _ ->
-                    index in (queue.lastCollectedId + 1 until queue.events.size)
-                }
-            } else {
-                listOf(getHeartbeatEventAndAddToQueue(queueId))
+    private fun getEvents(delay: Long = 1000, queueId: String): List<EventResponseDto>? {
+        Thread.sleep(delay)
+        val queue = queues[queueId] ?: return null
+        return if (queue.hasNewEvent()) {
+            queues[queueId] = queue.markEventsAsViewed()
+            queue.events.filterIndexed { index, _ ->
+                index in (queue.lastCollectedId + 1 until queue.events.size)
             }
+        } else {
+            listOf(getHeartbeatEventAndAddToQueue(queueId))
         }
+    }
 
     private fun sendMessage(content: String) {
         val newMessage = getNewMessage(content, chatMessages.messages.last().id + 1)
@@ -166,11 +162,17 @@ internal class ChatServerResponseTransformer : ResponseTransformer() {
         return true
     }
 
-    private fun removeReactionFromMessage(reactionName: String, messageId: Long, userId: Long): Boolean {
+    private fun removeReactionFromMessage(
+        reactionName: String,
+        messageId: Long,
+        userId: Long
+    ): Boolean {
         chatMessages = chatMessages.copy(
             messages = chatMessages.messages.map { messageDto ->
                 if (messageDto.id == messageId) {
-                    val reaction = messageDto.reactions.firstOrNull { it.userId == userId && it.emojiName == reactionName } ?: return false
+                    val reaction =
+                        messageDto.reactions.firstOrNull { it.userId == userId && it.emojiName == reactionName }
+                            ?: return false
                     addReactionChangedToEventQueues(
                         reaction = reaction,
                         messageId = messageId,
@@ -240,7 +242,8 @@ internal class ChatServerResponseTransformer : ResponseTransformer() {
 
     private fun Request.getBodyParamOrThrow(name: String): String {
         val queryParamRegex = "$name=([^\\r\\n\\t ]+)".toRegex()
-        return queryParamRegex.find(bodyAsString)?.groups?.get(1)?.value ?: error("Query param $name not found")
+        return queryParamRegex.find(bodyAsString)?.groups?.get(1)?.value
+            ?: error("Query param $name not found")
     }
 
     private fun Request.getUrlParamByRegexFirstGroup(regex: Regex): String {
@@ -282,8 +285,8 @@ internal class ChatServerResponseTransformer : ResponseTransformer() {
             id = messageId,
             content = content,
             timestamp = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC),
-            senderId = currentUserId,
-            senderFullName = CURRENT_USER_NAME,
+            senderId = data.user.id,
+            senderFullName = data.userName,
             avatarUrl = null,
             reactions = emptyList(),
             type = "stream",
@@ -307,9 +310,10 @@ internal class ChatServerResponseTransformer : ResponseTransformer() {
 
     private fun createReactionWithNameByUser(name: String, userId: Long): ReactionResponseDto {
         return ReactionResponseDto(
-            userId = currentUserId,
+            userId = data.user.id,
             emojiName = name,
-            emojiCode = EmojiData.emojisByName[name]?.code ?: EmojiData.emojisByName.values.random().code,
+            emojiCode = EmojiData.emojisByName[name]?.code
+                ?: EmojiData.emojisByName.values.random().code,
             reactionType = "unicode_emoji",
         )
     }

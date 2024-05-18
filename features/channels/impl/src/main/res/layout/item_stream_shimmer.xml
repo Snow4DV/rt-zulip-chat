@@ -30,7 +30,7 @@
         android:textSize="@dimen/stream_topic_name_text_size"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="@id/start_guideline"
-        app:layout_constraintRight_toLeftOf="@id/expand_stream_button"
+        app:layout_constraintRight_toLeftOf="@id/expand_stream_button_shimmer"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintTop_toTopOf="parent"
         />
@@ -38,7 +38,7 @@
 
 
     <ImageView
-        android:id="@+id/expand_stream_button"
+        android:id="@+id/expand_stream_button_shimmer"
         android:layout_width="wrap_content"
         android:clickable="false"
         android:layout_height="wrap_content"

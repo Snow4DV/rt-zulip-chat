@@ -48,7 +48,7 @@ internal object EventMapper {
         return EventStream(id, name)
     }
 
-    fun EventResponseDto.toDataEvent(currentUserId: Long, queueId: String): DomainEvent {
+    fun EventResponseDto.toDomainEvent(currentUserId: Long, queueId: String): DomainEvent {
         return when (this) {
             is EventResponseDto.MessageEventDto -> DomainEvent.MessageDomainEvent(
                 id = id,

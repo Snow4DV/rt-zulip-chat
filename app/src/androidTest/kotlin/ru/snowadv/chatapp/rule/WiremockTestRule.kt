@@ -7,69 +7,26 @@ import com.github.tomakehurst.wiremock.http.RequestMethod
 import com.github.tomakehurst.wiremock.junit.WireMockRule
 import org.junit.rules.RuleChain
 import org.junit.rules.TestRule
+import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
+import ru.snowadv.chatapp.di.holder.TestAppModuleComponentHolder
 import ru.snowadv.chatapp.server.ChatServerResponseTransformer
-import ru.snowadv.chatapp.wiremock.AssetStubMatcher
-import ru.snowadv.chatapp.wiremock.ChatTransformerStub
+import ru.snowadv.chatapp.server.wiremock.AssetStubMatcher
+import ru.snowadv.chatapp.server.wiremock.ChatTransformerStub
+import ru.snowadv.chatapp.server.wiremock.api.WireMockStubsProvider
+import javax.inject.Inject
 
-internal class WiremockTestRule : TestRule {
-    companion object Stubs {
-        private val stubs by lazy {
-            listOf(
-                // Chat screen
-                ChatTransformerStub(),
-                // Channels screen
-                AssetStubMatcher(
-                    urlRegex = ".*/api/v1/streams.*",
-                    assetsPath = "channels/streams.json",
-                    method = RequestMethod.GET,
-                ),
-                AssetStubMatcher(
-                    urlRegex = ".*/api/v1/users/me/[0-9]+/topics.*",
-                    assetsPath = "channels/topics.json",
-                    method = RequestMethod.GET,
-                ),
-                AssetStubMatcher(
-                    urlRegex = ".*/api/v1/users/me/subscriptions.*",
-                    assetsPath = "channels/subscriptions.json",
-                    method = RequestMethod.GET,
-                ),
-                // People screen
-                AssetStubMatcher(
-                    urlRegex = ".*/api/v1/users/?\$",
-                    assetsPath = "people/people.json",
-                    method = RequestMethod.GET,
-                ),
-                AssetStubMatcher(
-                    urlRegex = ".*/api/v1/realm/presence.*",
-                    assetsPath = "people/realm_presence.json",
-                    method = RequestMethod.GET,
-                ),
-                // Profile screen
-                AssetStubMatcher(
-                    urlRegex = ".*/api/v1/users/[0-9]+.*",
-                    assetsPath = "profile/profile.json",
-                    method = RequestMethod.GET,
-                ),
-                AssetStubMatcher(
-                    urlRegex = ".*/api/v1/users/[0-9]+/presence.*",
-                    assetsPath = "profile/presence.json",
-                    method = RequestMethod.GET,
-                ),
-            )
-        }
-    }
+internal class WiremockTestRule: TestWatcher() {
 
-    val wiremock = WireMockRule(wireMockConfig().extensions(ChatServerResponseTransformer()).notifier(ConsoleNotifier(true)))
+    @Inject
+    lateinit var wiremock: WireMockRule
+    @Inject
+    lateinit var stubsProvider: WireMockStubsProvider
+
     override fun apply(base: Statement?, description: Description?): Statement {
-        initStubs()
+        TestAppModuleComponentHolder.getComponent().inject(this)
+        stubsProvider.injectToWireMock(wiremock)
         return RuleChain.outerRule(wiremock).apply(base, description)
-    }
-
-    private fun initStubs() {
-        stubs.forEach {
-            it.applyToWiremock(wiremock)
-        }
     }
 }

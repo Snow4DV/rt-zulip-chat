@@ -15,13 +15,13 @@ import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
 import ru.snowadv.chat_presentation.chat.ui.view.ReactionView
 
-class KReactionView : KBaseView<KReactionView>, ReactionViewAssertions {
+internal class KReactionView : KBaseView<KReactionView>, ReactionViewAssertions {
     constructor(function: ViewBuilder.() -> Unit) : super(function)
     constructor(parent: Matcher<View>, function: ViewBuilder.() -> Unit) : super(parent, function)
     constructor(parent: DataInteraction, function: ViewBuilder.() -> Unit) : super(parent, function)
 }
 
-interface ReactionViewAssertions : BaseAssertions {
+internal interface ReactionViewAssertions : BaseAssertions {
     /**
      * Checks if user added such reaction
      */
@@ -60,7 +60,7 @@ interface ReactionViewAssertions : BaseAssertions {
 }
 
 
-class WithReactionCountMatcher(private val countMatcher: Matcher<Int>) :
+internal class WithReactionCountMatcher(private val countMatcher: Matcher<Int>) :
     TypeSafeMatcher<View>(View::class.java) {
 
     override fun describeTo(desc: Description) {
@@ -76,7 +76,7 @@ class WithReactionCountMatcher(private val countMatcher: Matcher<Int>) :
     }
 }
 
-class WithReactionEmojiCodeMatcher(private val codeMatcher: Matcher<String>) :
+internal class WithReactionEmojiCodeMatcher(private val codeMatcher: Matcher<String>) :
     TypeSafeMatcher<View>(View::class.java) {
 
     override fun describeTo(desc: Description) {
@@ -92,7 +92,7 @@ class WithReactionEmojiCodeMatcher(private val codeMatcher: Matcher<String>) :
     }
 }
 
-class WithReactionIsAddButtonMatcher(private val isPlusMatcher: Matcher<Boolean>) :
+internal class WithReactionIsAddButtonMatcher(private val isPlusMatcher: Matcher<Boolean>) :
     TypeSafeMatcher<View>(View::class.java) {
 
     override fun describeTo(desc: Description) {

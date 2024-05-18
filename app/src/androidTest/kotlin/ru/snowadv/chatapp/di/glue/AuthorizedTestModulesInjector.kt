@@ -1,4 +1,4 @@
-package ru.snowadv.chatapp.di
+package ru.snowadv.chatapp.di.glue
 
 import android.content.Context
 import coil.ImageLoader
@@ -23,7 +23,7 @@ import ru.snowadv.chat_domain_impl.di.ChatDomainComponentHolder
 import ru.snowadv.chat_presentation.di.holder.ChatPresentationComponentHolder
 import ru.snowadv.chat_presentation.di.holder.ChatPresentationDependencies
 import ru.snowadv.chat_presentation.navigation.ChatRouter
-import ru.snowadv.chatapp.auth_mock.AuthProviderMock
+import ru.snowadv.chatapp.mock.auth.AuthProviderMock
 import ru.snowadv.image_loader.di.holder.ImageLoaderLibAPI
 import ru.snowadv.image_loader.di.holder.ImageLoaderLibComponentHolder
 import ru.snowadv.model.BaseUrlProvider
@@ -35,11 +35,14 @@ import ru.snowadv.module_injector.module.BaseModuleDependencies
 import ru.snowadv.network.api.BadAuthBehavior
 import ru.snowadv.network.di.holder.NetworkLibComponentHolder
 import ru.snowadv.network.di.holder.NetworkLibDependencies
-import ru.snowadv.chatapp.config.WiremockBaseUrlProviderImpl
-import ru.snowadv.chatapp.auth_mock.AuthStorageMockRepository
-import ru.snowadv.chatapp.config.DebugLoggerToggle
+import ru.snowadv.chatapp.mock.config.WiremockBaseUrlProviderImpl
+import ru.snowadv.chatapp.mock.auth.AuthStorageMockRepository
+import ru.snowadv.chatapp.mock.config.DebugLoggerToggle
 import ru.snowadv.chatapp.di.holder.AppModuleAPI
 import ru.snowadv.chatapp.di.holder.AppModuleComponentHolder
+import ru.snowadv.chatapp.di.holder.TestAppModuleAPI
+import ru.snowadv.chatapp.di.holder.TestAppModuleComponentHolder
+import ru.snowadv.chatapp.di.holder.TestAppModuleDependencies
 import ru.snowadv.chatapp.glue.injector.BaseModulesInjector
 import ru.snowadv.database.dao.EmojisDao
 import ru.snowadv.database.dao.MessagesDao
@@ -50,6 +53,7 @@ import ru.snowadv.events_impl.di.dagger.EventsDataModuleComponentHolder
 import ru.snowadv.events_impl.di.holder.EventsDataDependencies
 import ru.snowadv.model.DispatcherProvider
 import ru.snowadv.module_injector.dependency_holder.DependencyHolder1
+import ru.snowadv.module_injector.dependency_holder.DependencyHolder4
 import ru.snowadv.network.api.LoggerToggle
 import ru.snowadv.network.api.ZulipApi
 import ru.snowadv.network.di.holder.NetworkLibAPI
@@ -60,15 +64,32 @@ internal object AuthorizedTestModulesInjector: BaseModulesInjector() {
     override fun inject(appContext: Context) {
         super.inject(appContext)
 
+        TestAppModuleComponentHolder.dependencyProvider = {
+            class TestAppModuleDependencyHolder(
+                override val block: (BaseDependencyHolder<TestAppModuleDependencies>, AppModuleAPI) -> TestAppModuleDependencies
+            ) : DependencyHolder1<AppModuleAPI, TestAppModuleDependencies>(
+                api1 = AppModuleComponentHolder.get(),
+            )
+
+            TestAppModuleDependencyHolder { dependencyHolder, appApi ->
+                object : TestAppModuleDependencies {
+                    override val json: Json = appApi.json
+                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
+                }
+            }.dependencies
+        }
+
         AuthDataComponentHolder.dependencyProvider = {
             class AuthDataDependencyHolder(
-                override val block: (BaseDependencyHolder<AuthDataDependencies>) -> AuthDataDependencies
-            ) : DependencyHolder0<AuthDataDependencies>()
+                override val block: (BaseDependencyHolder<AuthDataDependencies>, TestAppModuleAPI) -> AuthDataDependencies
+            ) : DependencyHolder1<TestAppModuleAPI, AuthDataDependencies>(
+                api1 = TestAppModuleComponentHolder.get(),
+            )
 
 
-            AuthDataDependencyHolder { dependencyHolder ->
+            AuthDataDependencyHolder { dependencyHolder, testApi ->
                 object : AuthDataDependencies {
-                    override val authStorageRepository: AuthStorageRepository = AuthStorageMockRepository
+                    override val authStorageRepository: AuthStorageRepository = testApi.authStorageMock
                     override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
                 }
             }.dependencies
@@ -79,14 +100,15 @@ internal object AuthorizedTestModulesInjector: BaseModulesInjector() {
 
         ChatPresentationComponentHolder.dependencyProvider = {
             class ChatPresentationDependencyHolder(
-                override val block: (BaseDependencyHolder<ChatPresentationDependencies>, AppModuleAPI, ChatDomainAPI, ImageLoaderLibAPI) -> ChatPresentationDependencies
-            ) : DependencyHolder3<AppModuleAPI, ChatDomainAPI, ImageLoaderLibAPI, ChatPresentationDependencies>(
+                override val block: (BaseDependencyHolder<ChatPresentationDependencies>, AppModuleAPI, ChatDomainAPI, ImageLoaderLibAPI, TestAppModuleAPI) -> ChatPresentationDependencies
+            ) : DependencyHolder4<AppModuleAPI, ChatDomainAPI, ImageLoaderLibAPI, TestAppModuleAPI, ChatPresentationDependencies>(
                 api1 = AppModuleComponentHolder.get() ,
                 api2 = ChatDomainComponentHolder.get(),
                 api3 = ImageLoaderLibComponentHolder.get(),
+                api4 = TestAppModuleComponentHolder.get(),
             )
 
-            ChatPresentationDependencyHolder { dependencyHolder, appApi, chatApi, imageLoaderApi ->
+            ChatPresentationDependencyHolder { dependencyHolder, appApi, chatApi, imageLoaderApi, testApi ->
                 object : ChatPresentationDependencies {
                     override val chatRouter: ChatRouter = appApi.chatRouter
                     override val addReactionUseCase: AddReactionUseCase = chatApi.addReactionUseCase
@@ -99,7 +121,7 @@ internal object AuthorizedTestModulesInjector: BaseModulesInjector() {
                     override val getEmojisUseCase: GetEmojisUseCase = chatApi.getEmojisUseCase
                     override val appContext: Context = appContext
                     override val imageLoader: ImageLoader = imageLoaderApi.coilImageLoader
-                    override val baseUrlProvider: BaseUrlProvider = WiremockBaseUrlProviderImpl
+                    override val baseUrlProvider: BaseUrlProvider = testApi.baseUrlProvider
                     override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
                 }
             }.dependencies
@@ -108,18 +130,19 @@ internal object AuthorizedTestModulesInjector: BaseModulesInjector() {
 
         NetworkLibComponentHolder.dependencyProvider = {
             class NetworkLibDependencyHolder(
-                override val block: (BaseDependencyHolder<NetworkLibDependencies>, AppModuleAPI) -> NetworkLibDependencies
-            ) : DependencyHolder1<AppModuleAPI, NetworkLibDependencies>(
+                override val block: (BaseDependencyHolder<NetworkLibDependencies>, AppModuleAPI, TestAppModuleAPI) -> NetworkLibDependencies
+            ) : DependencyHolder2<AppModuleAPI, TestAppModuleAPI, NetworkLibDependencies>(
                 api1 = AppModuleComponentHolder.get(),
+                api2 = TestAppModuleComponentHolder.get(),
             )
 
-            NetworkLibDependencyHolder { dependencyHolder, appApi ->
+            NetworkLibDependencyHolder { dependencyHolder, appApi, testApi ->
                 object : NetworkLibDependencies {
                     override val badAuthBehavior: BadAuthBehavior = appApi.badAuthBehavior
-                    override val authProvider: AuthProvider = AuthProviderMock
+                    override val authProvider: AuthProvider = testApi.authProviderMock
                     override val json: Json = appApi.json
-                    override val baseUrlProvider: BaseUrlProvider = WiremockBaseUrlProviderImpl
-                    override val loggerToggle: LoggerToggle = DebugLoggerToggle
+                    override val baseUrlProvider: BaseUrlProvider = testApi.baseUrlProvider
+                    override val loggerToggle: LoggerToggle = testApi.loggerToggle
                     override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> =
                         dependencyHolder
 
@@ -130,21 +153,22 @@ internal object AuthorizedTestModulesInjector: BaseModulesInjector() {
 
         ChatDataComponentHolder.dependencyProvider = {
             class ChatDataDependencyHolder(
-                override val block: (BaseDependencyHolder<ChatDataDependencies>, NetworkLibAPI, DatabaseLibAPI, AppModuleAPI) -> ChatDataDependencies
-            ) : DependencyHolder3<NetworkLibAPI, DatabaseLibAPI, AppModuleAPI, ChatDataDependencies>(
+                override val block: (BaseDependencyHolder<ChatDataDependencies>, NetworkLibAPI, DatabaseLibAPI, AppModuleAPI, TestAppModuleAPI) -> ChatDataDependencies
+            ) : DependencyHolder4<NetworkLibAPI, DatabaseLibAPI, AppModuleAPI, TestAppModuleAPI, ChatDataDependencies>(
                 api1 = NetworkLibComponentHolder.get(),
                 api2 = DatabaseLibComponentHolder.get(),
                 api3 = AppModuleComponentHolder.get(),
+                api4 = TestAppModuleComponentHolder.get(),
             )
 
 
-            ChatDataDependencyHolder { dependencyHolder, networkApi,  dbApi, appApi ->
+            ChatDataDependencyHolder { dependencyHolder, networkApi,  dbApi, appApi, testApi ->
                 object : ChatDataDependencies {
                     override val zulipApi: ZulipApi = networkApi.zulipApi
                     override val emojisDao: EmojisDao = dbApi.emojisDao
                     override val messagesDao: MessagesDao = dbApi.messagesDao
                     override val dispatcherProvider: DispatcherProvider = appApi.dispatcherProvider
-                    override val authProvider: AuthProvider = AuthProviderMock
+                    override val authProvider: AuthProvider = testApi.authProviderMock
                     override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
                 }
             }.dependencies
@@ -152,19 +176,20 @@ internal object AuthorizedTestModulesInjector: BaseModulesInjector() {
 
         EventsDataModuleComponentHolder.dependencyProvider = {
             class EventsDependencyHolder(
-                override val block: (BaseDependencyHolder<EventsDataDependencies>, AppModuleAPI, NetworkLibAPI) -> EventsDataDependencies
+                override val block: (BaseDependencyHolder<EventsDataDependencies>, AppModuleAPI, NetworkLibAPI, TestAppModuleAPI) -> EventsDataDependencies
 
-            ) : DependencyHolder2<AppModuleAPI, NetworkLibAPI, EventsDataDependencies>(
+            ) : DependencyHolder3<AppModuleAPI, NetworkLibAPI, TestAppModuleAPI, EventsDataDependencies>(
                 api1 = AppModuleComponentHolder.get(),
                 api2 = NetworkLibComponentHolder.get(),
+                api3 = TestAppModuleComponentHolder.get(),
             )
 
 
-            EventsDependencyHolder { dependencyHolder, appApi, networkApi ->
+            EventsDependencyHolder { dependencyHolder, appApi, networkApi, testApi ->
                 object : EventsDataDependencies {
                     override val dispatcherProvider: DispatcherProvider = appApi.dispatcherProvider
                     override val api: ZulipApi = networkApi.zulipApi
-                    override val authProvider: AuthProvider = AuthProviderMock
+                    override val authProvider: AuthProvider = testApi.authProviderMock
                     override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
 
                 }
@@ -173,20 +198,21 @@ internal object AuthorizedTestModulesInjector: BaseModulesInjector() {
 
         UsersDataModuleComponentHolder.dependencyProvider = {
             class UsersDependenciesHolder(
-                override val block: (BaseDependencyHolder<UsersDataModuleDependencies>, AppModuleAPI, NetworkLibAPI, DatabaseLibAPI) -> UsersDataModuleDependencies
+                override val block: (BaseDependencyHolder<UsersDataModuleDependencies>, AppModuleAPI, NetworkLibAPI, DatabaseLibAPI, TestAppModuleAPI) -> UsersDataModuleDependencies
 
-            ) : DependencyHolder3<AppModuleAPI, NetworkLibAPI, DatabaseLibAPI, UsersDataModuleDependencies>(
+            ) : DependencyHolder4<AppModuleAPI, NetworkLibAPI, DatabaseLibAPI, TestAppModuleAPI, UsersDataModuleDependencies>(
                 api1 = AppModuleComponentHolder.get(),
                 api2 = NetworkLibComponentHolder.get(),
                 api3 = DatabaseLibComponentHolder.get(),
+                api4 = TestAppModuleComponentHolder.get(),
             )
 
 
-            UsersDependenciesHolder { dependencyHolder, appApi, networkApi, dbApi ->
+            UsersDependenciesHolder { dependencyHolder, appApi, networkApi, dbApi, testApi ->
                 object : UsersDataModuleDependencies {
                     override val dispatcherProvider: DispatcherProvider = appApi.dispatcherProvider
                     override val api: ZulipApi = networkApi.zulipApi
-                    override val authProvider: AuthProvider = AuthProviderMock
+                    override val authProvider: AuthProvider = testApi.authProviderMock
                     override val usersDao: UsersDao = dbApi.usersDao
                     override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> =
                         dependencyHolder

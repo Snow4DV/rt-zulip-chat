@@ -10,7 +10,7 @@ import ru.snowadv.events_api.model.DomainEvent
 import ru.snowadv.events_api.model.EventNarrow
 import ru.snowadv.events_api.model.EventQueueProperties
 import ru.snowadv.events_api.model.EventType
-import ru.snowadv.events_impl.util.EventMapper.toDataEvent
+import ru.snowadv.events_impl.util.EventMapper.toDomainEvent
 import ru.snowadv.events_impl.util.EventMapper.toEventTypesDto
 import ru.snowadv.events_impl.util.EventMapper.toNarrow2DArrayDto
 import ru.snowadv.events_impl.util.EventMapper.toRegisteredQueueEvent
@@ -51,7 +51,7 @@ class EventRepositoryImpl @Inject constructor(
             ).fold(
                 onSuccess = {
                     val userId = authProvider.getAuthorizedUser().id
-                    it.events.map { eventDto -> eventDto.toDataEvent(userId, eventQueueProps.queueId) }.forEach { event ->
+                    it.events.map { eventDto -> eventDto.toDomainEvent(userId, eventQueueProps.queueId) }.forEach { event ->
                         emit(event)
                     }
                 },

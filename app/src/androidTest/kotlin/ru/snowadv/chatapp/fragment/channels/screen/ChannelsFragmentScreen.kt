@@ -1,7 +1,6 @@
 package ru.snowadv.chatapp.fragment.channels.screen
 
 import android.view.View
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.kaspersky.kaspresso.screens.KScreen
 import io.github.kakaocup.kakao.common.views.KView
 import io.github.kakaocup.kakao.image.KImageView
@@ -11,12 +10,7 @@ import io.github.kakaocup.kakao.recycler.KRecyclerItem
 import io.github.kakaocup.kakao.recycler.KRecyclerView
 import io.github.kakaocup.kakao.text.KTextView
 import org.hamcrest.Matcher
-import org.hamcrest.Matchers
 import ru.snowadv.channels_impl.presentation.channel_list.ChannelListFragment
-import ru.snowadv.chatapp.R
-import ru.snowadv.chatapp.fragment.chat.custom_view.KReactionView
-import ru.snowadv.chatapp.fragment.chat.custom_view.WithReactionCountMatcher
-import ru.snowadv.chatapp.fragment.chat.screen.ChatFragmentScreen
 
 internal object ChannelsFragmentScreen : KScreen<ChannelsFragmentScreen>() {
     override val layoutId: Int = ru.snowadv.channels_impl.R.layout.fragment_channel_list

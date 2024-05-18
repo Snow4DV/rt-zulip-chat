@@ -27,6 +27,7 @@ internal class ChatFragmentTest : TestCase() {
             ChatFragment.ARG_TOPIC_NAME_KEY to "testing",
         ),
     )
+    private val mockData get() = fragmentTestRule.mockDataRule.data
 
     @Test
     fun messagesShowUp() = run {
@@ -40,7 +41,7 @@ internal class ChatFragmentTest : TestCase() {
                 }
             }
             step("Проверяем, что был вызов метода получения сообщений") {
-                flakySafely {
+                flakySafely(intervalMs = 200) {
                     fragmentTestRule.wiremockRule.wiremock.verify(
                         WireMock.getRequestedFor(
                             urlPathMatching("/api/v1/messages.*")
@@ -49,7 +50,7 @@ internal class ChatFragmentTest : TestCase() {
                 }
             }
 
-            flakySafely {
+            flakySafely(intervalMs = 200) {
                 step("Проверяем, что загрузка завершилась") {
                     progressBar {
                         isGone()
@@ -57,7 +58,7 @@ internal class ChatFragmentTest : TestCase() {
                 }
             }
 
-            flakySafely {
+            flakySafely(intervalMs = 200) {
                 step("Проверяем, что не отображаются сообщения об ошибке/о загрузке из кэша") {
                     states.forEach {
                         it.doesNotExist()
@@ -66,17 +67,17 @@ internal class ChatFragmentTest : TestCase() {
 
             }
 
-            flakySafely {
+            flakySafely(intervalMs = 200) {
                 step("Проверяем, что показываются все сообщения") {
                     listOf(2, 3, 4, 5, 7).forEachIndexed { index, recyclerIndex ->
                         messagesRecycler.childAt<ChatFragmentScreen.KIncomingMessageItem>(
                             recyclerIndex
                         ) {
                             usernameText {
-                                hasText(MockData.messages.messages[index].senderFullName)
+                                hasText(mockData.messagesDto.messages[index].senderFullName)
                             }
                             content {
-                                hasText(MockData.messages.messages[index].content)
+                                hasText(mockData.messagesDto.messages[index].content)
                             }
                         }
                     }
@@ -90,14 +91,14 @@ internal class ChatFragmentTest : TestCase() {
     fun sendMessage() = run {
         val appContext = ApplicationProvider.getApplicationContext<Context>()
         ChatFragmentScreen {
-            flakySafely {
+            flakySafely(intervalMs = 200) {
                 step("Проверяем, что загрузка завершилась") {
                     progressBar {
                         isGone()
                     }
                 }
             }
-            flakySafely {
+            flakySafely(intervalMs = 200) {
                 step("Проверяем, что не отображаются сообщения об ошибке/о загрузке из кэша") {
                     states.forEach {
                         it.doesNotExist()
@@ -109,17 +110,17 @@ internal class ChatFragmentTest : TestCase() {
                 messageEditText.typeText("123")
             }
             step("Проверяем, что отображается кнопка отправки сообщения") {
-                flakySafely {
+                flakySafely(intervalMs = 200) {
                     sendOrAddAttachmentButton.hasTag(appContext.getString(R.string.send_message_hint))
                 }
             }
             step("Отправляем сообщение") {
-                flakySafely {
+                flakySafely(intervalMs = 200) {
                     sendOrAddAttachmentButton.perform { click() }
                 }
             }
             step("Проверяем, что был вызов метода отправки сообщения") {
-                flakySafely {
+                flakySafely(intervalMs = 200) {
 
                     fragmentTestRule.wiremockRule.wiremock.verify(
                         WireMock.postRequestedFor(
@@ -129,7 +130,7 @@ internal class ChatFragmentTest : TestCase() {
                 }
             }
             step("Проверяем, что последнее сообщение содержит текст `123`") {
-                flakySafely {
+                flakySafely(intervalMs = 200) {
                     messagesRecycler.childAt<ChatFragmentScreen.KOutgoingMessageItem>(
                         messagesRecycler.getSize() - 1
                     ) {
@@ -145,7 +146,7 @@ internal class ChatFragmentTest : TestCase() {
     @Test
     fun addReaction() = run {
         ChatFragmentScreen {
-            flakySafely {
+            flakySafely(intervalMs = 200) {
                 step("Проверяем, что загрузка завершилась") {
                     progressBar {
                         isGone()
@@ -153,7 +154,7 @@ internal class ChatFragmentTest : TestCase() {
                 }
             }
 
-            flakySafely {
+            flakySafely(intervalMs = 200) {
                 step("Проверяем, что не отображаются сообщения об ошибке/о загрузке из кэша") {
                     states.forEach {
                         it.doesNotExist()
@@ -162,7 +163,7 @@ internal class ChatFragmentTest : TestCase() {
 
             }
 
-            flakySafely {
+            flakySafely(intervalMs = 200) {
                 step("Проверяем, что у последнего сообщения отображается реакция") {
                     messagesRecycler.lastChild<ChatFragmentScreen.KIncomingMessageItem>() {
                         oneVoteReaction {
@@ -174,7 +175,7 @@ internal class ChatFragmentTest : TestCase() {
                 }
             }
 
-            flakySafely {
+            flakySafely(intervalMs = 200) {
                 step("Добавляем реакцию") {
                     messagesRecycler.lastChild<ChatFragmentScreen.KIncomingMessageItem>() {
                         oneVoteReaction {
@@ -185,7 +186,7 @@ internal class ChatFragmentTest : TestCase() {
                 }
             }
 
-            flakySafely {
+            flakySafely(intervalMs = 200) {
                 step("Проверяем, что был вызов метода получения сообщений") {
                     fragmentTestRule.wiremockRule.wiremock.verify(
                         WireMock.postRequestedFor(
@@ -195,7 +196,7 @@ internal class ChatFragmentTest : TestCase() {
                 }
             }
 
-            flakySafely {
+            flakySafely(intervalMs = 200) {
                 step("Проверяем, что реакция появилась") {
                     messagesRecycler.lastChild<ChatFragmentScreen.KIncomingMessageItem>() {
                         selectedReaction {
@@ -206,7 +207,7 @@ internal class ChatFragmentTest : TestCase() {
                 }
             }
 
-            flakySafely {
+            flakySafely(intervalMs = 200) {
                 step("Проверяем, что отправка реакции завершилась") {
                     progressBar {
                         isGone()
