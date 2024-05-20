@@ -8,6 +8,7 @@ import ru.snowadv.events_api.model.DomainEvent
 import ru.snowadv.events_api.model.EventMessage
 import ru.snowadv.events_api.model.EventPresence
 import ru.snowadv.events_api.model.EventReaction
+import java.io.IOException
 import java.time.ZonedDateTime
 
 internal class ChatActorElmTestData {
@@ -83,7 +84,8 @@ internal class ChatActorElmTestData {
         DomainEvent.FailedFetchingQueueEvent(
             id = -1,
             queueId = null,
-            isQueueBad = true
+            isQueueBad = true,
+            reason = IOException()
         ),
         DomainEvent.RegisteredNewQueueEvent(
             queueId = "new_queue",
