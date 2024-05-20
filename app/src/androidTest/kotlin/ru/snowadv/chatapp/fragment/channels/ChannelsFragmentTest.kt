@@ -8,7 +8,7 @@ import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import ru.snowadv.channels_impl.presentation.channel_list.ChannelListFragment
+import ru.snowadv.channels_presentation.channel_list.ChannelListFragment
 import ru.snowadv.chatapp.di.glue.AuthorizedTestModulesInjector
 import ru.snowadv.chatapp.fragment.channels.screen.ChannelsFragmentScreen
 import ru.snowadv.chatapp.rule.FragmentTestRule
@@ -96,6 +96,6 @@ internal class ChannelsFragmentTest : TestCase() {
 
 
     private fun launchChannelsFragment(): FragmentScenario<ChannelListFragment> {
-        return launchFragmentInContainer<ChannelListFragment>(themeResId = ru.snowadv.channels_impl.R.style.Theme_ZulipChat_Channels)
+        return launchFragmentInContainer<ChannelListFragment>(themeResId = ru.snowadv.channels_presentation.R.style.Theme_ZulipChat_Channels)
     }
 }

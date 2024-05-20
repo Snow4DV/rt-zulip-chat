@@ -7,7 +7,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import ru.snowadv.chatapp.fragment.people.screen.PeopleFragmentScreen
 import ru.snowadv.chatapp.rule.FragmentTestRule
-import ru.snowadv.people_impl.presentation.people_list.PeopleFragment
+import ru.snowadv.people_presentation.ui.PeopleFragment
 
 @RunWith(AndroidJUnit4::class)
 internal class PeopleFragmentTest : TestCase() {
@@ -15,7 +15,7 @@ internal class PeopleFragmentTest : TestCase() {
     @get:Rule
     val fragmentTestRule = FragmentTestRule(
         fragmentClass = PeopleFragment::class.java,
-        themeResId = ru.snowadv.people_impl.R.style.Theme_ZulipChat_People,
+        themeResId = ru.snowadv.people_presentation.R.style.Theme_ZulipChat_People,
     )
 
     private val mockData get() = fragmentTestRule.mockDataRule.data

@@ -94,23 +94,22 @@ dependencies {
     // Events feature
     implementation(projects.features.eventsData)
     implementation(projects.features.eventsDomainApi)
+    // Channels feature
+    implementation(projects.features.channelsData)
+    implementation(projects.features.channelsDomainApi)
+    implementation(projects.features.channelsDomainImpl)
+    implementation(projects.features.channelsPresentation)
+    // Users feature
+    implementation(projects.features.usersData)
+    implementation(projects.features.usersDomainApi)
+    implementation(projects.features.usersDomainImpl)
+    // People feature
+    implementation(projects.features.peoplePresentation)
+    // Profile feature
+    implementation(projects.features.profilePresentation)
+    // Home feature
+    implementation(projects.features.homePresentation)
 
-    // Old data TODO: Refactor
-    implementation(projects.data.channelsData.api)
-    implementation(projects.data.channelsData.impl)
-    implementation(projects.features.eventsDomainApi)
-    implementation(projects.data.usersData.api)
-    implementation(projects.data.usersData.impl)
-
-    // Old features TODO: Refactor
-    implementation(projects.features.channels.api)
-    implementation(projects.features.channels.impl)
-    implementation(projects.features.home.api)
-    implementation(projects.features.home.impl)
-    implementation(projects.features.people.api)
-    implementation(projects.features.people.impl)
-    implementation(projects.features.profile.api)
-    implementation(projects.features.profile.impl)
 
     // Core
     implementation(projects.core.utils)

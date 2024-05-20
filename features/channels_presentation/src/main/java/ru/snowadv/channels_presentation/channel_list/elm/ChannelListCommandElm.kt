@@ -1,0 +1,3 @@
+package ru.snowadv.channels_presentation.channel_list.elm
+
+internal interface ChannelListCommandElm

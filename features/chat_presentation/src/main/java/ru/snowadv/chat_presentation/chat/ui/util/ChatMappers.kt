@@ -13,6 +13,7 @@ import ru.snowadv.chat_presentation.chat.ui.model.ChatMessage
 import ru.snowadv.chat_presentation.chat.ui.model.ChatMessageType
 import ru.snowadv.chat_presentation.chat.ui.model.ChatPaginationStatus
 import ru.snowadv.chat_presentation.chat.ui.model.ChatReaction
+import ru.snowadv.chat_presentation.common.ui.util.EmojiMappers.toDomainChatEmoji
 import ru.snowadv.events_api.model.DomainEvent
 import ru.snowadv.events_api.model.EventMessage
 import ru.snowadv.events_api.model.EventReaction
@@ -49,13 +50,7 @@ internal object ChatMappers {
         )
     }
 
-    fun DomainChatEmoji.toUiChatEmoji(): UiChatEmoji {
-        return UiChatEmoji(
-            name = name,
-            code = code,
-            convertedEmojiString = EmojiUtils.combinedHexToString(code)
-        )
-    }
+
 
     private fun EventReaction.toChatReaction(): DomainChatReaction {
         return DomainChatReaction(
@@ -66,12 +61,7 @@ internal object ChatMappers {
         )
     }
 
-    fun DomainEvent.ReactionDomainEvent.toChatEmoji(): DomainChatEmoji {
-        return DomainChatEmoji(
-            name = emojiName,
-            code = emojiCode,
-        )
-    }
+
 
     fun DomainPaginationStatus.toUiPaginationStatus(): ChatPaginationStatus {
         return when(this) {
@@ -143,7 +133,7 @@ internal object ChatMappers {
                 queueId = queueId,
                 eventId = id,
                 messageId = messageId,
-                emoji = toChatEmoji(),
+                emoji = toDomainChatEmoji(),
                 currentUserReaction = currentUserReaction,
             )
 
@@ -151,7 +141,7 @@ internal object ChatMappers {
                 queueId = queueId,
                 eventId = id,
                 messageId = messageId,
-                emoji = toChatEmoji(),
+                emoji = toDomainChatEmoji(),
                 currentUserReaction = currentUserReaction,
             )
         }

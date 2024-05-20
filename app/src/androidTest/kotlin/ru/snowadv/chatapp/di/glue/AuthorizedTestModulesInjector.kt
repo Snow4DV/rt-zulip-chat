@@ -7,9 +7,12 @@ import ru.snowadv.auth_data.di.holder.AuthDataComponentHolder
 import ru.snowadv.auth_data.di.holder.AuthDataDependencies
 import ru.snowadv.auth_data.di.holder.ChatDataComponentHolder
 import ru.snowadv.auth_data.di.holder.ChatDataDependencies
+import ru.snowadv.auth_storage.di.holder.AuthStorageAPI
 import ru.snowadv.auth_storage.di.holder.AuthStorageComponentHolder
 import ru.snowadv.auth_storage.provider.AuthProvider
 import ru.snowadv.auth_storage.repository.AuthStorageRepository
+import ru.snowadv.channels_data.di.holder.ChannelsDataComponentHolder
+import ru.snowadv.channels_data.di.holder.ChannelsDataDependencies
 import ru.snowadv.chat_domain_api.di.ChatDomainAPI
 import ru.snowadv.chat_domain_api.use_case.AddReactionUseCase
 import ru.snowadv.chat_domain_api.use_case.GetCurrentMessagesUseCase
@@ -46,6 +49,8 @@ import ru.snowadv.chatapp.di.holder.TestAppModuleDependencies
 import ru.snowadv.chatapp.glue.injector.BaseModulesInjector
 import ru.snowadv.database.dao.EmojisDao
 import ru.snowadv.database.dao.MessagesDao
+import ru.snowadv.database.dao.StreamsDao
+import ru.snowadv.database.dao.TopicsDao
 import ru.snowadv.database.dao.UsersDao
 import ru.snowadv.database.di.holder.DatabaseLibAPI
 import ru.snowadv.database.di.holder.DatabaseLibComponentHolder
@@ -57,8 +62,8 @@ import ru.snowadv.module_injector.dependency_holder.DependencyHolder4
 import ru.snowadv.network.api.LoggerToggle
 import ru.snowadv.network.api.ZulipApi
 import ru.snowadv.network.di.holder.NetworkLibAPI
-import ru.snowadv.users_data_api.di.UsersDataModuleDependencies
-import ru.snowadv.users_data_impl.di.UsersDataModuleComponentHolder
+import ru.snowadv.users_data.di.holder.UsersDataComponentHolder
+import ru.snowadv.users_data.di.holder.UsersDataDependencies
 
 internal object AuthorizedTestModulesInjector: BaseModulesInjector() {
     override fun inject(appContext: Context) {
@@ -196,31 +201,26 @@ internal object AuthorizedTestModulesInjector: BaseModulesInjector() {
             }.dependencies
         }
 
-        UsersDataModuleComponentHolder.dependencyProvider = {
-            class UsersDependenciesHolder(
-                override val block: (BaseDependencyHolder<UsersDataModuleDependencies>, AppModuleAPI, NetworkLibAPI, DatabaseLibAPI, TestAppModuleAPI) -> UsersDataModuleDependencies
-
-            ) : DependencyHolder4<AppModuleAPI, NetworkLibAPI, DatabaseLibAPI, TestAppModuleAPI, UsersDataModuleDependencies>(
-                api1 = AppModuleComponentHolder.get(),
-                api2 = NetworkLibComponentHolder.get(),
-                api3 = DatabaseLibComponentHolder.get(),
+        UsersDataComponentHolder.dependencyProvider = {
+            class UsersDataDependencyHolder(
+                override val block: (BaseDependencyHolder<UsersDataDependencies>, NetworkLibAPI, DatabaseLibAPI, AppModuleAPI, TestAppModuleAPI) -> UsersDataDependencies
+            ) : DependencyHolder4<NetworkLibAPI, DatabaseLibAPI, AppModuleAPI, TestAppModuleAPI, UsersDataDependencies>(
+                api1 = NetworkLibComponentHolder.get(),
+                api2 = DatabaseLibComponentHolder.get(),
+                api3 = AppModuleComponentHolder.get(),
                 api4 = TestAppModuleComponentHolder.get(),
             )
 
 
-            UsersDependenciesHolder { dependencyHolder, appApi, networkApi, dbApi, testApi ->
-                object : UsersDataModuleDependencies {
-                    override val dispatcherProvider: DispatcherProvider = appApi.dispatcherProvider
-                    override val api: ZulipApi = networkApi.zulipApi
-                    override val authProvider: AuthProvider = testApi.authProviderMock
+            UsersDataDependencyHolder { dependencyHolder, networkApi,  dbApi, appApi, testApi ->
+                object : UsersDataDependencies {
+                    override val zulipApi: ZulipApi = networkApi.zulipApi
                     override val usersDao: UsersDao = dbApi.usersDao
-                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> =
-                        dependencyHolder
-
+                    override val dispatcherProvider: DispatcherProvider = appApi.dispatcherProvider
+                    override val authProvider: AuthProvider = testApi.authProviderMock
+                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
                 }
             }.dependencies
         }
-
-
     }
 }

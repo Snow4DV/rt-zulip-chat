@@ -2,8 +2,8 @@ package ru.snowadv.chatapp.glue.navigation
 
 import com.github.terrakok.cicerone.Router
 import dagger.Reusable
-import ru.snowadv.people_api.domain.navigation.PeopleRouter
 import ru.snowadv.chatapp.navigation.Screens
+import ru.snowadv.people_presentation.navigation.PeopleRouter
 import javax.inject.Inject
 
 @Reusable

@@ -1,5 +1,6 @@
 package ru.snowadv.chat_presentation.chat.ui
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.snowadv.chat_presentation.chat.presentation.elm.ChatEffectElm
 import ru.snowadv.chat_presentation.chat.presentation.elm.ChatEventElm
 import ru.snowadv.chat_presentation.chat.presentation.elm.ChatStateElm
+import ru.snowadv.chat_presentation.chat.presentation.elm.ChatStoreFactoryElm
 import ru.snowadv.chat_presentation.databinding.FragmentChatBinding
 import ru.snowadv.chat_presentation.di.holder.ChatPresentationComponentHolder
 import ru.snowadv.chat_presentation.chat.ui.model.ChatAction
@@ -26,6 +28,7 @@ import ru.snowadv.presentation.fragment.setStatusBarColor
 import ru.snowadv.presentation.fragment.setTopBarColor
 import vivid.money.elmslie.android.renderer.elmStoreWithRenderer
 import vivid.money.elmslie.core.store.Store
+import javax.inject.Inject
 
 class ChatFragment : BaseFragment<ChatEventElm, ChatEffectElm, ChatStateElm>(),
     ElmFragmentRenderer<ChatFragment, FragmentChatBinding, ChatEventElm, ChatEffectElm, ChatStateElm>
@@ -54,6 +57,9 @@ class ChatFragment : BaseFragment<ChatEventElm, ChatEffectElm, ChatStateElm>(),
         }
     }
 
+    @Inject
+    internal lateinit var chatStoreFactory: ChatStoreFactoryElm
+
     private var _binding: FragmentChatBinding? = null
     private val binding get() = requireNotNull(_binding) { "Binding wasn't initialized" }
     private val streamName: String by lazy {
@@ -64,7 +70,7 @@ class ChatFragment : BaseFragment<ChatEventElm, ChatEffectElm, ChatStateElm>(),
     }
 
     override val store: Store<ChatEventElm, ChatEffectElm, ChatStateElm> by elmStoreWithRenderer(elmRenderer = this) {
-        ChatPresentationComponentHolder.getComponent().chatStoreFactory.create(
+        chatStoreFactory.create(
             streamName = streamName,
             topicName = topicName,
         )
@@ -81,6 +87,12 @@ class ChatFragment : BaseFragment<ChatEventElm, ChatEffectElm, ChatStateElm>(),
             _binding = it
             addDecoratorToRecycler(it)
         }.root
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        ChatPresentationComponentHolder.getComponent().inject(this)
+        onAttachRendererView()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

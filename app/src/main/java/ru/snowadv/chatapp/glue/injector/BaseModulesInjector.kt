@@ -26,16 +26,22 @@ import ru.snowadv.auth_storage.di.holder.AuthStorageComponentHolder
 import ru.snowadv.auth_storage.di.holder.AuthStorageDependencies
 import ru.snowadv.auth_storage.provider.AuthProvider
 import ru.snowadv.auth_storage.repository.AuthStorageRepository
-import ru.snowadv.channels_api.di.ChannelsFeatureAPI
-import ru.snowadv.channels_api.di.ChannelsFeatureDependencies
-import ru.snowadv.channels_api.domain.navigation.ChannelsRouter
-import ru.snowadv.channels_api.presentation.ChannelsScreenFactory
-import ru.snowadv.channels_data_api.StreamDataRepository
-import ru.snowadv.channels_data_api.TopicDataRepository
-import ru.snowadv.channels_data_api.di.ChannelsDataModuleAPI
-import ru.snowadv.channels_data_api.di.ChannelsDataModuleDependencies
-import ru.snowadv.channels_data_impl.di.ChannelsDataModuleComponentHolder
-import ru.snowadv.channels_impl.di.ChannelsFeatureComponentHolder
+import ru.snowadv.channels_data.di.holder.ChannelsDataAPI
+import ru.snowadv.channels_data.di.holder.ChannelsDataComponentHolder
+import ru.snowadv.channels_data.di.holder.ChannelsDataDependencies
+import ru.snowadv.channels_domain_api.di.ChannelsDomainAPI
+import ru.snowadv.channels_domain_api.di.ChannelsDomainDependencies
+import ru.snowadv.channels_domain_api.repository.StreamRepository
+import ru.snowadv.channels_domain_api.repository.TopicRepository
+import ru.snowadv.channels_domain_api.use_case.GetStreamsUseCase
+import ru.snowadv.channels_domain_api.use_case.GetTopicsUseCase
+import ru.snowadv.channels_domain_api.use_case.ListenToStreamEventsUseCase
+import ru.snowadv.channels_domain_impl.di.ChannelsDomainComponentHolder
+import ru.snowadv.channels_presentation.navigation.ChannelsRouter
+import ru.snowadv.channels_presentation.api.ChannelsScreenFactory
+import ru.snowadv.channels_presentation.di.holder.ChannelsPresentationAPI
+import ru.snowadv.channels_presentation.di.holder.ChannelsPresentationComponentHolder
+import ru.snowadv.channels_presentation.di.holder.ChannelsPresentationDependencies
 import ru.snowadv.chat_domain_api.di.ChatDomainAPI
 import ru.snowadv.chat_domain_api.di.ChatDomainDependencies
 import ru.snowadv.chat_domain_api.repository.EmojiRepository
@@ -65,8 +71,6 @@ import ru.snowadv.events_api.repository.EventRepository
 import ru.snowadv.events_impl.di.dagger.EventsDataModuleComponentHolder
 import ru.snowadv.events_impl.di.holder.EventsDataAPI
 import ru.snowadv.events_impl.di.holder.EventsDataDependencies
-import ru.snowadv.home_api.di.HomeFeatureDependencies
-import ru.snowadv.home_impl.di.HomeFeatureComponentHolder
 import ru.snowadv.image_loader.di.holder.ImageLoaderLibAPI
 import ru.snowadv.image_loader.di.holder.ImageLoaderLibComponentHolder
 import ru.snowadv.image_loader.di.holder.ImageLoaderLibDependencies
@@ -88,24 +92,33 @@ import ru.snowadv.network_authorizer.api.ZulipAuthApi
 import ru.snowadv.network_authorizer.di.holder.NetworkAuthorizerLibAPI
 import ru.snowadv.network_authorizer.di.holder.NetworkAuthorizerLibComponentHolder
 import ru.snowadv.network_authorizer.di.holder.NetworkAuthorizerLibDependencies
-import ru.snowadv.people_api.di.PeopleFeatureAPI
-import ru.snowadv.people_api.di.PeopleFeatureDependencies
-import ru.snowadv.people_api.domain.navigation.PeopleRouter
-import ru.snowadv.people_api.presentation.PeopleScreenFactory
-import ru.snowadv.people_impl.di.PeopleFeatureComponentHolder
-import ru.snowadv.profile_api.di.ProfileFeatureAPI
-import ru.snowadv.profile_api.di.ProfileFeatureDependencies
-import ru.snowadv.profile_api.domain.navigation.ProfileRouter
-import ru.snowadv.profile_api.presentation.ProfileScreenFactory
-import ru.snowadv.profile_impl.di.ProfileFeatureComponentHolder
-import ru.snowadv.users_data_api.UserDataRepository
-import ru.snowadv.users_data_api.di.UsersDataModuleAPI
-import ru.snowadv.users_data_api.di.UsersDataModuleDependencies
-import ru.snowadv.users_data_impl.di.UsersDataModuleComponentHolder
 import ru.snowadv.chatapp.di.holder.AppModuleAPI
 import ru.snowadv.chatapp.di.holder.AppModuleComponentHolder
 import ru.snowadv.chatapp.di.holder.AppModuleDependencies
+import ru.snowadv.home_presentation.di.dagger.HomePresentationComponentHolder
+import ru.snowadv.home_presentation.di.holder.HomePresentationDependencies
 import ru.snowadv.network.api.LoggerToggle
+import ru.snowadv.people_presentation.api.PeopleScreenFactory
+import ru.snowadv.people_presentation.di.holder.PeoplePresentationAPI
+import ru.snowadv.people_presentation.di.holder.PeoplePresentationComponentHolder
+import ru.snowadv.people_presentation.di.holder.PeoplePresentationDependencies
+import ru.snowadv.people_presentation.navigation.PeopleRouter
+import ru.snowadv.profile_presentation.api.ProfileScreenFactory
+import ru.snowadv.profile_presentation.di.holder.ProfilePresentationAPI
+import ru.snowadv.profile_presentation.di.holder.ProfilePresentationComponentHolder
+import ru.snowadv.profile_presentation.di.holder.ProfilePresentationDependencies
+import ru.snowadv.profile_presentation.navigation.ProfileRouter
+import ru.snowadv.users_data.di.holder.UsersDataAPI
+import ru.snowadv.users_data.di.holder.UsersDataComponentHolder
+import ru.snowadv.users_data.di.holder.UsersDataDependencies
+import ru.snowadv.users_domain_api.di.UsersDomainAPI
+import ru.snowadv.users_domain_api.di.UsersDomainDependencies
+import ru.snowadv.users_domain_api.repository.UserRepository
+import ru.snowadv.users_domain_api.use_case.GetPeopleUseCase
+import ru.snowadv.users_domain_api.use_case.GetProfileUseCase
+import ru.snowadv.users_domain_api.use_case.ListenToPeoplePresenceEventsUseCase
+import ru.snowadv.users_domain_api.use_case.ListenToProfilePresenceEventsUseCase
+import ru.snowadv.users_domain_impl.di.UsersDomainComponentHolder
 
 /**
  * This injector injects dependencies into other modules' component holders
@@ -126,10 +139,6 @@ abstract class BaseModulesInjector {
                 }
             }.dependencies
         }
-
-        /*
-        New features
-         */
 
         // Auth
         AuthDataComponentHolder.dependencyProvider = {
@@ -253,142 +262,7 @@ abstract class BaseModulesInjector {
             }.dependencies
         }
 
-
-        // Old features
-
-        ChannelsFeatureComponentHolder.dependencyProvider = {
-            class ChannelsFeatureDependencyHolder(
-                override val block: (BaseDependencyHolder<ChannelsFeatureDependencies>, AppModuleAPI, EventsDataAPI, ChannelsDataModuleAPI) -> ChannelsFeatureDependencies
-            ) : DependencyHolder3<AppModuleAPI, EventsDataAPI, ChannelsDataModuleAPI, ChannelsFeatureDependencies>(
-                api1 = AppModuleComponentHolder.get(),
-                api2 = EventsDataModuleComponentHolder.get(),
-                api3 = ChannelsDataModuleComponentHolder.get(),
-            )
-
-            ChannelsFeatureDependencyHolder { dependencyHolder, appApi, eventApi, channelsData ->
-                object : ChannelsFeatureDependencies {
-                    override val router: ChannelsRouter = appApi.channelsRouter
-                    override val streamDataRepo: StreamDataRepository = channelsData.streamDataRepo
-                    override val topicDataRepo: TopicDataRepository = channelsData.topicDataRepo
-                    override val eventRepo: EventRepository = eventApi.eventRepo
-                    override val dispatcherProvider: DispatcherProvider = appApi.dispatcherProvider
-                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> =
-                        dependencyHolder
-                }
-            }.dependencies
-        }
-
-        HomeFeatureComponentHolder.dependencyProvider = {
-            class ChatFeatureDependencyHolder(
-                override val block: (BaseDependencyHolder<HomeFeatureDependencies>, AppModuleAPI, ChannelsFeatureAPI, PeopleFeatureAPI, ProfileFeatureAPI) -> HomeFeatureDependencies
-            ) : DependencyHolder4<AppModuleAPI, ChannelsFeatureAPI, PeopleFeatureAPI, ProfileFeatureAPI, HomeFeatureDependencies>(
-                api1 = AppModuleComponentHolder.get(),
-                api2 = ChannelsFeatureComponentHolder.get(),
-                api3 = PeopleFeatureComponentHolder.get(),
-                api4 = ProfileFeatureComponentHolder.get(),
-            )
-
-            ChatFeatureDependencyHolder { dependencyHolder, appApi, channelsFeature, peopleFeature, profileFeature ->
-                object : HomeFeatureDependencies {
-                    override val channelsScreenFactory: ChannelsScreenFactory = channelsFeature.screenFactory
-                    override val peopleScreenFactory: PeopleScreenFactory = peopleFeature.screenFactory
-                    override val profileScreenFactory: ProfileScreenFactory = profileFeature.screenFactory
-                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
-                }
-            }.dependencies
-        }
-
-        PeopleFeatureComponentHolder.dependencyProvider = {
-            class PeopleFeatureDependencyHolder(
-                override val block: (BaseDependencyHolder<PeopleFeatureDependencies>, AppModuleAPI, EventsDataAPI, UsersDataModuleAPI) -> PeopleFeatureDependencies
-            ) : DependencyHolder3<AppModuleAPI, EventsDataAPI, UsersDataModuleAPI, PeopleFeatureDependencies>(
-                api1 = AppModuleComponentHolder.get(),
-                api2 = EventsDataModuleComponentHolder.get(),
-                api3 = UsersDataModuleComponentHolder.get(),
-            )
-
-            PeopleFeatureDependencyHolder { dependencyHolder, appApi, eventApi, usersApi ->
-                object : PeopleFeatureDependencies {
-                    override val router: PeopleRouter = appApi.peopleRouter
-                    override val userDataRepo: UserDataRepository = usersApi.userDataRepo
-                    override val eventRepo: EventRepository = eventApi.eventRepo
-                    override val dispatcherProvider: DispatcherProvider = appApi.dispatcherProvider
-                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
-                }
-            }.dependencies
-        }
-
-        ProfileFeatureComponentHolder.dependencyProvider = {
-            class ProfileFeatureDependencyHolder(
-                override val block: (BaseDependencyHolder<ProfileFeatureDependencies>, AppModuleAPI, EventsDataAPI, UsersDataModuleAPI) -> ProfileFeatureDependencies
-            ) : DependencyHolder3<AppModuleAPI, EventsDataAPI, UsersDataModuleAPI, ProfileFeatureDependencies>(
-                api1 = AppModuleComponentHolder.get(),
-                api2 = EventsDataModuleComponentHolder.get(),
-                api3 = UsersDataModuleComponentHolder.get(),
-            )
-
-            ProfileFeatureDependencyHolder { dependencyHolder, appApi, eventApi, usersApi ->
-                object : ProfileFeatureDependencies {
-                    override val router: ProfileRouter = appApi.profileRouter
-                    override val userDataRepo: UserDataRepository = usersApi.userDataRepo
-                    override val eventRepo: EventRepository = eventApi.eventRepo
-                    override val dispatcherProvider: DispatcherProvider = appApi.dispatcherProvider
-                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> =
-                        dependencyHolder
-                }
-            }.dependencies
-        }
-
-        // Data
-
-        ChannelsDataModuleComponentHolder.dependencyProvider = {
-            class ChannelsDependencyHolder(
-                override val block: (BaseDependencyHolder<ChannelsDataModuleDependencies>, AppModuleAPI, NetworkLibAPI, DatabaseLibAPI) -> ChannelsDataModuleDependencies
-
-            ) : DependencyHolder3<AppModuleAPI, NetworkLibAPI, DatabaseLibAPI, ChannelsDataModuleDependencies>(
-                api1 = AppModuleComponentHolder.get(),
-                api2 = NetworkLibComponentHolder.get(),
-                api3 = DatabaseLibComponentHolder.get(),
-            )
-
-            ChannelsDependencyHolder { dependencyHolder, appApi, networkApi, dbApi ->
-                object : ChannelsDataModuleDependencies {
-                    override val dispatcherProvider: DispatcherProvider = appApi.dispatcherProvider
-                    override val api: ZulipApi = networkApi.zulipApi
-                    override val streamsDao: StreamsDao = dbApi.streamsDao
-                    override val topicsDao: TopicsDao = dbApi.topicsDao
-                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> =
-                        dependencyHolder
-
-                }
-            }.dependencies
-        }
-
-        ChatDataComponentHolder.dependencyProvider = {
-            class ChatDataDependencyHolder(
-                override val block: (BaseDependencyHolder<ChatDataDependencies>, AppModuleAPI, NetworkLibAPI, DatabaseLibAPI, AuthStorageAPI) -> ChatDataDependencies
-
-            ) : DependencyHolder4<AppModuleAPI, NetworkLibAPI, DatabaseLibAPI, AuthStorageAPI, ChatDataDependencies>(
-                api1 = AppModuleComponentHolder.get(),
-                api2 = NetworkLibComponentHolder.get(),
-                api3 = DatabaseLibComponentHolder.get(),
-                api4 = AuthStorageComponentHolder.get(),
-            )
-
-
-            ChatDataDependencyHolder { dependencyHolder, appApi, networkApi, dbApi, authStorageApi ->
-                object : ChatDataDependencies {
-                    override val dispatcherProvider: DispatcherProvider = appApi.dispatcherProvider
-                    override val authProvider: AuthProvider = authStorageApi.authProvider
-                    override val zulipApi: ZulipApi = networkApi.zulipApi
-                    override val emojisDao: EmojisDao = dbApi.emojisDao
-                    override val messagesDao: MessagesDao = dbApi.messagesDao
-                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
-
-                }
-            }.dependencies
-        }
-
+        // Events
         EventsDataModuleComponentHolder.dependencyProvider = {
             class EventsDependencyHolder(
                 override val block: (BaseDependencyHolder<EventsDataDependencies>, AppModuleAPI, NetworkLibAPI, AuthStorageAPI) -> EventsDataDependencies
@@ -411,31 +285,173 @@ abstract class BaseModulesInjector {
             }.dependencies
         }
 
+        // Channels
 
-        UsersDataModuleComponentHolder.dependencyProvider = {
-            class UsersDependenciesHolder(
-                override val block: (BaseDependencyHolder<UsersDataModuleDependencies>, AppModuleAPI, NetworkLibAPI, AuthStorageAPI, DatabaseLibAPI) -> UsersDataModuleDependencies
-
-            ) : DependencyHolder4<AppModuleAPI, NetworkLibAPI, AuthStorageAPI, DatabaseLibAPI, UsersDataModuleDependencies>(
-                api1 = AppModuleComponentHolder.get(),
-                api2 = NetworkLibComponentHolder.get(),
-                api3 = AuthStorageComponentHolder.get(),
-                api4 = DatabaseLibComponentHolder.get(),
+        ChannelsDataComponentHolder.dependencyProvider = {
+            class ChannelsDataDependencyHolder(
+                override val block: (BaseDependencyHolder<ChannelsDataDependencies>, NetworkLibAPI, DatabaseLibAPI, AppModuleAPI) -> ChannelsDataDependencies
+            ) : DependencyHolder3<NetworkLibAPI, DatabaseLibAPI, AppModuleAPI, ChannelsDataDependencies>(
+                api1 = NetworkLibComponentHolder.get(),
+                api2 = DatabaseLibComponentHolder.get(),
+                api3 = AppModuleComponentHolder.get(),
             )
 
 
-            UsersDependenciesHolder { dependencyHolder, appApi, networkApi, authDataApi, dbApi ->
-                object : UsersDataModuleDependencies {
+            ChannelsDataDependencyHolder { dependencyHolder, networkApi,  dbApi, appApi ->
+                object : ChannelsDataDependencies {
+                    override val zulipApi: ZulipApi = networkApi.zulipApi
+                    override val streamsDao: StreamsDao = dbApi.streamsDao
+                    override val topicsDao: TopicsDao = dbApi.topicsDao
                     override val dispatcherProvider: DispatcherProvider = appApi.dispatcherProvider
-                    override val api: ZulipApi = networkApi.zulipApi
-                    override val authProvider: AuthProvider = authDataApi.authProvider
-                    override val usersDao: UsersDao = dbApi.usersDao
-                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> =
-                        dependencyHolder
-
+                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
                 }
             }.dependencies
         }
+
+        ChannelsDomainComponentHolder.dependencyProvider = {
+            class ChannelsDomainDependencyHolder(
+                override val block: (BaseDependencyHolder<ChannelsDomainDependencies>, ChannelsDataAPI, EventsDataAPI) -> ChannelsDomainDependencies
+            ) : DependencyHolder2<ChannelsDataAPI, EventsDataAPI, ChannelsDomainDependencies>(
+                api1 = ChannelsDataComponentHolder.get(),
+                api2 = EventsDataModuleComponentHolder.get(),
+            )
+
+            ChannelsDomainDependencyHolder { dependencyHolder, channelsDataAPi, eventsDataApi ->
+                object : ChannelsDomainDependencies {
+                    override val streamRepository: StreamRepository = channelsDataAPi.streamRepo
+                    override val topicRepository: TopicRepository = channelsDataAPi.topicRepo
+                    override val eventRepository: EventRepository = eventsDataApi.eventRepo
+                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
+                }
+            }.dependencies
+        }
+
+        ChannelsPresentationComponentHolder.dependencyProvider = {
+            class ChannelsPresentationDependencyHolder(
+                override val block: (BaseDependencyHolder<ChannelsPresentationDependencies>, AppModuleAPI, ChannelsDomainAPI) -> ChannelsPresentationDependencies
+            ) : DependencyHolder2<AppModuleAPI, ChannelsDomainAPI, ChannelsPresentationDependencies>(
+                api1 = AppModuleComponentHolder.get() ,
+                api2 = ChannelsDomainComponentHolder.get(),
+            )
+
+            ChannelsPresentationDependencyHolder { dependencyHolder, appApi, channelsDomainAPi ->
+                object : ChannelsPresentationDependencies {
+                    override val channelsRouter: ChannelsRouter = appApi.channelsRouter
+                    override val getStreamsUseCase: GetStreamsUseCase = channelsDomainAPi.getStreamsUseCase
+                    override val getTopicsUseCase: GetTopicsUseCase = channelsDomainAPi.getTopicsUseCase
+                    override val listenToStreamEventsUseCase: ListenToStreamEventsUseCase = channelsDomainAPi.listenToStreamEventsUseCase
+                    override val appContext: Context = appContext
+                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
+                }
+            }.dependencies
+        }
+
+        // Users
+
+        UsersDataComponentHolder.dependencyProvider = {
+            class UsersDataDependencyHolder(
+                override val block: (BaseDependencyHolder<UsersDataDependencies>, NetworkLibAPI, DatabaseLibAPI, AppModuleAPI, AuthStorageAPI) -> UsersDataDependencies
+            ) : DependencyHolder4<NetworkLibAPI, DatabaseLibAPI, AppModuleAPI, AuthStorageAPI, UsersDataDependencies>(
+                api1 = NetworkLibComponentHolder.get(),
+                api2 = DatabaseLibComponentHolder.get(),
+                api3 = AppModuleComponentHolder.get(),
+                api4 = AuthStorageComponentHolder.get(),
+            )
+
+
+            UsersDataDependencyHolder { dependencyHolder, networkApi,  dbApi, appApi, authStorageApi ->
+                object : UsersDataDependencies {
+                    override val zulipApi: ZulipApi = networkApi.zulipApi
+                    override val usersDao: UsersDao = dbApi.usersDao
+                    override val dispatcherProvider: DispatcherProvider = appApi.dispatcherProvider
+                    override val authProvider: AuthProvider = authStorageApi.authProvider
+                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
+                }
+            }.dependencies
+        }
+
+        UsersDomainComponentHolder.dependencyProvider = {
+            class UsersDomainDependencyHolder(
+                override val block: (BaseDependencyHolder<UsersDomainDependencies>, UsersDataAPI, EventsDataAPI, AppModuleAPI) -> UsersDomainDependencies
+            ) : DependencyHolder3<UsersDataAPI, EventsDataAPI, AppModuleAPI, UsersDomainDependencies>(
+                api1 = UsersDataComponentHolder.get(),
+                api2 = EventsDataModuleComponentHolder.get(),
+                api3 = AppModuleComponentHolder.get(),
+            )
+
+            UsersDomainDependencyHolder { dependencyHolder, usersDataApi, eventsDataApi, appApi ->
+                object : UsersDomainDependencies {
+                    override val profileRepository: UserRepository = usersDataApi.userRepo
+                    override val eventRepository: EventRepository = eventsDataApi.eventRepo
+                    override val dispatcherProvider: DispatcherProvider = appApi.dispatcherProvider
+                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
+                }
+            }.dependencies
+        }
+
+        // People
+
+        PeoplePresentationComponentHolder.dependencyProvider = {
+            class PeoplePresentationDependencyHolder(
+                override val block: (BaseDependencyHolder<PeoplePresentationDependencies>, AppModuleAPI, UsersDomainAPI) -> PeoplePresentationDependencies
+            ) : DependencyHolder2<AppModuleAPI, UsersDomainAPI, PeoplePresentationDependencies>(
+                api1 = AppModuleComponentHolder.get() ,
+                api2 = UsersDomainComponentHolder.get(),
+            )
+
+            PeoplePresentationDependencyHolder { dependencyHolder, appApi, usersDomainApi ->
+                object : PeoplePresentationDependencies {
+                    override val peopleRouter: PeopleRouter = appApi.peopleRouter
+                    override val getPeopleUseCase: GetPeopleUseCase = usersDomainApi.getPeopleUseCase
+                    override val listenToPeopleRouter: ListenToPeoplePresenceEventsUseCase = usersDomainApi.listenToPeoplePresenceEventsUseCase
+                    override val appContext: Context = appContext
+                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
+                }
+            }.dependencies
+        }
+
+        // Profile
+
+        ProfilePresentationComponentHolder.dependencyProvider = {
+            class ProfilePresentationDependencyHolder(
+                override val block: (BaseDependencyHolder<ProfilePresentationDependencies>, AppModuleAPI, UsersDomainAPI) -> ProfilePresentationDependencies
+            ) : DependencyHolder2<AppModuleAPI, UsersDomainAPI, ProfilePresentationDependencies>(
+                api1 = AppModuleComponentHolder.get() ,
+                api2 = UsersDomainComponentHolder.get(),
+            )
+
+            ProfilePresentationDependencyHolder { dependencyHolder, appApi, usersDomainApi ->
+                object : ProfilePresentationDependencies {
+                    override val profileRouter: ProfileRouter = appApi.profileRouter
+                    override val getProfileUseCase: GetProfileUseCase = usersDomainApi.getProfileUseCase
+                    override val listenToProfileEventsUseCase: ListenToProfilePresenceEventsUseCase = usersDomainApi.listenToProfilePresenceEventsUseCase
+                    override val appContext: Context = appContext
+                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
+                }
+            }.dependencies
+        }
+
+        // Home
+        HomePresentationComponentHolder.dependencyProvider = {
+            class HomePresentationDependencyHolder(
+                override val block: (BaseDependencyHolder<HomePresentationDependencies>, ChannelsPresentationAPI, PeoplePresentationAPI, ProfilePresentationAPI) -> HomePresentationDependencies
+            ) : DependencyHolder3<ChannelsPresentationAPI, PeoplePresentationAPI, ProfilePresentationAPI, HomePresentationDependencies>(
+                api1 = ChannelsPresentationComponentHolder.get(),
+                api2 = PeoplePresentationComponentHolder.get(),
+                api3 = ProfilePresentationComponentHolder.get(),
+            )
+
+            HomePresentationDependencyHolder { dependencyHolder, channelsApi, peopleApi, profileApi ->
+                object : HomePresentationDependencies {
+                    override val channelsScreenFactory: ChannelsScreenFactory = channelsApi.screenFactory
+                    override val peopleScreenFactory: PeopleScreenFactory = peopleApi.screenFactory
+                    override val profileScreenFactory: ProfileScreenFactory = profileApi.screenFactory
+                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
+                }
+            }.dependencies
+        }
+
+
 
         // Lib
         NetworkLibComponentHolder.dependencyProvider = {

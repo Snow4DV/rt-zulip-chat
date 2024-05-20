@@ -16,12 +16,11 @@ import ru.snowadv.chat_presentation.chat.presentation.elm.ChatEventElm
 import ru.snowadv.chat_presentation.chat.presentation.elm.ChatStateElm
 import ru.snowadv.chat_presentation.chat.ui.adapter.DateSplitterAdapterDelegate
 import ru.snowadv.chat_presentation.chat.ui.elm.ChatEffectUiElm
-import ru.snowadv.chat_presentation.chat.ui.elm.ChatElmMapper
 import ru.snowadv.chat_presentation.chat.ui.elm.ChatEventUiElm
 import ru.snowadv.chat_presentation.chat.ui.elm.ChatStateUiElm
 import ru.snowadv.chat_presentation.databinding.FragmentChatBinding
 import ru.snowadv.chat_presentation.di.holder.ChatPresentationComponentHolder
-import ru.snowadv.chat_presentation.emoji_chooser.EmojiChooserBottomSheetDialog
+import ru.snowadv.chat_presentation.emoji_chooser.ui.EmojiChooserBottomSheetDialog
 import ru.snowadv.chat_presentation.chat.ui.model.ChatAction
 import ru.snowadv.chat_presentation.chat.ui.model.ChatPaginationStatus
 import ru.snowadv.chat_presentation.chat.ui.util.AdapterUtils.submitListAndKeepScrolledToBottom
@@ -63,8 +62,8 @@ internal class ChatFragmentRenderer :
         const val EMOJI_CHOOSER_REQUEST_KEY = "emoji_chooser_request"
     }
 
-    init {
-        ChatPresentationComponentHolder.getComponent().inject(this)
+    override fun ChatFragment.onAttachRendererView() {
+        ChatPresentationComponentHolder.getComponent().inject(this@ChatFragmentRenderer)
     }
 
     override fun ChatFragment.onRendererViewCreated(

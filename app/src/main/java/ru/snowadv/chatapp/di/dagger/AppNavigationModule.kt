@@ -7,19 +7,18 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import ru.snowadv.auth_presentation.navigation.AuthRouter
-import ru.snowadv.channels_api.domain.navigation.ChannelsRouter
+import ru.snowadv.channels_presentation.navigation.ChannelsRouter
 import ru.snowadv.chat_presentation.navigation.ChatRouter
-import ru.snowadv.home_api.presentation.local_navigation.InnerHomeScreenFactory
 import ru.snowadv.chatapp.glue.navigation.ChannelsRouterImpl
 import ru.snowadv.chatapp.glue.navigation.ChatRouterImpl
-import ru.snowadv.home_impl.presentation.feature.InnerHomeScreenFactoryImpl
 import ru.snowadv.model.BaseUrlProvider
-import ru.snowadv.people_api.domain.navigation.PeopleRouter
-import ru.snowadv.profile_api.domain.navigation.ProfileRouter
 import ru.snowadv.chatapp.glue.configuration.BaseUrlProviderImpl
 import ru.snowadv.chatapp.glue.navigation.AuthRouterImpl
 import ru.snowadv.chatapp.glue.navigation.PeopleRouterImpl
 import ru.snowadv.chatapp.glue.navigation.ProfileRouterImpl
+import ru.snowadv.home_presentation.local_navigation.impl.InnerHomeScreenFactoryImpl
+import ru.snowadv.people_presentation.navigation.PeopleRouter
+import ru.snowadv.profile_presentation.navigation.ProfileRouter
 import javax.inject.Singleton
 
 @Module
@@ -28,8 +27,6 @@ internal interface AppNavigationModule {
     fun bindChannelsRouterImpl(channelsRouterImpl: ChannelsRouterImpl): ChannelsRouter
     @Binds
     fun bindChatRouterImpl(chatRouterImpl: ChatRouterImpl): ChatRouter
-    @Binds
-    fun bindHomeScreenFactoryImpl(homeScreenFactoryImpl: InnerHomeScreenFactoryImpl): InnerHomeScreenFactory
     @Binds
     fun bindPeopleRouterImpl(peopleRouterImpl: PeopleRouterImpl): PeopleRouter
     @Binds

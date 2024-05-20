@@ -2,7 +2,7 @@ package ru.snowadv.chatapp.glue.navigation
 
 import com.github.terrakok.cicerone.Router
 import dagger.Reusable
-import ru.snowadv.channels_api.domain.navigation.ChannelsRouter
+import ru.snowadv.channels_presentation.navigation.ChannelsRouter
 import ru.snowadv.chatapp.navigation.Screens
 import javax.inject.Inject
 

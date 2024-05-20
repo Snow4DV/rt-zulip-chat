@@ -12,7 +12,7 @@ import ru.snowadv.chatapp.fragment.profile.screen.ProfileFragmentScreen
 import ru.snowadv.chatapp.rule.FakeAuthDepsInjectingRule
 import ru.snowadv.chatapp.rule.FragmentTestRule
 import ru.snowadv.chatapp.rule.WiremockTestRule
-import ru.snowadv.profile_impl.presentation.profile.ProfileFragment
+import ru.snowadv.profile_presentation.ui.ProfileFragment
 
 @RunWith(AndroidJUnit4::class)
 internal class ProfileFragmentTest : TestCase() {
@@ -70,7 +70,7 @@ internal class ProfileFragmentTest : TestCase() {
             fragmentArgs = bundleOf(
                 ProfileFragment.ARG_PROFILE_ID_KEY to profileId,
             ),
-            themeResId = ru.snowadv.profile_impl.R.style.Theme_ZulipChat_Profile,
+            themeResId = ru.snowadv.profile_presentation.R.style.Theme_ZulipChat_Profile,
         )
     }
 }
