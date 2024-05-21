@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import ru.snowadv.database.config.CacheConfiguration
 import ru.snowadv.database.entity.MessageEntity
 import ru.snowadv.database.entity.ReactionEntity
 
@@ -43,7 +44,7 @@ interface MessagesDao {
     ) {
         if (getMessagesFromTopic(streamName, topicName) != messages) {
             clearMessagesFromTopic(streamName, topicName)
-            insertMessages(messages)
+            insertMessages(messages.takeLast(CacheConfiguration.CACHED_MESSAGES_COUNT_PER_TOPIC))
         }
     }
 

@@ -3,6 +3,7 @@ package ru.snowadv.channels_presentation.stream_list.ui.elm
 import dagger.Reusable
 import ru.snowadv.channels_domain_api.model.Stream
 import ru.snowadv.channels_domain_api.model.StreamTopics
+import ru.snowadv.channels_domain_api.model.StreamUnreadMessages
 import ru.snowadv.channels_presentation.stream_list.presentation.elm.StreamListEffectElm
 import ru.snowadv.channels_presentation.stream_list.presentation.elm.StreamListEventElm
 import ru.snowadv.channels_presentation.stream_list.presentation.elm.StreamListStateElm
@@ -19,7 +20,11 @@ internal class StreamListElmMapper @Inject constructor() :
     ElmMapper<StreamListStateElm, StreamListEffectElm, StreamListEventElm, StreamListStateUiElm, StreamListEffectUiElm, StreamListEventUiElm> {
     override fun mapState(state: StreamListStateElm): StreamListStateUiElm {
         return StreamListStateUiElm(
-            screenState = combineStreamsAndTopics(state.screenState, state.topics),
+            screenState = combineStreamsAndTopics(
+                streamsScreenState = state.screenState,
+                topics = state.topics,
+                streamUnreadMessages = state.streamsUnreadMessages,
+            ),
             searchQuery = state.searchQuery,
         )
     }
@@ -42,7 +47,8 @@ internal class StreamListElmMapper @Inject constructor() :
 
     private fun combineStreamsAndTopics(
         streamsScreenState: ScreenState<List<Stream>>,
-        topics: StreamTopics?
+        topics: StreamTopics?,
+        streamUnreadMessages: List<StreamUnreadMessages>,
     ): ScreenState<List<DelegateItem>> {
         return streamsScreenState.map { streams ->
             buildList {
@@ -50,7 +56,15 @@ internal class StreamListElmMapper @Inject constructor() :
                     val expanded = topics?.streamId == stream.id
                     add(stream.toUiModel(expanded))
                     if (topics != null && expanded) {
-                        topics.topics.data?.map { it.toUiModel() }?.let { addAll(it) } ?: run {
+                        topics.topics.data?.map { topic ->
+                            topic.toUiModel(
+                                unreadMsgsCount = streamUnreadMessages
+                                    .firstOrNull { it.streamId == stream.id }
+                                    ?.topicsUnreadMessages
+                                    ?.firstOrNull { it.topicName == topic.name }
+                                    ?.unreadMessagesIds?.size ?: 0,
+                            )
+                        }?.let { addAll(it) } ?: run {
                             if (topics.topics is Resource.Loading) {
                                 addAll(UiShimmerTopic.generateShimmers(streamId = topics.streamId))
                             }
