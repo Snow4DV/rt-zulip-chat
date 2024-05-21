@@ -4,37 +4,52 @@ import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import ru.snowadv.presentation.databinding.ItemActionLoadingBinding
 import ru.snowadv.presentation.databinding.ItemEmptyBoxBinding
 import ru.snowadv.presentation.databinding.ItemErrorBoxBinding
+import ru.snowadv.presentation.databinding.ItemErrorWithCachedDataBinding
 import ru.snowadv.presentation.databinding.ItemLoadingBoxBinding
+import ru.snowadv.presentation.databinding.ItemLoadingWithCachedDataBinding
 import ru.snowadv.presentation.databinding.ItemStateBoxBinding
 import ru.snowadv.presentation.databinding.ItemTopBarWithBackBinding
+import ru.snowadv.presentation.databinding.ItemTopStateBoxBinding
 import ru.snowadv.presentation.model.ScreenState
 
-fun ItemStateBoxBinding.inflateState(screenState: ScreenState<*>, shimmerLayout: Int? = null) = with(root) {
+fun ItemStateBoxBinding.inflateState(screenState: ScreenState<*>, shimmerLayout: Int? = null, cacheStateBinding: ItemTopStateBoxBinding? = null) = with(root) {
     when(screenState) {
         is ScreenState.Empty -> {
-            removeChildViewsAndSetVisibility(visibility = true)
+            setHolder(this@inflateState, cacheStateBinding, StateHolder.BOX)
             ItemEmptyBoxBinding.inflate(LayoutInflater.from(context), this, true)
         }
         is ScreenState.Error -> {
-            removeChildViewsAndSetVisibility(visibility = true)
-            ItemErrorBoxBinding.inflate(LayoutInflater.from(context), this, true).also {
-                it.retryErrorButton.setOnClickListener { callOnClick() }
+            if (screenState.data == null || cacheStateBinding == null) {
+                setHolder(this@inflateState, cacheStateBinding, StateHolder.BOX)
+                ItemErrorBoxBinding.inflate(LayoutInflater.from(context), this, true).also {
+                    it.retryErrorButton.setOnClickListener { callOnClick() }
+                }
+            } else {
+                setHolder(this@inflateState, cacheStateBinding, StateHolder.CACHE_BAR)
+                ItemErrorWithCachedDataBinding.inflate(LayoutInflater.from(context), cacheStateBinding.root, true).also {
+                    it.root.setOnClickListener { callOnClick() }
+                }
             }
         }
         is ScreenState.Loading -> {
-            removeChildViewsAndSetVisibility(visibility = true)
-            shimmerLayout?.let { LayoutInflater.from(context).inflate(shimmerLayout, this) } ?: run {
-                ItemLoadingBoxBinding.inflate(LayoutInflater.from(context), this, true)
+            if (screenState.data == null || cacheStateBinding == null) {
+                setHolder(this@inflateState, cacheStateBinding, StateHolder.BOX)
+                shimmerLayout?.let { LayoutInflater.from(context).inflate(shimmerLayout, this) } ?: run {
+                    ItemLoadingBoxBinding.inflate(LayoutInflater.from(context), this, true)
+                }
+            } else {
+                setHolder(this@inflateState, cacheStateBinding, StateHolder.CACHE_BAR)
+                ItemLoadingWithCachedDataBinding.inflate(LayoutInflater.from(context), cacheStateBinding.root, true).also {
+                    it.root.setOnClickListener { callOnClick() }
+                }
             }
         }
         is ScreenState.Success -> {
-            removeChildViewsAndSetVisibility(visibility = false)
+            setHolder(this@inflateState, cacheStateBinding, StateHolder.NONE)
         }
     }
 }
@@ -43,9 +58,9 @@ fun ItemStateBoxBinding.setOnRetryClickListener(listener: ((View) -> Unit)?) {
     root.setOnClickListener(listener)
 }
 
-fun ItemStateBoxBinding.removeChildViewsAndSetVisibility(visibility: Boolean) {
-    root.removeAllViews()
-    root.isVisible = visibility
+fun ViewGroup.removeChildViewsAndSetVisibility(visibility: Boolean) {
+    removeAllViews()
+    isVisible = visibility
 }
 
 fun ItemTopBarWithBackBinding.setTopBarColor(colorResId: Int) {
@@ -72,4 +87,27 @@ fun ItemTopBarWithBackBinding.setColorAndText(colorResId: Int, text: String) {
 
 fun Fragment.setStatusBarColor(colorResId: Int) {
     requireActivity().window.statusBarColor = requireContext().getColor(colorResId)
+}
+
+private fun setHolder(boxStateBinding: ItemStateBoxBinding, cacheStateBinding: ItemTopStateBoxBinding? = null, holder: StateHolder) {
+    when(holder) {
+        StateHolder.BOX -> {
+            boxStateBinding.root.removeChildViewsAndSetVisibility(visibility = true)
+            cacheStateBinding?.root?.removeChildViewsAndSetVisibility(visibility = false)
+        }
+        StateHolder.CACHE_BAR -> {
+            boxStateBinding.root.removeChildViewsAndSetVisibility(visibility = false)
+            cacheStateBinding?.root?.removeChildViewsAndSetVisibility(visibility = true)
+        }
+        StateHolder.NONE -> {
+            boxStateBinding.root.removeChildViewsAndSetVisibility(visibility = false)
+            cacheStateBinding?.root?.removeChildViewsAndSetVisibility(visibility = false)
+        }
+    }
+}
+
+private enum class StateHolder {
+    BOX,
+    CACHE_BAR,
+    NONE,
 }

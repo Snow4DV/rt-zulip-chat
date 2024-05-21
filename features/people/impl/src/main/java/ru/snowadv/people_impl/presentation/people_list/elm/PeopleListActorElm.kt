@@ -22,16 +22,30 @@ internal class PeopleListActorElm @Inject constructor(
     private val router: PeopleRouter,
 ) : Actor<PeopleListCommandElm, PeopleListEventElm>() {
     override fun execute(command: PeopleListCommandElm): Flow<PeopleListEventElm> {
-        return when(command) {
+        return when (command) {
             PeopleListCommandElm.LoadData -> {
                 getPeopleUseCase().map { res ->
                     when (res) {
-                        is Resource.Error -> PeopleListEventElm.Internal.Error(res.throwable)
-                        Resource.Loading -> PeopleListEventElm.Internal.Loading
-                        is Resource.Success -> PeopleListEventElm.Internal.PeopleLoaded(res.data.map { it.toUiModel() })
+                        is Resource.Error -> PeopleListEventElm.Internal.Error(
+                            res.throwable,
+                            res.data?.map { it.toUiModel() },
+                        )
+
+                        is Resource.Loading -> res.data?.let { data ->
+                            PeopleListEventElm.Internal.PeopleLoaded(
+                                data.map { it.toUiModel() },
+                                true,
+                            )
+                        } ?: PeopleListEventElm.Internal.Loading
+
+                        is Resource.Success -> PeopleListEventElm.Internal.PeopleLoaded(
+                            res.data.map { it.toUiModel() },
+                            false,
+                        )
                     }
                 }
             }
+
             is PeopleListCommandElm.ObservePresence -> {
                 listenToPresenceEventsUseCase(command.isRestart, command.queueProps).map {
                     when (it) {

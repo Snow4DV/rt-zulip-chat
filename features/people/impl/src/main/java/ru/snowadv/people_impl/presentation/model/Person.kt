@@ -18,6 +18,7 @@ internal data class Person(
         ONLINE(ru.snowadv.presentation.R.color.online),
         IDLE(ru.snowadv.presentation.R.color.idle),
         OFFLINE(ru.snowadv.presentation.R.color.offline),
+        UNKNOWN(ru.snowadv.presentation.R.color.light_gray_1),
     }
 
     override fun getPayload(oldItem: DelegateItem): Any? {

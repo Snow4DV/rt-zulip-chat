@@ -11,4 +11,6 @@
     <string name="idk_emoji">🤷</string>
     <string name="stream_title">#%1$s</string>
     <string name="topic_title">Topic: #%1$s</string>
+    <string name="error_cached">Outdated information is shown due to loading error. Click here to retry.</string>
+    <string name="loading_cached">Still loading. Outdated information is currently shown.</string>
 </resources>

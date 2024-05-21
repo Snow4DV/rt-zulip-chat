@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="email">Email</string>
+    <string name="wrong_email">Wrong email</string>
+    <string name="password">Password</string>
+    <string name="wrong_password">Password can\'t be blank</string>
+    <string name="login">Log in</string>
+    <string name="log_in_to_chat">Log in to chat</string>
+    <string name="auth_error">Error occurred during authorization. Check your login, password and try again.</string>
+</resources>

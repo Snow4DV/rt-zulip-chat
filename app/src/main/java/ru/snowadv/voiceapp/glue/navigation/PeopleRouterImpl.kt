@@ -9,7 +9,7 @@ import ru.snowadv.voiceapp.navigation.Screens
 import javax.inject.Inject
 
 @Reusable
-class PeopleRouterImpl @Inject constructor(private val ciceroneRouter: Router, private val screens: Screens):
+internal class PeopleRouterImpl @Inject constructor(private val ciceroneRouter: Router, private val screens: Screens):
     PeopleRouter {
     override fun openProfile(userId: Long) {
         ciceroneRouter.navigateTo(screens.Profile(userId))

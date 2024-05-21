@@ -11,5 +11,6 @@ data class Person(
         ONLINE,
         IDLE,
         OFFLINE,
+        UNKNOWN,
     }
 }

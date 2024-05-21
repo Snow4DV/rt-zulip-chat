@@ -1,5 +1,6 @@
 package ru.snowadv.chat_impl.presentation.chat
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -19,6 +20,7 @@ import ru.snowadv.presentation.adapter.util.PaddingItemDecorator
 import ru.snowadv.presentation.elm.BaseFragment
 import ru.snowadv.presentation.fragment.ElmFragmentRenderer
 import ru.snowadv.presentation.fragment.ErrorHandlingFragment
+import ru.snowadv.presentation.fragment.ResultUtils
 import ru.snowadv.presentation.fragment.impl.SnackbarErrorHandlingFragment
 import ru.snowadv.presentation.fragment.setStatusBarColor
 import ru.snowadv.presentation.fragment.setTopBarColor
@@ -30,7 +32,18 @@ internal class ChatFragment : BaseFragment<ChatEventElm, ChatEffectElm, ChatStat
     by ChatFragmentRenderer(),
     ErrorHandlingFragment by SnackbarErrorHandlingFragment() {
 
+    private val fileChooser = ResultUtils.registerChooserUriLauncher(
+        fragment = this,
+        onSuccess = { mimeType, opener, extension ->
+            store.accept(ChatEventElm.Ui.FileWasChosen(mimeType, opener, extension))
+        },
+        onFailure = {
+            store.accept(ChatEventElm.Ui.FileChoosingDismissed)
+        },
+    )
+
     companion object {
+        const val ATTACHMENT_MIME_TYPE = "*/*"
         const val ARG_STREAM_NAME_KEY = "stream_name"
         const val ARG_TOPIC_NAME_KEY = "topic_name"
         fun newInstance(streamName: String, topicName: String): Fragment = ChatFragment().apply {
@@ -72,8 +85,8 @@ internal class ChatFragment : BaseFragment<ChatEventElm, ChatEffectElm, ChatStat
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setStatusBarColor(R.color.primary)
-        binding.topBackButtonBar.setTopBarColor(R.color.primary)
         onRendererViewCreated(binding, store)
+        binding.topBackButtonBar.setTopBarColor(R.color.primary)
     }
 
     override fun onDestroyView() {
@@ -102,6 +115,16 @@ internal class ChatFragment : BaseFragment<ChatEventElm, ChatEffectElm, ChatStat
         )
     }
 
+    override fun onResume() {
+        super.onResume()
+        setStatusBarColor(R.color.primary)
+    }
+
+    override fun onPause() {
+        setStatusBarColor(R.color.on_surface)
+        super.onPause()
+    }
+
     fun openActionsDialog(actions: List<ChatAction>, onResult: (ChatAction) -> Unit) {
         AlertDialog.Builder(requireContext())
             .setItems(actions.map { getString(it.titleResId) }.toTypedArray()) { _, which ->
@@ -110,5 +133,9 @@ internal class ChatFragment : BaseFragment<ChatEventElm, ChatEffectElm, ChatStat
             .create().show()
     }
 
-
+    fun openFilePicker() {
+        Intent(Intent.ACTION_GET_CONTENT).apply { type = ATTACHMENT_MIME_TYPE }.let { intent ->
+            fileChooser.launch(intent)
+        }
+    }
 }

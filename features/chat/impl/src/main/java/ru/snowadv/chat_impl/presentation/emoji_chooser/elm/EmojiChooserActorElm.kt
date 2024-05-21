@@ -19,8 +19,12 @@ internal class EmojiChooserActorElm @Inject constructor(
             is EmojiChooserCommandElm.LoadEmojis -> {
                 getEmojisUseCase().map { res ->
                     when(res) {
-                        is Resource.Error -> EmojiChooserEventElm.Internal.EmojiLoadError
-                        Resource.Loading -> EmojiChooserEventElm.Internal.EmojiLoading
+                        is Resource.Error -> res.data?.let { data -> EmojiChooserEventElm.Internal.LoadedEmojis(
+                            emojis = data.map { it.toUiChatEmoji() }
+                        ) } ?: EmojiChooserEventElm.Internal.EmojiLoadError(res.throwable)
+                        is Resource.Loading -> res.data?.let { data -> EmojiChooserEventElm.Internal.LoadedEmojis(
+                            emojis = data.map { it.toUiChatEmoji() }
+                        ) } ?: EmojiChooserEventElm.Internal.EmojiLoading
                         is Resource.Success -> EmojiChooserEventElm.Internal.LoadedEmojis(
                             emojis = res.data.map { it.toUiChatEmoji() }
                         )

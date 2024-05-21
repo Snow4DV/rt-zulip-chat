@@ -5,13 +5,12 @@ import com.github.terrakok.cicerone.Router
 import dagger.Reusable
 import ru.snowadv.auth_data_api.AuthDataRepository
 import ru.snowadv.network.api.BadAuthBehavior
+import ru.snowadv.voiceapp.navigation.Screens
 import javax.inject.Inject
 
 @Reusable
-class BadAuthBehaviorImpl @Inject constructor(private val authDataRepository: AuthDataRepository, private val router: Router): BadAuthBehavior {
+class BadAuthBehaviorImpl @Inject constructor(private val router: Router, private val screens: Screens): BadAuthBehavior {
     override fun onBadAuth() {
-        // TODO: Implement logic when session dies:
-        // 1) Remove user from auth repository
-        // 2) Reroute to login screen (with backstack clear)
+        router.newRootScreen(screens.Login()) // screen will clear auth once it is opened
     }
 }

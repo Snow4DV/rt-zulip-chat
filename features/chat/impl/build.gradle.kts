@@ -53,6 +53,13 @@ dependencies {
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)
 
+    implementation(libs.markwon.core)
+    implementation(libs.markwon.latex)
+    implementation(libs.markwon.coil)
+    implementation(libs.markwon.tables)
+    implementation(libs.markwon.strikethrough)
+    implementation(libs.markwon.html)
+
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.elmslie.core)
     implementation(libs.elmslie.android)

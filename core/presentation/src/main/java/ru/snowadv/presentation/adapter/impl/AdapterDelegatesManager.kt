@@ -37,6 +37,20 @@ class AdapterDelegatesManager<T>(vararg delegates: AdapterDelegate<T>) {
         )
     }
 
+    fun onViewAttachedToWindow(holder: ViewHolder, getCurrentList: () -> List<T>) {
+        getDelegateForViewTypeOrThrow(holder.itemViewType).onViewAttachedToWindow(
+            holder,
+            getCurrentList,
+        )
+    }
+
+    fun onViewDetachedFromWindow(holder: ViewHolder, getCurrentList: () -> List<T>) {
+        getDelegateForViewTypeOrThrow(holder.itemViewType).onViewDetachedFromWindow(
+            holder,
+            getCurrentList,
+        )
+    }
+
     private fun getDelegateForViewTypeOrThrow(viewType: Int) =
         delegates.getOrNull(viewType) ?: error("No such delegate with index $viewType")
 }

@@ -24,16 +24,16 @@ internal class PeopleListReducerElm @Inject constructor():
         when (event) {
             is PeopleListEventElm.Internal.Error -> state {
                 copy(
-                    screenState = ScreenState.Error(event.throwable),
+                    screenState = ScreenState.Error(event.throwable, event.cachedPeople),
                     peopleRes = Resource.Error(event.throwable),
                     eventQueueData = null,
                 )
             }
 
-            ru.snowadv.people_impl.presentation.people_list.elm.PeopleListEventElm.Internal.Loading -> state {
+            PeopleListEventElm.Internal.Loading -> state {
                 copy(
-                    screenState = ScreenState.Loading,
-                    peopleRes = Resource.Loading,
+                    screenState = ScreenState.Loading(),
+                    peopleRes = Resource.Loading(),
                     eventQueueData = null,
                 )
             }
@@ -45,7 +45,7 @@ internal class PeopleListReducerElm @Inject constructor():
                         peopleRes = Resource.Success(event.people),
                     )
                 }
-                if (state.isResumed) {
+                if (state.isResumed && !event.cached) {
                     observeCommand()
                 }
             }
@@ -53,9 +53,9 @@ internal class PeopleListReducerElm @Inject constructor():
             is PeopleListEventElm.Internal.ServerEvent.EventQueueFailed -> {
                 commands {
                     if (event.recreateQueue) {
-                        +ru.snowadv.people_impl.presentation.people_list.elm.PeopleListCommandElm.LoadData
+                        +PeopleListCommandElm.LoadData
                     } else if (state.isResumed){
-                        +ru.snowadv.people_impl.presentation.people_list.elm.PeopleListCommandElm.ObservePresence(
+                        +PeopleListCommandElm.ObservePresence(
                             isRestart = true,
                             queueProps = state.eventQueueData,
                         )
@@ -89,13 +89,13 @@ internal class PeopleListReducerElm @Inject constructor():
 
     override fun Result.ui(event: PeopleListEventElm.Ui) {
         when(event) {
-            ru.snowadv.people_impl.presentation.people_list.elm.PeopleListEventElm.Ui.ClickedOnRetry, ru.snowadv.people_impl.presentation.people_list.elm.PeopleListEventElm.Ui.Init -> commands {
-                +ru.snowadv.people_impl.presentation.people_list.elm.PeopleListCommandElm.LoadData
+            PeopleListEventElm.Ui.ClickedOnRetry, PeopleListEventElm.Ui.Init -> commands {
+                +PeopleListCommandElm.LoadData
             }
-            ru.snowadv.people_impl.presentation.people_list.elm.PeopleListEventElm.Ui.Paused -> state {
+            PeopleListEventElm.Ui.Paused -> state {
                 copy(isResumed = false)
             }
-            ru.snowadv.people_impl.presentation.people_list.elm.PeopleListEventElm.Ui.Resumed -> {
+            PeopleListEventElm.Ui.Resumed -> {
                 state {
                     copy(isResumed = true)
                 }
@@ -112,12 +112,12 @@ internal class PeopleListReducerElm @Inject constructor():
             }
 
             is PeopleListEventElm.Ui.ClickedOnPerson -> commands {
-                +ru.snowadv.people_impl.presentation.people_list.elm.PeopleListCommandElm.OpenProfile(
+                +PeopleListCommandElm.OpenProfile(
                     event.userId
                 )
             }
-            ru.snowadv.people_impl.presentation.people_list.elm.PeopleListEventElm.Ui.ClickedOnSearchIcon -> effects {
-                +ru.snowadv.people_impl.presentation.people_list.elm.PeopleListEffectElm.FocusOnSearchFieldAndOpenKeyboard
+            PeopleListEventElm.Ui.ClickedOnSearchIcon -> effects {
+                +PeopleListEffectElm.FocusOnSearchFieldAndOpenKeyboard
             }
         }
     }
@@ -125,7 +125,7 @@ internal class PeopleListReducerElm @Inject constructor():
     private fun Result.observeCommand() {
         if (!state.isResumed || state.screenState !is ScreenState.Success) return
         commands {
-            +ru.snowadv.people_impl.presentation.people_list.elm.PeopleListCommandElm.ObservePresence(
+            +PeopleListCommandElm.ObservePresence(
                 isRestart = false,
                 queueProps = state.eventQueueData,
             )

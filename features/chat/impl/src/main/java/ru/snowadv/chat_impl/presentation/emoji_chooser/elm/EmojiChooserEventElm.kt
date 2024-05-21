@@ -10,7 +10,7 @@ internal sealed interface EmojiChooserEventElm {
     }
 
     sealed interface Internal : EmojiChooserEventElm {
-        data object EmojiLoadError : Internal
+        data class EmojiLoadError(val error: Throwable) : Internal
         data object EmojiLoading : Internal
         data class LoadedEmojis(val emojis: List<ChatEmoji>) : Internal
     }

@@ -3,6 +3,7 @@
     <string name="online">online</string>
     <string name="offline">offline</string>
     <string name="idle">idle</string>
+    <string name="unknown">unknown</string>
     <string name="log_out">Log out</string>
     <string name="profile">Profile</string>
 </resources>

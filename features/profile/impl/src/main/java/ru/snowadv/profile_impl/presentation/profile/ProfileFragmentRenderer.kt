@@ -33,13 +33,16 @@ internal class ProfileFragmentRenderer :
         binding.stateBox.setOnRetryClickListener {
             store.accept(ProfileEventElm.Ui.ClickedOnRetry)
         }
+        binding.buttonLogout.setOnClickListener {
+            store.accept(ProfileEventElm.Ui.ClickedOnLogout)
+        }
     }
 
     override fun ProfileFragment.renderStateByRenderer(
         state: ProfileStateElm,
         binding: FragmentProfileBinding
     ): Unit = with(binding) {
-        stateBox.inflateState(state.screenState, R.layout.fragment_profile_shimmer)
+        stateBox.inflateState(state.screenState, R.layout.fragment_profile_shimmer, topStateBox)
         topBar.root.isVisible = !state.isOwner
         userAvatar.isVisible = state.screenState.getCurrentData() != null
         state.screenState.getCurrentData()?.let {  person ->
@@ -54,5 +57,6 @@ internal class ProfileFragmentRenderer :
             userName.text = person.fullName
             userEmail.text = person.email
         }
+        buttonLogout.isVisible = state.isOwner
     }
 }

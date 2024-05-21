@@ -6,4 +6,5 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinJvm) apply false
     alias(libs.plugins.kotlinParcelize) apply false
     alias(libs.plugins.kotlin.kapt) apply false
+    alias(libs.plugins.androidX.room) apply false
 }

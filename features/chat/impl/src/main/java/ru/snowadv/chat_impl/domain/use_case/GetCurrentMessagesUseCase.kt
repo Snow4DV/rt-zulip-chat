@@ -4,7 +4,7 @@ import dagger.Reusable
 import kotlinx.coroutines.flow.Flow
 import ru.snowadv.chat_impl.domain.model.ChatPaginatedMessages
 import ru.snowadv.chat_impl.domain.repository.MessageRepository
-import ru.snowadv.chat_impl.domain.util.PaginationConfig.MESSAGES_COUNT_PER_FETCH
+import ru.snowadv.chat_impl.domain.util.PaginationConfig.INIT_FETCH_MESSAGES_COUNT
 import ru.snowadv.model.Resource
 import javax.inject.Inject
 
@@ -18,7 +18,8 @@ internal class GetCurrentMessagesUseCase @Inject constructor(private val message
             streamName = streamName,
             topicName = topicName,
             includeAnchorMessage = true,
-            countOfMessages = MESSAGES_COUNT_PER_FETCH,
+            countOfMessages = INIT_FETCH_MESSAGES_COUNT,
+            saveToCache = true,
         )
     }
 }

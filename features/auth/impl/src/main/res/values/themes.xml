@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Feature theme. -->
+    <style name="Theme.ZulipChat.Auth" parent="Base.Theme.ZulipChat" />
+
+    <style name="AuthInputOutlinedBox"
+        parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/outline_box_stroke_color</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="hintTextColor">@color/text</item>
+    </style>
+</resources>

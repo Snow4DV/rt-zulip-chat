@@ -39,8 +39,10 @@ android {
 
 
 dependencies {
+    implementation(projects.core.utils)
     implementation(projects.data.authData.api)
-    implementation(projects.core.propertiesProvider.api)
+    implementation(projects.lib.networkAuthorizer)
+    implementation(projects.lib.database)
 
     implementation(projects.core.moduleInjector)
 

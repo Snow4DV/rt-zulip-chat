@@ -29,17 +29,18 @@ internal class StreamListActorElm @Inject constructor(
             is StreamListCommandElm.LoadStreams -> {
                 getStreamsUseCase(command.type).map { res ->
                     when(res) {
-                        is Resource.Error -> StreamListEventElm.Internal.Error(res.throwable)
-                        Resource.Loading -> StreamListEventElm.Internal.Loading
-                        is Resource.Success -> StreamListEventElm.Internal.StreamsLoaded(res.data.map { it.toUiModel() })
+                        is Resource.Error -> StreamListEventElm.Internal.Error(res.throwable, res.data?.map { it.toUiModel() })
+                        is Resource.Loading -> res.data?.let { StreamListEventElm.Internal.StreamsLoaded(it.map { data -> data.toUiModel() }, true) } ?: StreamListEventElm.Internal.Loading
+                        is Resource.Success -> StreamListEventElm.Internal.StreamsLoaded(res.data.map { it.toUiModel() }, false)
                     }
                 }
             }
             is StreamListCommandElm.LoadTopics -> {
                 getTopicsUseCase(command.streamId).map { res ->
                     when(res) {
-                        is Resource.Error -> StreamListEventElm.Internal.TopicsLoadingError(command.streamId, res.throwable)
-                        Resource.Loading -> StreamListEventElm.Internal.TopicsLoading(command.streamId)
+                        is Resource.Error -> res.data?.map { it.toUiModel() }?.let { cachedData -> StreamListEventElm.Internal.TopicsLoadingErrorWithCachedTopics(command.streamId, res.throwable, cachedData) }
+                            ?: StreamListEventElm.Internal.TopicsLoadingError(command.streamId, res.throwable)
+                        is Resource.Loading -> res.data?.let { data -> StreamListEventElm.Internal.TopicsLoaded(command.streamId, data.map { it.toUiModel() }) } ?: StreamListEventElm.Internal.TopicsLoading(command.streamId)
                         is Resource.Success -> StreamListEventElm.Internal.TopicsLoaded(command.streamId, res.data.map { it.toUiModel() })
                     }
                 }

@@ -19,12 +19,13 @@ internal sealed interface StreamListEventElm {
     }
 
     sealed interface Internal : StreamListEventElm {
-        data class StreamsLoaded(val streams: List<Stream>) : Internal
-        data class Error(val throwable: Throwable) : Internal
+        data class StreamsLoaded(val streams: List<Stream>, val cached: Boolean) : Internal
+        data class Error(val throwable: Throwable, val cachedStreams: List<Stream>?) : Internal
         data object Loading : Internal
 
         data class TopicsLoading(val streamId: Long) : Internal
         data class TopicsLoadingError(val streamId: Long, val throwable: Throwable) : Internal
+        data class TopicsLoadingErrorWithCachedTopics(val streamId: Long, val throwable: Throwable, val cachedTopics: List<Topic>) : Internal
         data class TopicsLoaded(val streamId: Long, val topics: List<Topic>) : Internal
 
         sealed class ServerEvent : Internal, EventInfoHolder {

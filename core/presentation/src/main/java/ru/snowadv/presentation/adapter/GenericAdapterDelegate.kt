@@ -1,6 +1,5 @@
 package ru.snowadv.presentation.adapter
 
-import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 
 /**
@@ -31,6 +30,16 @@ abstract class GenericAdapterDelegate<I : T, T, VH : ViewHolder, P> : AdapterDel
     }
 
     @Suppress("UNCHECKED_CAST")
+    override fun onViewAttachedToWindow(holder: ViewHolder, getCurrentList: () -> List<T>) {
+        genericOnViewAttachedToWindow(holder as VH, getCurrentList)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun onViewDetachedFromWindow(holder: ViewHolder, getCurrentList: () -> List<T>) {
+        genericOnViewDetachedFromWindow(holder as VH, getCurrentList)
+    }
+
+    @Suppress("UNCHECKED_CAST")
     fun getItemAtPosition(items: List<T>, position: Int): I? {
         return if (position in items.indices && isForViewType(items[position])) {
             items[position] as I
@@ -41,4 +50,6 @@ abstract class GenericAdapterDelegate<I : T, T, VH : ViewHolder, P> : AdapterDel
 
     abstract fun isForViewType(item: T): Boolean
     abstract fun onBindViewHolder(item: I, holder: VH, payloads: List<P>)
+    open fun genericOnViewAttachedToWindow(holder: VH, getCurrentList: () -> List<T>) {}
+    open fun genericOnViewDetachedFromWindow(holder: VH, getCurrentList: () -> List<T>) {}
 }

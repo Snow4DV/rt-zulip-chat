@@ -4,7 +4,7 @@ import dagger.Reusable
 import kotlinx.coroutines.flow.Flow
 import ru.snowadv.chat_impl.domain.model.ChatPaginatedMessages
 import ru.snowadv.chat_impl.domain.repository.MessageRepository
-import ru.snowadv.chat_impl.domain.util.PaginationConfig.MESSAGES_COUNT_PER_FETCH
+import ru.snowadv.chat_impl.domain.util.PaginationConfig.PAGINATION_FETCH_MESSAGES_COUNT
 import ru.snowadv.model.Resource
 import javax.inject.Inject
 
@@ -21,7 +21,7 @@ internal class LoadMoreMessagesUseCase @Inject constructor(private val messagesR
             topicName = topicName,
             includeAnchorMessage = includeAnchor,
             anchorMessageId = firstLoadedMessageId,
-            countOfMessages = MESSAGES_COUNT_PER_FETCH,
+            countOfMessages = PAGINATION_FETCH_MESSAGES_COUNT,
         )
     }
 }

@@ -9,9 +9,10 @@ import ru.snowadv.presentation.model.ScreenState
 internal data class ChatStateElm(
     val sendingMessage: Boolean = false,
     val changingReaction: Boolean = false,
+    val uploadingFile: Boolean = false,
     val stream: String,
     val topic: String,
-    val screenState: ScreenState<List<DelegateItem>> = ScreenState.Loading,
+    val screenState: ScreenState<List<DelegateItem>> = ScreenState.Loading(),
     val messages: List<ChatMessage> = emptyList(),
     val messageField: String = "",
     val actionButtonType: ActionButtonType = ActionButtonType.ADD_ATTACHMENT,
@@ -22,7 +23,7 @@ internal data class ChatStateElm(
 
     val firstLoadedMessageId: Long? = messages.firstOrNull()?.id
 
-    val isActionButtonVisible = !screenState.isLoading && !sendingMessage
+    val isActionButtonVisible = !screenState.isLoading && !sendingMessage && !uploadingFile
 
     enum class ActionButtonType {
         SEND_MESSAGE,

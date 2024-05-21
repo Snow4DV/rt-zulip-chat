@@ -12,11 +12,12 @@ internal sealed interface ProfileEventElm {
         data object Resumed : Ui
         data object ClickedOnRetry : Ui
         data object ClickedOnBack : Ui
+        data object ClickedOnLogout : Ui
     }
 
     sealed interface Internal : ProfileEventElm {
-        data class PersonLoaded(val person: Person) : Internal
-        data class Error(val throwable: Throwable) : Internal
+        data class PersonLoaded(val person: Person, val cached: Boolean) : Internal
+        data class Error(val throwable: Throwable, val cachedPerson: Person?) : Internal
         data object Loading : Internal
 
         sealed class ServerEvent : Internal, EventInfoHolder {

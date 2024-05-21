@@ -3,7 +3,7 @@ package ru.snowadv.utils
 import kotlinx.coroutines.CoroutineScope
 import ru.snowadv.model.Resource
 
-fun <T> Result<T>.toResource(): Resource<T> {
+fun <T> Result<T>.toResource(cachedData: T? = null): Resource<T> {
     return this.fold(
         onSuccess = {
             Resource.Success(it)
@@ -14,13 +14,13 @@ fun <T> Result<T>.toResource(): Resource<T> {
     )
 }
 
-fun <T, E> Result<T>.foldToResource(mapper: (T) -> E): Resource<E> {
+fun <T, E> Result<T>.foldToResource(cachedData: E? = null, mapper: (T) -> E): Resource<E> {
     return this.fold(
         onSuccess = {
             Resource.Success(mapper(it))
         },
         onFailure = {
-            Resource.Error(it)
+            Resource.Error(it, cachedData)
         },
     )
 }

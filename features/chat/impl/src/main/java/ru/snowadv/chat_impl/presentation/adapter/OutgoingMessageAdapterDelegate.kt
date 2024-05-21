@@ -3,6 +3,7 @@ package ru.snowadv.chat_impl.presentation.adapter
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import io.noties.markwon.Markwon
 import ru.snowadv.chat_impl.presentation.view.OutgoingMessageLayout
 import ru.snowadv.chat_impl.presentation.model.ChatReaction
 import ru.snowadv.chat_impl.presentation.model.ChatMessage
@@ -15,7 +16,8 @@ internal class OutgoingMessageAdapterDelegate(
     private val onAddReactionClickListener: ((ChatMessage) -> Unit)? = null,
     private val onLongMessageClickListener: ((ChatMessage) -> Unit)? = null,
     private val onReactionClickListener: ((reaction: ChatReaction, message: ChatMessage) -> Unit)? = null,
-    private val timestampFormatter: DateTimeFormatter
+    private val timestampFormatter: DateTimeFormatter,
+    private val markwon: Markwon,
 ) :
     DelegationItemAdapterDelegate<ChatMessage, OutgoingMessageAdapterDelegate.OutgoingMessageViewHolder, ChatMessage.Payload>() {
     internal inner class OutgoingMessageViewHolder(val messageLayout: OutgoingMessageLayout) :
@@ -32,9 +34,10 @@ internal class OutgoingMessageAdapterDelegate(
             messageLayout.onReactionClickListener = { count, emojiCode, userReacted ->
                 if (adapterPosition != RecyclerView.NO_POSITION) {
                     getItemAtPosition(getCurrentList(), adapterPosition)?.let { message ->
-                        message.reactions.firstOrNull { it.emojiCode == emojiCode }?.let { reaction ->
-                            onReactionClickListener?.invoke(reaction, message)
-                        }
+                        message.reactions.firstOrNull { it.emojiCode == emojiCode }
+                            ?.let { reaction ->
+                                onReactionClickListener?.invoke(reaction, message)
+                            }
                     }
                 }
             }
@@ -48,7 +51,7 @@ internal class OutgoingMessageAdapterDelegate(
         }
 
         fun bind(message: ChatMessage) = with(messageLayout) {
-            messageText = message.text
+            setMarkdown(message.text, markwon)
             timestampText = timestampFormatter.format(message.sentAt)
             bindReactions(message.reactions)
         }
@@ -61,8 +64,8 @@ internal class OutgoingMessageAdapterDelegate(
             }
         }
 
-        private fun bindReactions(reactions: List<ChatReaction>) = with(messageLayout) {
-            replaceReactions(reactions)
+        fun bindReactions(reactions: List<ChatReaction>?) = with(messageLayout) {
+            updateReactionsWithAsyncDiffUtil(reactions)
         }
     }
 
@@ -72,7 +75,7 @@ internal class OutgoingMessageAdapterDelegate(
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
-        getCurrentList: () -> List<DelegateItem>
+        getCurrentList: () -> List<DelegateItem>,
     ): ViewHolder {
         val holder = OutgoingMessageViewHolder(getNewOutgoingMessageLayout(parent))
         holder.initClickListeners(getCurrentList)
@@ -89,6 +92,29 @@ internal class OutgoingMessageAdapterDelegate(
         } else payloads.forEach {
             holder.handlePayload(it)
         }
+    }
+
+    /*
+       This is important because there's an edgecase when async differ is trying to dispatch updates
+       after view is detached.
+        */
+    override fun genericOnViewAttachedToWindow(
+        holder: OutgoingMessageAdapterDelegate.OutgoingMessageViewHolder,
+        getCurrentList: () -> List<DelegateItem>
+    ) {
+        holder.bindReactions(null)
+        if (holder.adapterPosition != RecyclerView.NO_POSITION) {
+            getItemAtPosition(getCurrentList(), holder.adapterPosition)?.let { message ->
+                holder.bindReactions(message.reactions)
+            }
+        }
+    }
+
+    override fun genericOnViewDetachedFromWindow(
+        holder: OutgoingMessageAdapterDelegate.OutgoingMessageViewHolder,
+        getCurrentList: () -> List<DelegateItem>
+    ) {
+        holder.bindReactions(null)
     }
 
     private fun getNewOutgoingMessageLayout(parent: ViewGroup): OutgoingMessageLayout {
