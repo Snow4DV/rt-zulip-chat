@@ -9,7 +9,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import ru.snowadv.channels_presentation.channel_list.ChannelListFragment
-import ru.snowadv.chatapp.di.glue.AuthorizedTestModulesInjector
+import ru.snowadv.chatapp.di.injector.AuthorizedTestModulesInjector
 import ru.snowadv.chatapp.fragment.channels.screen.ChannelsFragmentScreen
 import ru.snowadv.chatapp.rule.FragmentTestRule
 
@@ -22,8 +22,6 @@ internal class ChannelsFragmentTest : TestCase() {
 
     @Test
     fun streamsShowUp() = run {
-        AuthorizedTestModulesInjector.inject(ApplicationProvider.getApplicationContext())
-
         val scenario = launchChannelsFragment()
 
         ChannelsFragmentScreen {
@@ -58,8 +56,6 @@ internal class ChannelsFragmentTest : TestCase() {
 
     @Test
     fun loadTopics() = run {
-        AuthorizedTestModulesInjector.inject(ApplicationProvider.getApplicationContext())
-
         val scenario = launchChannelsFragment()
 
         ChannelsFragmentScreen {

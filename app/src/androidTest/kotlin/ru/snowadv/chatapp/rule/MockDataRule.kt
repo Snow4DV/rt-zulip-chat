@@ -1,11 +1,9 @@
 package ru.snowadv.chatapp.rule
 
-import androidx.test.core.app.ApplicationProvider
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
 import ru.snowadv.chatapp.data.MockData
-import ru.snowadv.chatapp.di.glue.AuthorizedTestModulesInjector
 import ru.snowadv.chatapp.di.holder.TestAppModuleComponentHolder
 import javax.inject.Inject
 

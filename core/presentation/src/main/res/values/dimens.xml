@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="action_button_width">150dp</dimen>
     <dimen name="small_common_padding">5dp</dimen>
     <dimen name="common_padding">10dp</dimen>
     <dimen name="common_elevation">5dp</dimen>
     <dimen name="common_margin">5dp</dimen>
     <dimen name="horizontal_progress_bar_height">8dp</dimen>
     <dimen name="common_margin_large">15dp</dimen>
+    <dimen name="common_margin_mid">12dp</dimen>
+    <dimen name="input_layout_padding">14dp</dimen>
     <dimen name="common_radius">15dp</dimen>
     <dimen name="top_bar_text_size">24sp</dimen>
     <dimen name="top_bar_padding_horizontal">20dp</dimen>
@@ -19,4 +22,7 @@
     <dimen name="shimmer_text_bg_padding_top">6dp</dimen>
     <dimen name="shimmer_text_bg_padding_bottom">2dp</dimen>
     <dimen name="error_cached_text_size">18sp</dimen>
+    <dimen name="outlined_edit_box_stroke_width">5dp</dimen>
+    <dimen name="bottom_sheet_title_text_size">32sp</dimen>
+    <dimen name="fab_bottom_padding">80dp</dimen>
 </resources>

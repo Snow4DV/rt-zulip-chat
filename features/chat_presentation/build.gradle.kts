@@ -57,6 +57,7 @@ dependencies {
     // Feature domain api
     implementation(projects.features.chatDomainApi)
     implementation(projects.features.eventsDomainApi)
+    implementation(projects.features.channelsDomainApi) // To get topics in chat screen
 
     // Feature basic core deps
     implementation(projects.core.utils)

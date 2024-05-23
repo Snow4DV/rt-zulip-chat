@@ -23,9 +23,8 @@ interface StreamsDao {
 
     @Transaction
     suspend fun insertAllStreams(streams: List<StreamEntity>) {
-        val subscribedIds = getSubscribed().asSequence().map { it.id }.toSet()
         clear()
-        insertAll(streams.map { it.copy(subscribed = it.id in subscribedIds) })
+        insertAll(streams)
     }
 
     @Transaction
@@ -37,13 +36,13 @@ interface StreamsDao {
     suspend fun clear()
 
     @Transaction
-    suspend fun insertNewStream(streamId: Long, streamName: String) {
-        insert(StreamEntity(id = streamId, name = streamName, subscribed = false))
+    suspend fun insertNewStream(streamId: Long, streamName: String, color: String?) {
+        insert(StreamEntity(id = streamId, name = streamName, subscribed = false, color = color))
     }
 
     @Transaction
-    suspend fun insertNewSubscribed(streamId: Long, streamName: String) {
-        insert(StreamEntity(id = streamId, name = streamName, subscribed = true))
+    suspend fun insertNewSubscribed(streamId: Long, streamName: String, color: String?) {
+        insert(StreamEntity(id = streamId, name = streamName, subscribed = true, color = color))
     }
 
     @Query("DELETE FROM streams WHERE stream_id = :streamId")

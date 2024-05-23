@@ -23,14 +23,14 @@ import ru.snowadv.channels_presentation.stream_list.ui.util.StreamsMapper.toLoca
 import ru.snowadv.presentation.activity.showKeyboard
 import ru.snowadv.presentation.elm.BaseFragment
 import ru.snowadv.presentation.fragment.ElmFragmentRenderer
-import ru.snowadv.presentation.fragment.ErrorHandlingFragment
-import ru.snowadv.presentation.fragment.impl.SnackbarErrorHandlingFragment
+import ru.snowadv.presentation.fragment.PopupHandlingFragment
+import ru.snowadv.presentation.fragment.impl.SnackbarPopupHandlingFragment
 import vivid.money.elmslie.android.renderer.elmStoreWithRenderer
 import vivid.money.elmslie.core.store.Store
 import javax.inject.Inject
 
 class ChannelListFragment : BaseFragment<ChannelListEventElm, ChannelListEffectElm, ChannelListStateElm>(),
-    ErrorHandlingFragment by SnackbarErrorHandlingFragment(),
+    PopupHandlingFragment by SnackbarPopupHandlingFragment(),
     ElmFragmentRenderer<ChannelListFragment, FragmentChannelListBinding, ChannelListEventElm, ChannelListEffectElm, ChannelListStateElm>
     by ChannelListFragmentRenderer(), SearchHolder {
 
@@ -87,8 +87,8 @@ class ChannelListFragment : BaseFragment<ChannelListEventElm, ChannelListEffectE
     }
 
     fun showKeyboardAndFocusOnSearchField() {
-        binding.searchBar.searchEditText.requestFocus()
-        activity?.showKeyboard(binding.searchBar.searchEditText)
+        binding.channelsSearchBar.searchEditText.requestFocus()
+        activity?.showKeyboard(binding.channelsSearchBar.searchEditText)
     }
 
     private fun setupPagerAdapter() {

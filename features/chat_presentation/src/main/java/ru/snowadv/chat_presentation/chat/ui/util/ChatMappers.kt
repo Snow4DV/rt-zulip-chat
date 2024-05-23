@@ -36,7 +36,8 @@ internal object ChatMappers {
             senderAvatarUrl = senderAvatarUrl,
             reactions = reactions.map { it.toUiChatReaction() }
                 .sortedWith(compareBy({ -it.count }, { it.name })),
-            messageType = if (owner) ChatMessageType.OUTGOING else ChatMessageType.INCOMING
+            messageType = if (owner) ChatMessageType.OUTGOING else ChatMessageType.INCOMING,
+            topic = topic,
         )
     }
 
@@ -124,6 +125,7 @@ internal object ChatMappers {
             senderAvatarUrl = avatarUrl,
             reactions = reactions.map { it.toChatReaction() },
             owner = this.owner,
+            topic = subject,
         )
     }
 

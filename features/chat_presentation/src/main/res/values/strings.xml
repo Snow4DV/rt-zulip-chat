@@ -24,4 +24,5 @@
     <string name="chat_beginning">Beginning of discussion</string>
     <string name="send_message_hint">Send message</string>
     <string name="add_attachment_hint">Add attachment</string>
+    <string name="open_all_topics_button">Open all topics button</string>
 </resources>

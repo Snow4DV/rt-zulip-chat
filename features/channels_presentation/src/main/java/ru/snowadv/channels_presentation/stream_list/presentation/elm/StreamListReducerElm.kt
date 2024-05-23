@@ -103,7 +103,7 @@ internal class StreamListReducerElm @Inject constructor() :
 
             is StreamListEventElm.Internal.ServerEvent.NewMessage -> {
                 state {
-                    if (event.streamId != null && "read" !in event.flags) {
+                    if (!event.isRead) {
                         addNewMessage(
                             event.streamId,
                             event.topicName,
@@ -112,7 +112,11 @@ internal class StreamListReducerElm @Inject constructor() :
                         )
                     } else {
                         copy(eventQueueData = eventQueueData?.copy(lastEventId = event.eventId))
-                    }
+                    }.addTopic(
+                        streamId = event.streamId,
+                        topicName = event.topicName,
+                        isNewMessageRead = event.isRead,
+                    )
                 }
                 commandObserve()
             }
@@ -152,7 +156,7 @@ internal class StreamListReducerElm @Inject constructor() :
                         addStreams(event.changedStreams, event.eventId)
                     } else {
                         copy(eventQueueData = eventQueueData?.copy(lastEventId = event.eventId))
-                    }
+                    }.subscribedToStreams(event.changedStreams.map { it.id }.toSet())
                 }
                 commandObserve()
             }
@@ -160,10 +164,10 @@ internal class StreamListReducerElm @Inject constructor() :
             is StreamListEventElm.Internal.ServerEvent.UserSubscriptionsRemovedEvent -> {
                 state {
                     if (state.streamType == StreamType.SUBSCRIBED) {
-                        addStreams(event.changedStreams, event.eventId)
+                        removeStreams(event.changedStreams, event.eventId)
                     } else {
                         copy(eventQueueData = eventQueueData?.copy(lastEventId = event.eventId))
-                    }
+                    }.unsubscribedFromStreams(event.changedStreams.map { it.id }.toSet())
                 }
                 commandObserve()
             }
@@ -176,7 +180,7 @@ internal class StreamListReducerElm @Inject constructor() :
                         )
                     copy(
                         screenUnfilteredDataRes = newData,
-                        screenState = newData.toScreenState(),
+                        screenState = newData.toScreenState().filterStreamsByQuery(state.searchQuery),
                         eventQueueData = null,
                     )
                 }
@@ -204,10 +208,26 @@ internal class StreamListReducerElm @Inject constructor() :
                 }
                 effects {
                     +StreamListEffectElm.ShowInternetErrorWithRetry(
-                        StreamListEventElm.Ui.ClickedOnStream(
+                        StreamListEventElm.Ui.ClickedOnExpandStream(
                             event.streamId,
                         )
                     )
+                }
+            }
+
+            is StreamListEventElm.Internal.SubscribingToStream -> state {
+                changeSubscribingToStream(streamId = event.streamId, subscribing = true)
+            }
+
+            is StreamListEventElm.Internal.ErrorWhileSubscribingToStream -> state {
+                changeSubscribingToStream(streamId = event.streamId, subscribing = false)
+            }
+
+            is StreamListEventElm.Internal.ChangedSubscriptionToStream -> state {
+                if (event.isSubscribed) {
+                    subscribedToStreams(setOf(event.streamId))
+                } else {
+                    unsubscribedFromStreams(setOf(event.streamId))
                 }
             }
         }
@@ -216,9 +236,9 @@ internal class StreamListReducerElm @Inject constructor() :
     override fun Result.ui(event: StreamListEventElm.Ui) {
         when (event) {
             is StreamListEventElm.Ui.ClickedOnTopic -> {
-                state.selectedStream?.name?.let { streamName ->
+                state.selectedStream?.let { stream ->
                     commands {
-                        +StreamListCommandElm.GoToChat(streamName, event.topicName)
+                        +StreamListCommandElm.GoToTopic(stream.id, stream.name, event.topicName)
                     }
                 }
             }
@@ -227,7 +247,7 @@ internal class StreamListReducerElm @Inject constructor() :
                 +StreamListCommandElm.LoadStreams(state.streamType)
             }
 
-            is StreamListEventElm.Ui.ClickedOnStream -> {
+            is StreamListEventElm.Ui.ClickedOnExpandStream -> {
                 if (state.selectedStream?.id == event.streamId) {
                     state { hideTopics() }
                 } else {
@@ -257,6 +277,16 @@ internal class StreamListReducerElm @Inject constructor() :
                     )
                 }
             }
+
+            is StreamListEventElm.Ui.ClickedOnChangeStreamSubscriptionStatus -> commands {
+                if (!event.stream.subscribing) {
+                    +StreamListCommandElm.ChangeSubscriptionStatusForStream(event.stream.id, event.stream.name, !event.stream.subscribed)
+                }
+            }
+
+            is StreamListEventElm.Ui.ClickedOnOpenStream -> commands {
+                +StreamListCommandElm.GoToStream(event.streamId, event.streamName)
+            }
         }
     }
 
@@ -277,7 +307,11 @@ internal class StreamListReducerElm @Inject constructor() :
     ): StreamListStateElm {
         val streamIds = screenState.getCurrentData()?.map { it.id }?.toSet() ?: emptySet()
         val newData =
-            screenUnfilteredDataRes.map { it + streams.filter { stream -> stream.id !in streamIds } }
+            screenUnfilteredDataRes.map { streamsList ->
+                (streamsList + streams.filter { stream -> stream.id !in streamIds })
+                    .sortedBy { it.name }
+                    .setStreamUnreadMessagesForStreams(streamsUnreadMessages)
+            }
         return copy(
             screenState = newData.toScreenState().filterStreamsByQuery(searchQuery),
             screenUnfilteredDataRes = newData,
@@ -304,6 +338,48 @@ internal class StreamListReducerElm @Inject constructor() :
         )
     }
 
+    private fun StreamListStateElm.changeSubscribingToStream(streamId: Long, subscribing: Boolean): StreamListStateElm {
+        return copy(
+            screenState = screenState.map { streams ->
+                streams.map { stream ->
+                    if (stream.id == streamId) {
+                        stream.copy(subscribing = subscribing)
+                    } else {
+                        stream
+                    }
+                }
+            }
+        )
+    }
+
+    private fun StreamListStateElm.subscribedToStreams(streamIds: Set<Long>): StreamListStateElm {
+        return copy(
+            screenState = screenState.map { streams ->
+                streams.map { stream ->
+                    if (stream.id in streamIds) {
+                        stream.copy(subscribing = false, subscribed = true)
+                    } else {
+                        stream
+                    }
+                }
+            }
+        )
+    }
+
+    private fun StreamListStateElm.unsubscribedFromStreams(streamIds: Set<Long>): StreamListStateElm {
+        return copy(
+            screenState = screenState.map { streams ->
+                streams.map { stream ->
+                    if (stream.id in streamIds) {
+                        stream.copy(subscribing = false, subscribed = false)
+                    } else {
+                        stream
+                    }
+                }
+            }
+        )
+    }
+
     private fun StreamListStateElm.loadTopics(
         streamId: Long,
         topics: List<Topic>
@@ -311,7 +387,7 @@ internal class StreamListReducerElm @Inject constructor() :
         return copy(
             topics = StreamTopics(
                 streamId = streamId,
-                topics = Resource.Success(topics.setStreamUnreadMessages(streamsUnreadMessages)),
+                topics = Resource.Success(topics.setStreamUnreadMessagesForTopics(streamsUnreadMessages)),
             ),
         )
     }
@@ -340,7 +416,7 @@ internal class StreamListReducerElm @Inject constructor() :
                 } else {
                     stream
                 }
-            }
+            }.setStreamUnreadMessagesForStreams(streamsUnreadMessages)
         }
         return copy(
             screenState = newData.toScreenState().filterStreamsByQuery(searchQuery),
@@ -372,7 +448,13 @@ internal class StreamListReducerElm @Inject constructor() :
     ): StreamListStateElm {
         return copy(
             streamsUnreadMessages = streamsUnreadMessages,
-            topics = topics?.copy(topics = topics.topics.map { it.setStreamUnreadMessages(streamsUnreadMessages) }),
+            screenState = screenState.map { it.setStreamUnreadMessagesForStreams(streamsUnreadMessages) },
+            screenUnfilteredDataRes = screenUnfilteredDataRes.map { it.setStreamUnreadMessagesForStreams(streamsUnreadMessages) },
+            topics = topics?.copy(topics = topics.topics.map {
+                it.setStreamUnreadMessagesForTopics(
+                    streamsUnreadMessages
+                )
+            }),
             eventQueueData = EventQueueProperties(
                 queueId = queueId,
                 timeoutSeconds = timeoutSeconds,
@@ -415,7 +497,13 @@ internal class StreamListReducerElm @Inject constructor() :
         }
         return copy(
             streamsUnreadMessages = newStreamsUnreadMessages,
-            topics = topics?.copy(topics = topics.topics.map { it.setStreamUnreadMessages(streamsUnreadMessages) }),
+            screenState = screenState.map { it.setStreamUnreadMessagesForStreams(newStreamsUnreadMessages) },
+            screenUnfilteredDataRes = screenUnfilteredDataRes.map { it.setStreamUnreadMessagesForStreams(newStreamsUnreadMessages) },
+            topics = topics?.copy(topics = topics.topics.map {
+                it.setStreamUnreadMessagesForTopics(
+                    streamsUnreadMessages
+                )
+            }),
             eventQueueData = eventQueueData?.copy(lastEventId = eventId),
         )
     }
@@ -469,12 +557,38 @@ internal class StreamListReducerElm @Inject constructor() :
         }
         return copy(
             streamsUnreadMessages = newStreamsUnreadMessages,
-            topics = topics?.copy(topics = topics.topics.map { it.setStreamUnreadMessages(streamsUnreadMessages) }),
+            screenState = screenState.map { it.setStreamUnreadMessagesForStreams(newStreamsUnreadMessages) },
+            screenUnfilteredDataRes = screenUnfilteredDataRes.map { it.setStreamUnreadMessagesForStreams(newStreamsUnreadMessages) },
+            topics = topics?.copy(topics = topics.topics.map {
+                it.setStreamUnreadMessagesForTopics(
+                    newStreamsUnreadMessages
+                )
+            }),
             eventQueueData = eventQueueData?.copy(lastEventId = eventId),
         )
     }
 
-    private fun List<Topic>.setStreamUnreadMessages(streamUnreadMessages: List<StreamUnreadMessages>): List<Topic> {
+    private fun StreamListStateElm.addTopic(
+        streamId: Long,
+        topicName: String,
+        isNewMessageRead: Boolean
+    ): StreamListStateElm {
+        return if (selectedStream?.id == streamId) {
+            copy(
+                topics = topics?.copy(topics = topics.topics.map {
+                    it.addNewTopicToExistingTopics(
+                        streamId = streamId,
+                        newTopicName = topicName,
+                        isNewMessageRead = isNewMessageRead,
+                    )
+                })
+            )
+        } else {
+            this
+        }
+    }
+
+    private fun List<Topic>.setStreamUnreadMessagesForTopics(streamUnreadMessages: List<StreamUnreadMessages>): List<Topic> {
         val streamUnreadMessagesById = streamUnreadMessages.associateBy { it.streamId }
         return map { topic ->
             streamUnreadMessagesById[topic.streamId]?.topicsUnreadMessages
@@ -482,5 +596,44 @@ internal class StreamListReducerElm @Inject constructor() :
                 ?.let { topicUnreadMessages -> topic.copy(unreadMessagesCount = topicUnreadMessages.unreadMessagesIds.size) }
                 ?: topic
         }
+    }
+
+    private fun List<Stream>.setStreamUnreadMessagesForStreams(streamUnreadMessages: List<StreamUnreadMessages>): List<Stream> {
+        val streamUnreadMessagesCountById = streamUnreadMessages.associateBy { it.streamId }
+            .mapValues { it.value.topicsUnreadMessages.map { unreadMessagesIds ->
+                unreadMessagesIds.unreadMessagesIds.size }.sum()
+            }
+        return map { stream ->
+            stream.copy(unreadMessagesCount = streamUnreadMessagesCountById[stream.id] ?: 0)
+        }
+    }
+
+    private fun List<Topic>.addNewTopicToExistingTopics(
+        streamId: Long,
+        newTopicName: String,
+        isNewMessageRead: Boolean
+    ): List<Topic> {
+        return if (this.none { it.name == newTopicName }) {
+            (this + createTopicByNameWithUnreadMessage(
+                streamId,
+                newTopicName,
+                isNewMessageRead
+            )).sortedBy { it.name }
+        } else {
+            this
+        }
+    }
+
+    private fun createTopicByNameWithUnreadMessage(
+        streamId: Long,
+        topicName: String,
+        isNewMessageRead: Boolean
+    ): Topic {
+        return Topic(
+            uniqueId = "${streamId}_${topicName}",
+            name = topicName,
+            streamId = streamId,
+            unreadMessagesCount = if (isNewMessageRead) 0 else 1,
+        )
     }
 }

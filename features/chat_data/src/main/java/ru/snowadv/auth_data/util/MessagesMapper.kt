@@ -23,6 +23,7 @@ internal object MessagesMapper {
             senderAvatarUrl = avatarUrl,
             reactions = reactions.fromDtotoChatReactions(currentUserId),
             owner = currentUserId == senderId,
+            topic = subject,
         )
     }
 
@@ -76,6 +77,7 @@ internal object MessagesMapper {
             senderAvatarUrl = avatarUrl,
             reactions = reactions.fromEntitytoChatReactions(currentUserId),
             owner = currentUserId == senderId,
+            topic = subject,
         )
     }
 

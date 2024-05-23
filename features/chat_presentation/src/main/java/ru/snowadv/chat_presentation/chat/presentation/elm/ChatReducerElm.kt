@@ -214,6 +214,24 @@ internal class ChatReducerElm @Inject constructor() :
                     +ChatEffectElm.ShowActionErrorWithRetry(event.retryEvent)
                 }
             }
+
+            is ChatEventElm.Internal.TopicsResourceChanged -> state {
+                copy(
+                    topics = event.topicsRes,
+                )
+            }
+
+            ChatEventElm.Ui.ClickedOnLeaveTopic -> {
+                state {
+                    copy(
+                        eventQueueData = null,
+                        topic = null,
+                    )
+                }
+                commands {
+                    +ChatCommandElm.LoadInitialMessages(state.stream, null)
+                }
+            }
         }
     }
 
@@ -291,7 +309,7 @@ internal class ChatReducerElm @Inject constructor() :
                             commands {
                                 +ChatCommandElm.SendMessage(
                                     streamName = state.stream,
-                                    topicName = state.topic,
+                                    topicName = state.sendTopic,
                                     text = state.messageField
                                 )
                             }
@@ -324,11 +342,24 @@ internal class ChatReducerElm @Inject constructor() :
             is ChatEventElm.Ui.FileWasChosen -> commands {
                 +ChatCommandElm.AddAttachment(
                     state.stream,
-                    state.topic,
+                    state.sendTopic,
                     event.mimeType,
                     event.inputStreamOpener,
                     event.extension,
                 )
+            }
+
+            is ChatEventElm.Ui.ClickedOnTopic -> {
+                state {
+                    copy(
+                        eventQueueData = null,
+                        topic = event.topicName,
+                        sendTopic = event.topicName,
+                    )
+                }
+                commands {
+                    +ChatCommandElm.LoadInitialMessages(state.stream, state.topic)
+                }
             }
         }
     }

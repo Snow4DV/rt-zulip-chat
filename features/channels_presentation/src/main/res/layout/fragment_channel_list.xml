@@ -2,13 +2,13 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_channel_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@style/Theme.ZulipChat.Channels">
 
-
     <include
-        android:id="@+id/search_bar"
+        android:id="@+id/channels_search_bar"
         layout="@layout/item_search_bar" />
 
     <com.google.android.material.tabs.TabLayout
@@ -19,7 +19,7 @@
         android:contentDescription="@string/channels_tabs"
 
         android:textAllCaps="false"
-        app:layout_constraintTop_toBottomOf="@id/search_bar"
+        app:layout_constraintTop_toBottomOf="@id/channels_search_bar"
         app:tabTextAppearance="@style/Theme.ZulipChat.StreamTypesTabsTextAppearance" />
 
     <androidx.viewpager2.widget.ViewPager2
@@ -29,5 +29,16 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tabs_stream_types" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/create_stream_floating_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/common_margin_large"
+        android:backgroundTint="@color/primary"
+        android:contentDescription="@string/create_stream"
+        android:src="@drawable/ic_add"
+        app:tint="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

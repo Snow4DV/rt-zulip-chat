@@ -25,11 +25,14 @@ internal class ListenToChatEventsUseCaseImpl @Inject constructor(private val eve
         isRestart: Boolean,
         eventQueueProps: EventQueueProperties?,
         streamName: String,
-        topicName: String,
+        topicName: String?,
     ): Flow<DomainEvent> {
         return eventRepository.listenEvents(
             types = eventTypes,
-            narrows = setOf(EventNarrow("stream", streamName), EventNarrow("topic", topicName)),
+            narrows = setOfNotNull(
+                EventNarrow("stream", streamName),
+                topicName?.let { EventNarrow("topic", topicName) },
+            ),
             delayBeforeObtain = isRestart,
             eventQueueProps = eventQueueProps,
         )

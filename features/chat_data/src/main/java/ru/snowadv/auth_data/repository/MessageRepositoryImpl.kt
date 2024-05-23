@@ -35,7 +35,7 @@ internal class MessageRepositoryImpl @Inject constructor(
 
     private val currentUserId get() = authProvider.getAuthorizedUser().id
 
-    override fun getMessages(
+    override fun getMessagesFromTopic(
         streamName: String,
         topicName: String,
         includeAnchorMessage: Boolean,
@@ -78,6 +78,63 @@ internal class MessageRepositoryImpl @Inject constructor(
                     messagesDao.updateMessagesForTopicIfChanged(
                         streamName = streamName,
                         topicName = topicName,
+                        messages = remoteMsgs.toEntityMessages(streamName),
+                    )
+                }
+            }
+
+            remoteMessages.foldToResource(
+                cachedData = cachedData,
+                mapper = { messagesDto ->
+                    messagesDto.toChatPaginatedMessages(
+                        currentUserId,
+                        anchorMessageId,
+                        includeAnchorMessage
+                    )
+                },
+            )
+                .let { res -> emit(res) }
+        }.flowOn(dispatcherProvider.io)
+
+
+    override fun getMessagesFromStream(
+        streamName: String,
+        includeAnchorMessage: Boolean,
+        anchorMessageId: Long?,
+        countOfMessages: Int,
+        useCache: Boolean
+    ): Flow<Resource<ChatPaginatedMessages>> =
+        flow {
+
+            val cachedData = if (useCache) {
+                messagesDao.getMessagesFromStream(streamName)
+                    .ifEmpty { null }
+                    ?.toChatPaginatedMessages(
+                        currentUserId,
+                        anchorMessageId,
+                        includeAnchorMessage
+                    )
+            } else {
+                null
+            }
+
+            emit(Resource.Loading(cachedData))
+
+
+            val remoteMessages = api.getMessages(
+                numBefore = countOfMessages,
+                narrow = NarrowListRequestDto(
+                    NarrowRequestDto.ofStream(streamName)
+                ),
+                numAfter = 0,
+                anchor = anchorMessageId?.toString() ?: NEWEST_MESSAGE_ANCHOR,
+                applyMarkdown = true,
+            )
+
+            remoteMessages.getOrNull()?.let { remoteMsgs ->
+                if (useCache) {
+                    messagesDao.updateMessagesForStreamIfChanged(
+                        streamName = streamName,
                         messages = remoteMsgs.toEntityMessages(streamName),
                     )
                 }

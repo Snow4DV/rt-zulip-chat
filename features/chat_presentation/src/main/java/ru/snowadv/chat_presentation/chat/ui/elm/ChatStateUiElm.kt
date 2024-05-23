@@ -4,6 +4,7 @@ import ru.snowadv.chat_presentation.R
 import ru.snowadv.chat_presentation.chat.ui.model.ChatMessage
 import ru.snowadv.chat_presentation.chat.ui.model.ChatPaginationStatus
 import ru.snowadv.events_api.model.EventQueueProperties
+import ru.snowadv.model.Resource
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.model.ScreenState
 
@@ -12,7 +13,7 @@ internal data class ChatStateUiElm(
     val changingReaction: Boolean = false,
     val uploadingFile: Boolean = false,
     val stream: String,
-    val topic: String,
+    val topic: String?,
     val screenState: ScreenState<List<DelegateItem>> = ScreenState.Loading(),
     val messages: List<ChatMessage> = emptyList(),
     val messageField: String = "",
@@ -20,6 +21,8 @@ internal data class ChatStateUiElm(
     val paginationStatus: ChatPaginationStatus = ChatPaginationStatus.None,
     val eventQueueData: EventQueueProperties?,
     val resumed: Boolean = false,
+    val sendTopic: String,
+    val topics: Resource<List<String>> = Resource.Loading(),
 ) {
 
     val firstLoadedMessageId: Long? = messages.firstOrNull()?.id

@@ -25,12 +25,20 @@ fun <T, E> Result<T>.foldToResource(cachedData: E? = null, mapper: (T) -> E): Re
     )
 }
 
-suspend fun <T, E> Result<T>.combineFold(
+fun <T> Resource<T>.combineWithCache(cache: T?): Resource<T> {
+    return when(this) {
+        is Resource.Error -> Resource.Error(throwable, data ?: cache, errorCode)
+        is Resource.Loading -> Resource.Loading(data ?: cache)
+        is Resource.Success -> Resource.Success(data)
+    }
+}
+
+suspend fun <T, E, R> Result<T>.combineFold(
     other: Result<E>,
-    onBothSuccess: suspend (T, E) -> Unit,
-    onFailure: suspend (Throwable) -> Unit
-) {
-    if (this.isSuccess && other.isSuccess) {
+    onBothSuccess: suspend (T, E) -> R,
+    onFailure: suspend (Throwable) -> R
+): R {
+    return if (this.isSuccess && other.isSuccess) {
         onBothSuccess(this.getOrThrow(), other.getOrThrow())
     } else {
         onFailure(this.exceptionOrNull() ?: other.exceptionOrNull() ?: Exception("Unknown exception"))

@@ -48,6 +48,12 @@ internal class StaticStubsProvider @Inject constructor() : WireMockStubsProvider
                 assetsPath = "profile/presence.json",
                 method = RequestMethod.GET,
             ),
+            // Auth screen
+            AssetStubMatcher(
+                urlRegex = ".*/api/v1/fetch_api_key.*",
+                assetsPath = "auth/api_key.json",
+                method = RequestMethod.POST,
+            )
         )
     }
 }

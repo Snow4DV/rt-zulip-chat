@@ -33,9 +33,11 @@ import ru.snowadv.channels_domain_api.di.ChannelsDomainAPI
 import ru.snowadv.channels_domain_api.di.ChannelsDomainDependencies
 import ru.snowadv.channels_domain_api.repository.StreamRepository
 import ru.snowadv.channels_domain_api.repository.TopicRepository
+import ru.snowadv.channels_domain_api.use_case.CreateStreamUseCase
 import ru.snowadv.channels_domain_api.use_case.GetStreamsUseCase
 import ru.snowadv.channels_domain_api.use_case.GetTopicsUseCase
 import ru.snowadv.channels_domain_api.use_case.ListenToStreamEventsUseCase
+import ru.snowadv.channels_domain_api.use_case.ChangeStreamSubscriptionStatusUseCase
 import ru.snowadv.channels_domain_impl.di.ChannelsDomainComponentHolder
 import ru.snowadv.channels_presentation.navigation.ChannelsRouter
 import ru.snowadv.channels_presentation.api.ChannelsScreenFactory
@@ -236,14 +238,15 @@ abstract class BaseModulesInjector {
 
         ChatPresentationComponentHolder.dependencyProvider = {
             class ChatPresentationDependencyHolder(
-                override val block: (BaseDependencyHolder<ChatPresentationDependencies>, AppModuleAPI, ChatDomainAPI, ImageLoaderLibAPI) -> ChatPresentationDependencies
-            ) : DependencyHolder3<AppModuleAPI, ChatDomainAPI, ImageLoaderLibAPI, ChatPresentationDependencies>(
+                override val block: (BaseDependencyHolder<ChatPresentationDependencies>, AppModuleAPI, ChatDomainAPI, ImageLoaderLibAPI, ChannelsDomainAPI) -> ChatPresentationDependencies
+            ) : DependencyHolder4<AppModuleAPI, ChatDomainAPI, ImageLoaderLibAPI, ChannelsDomainAPI, ChatPresentationDependencies>(
                 api1 = AppModuleComponentHolder.get() ,
                 api2 = ChatDomainComponentHolder.get(),
                 api3 = ImageLoaderLibComponentHolder.get(),
+                api4 = ChannelsDomainComponentHolder.get(),
             )
 
-            ChatPresentationDependencyHolder { dependencyHolder, appApi, chatApi, imageLoaderApi ->
+            ChatPresentationDependencyHolder { dependencyHolder, appApi, chatApi, imageLoaderApi, channelsApi ->
                 object : ChatPresentationDependencies {
                     override val chatRouter: ChatRouter = appApi.chatRouter
                     override val addReactionUseCase: AddReactionUseCase = chatApi.addReactionUseCase
@@ -254,6 +257,7 @@ abstract class BaseModulesInjector {
                     override val loadMoreMessagesUseCase: LoadMoreMessagesUseCase = chatApi.loadMoreMessagesUseCase
                     override val sendFileUseCase: SendFileUseCase = chatApi.sendFileUseCase
                     override val getEmojisUseCase: GetEmojisUseCase = chatApi.getEmojisUseCase
+                    override val getTopicsUseCase: GetTopicsUseCase = channelsApi.getTopicsUseCase
                     override val appContext: Context = appContext
                     override val imageLoader: ImageLoader = imageLoaderApi.coilImageLoader
                     override val baseUrlProvider: BaseUrlProvider = appApi.baseUrlProvider
@@ -340,6 +344,8 @@ abstract class BaseModulesInjector {
                     override val getStreamsUseCase: GetStreamsUseCase = channelsDomainAPi.getStreamsUseCase
                     override val getTopicsUseCase: GetTopicsUseCase = channelsDomainAPi.getTopicsUseCase
                     override val listenToStreamEventsUseCase: ListenToStreamEventsUseCase = channelsDomainAPi.listenToStreamEventsUseCase
+                    override val createStreamUseCase: CreateStreamUseCase = channelsDomainAPi.createStreamUseCase
+                    override val subscribeToStreamUseCase: ChangeStreamSubscriptionStatusUseCase = channelsDomainAPi.subscribeToStreamUseCase
                     override val appContext: Context = appContext
                     override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
                 }

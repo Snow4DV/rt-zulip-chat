@@ -19,4 +19,6 @@ sealed interface ChatEventUiElm {
     data object ScrolledToNTopMessages : ChatEventUiElm
     data object FileChoosingDismissed : ChatEventUiElm
     data class FileWasChosen(val mimeType: String?, val inputStreamOpener: InputStreamOpener, val extension: String?) : ChatEventUiElm
+    data class ClickedOnTopic(val topicName: String) : ChatEventUiElm
+    data object OnLeaveTopicClicked : ChatEventUiElm
 }

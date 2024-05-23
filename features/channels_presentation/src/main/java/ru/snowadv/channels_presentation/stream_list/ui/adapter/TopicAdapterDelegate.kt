@@ -67,7 +67,7 @@ internal class TopicAdapterDelegate(
             parent,
             false
         )
-        val colors = binding.root.context.resources.getIntArray(R.array.topics_colors)
+        val colors = binding.root.context.resources.getIntArray(ru.snowadv.presentation.R.array.topics_colors)
 
         return UiTopicViewHolder(binding, colors).also { streamViewHolder ->
             streamViewHolder.initClickListeners(getCurrentList)

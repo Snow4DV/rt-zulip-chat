@@ -15,9 +15,21 @@ import ru.snowadv.chatapp.mock.auth.AuthStorageMockRepository
 import ru.snowadv.chatapp.data.MockData
 import ru.snowadv.chatapp.mock.config.DebugLoggerToggle
 import ru.snowadv.chatapp.mock.config.WiremockBaseUrlProviderImpl
+import ru.snowadv.chatapp.mock.dao.AuthDaoMockImpl
+import ru.snowadv.chatapp.mock.dao.EmojisDaoMockImpl
+import ru.snowadv.chatapp.mock.dao.MessagesDaoMockImpl
+import ru.snowadv.chatapp.mock.dao.StreamsDaoMockImpl
+import ru.snowadv.chatapp.mock.dao.TopicsDaoMockImpl
+import ru.snowadv.chatapp.mock.dao.UsersDaoMockImpl
 import ru.snowadv.chatapp.server.ChatServerResponseTransformer
 import ru.snowadv.chatapp.server.wiremock.StaticStubsProvider
 import ru.snowadv.chatapp.server.wiremock.api.WireMockStubsProvider
+import ru.snowadv.database.dao.AuthDao
+import ru.snowadv.database.dao.EmojisDao
+import ru.snowadv.database.dao.MessagesDao
+import ru.snowadv.database.dao.StreamsDao
+import ru.snowadv.database.dao.TopicsDao
+import ru.snowadv.database.dao.UsersDao
 import ru.snowadv.model.BaseUrlProvider
 import ru.snowadv.network.api.LoggerToggle
 import wiremock.org.eclipse.jetty.util.thread.ExecutorThreadPool
@@ -41,6 +53,24 @@ internal interface TestAppModule {
 
     @Binds
     fun bindStaticStubsProvider(provider: StaticStubsProvider): WireMockStubsProvider
+    @Binds
+    fun bindAuthDao(impl: AuthDaoMockImpl): AuthDao
+
+    @Binds
+    fun bindEmojisDao(impl: EmojisDaoMockImpl): EmojisDao
+
+    @Binds
+    fun bindMessagesDao(impl: MessagesDaoMockImpl): MessagesDao
+
+    @Binds
+    fun bindStreamsDao(impl: StreamsDaoMockImpl): StreamsDao
+
+    @Binds
+    fun bindTopicsDao(impl: TopicsDaoMockImpl): TopicsDao
+
+    @Binds
+    fun bindUsersDao(impl: UsersDaoMockImpl): UsersDao
+
 
     companion object {
         @Provides

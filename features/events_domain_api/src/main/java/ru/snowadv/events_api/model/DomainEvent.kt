@@ -34,13 +34,22 @@ sealed class DomainEvent {
         override val id: Long,
         val eventMessage: EventMessage,
         override val queueId: String,
+        val flags: Set<String>,
     ): DomainEvent()
 
     data class DeleteMessageDomainEvent(
         override val id: Long,
         val messageId: Long,
         override val queueId: String,
-    ): DomainEvent()
+        val streamId: Long? = null, // can be absent if type is "private"
+        val topic: String? = null, // can be absent if type is "private"
+        val messageType: MessageType, // "stream" or "private"
+    ): DomainEvent() {
+        enum class MessageType(val value: String) {
+            STREAM("stream"),
+            PRIVATE("private"),
+        }
+    }
 
     data class UpdateMessageDomainEvent(
         override val id: Long,

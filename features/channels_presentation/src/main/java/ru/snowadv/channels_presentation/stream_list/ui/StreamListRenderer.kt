@@ -15,10 +15,8 @@ import ru.snowadv.channels_presentation.stream_list.ui.adapter.ShimmerTopicAdapt
 import ru.snowadv.channels_presentation.stream_list.ui.adapter.StreamAdapterDelegate
 import ru.snowadv.channels_presentation.stream_list.ui.adapter.TopicAdapterDelegate
 import ru.snowadv.channels_presentation.stream_list.ui.elm.StreamListEffectUiElm
-import ru.snowadv.channels_presentation.stream_list.ui.elm.StreamListElmMapper
 import ru.snowadv.channels_presentation.stream_list.ui.elm.StreamListEventUiElm
 import ru.snowadv.channels_presentation.stream_list.ui.elm.StreamListStateUiElm
-import ru.snowadv.module_injector.component_holder.ComponentHolder
 import ru.snowadv.presentation.adapter.impl.DiffDelegationAdapter
 import ru.snowadv.presentation.adapter.setupDiffDelegatesAdapter
 import ru.snowadv.presentation.adapter.updateAnimationDurations
@@ -26,7 +24,7 @@ import ru.snowadv.presentation.elm.ElmMapper
 import ru.snowadv.presentation.fragment.ElmFragmentRenderer
 import ru.snowadv.presentation.fragment.inflateState
 import ru.snowadv.presentation.fragment.setOnRetryClickListener
-import ru.snowadv.presentation.recycler.setupDefaultDecorator
+import ru.snowadv.presentation.recycler.setupDecorator
 import vivid.money.elmslie.core.store.Store
 import javax.inject.Inject
 
@@ -91,7 +89,10 @@ internal class StreamListRenderer :
     }
 
     private fun RecyclerView.setupAdapter(store: Store<StreamListEventElm, StreamListEffectElm, StreamListStateElm>): DiffDelegationAdapter {
-        setupDefaultDecorator()
+        setupDecorator(
+            horizontalSpacingResId = ru.snowadv.presentation.R.dimen.small_common_padding,
+            verticalSpacingResId = ru.snowadv.presentation.R.dimen.small_common_padding,
+        )
         itemAnimator?.updateAnimationDurations(RECYCLER_ANIMATION_DURATION)
         return setupDelegatesAdapter(store).also { adapter = it }
     }
@@ -106,8 +107,14 @@ internal class StreamListRenderer :
 
     private fun setupStreamAdapterDelegate(store: Store<StreamListEventElm, StreamListEffectElm, StreamListStateElm>): StreamAdapterDelegate {
         return StreamAdapterDelegate(
-            onStreamClickListener = {
-                store.accept(StreamListEventElm.Ui.ClickedOnStream(it.id))
+            onExpandStreamClickListener = {
+                store.accept(mapper.mapUiEvent(StreamListEventUiElm.ClickedOnExpandStream(it.id)))
+            },
+            onChangeStreamSubscriptionStatusClickListener = {
+                store.accept(mapper.mapUiEvent(StreamListEventUiElm.ClickedOnChangeStreamSubscriptionStatus(it)))
+            },
+            onOpenStreamClickListener = {
+                store.accept(mapper.mapUiEvent(StreamListEventUiElm.ClickedOnOpenStream(it.id, it.name)))
             }
         )
     }

@@ -2,6 +2,7 @@ package ru.snowadv.chat_presentation.di.holder
 
 import android.content.Context
 import coil.ImageLoader
+import ru.snowadv.channels_domain_api.use_case.GetTopicsUseCase
 import ru.snowadv.chat_domain_api.use_case.AddReactionUseCase
 import ru.snowadv.chat_domain_api.use_case.GetCurrentMessagesUseCase
 import ru.snowadv.chat_domain_api.use_case.GetEmojisUseCase
@@ -25,6 +26,8 @@ interface ChatPresentationDependencies : BaseModuleDependencies {
     val loadMoreMessagesUseCase: LoadMoreMessagesUseCase
     val sendFileUseCase: SendFileUseCase
     val getEmojisUseCase: GetEmojisUseCase
+
+    val getTopicsUseCase: GetTopicsUseCase
 
     val appContext: Context
     val imageLoader: ImageLoader

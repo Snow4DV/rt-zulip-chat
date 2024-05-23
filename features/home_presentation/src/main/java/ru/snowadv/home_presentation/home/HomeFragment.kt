@@ -23,7 +23,7 @@ import vivid.money.elmslie.android.renderer.elmStoreWithRenderer
 import vivid.money.elmslie.core.store.Store
 import javax.inject.Inject
 
-internal class HomeFragment : BaseFragment<HomeEventElm, HomeEffectElm, HomeStateElm>(),
+class HomeFragment : BaseFragment<HomeEventElm, HomeEffectElm, HomeStateElm>(),
     ElmFragmentRenderer<HomeFragment, FragmentHomeBinding, HomeEventElm, HomeEffectElm, HomeStateElm> by HomeFragmentRenderer() {
 
     private val currentTabFragment: Fragment?
@@ -73,7 +73,7 @@ internal class HomeFragment : BaseFragment<HomeEventElm, HomeEffectElm, HomeStat
         if (currentFragment != null && newFragment != null && currentFragment == newFragment) return
         childFragmentManager.beginTransaction().apply {
             if (newFragment == null) add(
-                R.id.fragment_container,
+                R.id.home_fragment_container,
                 factory.createFragment(screen),
                 screen.tag,
             )

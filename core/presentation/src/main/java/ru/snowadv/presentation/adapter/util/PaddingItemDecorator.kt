@@ -4,11 +4,12 @@ import android.content.Context
 import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import kotlin.math.max
 
 class PaddingItemDecorator(
     context: Context,
     horizontalSpacingResId: Int? = null,
-    verticalSpacingResId: Int? = null
+    verticalSpacingResId: Int? = null,
 ) : RecyclerView.ItemDecoration() {
     private val horizontalSpacingPx: Int
     private val verticalSpacingPx: Int
@@ -33,6 +34,7 @@ class PaddingItemDecorator(
         if (parent.getChildViewHolder(view).adapterPosition == 0) {
             outRect.top = verticalSpacingPx
         }
+
         outRect.bottom = verticalSpacingPx
         outRect.right = horizontalSpacingPx
         outRect.left = horizontalSpacingPx

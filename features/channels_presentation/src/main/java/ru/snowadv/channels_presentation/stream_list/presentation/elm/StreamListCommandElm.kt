@@ -4,6 +4,7 @@ import ru.snowadv.channels_domain_api.model.StreamType
 import ru.snowadv.events_api.model.EventQueueProperties
 
 internal sealed interface StreamListCommandElm {
+    data class ChangeSubscriptionStatusForStream(val streamId: Long, val streamName: String, val subscribe: Boolean) : StreamListCommandElm
     data class LoadStreams(val type: StreamType) :
         StreamListCommandElm
     data class LoadTopics(val streamId: Long) : StreamListCommandElm
@@ -11,5 +12,6 @@ internal sealed interface StreamListCommandElm {
         val isRestart: Boolean,
         val queueProps: EventQueueProperties?,
     ) : StreamListCommandElm
-    data class GoToChat(val streamName: String, val topicName: String) : StreamListCommandElm
+    data class GoToTopic(val streamId: Long, val streamName: String, val topicName: String) : StreamListCommandElm
+    data class GoToStream(val streamId: Long, val streamName: String) : StreamListCommandElm
 }

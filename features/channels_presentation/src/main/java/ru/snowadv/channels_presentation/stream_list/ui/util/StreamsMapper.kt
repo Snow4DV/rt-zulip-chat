@@ -9,20 +9,23 @@ import ru.snowadv.channels_domain_api.model.Stream as DomainStream
 import ru.snowadv.channels_domain_api.model.Topic as DomainTopic
 
 internal object StreamsMapper {
-    fun DomainStream.toUiModel(expandedStreamId: Long? = null): UiStream {
-        return UiStream(
-            id = id,
-            name = name,
-            expanded = id == expandedStreamId
-        )
-    }
-
     fun DomainStream.toUiModel(isExpanded: Boolean): UiStream {
         return UiStream(
             id = id,
             name = name,
             expanded = isExpanded,
+            subscribeStatus = getSubscribeStatus(),
+            color = color ?: UiStream.DEFAULT_UNREAD_MESSAGES_TEXT_COLOR,
+            unreadMessagesCount = unreadMessagesCount,
         )
+    }
+
+    private fun DomainStream.getSubscribeStatus(): UiStream.SubscribeStatus {
+        return when {
+            subscribing -> UiStream.SubscribeStatus.SUBSCRIBING
+            subscribed -> UiStream.SubscribeStatus.SUBSCRIBED
+            else -> UiStream.SubscribeStatus.NOT_SUBSCRIBED
+        }
     }
 
     fun DomainTopic.toUiModel(unreadMsgsCount: Int = 0): UiTopic {
@@ -31,6 +34,17 @@ internal object StreamsMapper {
             name = name,
             streamId = streamId,
             unreadMessagesCount = unreadMsgsCount,
+        )
+    }
+
+    fun UiStream.toDomainModel(): DomainStream {
+        return DomainStream(
+            id = id,
+            name = name,
+            subscribing = subscribeStatus == UiStream.SubscribeStatus.SUBSCRIBING,
+            subscribed = subscribeStatus == UiStream.SubscribeStatus.SUBSCRIBED,
+            color = color,
+            unreadMessagesCount = unreadMessagesCount,
         )
     }
 

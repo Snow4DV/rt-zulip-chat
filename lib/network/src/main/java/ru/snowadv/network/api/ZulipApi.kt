@@ -1,14 +1,6 @@
 package ru.snowadv.network.api
 
-import android.content.ContentResolver
-import android.net.Uri
-import com.skydoves.retrofit.adapters.result.ResultCallAdapterFactory
 import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
-import okhttp3.RequestBody.Companion.asRequestBody
-import retrofit2.Converter
-import retrofit2.Retrofit
-import retrofit2.create
 import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -22,9 +14,6 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 import ru.snowadv.model.InputStreamOpener
 import ru.snowadv.network.file.InputStreamRequestBody
-import ru.snowadv.network.interceptor.BadAuthResponseInterceptor
-import ru.snowadv.network.interceptor.HeaderBasicAuthInterceptor
-import ru.snowadv.network.interceptor.TimeoutSetterInterceptor
 import ru.snowadv.network.interceptor.TimeoutSetterInterceptor.Companion.READ_TIMEOUT_HEADER
 import ru.snowadv.network.model.AllStreamsResponseDto
 import ru.snowadv.network.model.AllUsersResponseDto
@@ -39,13 +28,18 @@ import ru.snowadv.network.model.NarrowListRequestDto
 import ru.snowadv.network.model.SingleUserResponseDto
 import ru.snowadv.network.model.SingleUserPresenceDto
 import ru.snowadv.network.model.SubscribedStreamsResponseDto
+import ru.snowadv.network.model.SubscriptionDetailsListRequestDto
 import ru.snowadv.network.model.TopicsResponseDto
+import ru.snowadv.network.model.UnsubscribeStreamsListRequestDto
 import ru.snowadv.network.model.UploadFileResponseDto
-import java.io.File
-import java.io.InputStream
 import java.util.UUID
 
 interface ZulipApi {
+
+    companion object {
+        const val DEFAULT_MESSAGE_TYPE = "stream"
+        const val DEFAULT_MESSAGE_ANCHOR = "newest"
+    }
 
     // Streams
     @GET("streams")
@@ -163,10 +157,17 @@ interface ZulipApi {
         @Header(READ_TIMEOUT_HEADER) readTimeout: Long,
     ): Result<EventsResponseDto>
 
-    companion object {
-        const val DEFAULT_MESSAGE_TYPE = "stream"
-        const val DEFAULT_MESSAGE_ANCHOR = "newest"
-    }
+    @POST("users/me/subscriptions")
+    suspend fun subscribeOrCreateStream(
+        @Query("subscriptions") subscriptionsDetails: SubscriptionDetailsListRequestDto,
+        @Query("history_public_to_subscribers") showHistoryToNewSubscribers: Boolean? = null,
+        @Query("announce") announceChannel: Boolean? = null, // channel will be announced in "new channels" if true
+    ): Result<Unit>
+
+    @DELETE("users/me/subscriptions")
+    suspend fun unsubscribeFromStreams(
+        @Query("subscriptions") subscriptions: UnsubscribeStreamsListRequestDto,
+    ): Result<Unit>
 }
 
 suspend fun ZulipApi.uploadFile(

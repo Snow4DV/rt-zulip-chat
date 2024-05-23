@@ -11,7 +11,8 @@ internal data class ChatMessage(
     val senderName: String,
     val senderAvatarUrl: String?,
     val reactions: List<ChatReaction>,
-    val messageType: ChatMessageType
+    val messageType: ChatMessageType,
+    val topic: String,
 ) : DelegateItem {
     override fun getPayload(oldItem: DelegateItem): Any? {
         return if (oldItem is ChatMessage && checkIfOnlyReactionsChanged(oldItem)) {

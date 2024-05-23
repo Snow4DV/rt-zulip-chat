@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResult
+import com.google.android.material.snackbar.Snackbar
 import ru.snowadv.chat_presentation.R
 import ru.snowadv.chat_presentation.databinding.FragmentEmojiChooserBinding
 import ru.snowadv.chat_presentation.di.holder.ChatPresentationComponentHolder

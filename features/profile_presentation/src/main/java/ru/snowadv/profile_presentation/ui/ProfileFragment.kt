@@ -76,7 +76,7 @@ class ProfileFragment : BaseFragment<ProfileEventElm, ProfileEffectElm, ProfileS
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         onRendererViewCreated(binding, store)
-        binding.topBar.setColorAndText(ru.snowadv.presentation.R.color.on_surface, getString(R.string.profile))
+        binding.profileTopBar.setColorAndText(ru.snowadv.presentation.R.color.on_surface, getString(R.string.profile))
         if (savedInstanceState == null) store.accept(ProfileEventElm.Ui.Init)
     }
 

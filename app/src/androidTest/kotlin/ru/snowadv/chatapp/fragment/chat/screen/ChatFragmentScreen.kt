@@ -101,4 +101,8 @@ internal object ChatFragmentScreen : KScreen<ChatFragmentScreen>() {
 
     val messageEditText = KEditText { withId(R.id.message_edit_text) }
     val sendOrAddAttachmentButton = KImageView { withId(R.id.send_or_add_attachment_button) }
+
+    fun isVisible() {
+
+    }
 }

@@ -6,19 +6,23 @@ import ru.snowadv.model.InputStreamOpener
 sealed interface ChatCommandElm { // commands to actor
     data class LoadInitialMessages(
         val streamName: String,
-        val topicName: String,
+        val topicName: String?,
+    ) : ChatCommandElm
+
+    data class LoadTopicsFromCurrentStream(
+        val streamId: Long,
     ) : ChatCommandElm
 
     data class LoadMoreMessages(
         val streamName: String,
-        val topicName: String,
+        val topicName: String?,
         val firstLoadedMessageId: Long?,
         val includeAnchor: Boolean,
     ) : ChatCommandElm
 
     data class ObserveEvents(
         val streamName: String,
-        val topicName: String,
+        val topicName: String?,
         val isRestart: Boolean,
         val queueProps: EventQueueProperties?
     ) :

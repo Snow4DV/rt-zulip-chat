@@ -15,6 +15,7 @@ import ru.snowadv.chat_presentation.chat.presentation.elm.ChatEffectElm
 import ru.snowadv.chat_presentation.chat.presentation.elm.ChatEventElm
 import ru.snowadv.chat_presentation.chat.presentation.elm.ChatStateElm
 import ru.snowadv.chat_presentation.chat.ui.adapter.DateSplitterAdapterDelegate
+import ru.snowadv.chat_presentation.chat.ui.adapter.TopicAdapterDelegate
 import ru.snowadv.chat_presentation.chat.ui.elm.ChatEffectUiElm
 import ru.snowadv.chat_presentation.chat.ui.elm.ChatEventUiElm
 import ru.snowadv.chat_presentation.chat.ui.elm.ChatStateUiElm
@@ -34,8 +35,6 @@ import ru.snowadv.presentation.util.DateFormatter
 import ru.snowadv.presentation.util.DateTimeFormatter
 import ru.snowadv.presentation.fragment.inflateState
 import ru.snowadv.presentation.fragment.setOnRetryClickListener
-import ru.snowadv.presentation.fragment.setTopBarText
-import ru.snowadv.presentation.view.setTextIfEmpty
 import vivid.money.elmslie.core.store.Store
 import javax.inject.Inject
 
@@ -46,15 +45,19 @@ internal class ChatFragmentRenderer :
     private val adapter get() = requireNotNull(_adapter) { "Adapter wasn't initialized" }
 
     private var _messagesRecyclerLinearLayoutManager: LinearLayoutManager? = null
-    private val messagesRecyclerLinearLayoutManager: LinearLayoutManager get() =
-        requireNotNull(_messagesRecyclerLinearLayoutManager) { "Linear Layout Manager wasn't initialized for messages recycler" }
+    private val messagesRecyclerLinearLayoutManager: LinearLayoutManager
+        get() =
+            requireNotNull(_messagesRecyclerLinearLayoutManager) { "Linear Layout Manager wasn't initialized for messages recycler" }
 
     @Inject
     internal lateinit var splitterDateFormatter: DateFormatter
+
     @Inject
     internal lateinit var dateTimeFormatter: DateTimeFormatter
+
     @Inject
     internal lateinit var markwon: Markwon
+
     @Inject
     internal lateinit var mapper: ElmMapper<ChatStateElm, ChatEffectElm, ChatEventElm, ChatStateUiElm, ChatEffectUiElm, ChatEventUiElm>
 
@@ -74,8 +77,9 @@ internal class ChatFragmentRenderer :
         _adapter = initDelegateAdapter(store).also {
             setAdapterToRecyclerView(binding.messagesRecycler, it)
         }
-        _messagesRecyclerLinearLayoutManager = binding.messagesRecycler.layoutManager as? LinearLayoutManager
-            ?: error("Wrong LinearLayoutManager is set to messages recycler")
+        _messagesRecyclerLinearLayoutManager =
+            binding.messagesRecycler.layoutManager as? LinearLayoutManager
+                ?: error("Wrong LinearLayoutManager is set to messages recycler")
         initListeners(binding, store)
     }
 
@@ -85,35 +89,45 @@ internal class ChatFragmentRenderer :
     ) = with(binding) {
         val mappedState = mapper.mapState(state)
 
+        topicName.isVisible = mappedState.topic != null
         topicName.text = getString(ru.snowadv.presentation.R.string.topic_title, mappedState.topic)
-        topBackButtonBar.setTopBarText(
-            getString(
-                ru.snowadv.presentation.R.string.stream_title,
-                mappedState.stream
-            )
+        chatTopBar.barTitle.text = getString(
+            ru.snowadv.presentation.R.string.stream_title,
+            mappedState.stream,
         )
+        chatTopBar.openAllTopicsButton.isVisible = mappedState.topic != null
         bottomBar.sendOrAddAttachmentButton.setImageResource(mappedState.actionButtonType.buttonResId)
         bottomBar.sendOrAddAttachmentButton.isVisible = mappedState.isActionButtonVisible
-        bottomBar.sendOrAddAttachmentButton.contentDescription = getString(mappedState.actionButtonType.hintTextResId)
-        bottomBar.sendOrAddAttachmentButton.tag = getString(mappedState.actionButtonType.hintTextResId)
+        bottomBar.sendOrAddAttachmentButton.contentDescription =
+            getString(mappedState.actionButtonType.hintTextResId)
+        bottomBar.sendOrAddAttachmentButton.tag =
+            getString(mappedState.actionButtonType.hintTextResId)
 
         adapter.submitListAndKeepScrolledToBottom(
             recycler = binding.messagesRecycler,
-            list = listOf(mappedState.paginationStatus) + (mappedState.screenState.getCurrentData() ?: emptyList()),
+            list = listOf(mappedState.paginationStatus) + (mappedState.screenState.getCurrentData()
+                ?: emptyList()),
         ) {
-            stateBox.inflateState(mappedState.screenState, R.layout.fragment_chat_shimmer, topStateBox)
+            stateBox.inflateState(
+                mappedState.screenState,
+                R.layout.fragment_chat_shimmer,
+                topStateBox
+            )
         }
 
-        binding.bottomBar.messageEditText.setTextIfEmpty(mappedState.messageField)
+        if (mappedState.messageField.isEmpty() || bottomBar.messageEditText.text.toString().isEmpty()) {
+            bottomBar.messageEditText.setText(mappedState.messageField)
+        }
 
-        actionProgressBar.isVisible = mappedState.changingReaction || mappedState.sendingMessage || mappedState.uploadingFile
+        actionProgressBar.isVisible =
+            mappedState.changingReaction || mappedState.sendingMessage || mappedState.uploadingFile
     }
 
     override fun ChatFragment.handleEffectByRenderer(
         effect: ChatEffectElm,
         binding: FragmentChatBinding,
         store: Store<ChatEventElm, ChatEffectElm, ChatStateElm>,
-    ) = with(mapper.mapEffect(effect)){
+    ) = with(mapper.mapEffect(effect)) {
         when (this) {
             is ChatEffectUiElm.OpenReactionChooser -> {
                 openReactionChooser(destMessageId, this@handleEffectByRenderer)
@@ -125,7 +139,7 @@ internal class ChatFragmentRenderer :
                         messageId,
                         userId,
 
-                )
+                        )
                 ) {
                     when (it) {
                         is ChatAction.AddReaction -> {
@@ -146,7 +160,10 @@ internal class ChatFragmentRenderer :
             }
 
             ChatEffectUiElm.ShowActionError -> {
-                showErrorToast(this@handleEffectByRenderer, ru.snowadv.presentation.R.string.action_internet_error)
+                showErrorToast(
+                    this@handleEffectByRenderer,
+                    ru.snowadv.presentation.R.string.action_internet_error
+                )
             }
 
             ChatEffectUiElm.OpenFileChooser -> openFilePicker()
@@ -164,29 +181,34 @@ internal class ChatFragmentRenderer :
     ) {
         recyclerView.adapter = adapter
     }
+
     private fun initListeners(
         binding: FragmentChatBinding,
         store: Store<ChatEventElm, ChatEffectElm, ChatStateElm>,
     ) {
+        binding.chatTopBar.openAllTopicsButton.setOnClickListener {
+            store.accept(mapper.mapUiEvent(ChatEventUiElm.OnLeaveTopicClicked))
+        }
         binding.bottomBar.messageEditText.addTextChangedListener {
             it?.toString()?.let { currentMessage ->
-                store.accept(ChatEventElm.Ui.MessageFieldChanged(currentMessage))
+                store.accept(mapper.mapUiEvent(ChatEventUiElm.MessageFieldChanged(currentMessage)))
             }
         }
         binding.bottomBar.sendOrAddAttachmentButton.setOnClickListener {
-            store.accept(ChatEventElm.Ui.SendMessageAddAttachmentButtonClicked)
+            store.accept(mapper.mapUiEvent(ChatEventUiElm.SendMessageAddAttachmentButtonClicked))
         }
-        binding.topBackButtonBar.backButton.setOnClickListener {
-            store.accept(ChatEventElm.Ui.GoBackClicked)
+        binding.chatTopBar.backButton.setOnClickListener {
+            store.accept(mapper.mapUiEvent(ChatEventUiElm.GoBackClicked))
         }
         binding.stateBox.setOnRetryClickListener {
-            store.accept(ChatEventElm.Ui.ReloadClicked)
+            store.accept(mapper.mapUiEvent(ChatEventUiElm.ReloadClicked))
         }
 
         binding.messagesRecycler.setOnScrollChangeListener { _, _, scrollY, _, oldScrollY ->
             if (messagesRecyclerLinearLayoutManager.findFirstVisibleItemPosition() < PaginationConfig.TOP_MESSAGES_TO_FETCH_COUNT
-                    && scrollY - oldScrollY < 0) {
-                store.accept(ChatEventElm.Ui.ScrolledToNTopMessages)
+                && scrollY - oldScrollY < 0
+            ) {
+                store.accept(mapper.mapUiEvent(ChatEventUiElm.ScrolledToNTopMessages))
             }
         }
     }
@@ -264,6 +286,15 @@ internal class ChatFragmentRenderer :
             initIncomingMessagesDelegate(store),
             initOutgoingMessagesDelegate(store),
             initPaginationStatusDelegate(store),
+            initTopicDelegate(store),
+        )
+    }
+
+    private fun initTopicDelegate(store: Store<ChatEventElm, ChatEffectElm, ChatStateElm>): TopicAdapterDelegate {
+        return TopicAdapterDelegate(
+            onTopicClickListener = {
+                store.accept(mapper.mapUiEvent(ChatEventUiElm.ClickedOnTopic(topicName = it.name)))
+            },
         )
     }
 
@@ -291,19 +322,18 @@ internal class ChatFragmentRenderer :
         ) { _, bundle ->
             val chosenReaction =
                 bundle.getString(EmojiChooserBottomSheetDialog.BUNDLE_CHOSEN_REACTION_NAME)
-                    ?: error("No reaction came as result from EmojiChooserBottomSheetDialog")
             val messageId = bundle.getLong(
                 EmojiChooserBottomSheetDialog.BUNDLE_MESSAGE_ID_KEY,
                 EmojiChooserBottomSheetDialog.DEFAULT_ARG_MESSAGE_ID
             )
-            if (messageId == EmojiChooserBottomSheetDialog.DEFAULT_ARG_MESSAGE_ID) {
-                error("Missing messageId in result bundle from emoji chooser")
+            if (messageId != EmojiChooserBottomSheetDialog.DEFAULT_ARG_MESSAGE_ID && chosenReaction != null) {
+                store.accept(
+                    ChatEventUiElm.AddChosenReaction(
+                        messageId = messageId,
+                        reactionName = chosenReaction,
+                    ).let { mapper.mapUiEvent(it) }
+                )
             }
-            store.accept(
-                ChatEventElm.Ui.AddChosenReaction(
-                messageId = messageId,
-                reactionName = chosenReaction,
-            ))
         }
     }
 

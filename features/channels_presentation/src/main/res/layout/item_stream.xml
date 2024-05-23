@@ -26,19 +26,57 @@
         android:id="@+id/stream_name_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/common_margin"
         android:textColor="@color/text"
         android:textSize="@dimen/stream_topic_name_text_size"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="@id/start_guideline"
-        app:layout_constraintRight_toLeftOf="@id/expand_stream_button"
+        app:layout_constraintRight_toLeftOf="@id/messages_count_text"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="#general" />
 
+    <TextView
+        android:id="@+id/messages_count_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/common_margin_mid"
+        android:textColor="@color/text"
+        android:textSize="@dimen/messages_counter_text_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/subscribe_action_container"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="45" />
+
+    <FrameLayout
+        android:id="@+id/subscribe_action_container"
+        android:layout_width="@dimen/stream_action_button_size"
+        android:layout_height="@dimen/stream_action_button_size"
+        android:layout_marginRight="@dimen/common_margin_mid"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/expand_stream_button"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/subscribe_stream_button"
+            style="@style/Theme.ZulipChat.Clickable"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/subscribe_to_stream"
+            android:src="@drawable/ic_subscribe_selector" />
+
+        <ProgressBar
+            android:id="@+id/subscribe_loading_progress_bar"
+            style="@style/Theme.ZulipChat.CircularProgressBar"
+            android:layout_width="@dimen/stream_action_button_size"
+            android:layout_height="@dimen/stream_action_button_size"
+            android:visibility="gone" />
+    </FrameLayout>
+
     <ImageView
         android:id="@+id/expand_stream_button"
-        android:layout_width="wrap_content"
-        android:clickable="false"
-        android:layout_height="wrap_content"
+        style="@style/Theme.ZulipChat.Clickable"
+        android:layout_width="@dimen/stream_action_button_size"
+        android:layout_height="@dimen/stream_action_button_size"
         android:contentDescription="@string/expand_topic"
         android:src="@drawable/ic_arrow_selector"
         app:layout_constraintBottom_toBottomOf="parent"

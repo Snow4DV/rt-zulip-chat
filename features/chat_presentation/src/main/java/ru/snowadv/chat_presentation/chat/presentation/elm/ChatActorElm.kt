@@ -4,6 +4,7 @@ import dagger.Reusable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import ru.snowadv.channels_domain_api.use_case.GetTopicsUseCase
 import ru.snowadv.chat_domain_api.use_case.AddReactionUseCase
 import ru.snowadv.chat_domain_api.use_case.GetCurrentMessagesUseCase
 import ru.snowadv.chat_domain_api.use_case.ListenToChatEventsUseCase
@@ -14,6 +15,7 @@ import ru.snowadv.chat_domain_api.use_case.SendMessageUseCase
 import ru.snowadv.chat_presentation.chat.ui.util.ChatMappers.toElmEvent
 import ru.snowadv.chat_presentation.navigation.ChatRouter
 import ru.snowadv.model.Resource
+import ru.snowadv.model.map
 import vivid.money.elmslie.core.store.Actor
 import javax.inject.Inject
 
@@ -27,6 +29,7 @@ class ChatActorElm @Inject constructor(
     private val listenToChatEventsUseCase: ListenToChatEventsUseCase,
     private val loadMoreMessagesUseCase: LoadMoreMessagesUseCase,
     private val sendFileUseCase: SendFileUseCase,
+    private val getTopicsUseCase: GetTopicsUseCase,
 ) : Actor<ChatCommandElm, ChatEventElm>() {
     override fun execute(command: ChatCommandElm): Flow<ChatEventElm> = when (command) {
         ChatCommandElm.GoBack -> flow { router.goBack() }
@@ -131,6 +134,12 @@ class ChatActorElm @Inject constructor(
                     is Resource.Loading -> ChatEventElm.Internal.UploadingFile
                     is Resource.Success -> ChatEventElm.Internal.FileUploaded
                 }
+            }
+        }
+
+        is ChatCommandElm.LoadTopicsFromCurrentStream -> {
+            getTopicsUseCase(command.streamId).map{ res ->
+                ChatEventElm.Internal.TopicsResourceChanged(res.map { topics -> topics.map { it.name } })
             }
         }
     }

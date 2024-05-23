@@ -21,13 +21,15 @@ internal class ChatElmUiMapper @Inject constructor() :
             uploadingFile = uploadingFile,
             stream = stream,
             topic = topic,
-            screenState = screenState.map { it.mapToUiAdapterMessagesAndDates() },
+            screenState = screenState.map { it.mapToUiAdapterMessagesAndDates(showTopics = topic == null) },
             messages = messages.map { it.toUiChatMessage() },
             messageField = messageField,
             actionButtonType = actionButtonType.toUiType(),
             paginationStatus = paginationStatus.toUiPaginationStatus(),
             eventQueueData = eventQueueData,
             resumed = resumed,
+            sendTopic = sendTopic,
+            topics = topics,
         )
     }
 
@@ -69,6 +71,8 @@ internal class ChatElmUiMapper @Inject constructor() :
             ChatEventUiElm.Resumed -> ChatEventElm.Ui.Resumed
             ChatEventUiElm.ScrolledToNTopMessages -> ChatEventElm.Ui.ScrolledToNTopMessages
             ChatEventUiElm.SendMessageAddAttachmentButtonClicked -> ChatEventElm.Ui.SendMessageAddAttachmentButtonClicked
+            is ChatEventUiElm.ClickedOnTopic -> ChatEventElm.Ui.ClickedOnTopic(topicName)
+            ChatEventUiElm.OnLeaveTopicClicked -> ChatEventElm.Ui.ClickedOnLeaveTopic
         }
     }
 }

@@ -4,6 +4,14 @@
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
     </style>
 
+    <style name="Theme.ZulipChat.Clickable">
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+    </style>
+
+    <style name="Theme.ZulipChat.ClickableWithLimitedBorders">
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
     <style name="Theme.ZulipChat.ActionBarImageButton" parent="Widget.AppCompat.ImageButton">
         <item name="android:background">?attr/actionBarItemBackground</item>
     </style>
@@ -19,4 +27,9 @@
         <item name="android:indeterminateTintMode">src_in</item>
     </style>
 
+    <style name="Theme.ZulipChat.CircularProgressBar" parent="Widget.AppCompat.ProgressBar">
+        <item name="android:indeterminate">true</item>
+        <item name="android:indeterminateTint">@color/primary</item>
+        <item name="android:indeterminateTintMode">src_in</item>
+    </style>
 </resources>

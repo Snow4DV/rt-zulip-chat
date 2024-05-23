@@ -4,9 +4,9 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import ru.snowadv.presentation.R
-import ru.snowadv.presentation.fragment.ErrorHandlingFragment
+import ru.snowadv.presentation.fragment.PopupHandlingFragment
 
-class SnackbarErrorHandlingFragment: ErrorHandlingFragment {
+class SnackbarPopupHandlingFragment: PopupHandlingFragment {
     override fun Fragment.showInternetError(rootView: View) {
         showSnackbar(rootView, getString(R.string.internet_error))
     }
@@ -29,6 +29,14 @@ class SnackbarErrorHandlingFragment: ErrorHandlingFragment {
 
     override fun Fragment.showActionInternetErrorWithRetry(rootView: View, action: () -> Unit) {
         showSnackbar(rootView, getString(R.string.action_internet_error), action)
+    }
+
+    override fun Fragment.showInfo(rootView: View, text: String) {
+        showSnackbar(rootView, text)
+    }
+
+    override fun Fragment.showInfo(rootView: View, textResId: Int) {
+        showSnackbar(rootView, getString(textResId))
     }
 
     private fun Fragment.showSnackbar(rootView: View, text: String, retryAction: (() -> Unit)? = null) {

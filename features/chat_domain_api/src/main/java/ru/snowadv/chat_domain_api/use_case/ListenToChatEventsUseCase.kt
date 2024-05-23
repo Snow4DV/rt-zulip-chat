@@ -9,6 +9,6 @@ interface ListenToChatEventsUseCase {
         isRestart: Boolean,
         eventQueueProps: EventQueueProperties?,
         streamName: String,
-        topicName: String,
+        topicName: String?,
     ): Flow<DomainEvent>
 }

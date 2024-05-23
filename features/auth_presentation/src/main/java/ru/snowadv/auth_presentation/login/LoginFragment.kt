@@ -12,14 +12,14 @@ import ru.snowadv.auth_presentation.login.elm.LoginEventElm
 import ru.snowadv.auth_presentation.login.elm.LoginStateElm
 import ru.snowadv.presentation.elm.BaseFragment
 import ru.snowadv.presentation.fragment.ElmFragmentRenderer
-import ru.snowadv.presentation.fragment.ErrorHandlingFragment
-import ru.snowadv.presentation.fragment.impl.SnackbarErrorHandlingFragment
+import ru.snowadv.presentation.fragment.PopupHandlingFragment
+import ru.snowadv.presentation.fragment.impl.SnackbarPopupHandlingFragment
 import vivid.money.elmslie.android.renderer.elmStoreWithRenderer
 import vivid.money.elmslie.core.store.Store
 
-internal class LoginFragment : BaseFragment<LoginEventElm, LoginEffectElm, LoginStateElm>(),
+class LoginFragment : BaseFragment<LoginEventElm, LoginEffectElm, LoginStateElm>(),
     ElmFragmentRenderer<LoginFragment, FragmentLoginBinding, LoginEventElm, LoginEffectElm, LoginStateElm> by LoginFragmentRenderer(),
-    ErrorHandlingFragment by SnackbarErrorHandlingFragment() {
+    PopupHandlingFragment by SnackbarPopupHandlingFragment() {
 
     companion object {
         fun newInstance(): Fragment = LoginFragment()

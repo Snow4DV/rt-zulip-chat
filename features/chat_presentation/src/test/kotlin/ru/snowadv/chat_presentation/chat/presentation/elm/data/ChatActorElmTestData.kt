@@ -103,12 +103,12 @@ internal class ChatActorElmTestData {
                 avatarUrl = "http://example.com/1.png",
                 reactions = listOf(EventReaction(sampleEmoji.name, sampleEmoji.code, 1, false, reactionType)),
                 owner = false,
-                flags = setOf("read"),
                 type = "stream",
                 streamId = 1,
                 subject = topicName,
             ),
-            queueId = "example_queue"
+            queueId = "example_queue",
+            flags = setOf("read"),
         ),
         DomainEvent.DeleteMessageDomainEvent(
             id = 2,

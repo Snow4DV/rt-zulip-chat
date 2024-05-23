@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="stream_left_padding">20dp</dimen>
-    <dimen name="stream_right_padding">30dp</dimen>
+    <dimen name="stream_right_padding">15dp</dimen>
     <dimen name="stream_vertical_padding">15dp</dimen>
     <dimen name="topic_horizontal_padding">30dp</dimen>
     <dimen name="topic_vertical_padding">8dp</dimen>
@@ -14,5 +14,8 @@
     <dimen name="top_bar_padding_vertical">20dp</dimen>
     <dimen name="tabs_layout_height">60dp</dimen>
     <dimen name="tabs_layout_text_size">24sp</dimen>
-
+    <dimen name="new_stream_edit_text_height">42sp</dimen>
+    <dimen name="new_stream_edit_text_size">16sp</dimen>
+    <dimen name="stream_action_button_size">28dp</dimen>
+    <dimen name="messages_counter_text_size">18sp</dimen>
 </resources>

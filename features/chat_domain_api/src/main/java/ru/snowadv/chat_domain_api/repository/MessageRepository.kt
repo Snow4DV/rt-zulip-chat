@@ -9,9 +9,18 @@ interface MessageRepository {
     /**
      * Returns flow that emits initial state of dialog ONCE.
      */
-    fun getMessages(
+    fun getMessagesFromTopic(
         streamName: String,
         topicName: String,
+        includeAnchorMessage: Boolean,
+        anchorMessageId: Long? = null,
+        countOfMessages: Int,
+        useCache: Boolean = false,
+    ): Flow<Resource<ChatPaginatedMessages>>
+
+
+    fun getMessagesFromStream(
+        streamName: String,
         includeAnchorMessage: Boolean,
         anchorMessageId: Long? = null,
         countOfMessages: Int,

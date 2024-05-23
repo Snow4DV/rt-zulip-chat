@@ -3,6 +3,9 @@
     <color name="stream_selected_arrow_color">@color/gray</color>
     <color name="stream_not_selected_arrow_color">@color/black</color>
 
+    <color name="stream_subscribed_action_color">@color/gray</color>
+    <color name="stream_not_subscribed_action_color">@color/black</color>
+
 
     <color name="search_line_color">@color/black_2</color>
 

@@ -1,11 +1,14 @@
 package ru.snowadv.chat_presentation.chat.presentation.elm
 
+import ru.snowadv.channels_domain_api.model.Topic
 import ru.snowadv.chat_domain_api.model.ChatEmoji
 import ru.snowadv.chat_domain_api.model.ChatMessage
 import ru.snowadv.chat_domain_api.model.ChatPaginatedMessages
+import ru.snowadv.chat_presentation.chat.ui.elm.ChatEventUiElm
 import ru.snowadv.events_api.model.EventInfoHolder
 import ru.snowadv.events_api.model.EventSenderType
 import ru.snowadv.model.InputStreamOpener
+import ru.snowadv.model.Resource
 
 sealed interface ChatEventElm {
 
@@ -20,16 +23,19 @@ sealed interface ChatEventElm {
         data class RemoveReaction(val messageId: Long, val reactionName: String) : Ui
         data class GoToProfileClicked(val profileId: Long) : Ui
         data class MessageFieldChanged(val text: String) : Ui
+        data class ClickedOnTopic(val topicName: String) : Ui
         data object GoBackClicked : Ui
         data object ReloadClicked : Ui
         data object PaginationLoadMore : Ui
         data object ScrolledToNTopMessages : Ui
         data object FileChoosingDismissed : Ui
+        data object ClickedOnLeaveTopic : Internal
         data class FileWasChosen(val mimeType: String?, val inputStreamOpener: InputStreamOpener, val extension: String?) :
             Ui
     }
 
     sealed interface Internal : ChatEventElm {
+        data class TopicsResourceChanged(val topicsRes: Resource<List<String>>) : Internal
         data class InitialChatLoaded(val messages: ChatPaginatedMessages, val cached: Boolean) :
             Internal
         data class MoreMessagesLoaded(val messages: ChatPaginatedMessages) : Internal

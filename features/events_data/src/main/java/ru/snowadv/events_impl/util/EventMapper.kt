@@ -36,7 +36,6 @@ internal object EventMapper {
             type = type,
             streamId = streamId,
             subject = subject,
-            flags = flags.toSet(),
         )
     }
 
@@ -45,7 +44,7 @@ internal object EventMapper {
     }
 
     private fun StreamResponseDto.toEventStream(): EventStream {
-        return EventStream(id, name)
+        return EventStream(id, name, color)
     }
 
     fun EventResponseDto.toDomainEvent(currentUserId: Long, queueId: String): DomainEvent {
@@ -54,6 +53,7 @@ internal object EventMapper {
                 id = id,
                 eventMessage = message.toEventMessage(currentUserId),
                 queueId = queueId,
+                flags = flags.toSet(),
             )
             is EventResponseDto.HeartbeatEventDto -> DomainEvent.HeartbeatDomainEvent(
                 id = id,
@@ -68,6 +68,9 @@ internal object EventMapper {
                 id = id,
                 messageId = messageId,
                 queueId = queueId,
+                streamId = streamId,
+                topic = topic,
+                messageType = DomainEvent.DeleteMessageDomainEvent.MessageType.valueOf(messageType.toString()),
             )
             is EventResponseDto.PresenceEventDto -> DomainEvent.PresenceDomainEvent(
                 id = id,

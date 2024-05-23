@@ -15,9 +15,12 @@ import ru.snowadv.chat_presentation.chat.ui.ChatFragment.Companion.ARG_STREAM_NA
 import ru.snowadv.chat_presentation.chat.ui.ChatFragment.Companion.ARG_TOPIC_NAME_KEY
 import ru.snowadv.chatapp.fragment.channels.screen.ChannelsFragmentScreen
 import ru.snowadv.chatapp.fragment.chat.screen.ChatFragmentScreen
+import ru.snowadv.chatapp.fragment.home.screen.HomeFragmentScreen
+import ru.snowadv.chatapp.fragment.people.screen.PeopleFragmentScreen
+import ru.snowadv.chatapp.fragment.profile.screen.ProfileFragmentScreen
 import ru.snowadv.chatapp.rule.ActivityTestRule
-import ru.snowadv.chatapp.rule.MockDataRule
 import ru.snowadv.chatapp.util.ActivityUtils.onLastFragment
+import ru.snowadv.profile_presentation.ui.ProfileFragment
 
 @RunWith(AndroidJUnit4::class)
 internal class MainActivityTest : TestCase() {
@@ -136,6 +139,77 @@ internal class MainActivityTest : TestCase() {
 
                     Assert.assertEquals(streamName, arguments?.getString(ARG_STREAM_NAME_KEY))
                     Assert.assertEquals(topicName, arguments?.getString(ARG_TOPIC_NAME_KEY))
+                }
+            }
+        }
+    }
+
+    @Test
+    fun testMenu() = run {
+        step("Проверим, что отображается экран Channels") {
+            flakySafely(intervalMs = 200) {
+                ChannelsFragmentScreen {
+                    isVisible()
+                }
+            }
+        }
+        step("Перейдем на экран People") {
+            flakySafely(intervalMs = 200) {
+                HomeFragmentScreen {
+                    bottomNavigationView.setSelectedItem(ru.snowadv.home_presentation.R.id.action_people)
+                    bottomNavigationView.hasSelectedItem(ru.snowadv.home_presentation.R.id.action_people)
+                }
+            }
+        }
+        step("Проверим, что отображается экран People") {
+            flakySafely(intervalMs = 200) {
+                PeopleFragmentScreen {
+                    isVisible()
+                }
+            }
+        }
+        step("Перейдем на экран Profile") {
+            flakySafely(intervalMs = 200) {
+                HomeFragmentScreen {
+                    bottomNavigationView.setSelectedItem(ru.snowadv.home_presentation.R.id.action_profile)
+                    bottomNavigationView.hasSelectedItem(ru.snowadv.home_presentation.R.id.action_profile)
+                }
+            }
+        }
+        step("Проверим, что отображается экран Profile") {
+            flakySafely(intervalMs = 200) {
+                ProfileFragmentScreen {
+                    isVisible()
+                }
+            }
+        }
+    }
+
+    @Test
+    fun openOtherUserProfile() = run {
+        step("Перейдем на экран People") {
+            flakySafely(intervalMs = 200) {
+                HomeFragmentScreen {
+                    bottomNavigationView.setSelectedItem(ru.snowadv.home_presentation.R.id.action_people)
+                    bottomNavigationView.hasSelectedItem(ru.snowadv.home_presentation.R.id.action_people)
+                }
+            }
+        }
+        step("Откроем профиль пользователя") {
+            flakySafely(intervalMs = 200) {
+                PeopleFragmentScreen {
+                    peopleRecycler.childAt<PeopleFragmentScreen.KPeopleItem>(0) {
+                        userName.click()
+                    }
+                }
+            }
+        }
+        step("Убедимся, что профиль отображается корректно") {
+            flakySafely(intervalMs = 200) {
+                ProfileFragmentScreen {
+                    isVisible()
+                    userName.hasText(activityTestRule.mockDataRule.data.profile.user.name)
+                    userEmail.hasText(activityTestRule.mockDataRule.data.profile.user.email)
                 }
             }
         }

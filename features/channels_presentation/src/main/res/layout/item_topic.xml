@@ -8,14 +8,14 @@
     android:foreground="?attr/selectableItemBackground">
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/start_guideline"
+        android:id="@+id/start_guideline_topic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_begin="@dimen/topic_horizontal_padding" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/end_guideline"
+        android:id="@+id/end_guideline_topic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -38,7 +38,7 @@
         android:textColor="@color/white"
         android:textSize="@dimen/stream_topic_name_text_size"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="@id/start_guideline"
+        app:layout_constraintLeft_toLeftOf="@id/start_guideline_topic"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="#general" />
 
@@ -53,7 +53,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.05"
         app:layout_constraintLeft_toRightOf="@id/topic_name_text"
-        app:layout_constraintRight_toRightOf="@id/end_guideline"
+        app:layout_constraintRight_toRightOf="@id/end_guideline_topic"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="24 mes" />
 
