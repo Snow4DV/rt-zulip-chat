@@ -30,6 +30,7 @@ internal class ChatElmUiMapper @Inject constructor() :
             resumed = resumed,
             sendTopic = sendTopic,
             topics = topics,
+            isLoading = isLoading,
         )
     }
 

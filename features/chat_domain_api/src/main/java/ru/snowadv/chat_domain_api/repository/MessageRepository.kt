@@ -1,6 +1,7 @@
 package ru.snowadv.chat_domain_api.repository
 
 import kotlinx.coroutines.flow.Flow
+import ru.snowadv.chat_domain_api.model.ChatMessage
 import ru.snowadv.chat_domain_api.model.ChatPaginatedMessages
 import ru.snowadv.model.InputStreamOpener
 import ru.snowadv.model.Resource
@@ -26,6 +27,11 @@ interface MessageRepository {
         countOfMessages: Int,
         useCache: Boolean = false,
     ): Flow<Resource<ChatPaginatedMessages>>
+
+    fun getMessageByIdFromStream(
+        messageId: Long,
+        streamName: String,
+    ): Flow<Resource<ChatMessage>>
 
     fun sendMessage(
         streamName: String,

@@ -1,7 +1,7 @@
 package ru.snowadv.network.di.dagger
 
-import android.content.pm.ApplicationInfo
 import com.skydoves.retrofit.adapters.result.ResultCallAdapterFactory
+import dagger.Lazy
 import dagger.Module
 import dagger.Provides
 import dagger.Reusable
@@ -14,7 +14,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.create
 import ru.snowadv.model.BaseUrlProvider
-import ru.snowadv.network.api.LoggerToggle
+import ru.snowadv.model.LoggerToggle
 import ru.snowadv.network.api.ZulipApi
 import ru.snowadv.network.interceptor.BadAuthResponseInterceptor
 import ru.snowadv.network.interceptor.HeaderBasicAuthInterceptor
@@ -45,11 +45,20 @@ internal class NetworkLibModule {
 
     @Reusable
     @Provides
+    fun provideHttpLoggerInterceptor(): HttpLoggingInterceptor {
+        return HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+    }
+
+    @Reusable
+    @Provides
     fun provideOkHttpClient(
         headerBasicAuthInterceptor: HeaderBasicAuthInterceptor,
         timeoutSetterInterceptor: TimeoutSetterInterceptor,
         badAuthResponseInterceptor: BadAuthResponseInterceptor,
         loggerToggle: LoggerToggle,
+        interceptor: Lazy<HttpLoggingInterceptor>,
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(headerBasicAuthInterceptor)
@@ -57,9 +66,7 @@ internal class NetworkLibModule {
             .addInterceptor(badAuthResponseInterceptor)
             .let {
                 if (loggerToggle.isLoggingEnabled) {
-                    it.addInterceptor(HttpLoggingInterceptor().apply {
-                        level = HttpLoggingInterceptor.Level.BODY
-                    })
+                    it.addNetworkInterceptor(interceptor.get())
                 } else {
                     it
                 }

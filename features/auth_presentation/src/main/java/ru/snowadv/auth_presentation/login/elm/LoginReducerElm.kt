@@ -16,7 +16,7 @@ internal class LoginReducerElm @Inject constructor():
                     +LoginEffectElm.ShowInternetErrorWithRetry(LoginEventElm.Ui.OnLoginButtonClicked)
                 }
             }
-            LoginEventElm.Internal.Loading -> state { copy(loading = false) }
+            LoginEventElm.Internal.Loading -> state { copy(loading = true) }
             LoginEventElm.Internal.LoggedInSuccessfully -> state { copy(loading = false) }
             is LoginEventElm.Internal.ValidationError -> effects {
                 +LoginEffectElm.ShowValidationError(

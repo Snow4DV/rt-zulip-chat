@@ -10,8 +10,7 @@ import ru.snowadv.database.dao.TopicsDao
 import ru.snowadv.database.dao.UsersDao
 import ru.snowadv.model.BaseUrlProvider
 import ru.snowadv.module_injector.module.BaseModuleAPI
-import ru.snowadv.module_injector.module.BaseModuleDependencies
-import ru.snowadv.network.api.LoggerToggle
+import ru.snowadv.model.LoggerToggle
 
 interface TestAppModuleAPI : BaseModuleAPI {
     val baseUrlProvider: BaseUrlProvider

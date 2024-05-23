@@ -82,7 +82,9 @@ sealed class EventResponseDto {
         @SerialName("message_id")
         val messageId: Long,
         @SerialName("rendered_content")
-        val content: String? // Will only present if message content has changed.
+        val content: String? = null, // Will only present if message content has changed.
+        @SerialName("subject")
+        val subject: String? = null, // Will only present if message subject has changed
     ): EventResponseDto()
 
 

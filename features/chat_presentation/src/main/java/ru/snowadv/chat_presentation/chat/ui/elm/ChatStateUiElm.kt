@@ -23,11 +23,8 @@ internal data class ChatStateUiElm(
     val resumed: Boolean = false,
     val sendTopic: String,
     val topics: Resource<List<String>> = Resource.Loading(),
+    val isLoading: Boolean,
 ) {
-
-    val firstLoadedMessageId: Long? = messages.firstOrNull()?.id
-
-    val isActionButtonVisible = !screenState.isLoading && !sendingMessage && !uploadingFile
 
     enum class ActionButtonType (val buttonResId: Int, val hintTextResId: Int) {
         SEND_MESSAGE(R.drawable.ic_send, R.string.send_message_hint),

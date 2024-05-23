@@ -26,7 +26,8 @@ data class ChatStateElm(
 
     val firstLoadedMessageId: Long? = messages.firstOrNull()?.id
 
-    val isActionButtonVisible = !screenState.isLoading && !sendingMessage && !uploadingFile
+    val isLoading: Boolean = sendingMessage || changingReaction || uploadingFile
+            || (screenState is ScreenState.Loading && screenState.data != null)
 
     enum class ActionButtonType {
         SEND_MESSAGE,

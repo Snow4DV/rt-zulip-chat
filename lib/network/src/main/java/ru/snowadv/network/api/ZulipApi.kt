@@ -148,6 +148,7 @@ interface ZulipApi {
     suspend fun registerEventQueue(
         @Query("event_types") eventTypes: EventTypesRequestDto,
         @Query("narrow") narrow: Narrow2DArrayRequestDto,
+        @Query(value = "apply_markdown") applyMarkdown: Boolean,
     ): Result<EventQueueResponseDto>
 
     @GET("events")

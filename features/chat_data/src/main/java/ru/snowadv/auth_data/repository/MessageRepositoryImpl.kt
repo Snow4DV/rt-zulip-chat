@@ -4,15 +4,19 @@ import dagger.Reusable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import ru.snowadv.auth_data.util.MessagesMapper.toChatMessage
 import ru.snowadv.auth_data.util.MessagesMapper.toChatPaginatedMessages
+import ru.snowadv.auth_data.util.MessagesMapper.toEntityMessage
 import ru.snowadv.auth_data.util.MessagesMapper.toEntityMessages
 import ru.snowadv.auth_storage.provider.AuthProvider
+import ru.snowadv.chat_domain_api.model.ChatMessage
 import ru.snowadv.chat_domain_api.model.ChatPaginatedMessages
 import ru.snowadv.chat_domain_api.repository.MessageRepository
 import ru.snowadv.database.dao.MessagesDao
 import ru.snowadv.model.DispatcherProvider
 import ru.snowadv.model.InputStreamOpener
 import ru.snowadv.model.Resource
+import ru.snowadv.model.map
 import ru.snowadv.network.api.ZulipApi
 import ru.snowadv.network.api.uploadFile
 import ru.snowadv.network.model.NarrowListRequestDto
@@ -152,6 +156,30 @@ internal class MessageRepositoryImpl @Inject constructor(
             )
                 .let { res -> emit(res) }
         }.flowOn(dispatcherProvider.io)
+
+    override fun getMessageByIdFromStream(
+        messageId: Long,
+        streamName: String,
+    ): Flow<Resource<ChatMessage>> = flow {
+        emit(Resource.Loading())
+        api.getMessages(
+            anchor = messageId.toString(), numBefore = 0, numAfter = 0,
+            narrow = NarrowListRequestDto(
+                emptyList()
+            ),
+            applyMarkdown = true,
+        ).fold(
+            onSuccess = { messagesDto ->
+                messagesDto.messages.firstOrNull()?.let { message ->
+                    messagesDao.insertMessage(message.toEntityMessage(streamName))
+                    Resource.Success(message.toChatMessage(currentUserId))
+                } ?: Resource.Error(IllegalStateException("Message with id $messageId not found on the server"))
+            },
+            onFailure = { throwable ->
+                Resource.Error(throwable)
+            }
+        ).let { emit(it) }
+    }
 
     override fun sendMessage(
         streamName: String,

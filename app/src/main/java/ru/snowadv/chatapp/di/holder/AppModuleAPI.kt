@@ -10,7 +10,7 @@ import ru.snowadv.model.BaseUrlProvider
 import ru.snowadv.model.DispatcherProvider
 import ru.snowadv.module_injector.module.BaseModuleAPI
 import ru.snowadv.network.api.BadAuthBehavior
-import ru.snowadv.network.api.LoggerToggle
+import ru.snowadv.model.LoggerToggle
 import ru.snowadv.people_presentation.navigation.PeopleRouter
 import ru.snowadv.profile_presentation.navigation.ProfileRouter
 

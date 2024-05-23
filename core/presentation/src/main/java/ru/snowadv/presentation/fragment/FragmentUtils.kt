@@ -16,40 +16,63 @@ import ru.snowadv.presentation.databinding.ItemTopBarWithBackBinding
 import ru.snowadv.presentation.databinding.ItemTopStateBoxBinding
 import ru.snowadv.model.ScreenState
 
-fun ItemStateBoxBinding.inflateState(screenState: ScreenState<*>, shimmerLayout: Int? = null, cacheStateBinding: ItemTopStateBoxBinding? = null) = with(root) {
-    when(screenState) {
-        is ScreenState.Empty -> {
-            setHolder(this@inflateState, cacheStateBinding, StateHolder.BOX)
-            ItemEmptyBoxBinding.inflate(LayoutInflater.from(context), this, true)
-        }
-        is ScreenState.Error -> {
-            if (screenState.data == null || cacheStateBinding == null) {
+fun ItemStateBoxBinding.inflateState(
+    screenState: ScreenState<*>,
+    shimmerLayout: Int? = null,
+    cacheStateBinding: ItemTopStateBoxBinding? = null,
+    showLoadingInCacheState: Boolean = true,
+) {
+    with(root) {
+        when (screenState) {
+            is ScreenState.Empty -> {
                 setHolder(this@inflateState, cacheStateBinding, StateHolder.BOX)
-                ItemErrorBoxBinding.inflate(LayoutInflater.from(context), this, true).also {
-                    it.retryErrorButton.setOnClickListener { callOnClick() }
-                }
-            } else {
-                setHolder(this@inflateState, cacheStateBinding, StateHolder.CACHE_BAR)
-                ItemErrorWithCachedDataBinding.inflate(LayoutInflater.from(context), cacheStateBinding.root, true).also {
-                    it.root.setOnClickListener { callOnClick() }
+                ItemEmptyBoxBinding.inflate(LayoutInflater.from(context), this, true)
+            }
+
+            is ScreenState.Error -> {
+                if (screenState.data == null || cacheStateBinding == null) {
+                    setHolder(this@inflateState, cacheStateBinding, StateHolder.BOX)
+                    ItemErrorBoxBinding.inflate(LayoutInflater.from(context), this, true).also {
+                        it.retryErrorButton.setOnClickListener { callOnClick() }
+                    }
+                } else {
+                    setHolder(this@inflateState, cacheStateBinding, StateHolder.CACHE_BAR)
+                    ItemErrorWithCachedDataBinding.inflate(
+                        LayoutInflater.from(context),
+                        cacheStateBinding.root,
+                        true
+                    ).also {
+                        it.root.setOnClickListener { callOnClick() }
+                    }
                 }
             }
-        }
-        is ScreenState.Loading -> {
-            if (screenState.data == null || cacheStateBinding == null) {
-                setHolder(this@inflateState, cacheStateBinding, StateHolder.BOX)
-                shimmerLayout?.let { LayoutInflater.from(context).inflate(shimmerLayout, this) } ?: run {
-                    ItemLoadingBoxBinding.inflate(LayoutInflater.from(context), this, true)
-                }
-            } else {
-                setHolder(this@inflateState, cacheStateBinding, StateHolder.CACHE_BAR)
-                ItemLoadingWithCachedDataBinding.inflate(LayoutInflater.from(context), cacheStateBinding.root, true).also {
-                    it.root.setOnClickListener { callOnClick() }
+
+            is ScreenState.Loading -> {
+                if (screenState.data == null || cacheStateBinding == null) {
+                    setHolder(this@inflateState, cacheStateBinding, StateHolder.BOX)
+                    shimmerLayout?.let { LayoutInflater.from(context).inflate(shimmerLayout, this) }
+                        ?: run {
+                            ItemLoadingBoxBinding.inflate(LayoutInflater.from(context), this, true)
+                        }
+                } else {
+                    setHolder(this@inflateState, cacheStateBinding, StateHolder.CACHE_BAR)
+                    if (showLoadingInCacheState) {
+                        ItemLoadingWithCachedDataBinding.inflate(
+                            LayoutInflater.from(context),
+                            cacheStateBinding.root,
+                            true
+                        ).also {
+                            it.root.setOnClickListener { callOnClick() }
+                        }
+                    } else {
+                        Unit
+                    }
                 }
             }
-        }
-        is ScreenState.Success -> {
-            setHolder(this@inflateState, cacheStateBinding, StateHolder.NONE)
+
+            is ScreenState.Success -> {
+                setHolder(this@inflateState, cacheStateBinding, StateHolder.NONE)
+            }
         }
     }
 }
@@ -67,6 +90,7 @@ fun ItemTopBarWithBackBinding.setTopBarColor(colorResId: Int) {
     val context = root.context
     this.root.background = ColorDrawable(context.resources.getColor(colorResId, context.theme))
 }
+
 fun ItemTopBarWithBackBinding.setTopBarText(text: String) {
     this.barTitle.text = text
 }
@@ -89,16 +113,22 @@ fun Fragment.setStatusBarColor(colorResId: Int) {
     requireActivity().window.statusBarColor = requireContext().getColor(colorResId)
 }
 
-private fun setHolder(boxStateBinding: ItemStateBoxBinding, cacheStateBinding: ItemTopStateBoxBinding? = null, holder: StateHolder) {
-    when(holder) {
+private fun setHolder(
+    boxStateBinding: ItemStateBoxBinding,
+    cacheStateBinding: ItemTopStateBoxBinding? = null,
+    holder: StateHolder
+) {
+    when (holder) {
         StateHolder.BOX -> {
             boxStateBinding.root.removeChildViewsAndSetVisibility(visibility = true)
             cacheStateBinding?.root?.removeChildViewsAndSetVisibility(visibility = false)
         }
+
         StateHolder.CACHE_BAR -> {
             boxStateBinding.root.removeChildViewsAndSetVisibility(visibility = false)
             cacheStateBinding?.root?.removeChildViewsAndSetVisibility(visibility = true)
         }
+
         StateHolder.NONE -> {
             boxStateBinding.root.removeChildViewsAndSetVisibility(visibility = false)
             cacheStateBinding?.root?.removeChildViewsAndSetVisibility(visibility = false)

@@ -86,6 +86,7 @@ class EventRepositoryImpl @Inject constructor(
             api.registerEventQueue(
                 eventTypes = (types + EventType.HEARTBEAT + EventType.REALM).toEventTypesDto(),
                 narrow = narrows.toNarrow2DArrayDto(),
+                applyMarkdown = true,
             ).getOrElse {
                 emit(DomainEvent.FailedFetchingQueueEvent(-1, null, it, true))
                 return@flow

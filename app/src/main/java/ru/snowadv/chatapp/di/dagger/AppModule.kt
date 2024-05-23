@@ -10,7 +10,7 @@ import ru.snowadv.network.api.BadAuthBehavior
 import ru.snowadv.chatapp.glue.auth.BadAuthBehaviorImpl
 import ru.snowadv.chatapp.glue.coroutines.DispatcherProviderImpl
 import ru.snowadv.chatapp.glue.network.ReleaseLoggerToggle
-import ru.snowadv.network.api.LoggerToggle
+import ru.snowadv.model.LoggerToggle
 
 @Module
 internal interface AppModule {

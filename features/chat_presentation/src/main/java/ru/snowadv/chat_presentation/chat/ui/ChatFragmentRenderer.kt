@@ -97,7 +97,7 @@ internal class ChatFragmentRenderer :
         )
         chatTopBar.openAllTopicsButton.isVisible = mappedState.topic != null
         bottomBar.sendOrAddAttachmentButton.setImageResource(mappedState.actionButtonType.buttonResId)
-        bottomBar.sendOrAddAttachmentButton.isVisible = mappedState.isActionButtonVisible
+        bottomBar.sendOrAddAttachmentButton.isVisible = !mappedState.isLoading
         bottomBar.sendOrAddAttachmentButton.contentDescription =
             getString(mappedState.actionButtonType.hintTextResId)
         bottomBar.sendOrAddAttachmentButton.tag =
@@ -109,9 +109,10 @@ internal class ChatFragmentRenderer :
                 ?: emptyList()),
         ) {
             stateBox.inflateState(
-                mappedState.screenState,
-                R.layout.fragment_chat_shimmer,
-                topStateBox
+                screenState = mappedState.screenState,
+                shimmerLayout = R.layout.fragment_chat_shimmer,
+                cacheStateBinding = topStateBox,
+                showLoadingInCacheState = false,
             )
         }
 
@@ -119,8 +120,7 @@ internal class ChatFragmentRenderer :
             bottomBar.messageEditText.setText(mappedState.messageField)
         }
 
-        actionProgressBar.isVisible =
-            mappedState.changingReaction || mappedState.sendingMessage || mappedState.uploadingFile
+        actionProgressBar.isVisible = mappedState.isLoading
     }
 
     override fun ChatFragment.handleEffectByRenderer(

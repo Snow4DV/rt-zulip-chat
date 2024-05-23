@@ -45,16 +45,13 @@ internal class ChatReducerElm @Inject constructor() :
                         screenState = event.messages.messages.toScreenState(),
                         messages = event.messages.messages,
                         paginationStatus = when {
-                            event.cached -> ChatPaginationStatus.None
                             event.messages.foundOldest -> ChatPaginationStatus.LoadedAll
                             else -> ChatPaginationStatus.HasMore
                         },
                         eventQueueData = null,
                     )
                 }
-                if (!event.cached) {
-                    commandObserve()
-                }
+                commandObserve()
 
             }
 
@@ -134,13 +131,17 @@ internal class ChatReducerElm @Inject constructor() :
 
             is ChatEventElm.Internal.ServerEvent.MessageUpdated -> {
                 state {
-                    event.newContent?.let {
-                        updateMessage(
-                            messageId = event.messageId,
-                            renderedContent = event.newContent,
-                            eventId = event.eventId,
-                        )
-                    } ?: copy(eventQueueData = eventQueueData?.copy(lastEventId = event.eventId))
+                    updateMessage(
+                        messageId = event.messageId,
+                        renderedContent = event.newContent,
+                        eventId = event.eventId,
+                        newSubject = event.newSubject,
+                    )
+                }
+                if (state.topic != null && state.topic == event.newSubject && event.queueId != null) {
+                    commands {
+                        +ChatCommandElm.LoadMovedMessage(event.messageId, state.stream, event.queueId, event.eventId)
+                    }
                 }
                 commandObserve()
             }
@@ -231,6 +232,29 @@ internal class ChatReducerElm @Inject constructor() :
                 commands {
                     +ChatCommandElm.LoadInitialMessages(state.stream, null)
                 }
+            }
+
+            is ChatEventElm.Internal.InitialChatLoadedFromCache -> {
+                state {
+                    copy(
+                        screenState = event.messages.messages.toScreenState(loading = true),
+                        messages = event.messages.messages,
+                        paginationStatus = when {
+                            event.messages.foundOldest -> ChatPaginationStatus.LoadedAll
+                            else -> ChatPaginationStatus.HasMore
+                        },
+                        eventQueueData = null,
+                    )
+                }
+            }
+
+            is ChatEventElm.Internal.ErrorFetchingMovedMessage -> commands {
+                if (event.queueId == state.eventQueueData?.queueId) {
+                    +ChatCommandElm.LoadInitialMessages(state.stream, state.topic)
+                }
+            }
+            is ChatEventElm.Internal.LoadedMovedMessage -> state {
+                addMessage(event.message, event.eventId)
             }
         }
     }
@@ -465,7 +489,8 @@ internal class ChatReducerElm @Inject constructor() :
     }
 
     private fun ChatStateElm.addMessage(newMessage: ChatMessage, eventId: Long): ChatStateElm {
-        return updateMessageList(messageList = messages + newMessage, eventId = eventId)
+        return updateMessageList(messageList = (messages + newMessage).distinctBy { it.id }
+            .sortedBy { it.sentAt }, eventId = eventId)
     }
 
     private fun ChatStateElm.replaceMessage(newMessage: ChatMessage, eventId: Long): ChatStateElm {
@@ -476,10 +501,16 @@ internal class ChatReducerElm @Inject constructor() :
     }
 
     private fun ChatStateElm.updateMessage(
-        messageId: Long, renderedContent: String, eventId: Long
+        messageId: Long, renderedContent: String?, newSubject: String?, eventId: Long,
     ): ChatStateElm {
         return updateMessageList(
-            messageList = messages.map { if (it.id == messageId) it.copy(content = renderedContent) else it },
+            messageList = messages.mapNotNull { message ->
+                when {
+                    message.id != messageId -> message
+                    newSubject != null && topic != null && newSubject != topic -> null
+                    else -> message.copy(topic = newSubject ?: message.topic, content = renderedContent ?: message.content)
+                }
+            },
             eventId = eventId
         )
     }

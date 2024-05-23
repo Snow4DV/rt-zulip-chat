@@ -36,9 +36,12 @@ sealed interface ChatEventElm {
 
     sealed interface Internal : ChatEventElm {
         data class TopicsResourceChanged(val topicsRes: Resource<List<String>>) : Internal
-        data class InitialChatLoaded(val messages: ChatPaginatedMessages, val cached: Boolean) :
-            Internal
+        data class InitialChatLoaded(val messages: ChatPaginatedMessages) : Internal
+        data class InitialChatLoadedFromCache(val messages: ChatPaginatedMessages) : Internal
         data class MoreMessagesLoaded(val messages: ChatPaginatedMessages) : Internal
+
+        data class LoadedMovedMessage(val message: ChatMessage, val queueId: String, val eventId: Long) : Internal
+        data class ErrorFetchingMovedMessage(val reason: Throwable, val queueId: String, val eventId: Long) : Internal
 
         data class Error(val throwable: Throwable, val cachedMessages: ChatPaginatedMessages?) :
             Internal
@@ -71,6 +74,7 @@ sealed interface ChatEventElm {
             data class EventQueueFailed(
                 override val queueId: String?,
                 override val eventId: Long,
+                val reason: Throwable,
                 val recreateQueue: Boolean,
             ) : ServerEvent() {
                 override val senderType: EventSenderType
@@ -100,6 +104,7 @@ sealed interface ChatEventElm {
                 override val eventId: Long,
                 val messageId: Long,
                 val newContent: String?,
+                val newSubject: String?,
             ) : ServerEvent()
 
             data class ReactionAdded(

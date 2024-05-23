@@ -8,6 +8,7 @@ import ru.snowadv.channels_domain_api.use_case.GetTopicsUseCase
 import ru.snowadv.chat_domain_api.use_case.AddReactionUseCase
 import ru.snowadv.chat_domain_api.use_case.GetCurrentMessagesUseCase
 import ru.snowadv.chat_domain_api.use_case.ListenToChatEventsUseCase
+import ru.snowadv.chat_domain_api.use_case.LoadMessageUseCase
 import ru.snowadv.chat_domain_api.use_case.LoadMoreMessagesUseCase
 import ru.snowadv.chat_domain_api.use_case.RemoveReactionUseCase
 import ru.snowadv.chat_domain_api.use_case.SendFileUseCase
@@ -30,6 +31,7 @@ class ChatActorElm @Inject constructor(
     private val loadMoreMessagesUseCase: LoadMoreMessagesUseCase,
     private val sendFileUseCase: SendFileUseCase,
     private val getTopicsUseCase: GetTopicsUseCase,
+    private val loadMessageUseCase: LoadMessageUseCase
 ) : Actor<ChatCommandElm, ChatEventElm>() {
     override fun execute(command: ChatCommandElm): Flow<ChatEventElm> = when (command) {
         ChatCommandElm.GoBack -> flow { router.goBack() }
@@ -40,10 +42,10 @@ class ChatActorElm @Inject constructor(
             when (res) {
                 is Resource.Error -> ChatEventElm.Internal.Error(res.throwable, res.data)
                 is Resource.Loading -> res.getDataOrNull()
-                    ?.let { ChatEventElm.Internal.InitialChatLoaded(it, true) }
+                    ?.let { ChatEventElm.Internal.InitialChatLoadedFromCache(it) }
                     ?: ChatEventElm.Internal.Loading
 
-                is Resource.Success -> ChatEventElm.Internal.InitialChatLoaded(res.data, false)
+                is Resource.Success -> ChatEventElm.Internal.InitialChatLoaded(res.data)
             }
         }
 
@@ -141,6 +143,21 @@ class ChatActorElm @Inject constructor(
             getTopicsUseCase(command.streamId).map{ res ->
                 ChatEventElm.Internal.TopicsResourceChanged(res.map { topics -> topics.map { it.name } })
             }
+        }
+
+        is ChatCommandElm.LoadMovedMessage -> {
+            loadMessageUseCase(command.messageId, command.streamName).mapEvents(
+                eventMapper = { res ->
+                    when(res) {
+                        is Resource.Error -> ChatEventElm.Internal.ErrorFetchingMovedMessage(res.throwable, command.requestQueueId, command.requestEventId)
+                        is Resource.Loading -> null
+                        is Resource.Success -> ChatEventElm.Internal.LoadedMovedMessage(res.data, command.requestQueueId, command.requestEventId)
+                    }
+                },
+                errorMapper = { error ->
+                    ChatEventElm.Internal.ErrorFetchingMovedMessage(error, command.requestQueueId, command.requestEventId)
+                },
+            )
         }
     }
 

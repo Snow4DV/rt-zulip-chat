@@ -50,4 +50,6 @@ dependencies {
     implementation(libs.retrofit.resultConverter)
     
     implementation(libs.okhttp.logging.interceptor)
+
+    implementation(libs.okhttp.urlConnection)
 }

@@ -1,4 +1,4 @@
-package ru.snowadv.network.api
+package ru.snowadv.model
 
 interface LoggerToggle {
     val isLoggingEnabled: Boolean

@@ -12,11 +12,15 @@ import ru.snowadv.auth_storage.provider.AuthProvider
 import ru.snowadv.auth_storage.repository.AuthStorageRepository
 import ru.snowadv.channels_data.di.holder.ChannelsDataComponentHolder
 import ru.snowadv.channels_data.di.holder.ChannelsDataDependencies
+import ru.snowadv.channels_domain_api.di.ChannelsDomainAPI
+import ru.snowadv.channels_domain_api.use_case.GetTopicsUseCase
+import ru.snowadv.channels_domain_impl.di.ChannelsDomainComponentHolder
 import ru.snowadv.chat_domain_api.di.ChatDomainAPI
 import ru.snowadv.chat_domain_api.use_case.AddReactionUseCase
 import ru.snowadv.chat_domain_api.use_case.GetCurrentMessagesUseCase
 import ru.snowadv.chat_domain_api.use_case.GetEmojisUseCase
 import ru.snowadv.chat_domain_api.use_case.ListenToChatEventsUseCase
+import ru.snowadv.chat_domain_api.use_case.LoadMessageUseCase
 import ru.snowadv.chat_domain_api.use_case.LoadMoreMessagesUseCase
 import ru.snowadv.chat_domain_api.use_case.RemoveReactionUseCase
 import ru.snowadv.chat_domain_api.use_case.SendFileUseCase
@@ -46,14 +50,13 @@ import ru.snowadv.database.dao.MessagesDao
 import ru.snowadv.database.dao.StreamsDao
 import ru.snowadv.database.dao.TopicsDao
 import ru.snowadv.database.dao.UsersDao
-import ru.snowadv.database.di.holder.DatabaseLibAPI
-import ru.snowadv.database.di.holder.DatabaseLibComponentHolder
 import ru.snowadv.events_impl.di.dagger.EventsDataModuleComponentHolder
 import ru.snowadv.events_impl.di.holder.EventsDataDependencies
 import ru.snowadv.model.DispatcherProvider
 import ru.snowadv.module_injector.dependency_holder.DependencyHolder1
 import ru.snowadv.module_injector.dependency_holder.DependencyHolder4
-import ru.snowadv.network.api.LoggerToggle
+import ru.snowadv.model.LoggerToggle
+import ru.snowadv.module_injector.dependency_holder.DependencyHolder5
 import ru.snowadv.network.api.ZulipApi
 import ru.snowadv.network.di.holder.NetworkLibAPI
 import ru.snowadv.users_data.di.holder.UsersDataComponentHolder
@@ -99,15 +102,16 @@ internal object AuthorizedTestModulesInjector: BaseModulesInjector() {
 
         ChatPresentationComponentHolder.dependencyProvider = {
             class ChatPresentationDependencyHolder(
-                override val block: (BaseDependencyHolder<ChatPresentationDependencies>, AppModuleAPI, ChatDomainAPI, ImageLoaderLibAPI, TestAppModuleAPI) -> ChatPresentationDependencies
-            ) : DependencyHolder4<AppModuleAPI, ChatDomainAPI, ImageLoaderLibAPI, TestAppModuleAPI, ChatPresentationDependencies>(
+                override val block: (BaseDependencyHolder<ChatPresentationDependencies>, AppModuleAPI, ChatDomainAPI, ImageLoaderLibAPI, TestAppModuleAPI, ChannelsDomainAPI) -> ChatPresentationDependencies
+            ) : DependencyHolder5<AppModuleAPI, ChatDomainAPI, ImageLoaderLibAPI, TestAppModuleAPI, ChannelsDomainAPI, ChatPresentationDependencies>(
                 api1 = AppModuleComponentHolder.get() ,
                 api2 = ChatDomainComponentHolder.get(),
                 api3 = ImageLoaderLibComponentHolder.get(),
                 api4 = TestAppModuleComponentHolder.get(),
+                api5 = ChannelsDomainComponentHolder.get(),
             )
 
-            ChatPresentationDependencyHolder { dependencyHolder, appApi, chatApi, imageLoaderApi, testApi ->
+            ChatPresentationDependencyHolder { dependencyHolder, appApi, chatApi, imageLoaderApi, testApi, channelsDomainApi ->
                 object : ChatPresentationDependencies {
                     override val chatRouter: ChatRouter = appApi.chatRouter
                     override val addReactionUseCase: AddReactionUseCase = chatApi.addReactionUseCase
@@ -118,6 +122,8 @@ internal object AuthorizedTestModulesInjector: BaseModulesInjector() {
                     override val loadMoreMessagesUseCase: LoadMoreMessagesUseCase = chatApi.loadMoreMessagesUseCase
                     override val sendFileUseCase: SendFileUseCase = chatApi.sendFileUseCase
                     override val getEmojisUseCase: GetEmojisUseCase = chatApi.getEmojisUseCase
+                    override val loadMessageUseCase: LoadMessageUseCase = chatApi.loadMessageUseCase
+                    override val getTopicsUseCase: GetTopicsUseCase = channelsDomainApi.getTopicsUseCase
                     override val appContext: Context = appContext
                     override val imageLoader: ImageLoader = imageLoaderApi.coilImageLoader
                     override val baseUrlProvider: BaseUrlProvider = testApi.baseUrlProvider

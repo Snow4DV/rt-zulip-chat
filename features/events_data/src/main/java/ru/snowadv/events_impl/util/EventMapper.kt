@@ -114,6 +114,7 @@ internal object EventMapper {
                 messageId = messageId,
                 content = content,
                 queueId = queueId,
+                subject = subject,
             )
             is EventResponseDto.UserStatusEventDto -> DomainEvent.UserStatusDomainEvent(
                 id = id,

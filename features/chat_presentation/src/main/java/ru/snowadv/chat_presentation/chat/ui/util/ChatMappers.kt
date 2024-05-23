@@ -86,6 +86,7 @@ internal object ChatMappers {
                 queueId = queueId,
                 eventId = id,
                 recreateQueue = isQueueBad,
+                reason = reason,
             )
 
             is DomainEvent.MessageDomainEvent -> ChatEventElm.Internal.ServerEvent.NewMessage(
@@ -106,6 +107,7 @@ internal object ChatMappers {
                 eventId = id,
                 messageId = messageId,
                 newContent = content,
+                newSubject = subject,
             )
 
             else -> ChatEventElm.Internal.ServerEvent.EventQueueUpdated(

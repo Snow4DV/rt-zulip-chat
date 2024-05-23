@@ -52,6 +52,7 @@ import ru.snowadv.chat_domain_api.use_case.AddReactionUseCase
 import ru.snowadv.chat_domain_api.use_case.GetCurrentMessagesUseCase
 import ru.snowadv.chat_domain_api.use_case.GetEmojisUseCase
 import ru.snowadv.chat_domain_api.use_case.ListenToChatEventsUseCase
+import ru.snowadv.chat_domain_api.use_case.LoadMessageUseCase
 import ru.snowadv.chat_domain_api.use_case.LoadMoreMessagesUseCase
 import ru.snowadv.chat_domain_api.use_case.RemoveReactionUseCase
 import ru.snowadv.chat_domain_api.use_case.SendFileUseCase
@@ -99,7 +100,7 @@ import ru.snowadv.chatapp.di.holder.AppModuleComponentHolder
 import ru.snowadv.chatapp.di.holder.AppModuleDependencies
 import ru.snowadv.home_presentation.di.dagger.HomePresentationComponentHolder
 import ru.snowadv.home_presentation.di.holder.HomePresentationDependencies
-import ru.snowadv.network.api.LoggerToggle
+import ru.snowadv.model.LoggerToggle
 import ru.snowadv.people_presentation.api.PeopleScreenFactory
 import ru.snowadv.people_presentation.di.holder.PeoplePresentationAPI
 import ru.snowadv.people_presentation.di.holder.PeoplePresentationComponentHolder
@@ -257,6 +258,7 @@ abstract class BaseModulesInjector {
                     override val loadMoreMessagesUseCase: LoadMoreMessagesUseCase = chatApi.loadMoreMessagesUseCase
                     override val sendFileUseCase: SendFileUseCase = chatApi.sendFileUseCase
                     override val getEmojisUseCase: GetEmojisUseCase = chatApi.getEmojisUseCase
+                    override val loadMessageUseCase: LoadMessageUseCase = chatApi.loadMessageUseCase
                     override val getTopicsUseCase: GetTopicsUseCase = channelsApi.getTopicsUseCase
                     override val appContext: Context = appContext
                     override val imageLoader: ImageLoader = imageLoaderApi.coilImageLoader
@@ -492,6 +494,8 @@ abstract class BaseModulesInjector {
             NetworkAuthorizerLibDependencyHolder { dependencyHolder, appApi ->
                 object : NetworkAuthorizerLibDependencies {
                     override val json: Json = appApi.json
+                    override val baseUrlProvider: BaseUrlProvider = appApi.baseUrlProvider
+                    override val loggerToggle: LoggerToggle = appApi.networkLoggerToggle
                     override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> =
                         dependencyHolder
 

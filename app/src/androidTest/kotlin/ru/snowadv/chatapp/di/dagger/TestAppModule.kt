@@ -6,13 +6,10 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import dagger.Reusable
-import kotlinx.serialization.json.Json
 import ru.snowadv.auth_storage.provider.AuthProvider
 import ru.snowadv.auth_storage.repository.AuthStorageRepository
 import ru.snowadv.chatapp.mock.auth.AuthProviderMock
 import ru.snowadv.chatapp.mock.auth.AuthStorageMockRepository
-import ru.snowadv.chatapp.data.MockData
 import ru.snowadv.chatapp.mock.config.DebugLoggerToggle
 import ru.snowadv.chatapp.mock.config.WiremockBaseUrlProviderImpl
 import ru.snowadv.chatapp.mock.dao.AuthDaoMockImpl
@@ -31,11 +28,9 @@ import ru.snowadv.database.dao.StreamsDao
 import ru.snowadv.database.dao.TopicsDao
 import ru.snowadv.database.dao.UsersDao
 import ru.snowadv.model.BaseUrlProvider
-import ru.snowadv.network.api.LoggerToggle
+import ru.snowadv.model.LoggerToggle
 import wiremock.org.eclipse.jetty.util.thread.ExecutorThreadPool
-import wiremock.org.eclipse.jetty.util.thread.ThreadPool
 import java.util.concurrent.Executors
-import javax.inject.Singleton
 
 @Module
 internal interface TestAppModule {

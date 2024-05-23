@@ -55,6 +55,7 @@ sealed class DomainEvent {
         override val id: Long,
         val messageId: Long,
         val content: String?, // Will only present if message content has changed.
+        val subject: String?, // Will only present if subject has changed
         override val queueId: String,
     ): DomainEvent()
 

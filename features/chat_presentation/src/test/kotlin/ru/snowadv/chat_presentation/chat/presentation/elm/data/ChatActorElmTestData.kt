@@ -25,7 +25,8 @@ internal class ChatActorElmTestData {
         senderName = "Petr Petrov",
         senderAvatarUrl = "http://example.com/someurl.png",
         reactions = emptyList(),
-        owner = true
+        owner = true,
+        topic = "sometopic",
     )
 
     val sampleZonedDateTime = ZonedDateTime.now()
@@ -41,7 +42,8 @@ internal class ChatActorElmTestData {
         senderName = "Ivan Ivanov",
         senderAvatarUrl = null,
         reactions = emptyList(),
-        owner = false
+        owner = false,
+        topic = "sometopic",
     )
 
     val remoteMessages = listOf(
@@ -75,7 +77,8 @@ internal class ChatActorElmTestData {
         senderName = "Vladimir Vladimirov",
         senderAvatarUrl = "http://example.com/someurl.png",
         reactions = listOf(ChatReaction(sampleEmoji.name, sampleEmoji.code, 1, false)),
-        owner = false
+        owner = false,
+        topic = "sometopic",
     )
 
     val secondPageMessages = listOf(secondPageMessage)
@@ -113,13 +116,17 @@ internal class ChatActorElmTestData {
         DomainEvent.DeleteMessageDomainEvent(
             id = 2,
             messageId = 1,
-            queueId = "example_queue"
+            queueId = "example_queue",
+            streamId = 1,
+            topic = "test",
+            messageType = DomainEvent.DeleteMessageDomainEvent.MessageType.STREAM,
         ),
         DomainEvent.UpdateMessageDomainEvent(
             id = 3,
             messageId = 1,
             content = "Updated content",
-            queueId = "example_queue"
+            queueId = "example_queue",
+            subject = "test",
         ),
         DomainEvent.RealmDomainEvent(
             id = 4,
@@ -222,7 +229,8 @@ internal class ChatActorElmTestData {
         ChatEventElm.Internal.ServerEvent.EventQueueFailed(
             queueId = null,
             eventId = -1,
-            recreateQueue = true
+            recreateQueue = true,
+            reason = IOException(),
         ),
         ChatEventElm.Internal.ServerEvent.EventQueueRegistered(
             queueId = "new_queue",
@@ -241,6 +249,7 @@ internal class ChatActorElmTestData {
                 senderAvatarUrl = "http://example.com/1.png",
                 reactions = listOf(ChatReaction(sampleEmoji.name, sampleEmoji.code, 1, false)),
                 owner = false,
+                topic = "sometopic",
             )
         ),
         ChatEventElm.Internal.ServerEvent.MessageDeleted(
@@ -252,7 +261,8 @@ internal class ChatActorElmTestData {
             queueId = "example_queue",
             eventId = 3,
             messageId = 1,
-            newContent = "Updated content"
+            newContent = "Updated content",
+            newSubject = "othertopic",
         ),
         ChatEventElm.Internal.ServerEvent.EventQueueUpdated(
             queueId = "example_queue",

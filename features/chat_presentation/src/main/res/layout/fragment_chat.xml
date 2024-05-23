@@ -12,20 +12,27 @@
         android:id="@+id/chat_top_bar"
         layout="@layout/item_chat_top_bar" />
 
-    <TextView
-        android:id="@+id/topic_name"
-        style="@style/Theme.ZulipChat.TopicTextView"
+    <FrameLayout
+        android:id="@+id/topic_and_progress_bar_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/chat_top_bar"
-        tools:text="@string/sample_topic_name" />
+        app:layout_constraintTop_toBottomOf="@id/chat_top_bar">
+        <TextView
+            android:id="@+id/topic_name"
+            style="@style/Theme.ZulipChat.TopicTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/chat_top_bar"
+            tools:text="@string/sample_topic_name" />
 
-    <ProgressBar
-        android:id="@+id/action_progress_bar"
-        style="@style/Theme.ZulipChat.IndeterminateProgressBar"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/horizontal_progress_bar_height"
-        app:layout_constraintTop_toBottomOf="@id/chat_top_bar" />
+        <ProgressBar
+            android:id="@+id/action_progress_bar"
+            style="@style/Theme.ZulipChat.IndeterminateProgressBar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/horizontal_progress_bar_height"
+            app:layout_constraintTop_toBottomOf="@id/chat_top_bar" />
+    </FrameLayout>
+
 
     <include
         android:id="@+id/top_state_box"
@@ -34,7 +41,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topic_name" />
+        app:layout_constraintTop_toBottomOf="@id/topic_and_progress_bar_container" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messages_recycler"
@@ -64,6 +71,6 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/bottom_bar"
-        app:layout_constraintTop_toBottomOf="@id/topic_name" />
+        app:layout_constraintTop_toBottomOf="@id/topic_and_progress_bar_container" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

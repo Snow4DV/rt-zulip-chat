@@ -32,7 +32,7 @@ facebookShimmer = "0.5.0"
 kotlinx-serialization = "1.6.0"
 retrofit = "2.11.0"
 retrofitResultConverter = "1.0.9"
-okhttp-interceptor ="4.12.0"
+okhttp ="4.12.0"
 elmslie = "3.0.0-alpha10"
 room = "2.6.1"
 markwon = "4.6.2"
@@ -75,7 +75,8 @@ kotlinSerialization-json = { group="org.jetbrains.kotlinx", name = "kotlinx-seri
 retrofit-core = { group="com.squareup.retrofit2", name="retrofit", version.ref="retrofit" }
 retrofit-kotlinxConverter = {group="com.squareup.retrofit2", name="converter-kotlinx-serialization", version.ref="retrofit"}
 retrofit-resultConverter = {group="com.github.skydoves", name="retrofit-adapters-result", version.ref="retrofitResultConverter"}
-okhttp-logging-interceptor = {group="com.squareup.okhttp3", name="logging-interceptor", version.ref="okhttp-interceptor"}
+okhttp-logging-interceptor = {group="com.squareup.okhttp3", name="logging-interceptor", version.ref= "okhttp" }
+okhttp-urlConnection = {group="com.squareup.okhttp3", name="okhttp-urlconnection", version.ref= "okhttp" }
 elmslie-core = {group="com.github.vivid-money.elmslie", name="elmslie-core", version.ref="elmslie"}
 elmslie-android = {group="com.github.vivid-money.elmslie", name="elmslie-android", version.ref="elmslie"}
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }

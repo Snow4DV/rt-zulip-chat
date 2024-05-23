@@ -6,6 +6,7 @@ import ru.snowadv.chat_domain_api.use_case.AddReactionUseCase
 import ru.snowadv.chat_domain_api.use_case.GetCurrentMessagesUseCase
 import ru.snowadv.chat_domain_api.use_case.GetEmojisUseCase
 import ru.snowadv.chat_domain_api.use_case.ListenToChatEventsUseCase
+import ru.snowadv.chat_domain_api.use_case.LoadMessageUseCase
 import ru.snowadv.chat_domain_api.use_case.LoadMoreMessagesUseCase
 import ru.snowadv.chat_domain_api.use_case.RemoveReactionUseCase
 import ru.snowadv.chat_domain_api.use_case.SendFileUseCase
@@ -19,6 +20,7 @@ interface ChatDomainAPI : BaseModuleAPI {
     val getEmojisUseCase: GetEmojisUseCase
     val listenToChatEventsUseCase: ListenToChatEventsUseCase
     val loadMoreMessagesUseCase: LoadMoreMessagesUseCase
+    val loadMessageUseCase: LoadMessageUseCase
     val removeReactionUseCase: RemoveReactionUseCase
     val sendFileUseCase: SendFileUseCase
     val sendMessageUseCase: SendMessageUseCase

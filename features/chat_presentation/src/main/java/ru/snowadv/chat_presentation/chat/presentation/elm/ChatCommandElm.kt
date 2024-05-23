@@ -20,6 +20,13 @@ sealed interface ChatCommandElm { // commands to actor
         val includeAnchor: Boolean,
     ) : ChatCommandElm
 
+    data class LoadMovedMessage(
+        val messageId: Long,
+        val streamName: String,
+        val requestQueueId: String,
+        val requestEventId: Long,
+    ) : ChatCommandElm
+
     data class ObserveEvents(
         val streamName: String,
         val topicName: String?,
