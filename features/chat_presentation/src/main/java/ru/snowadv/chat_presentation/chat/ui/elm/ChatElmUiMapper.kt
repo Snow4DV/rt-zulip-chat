@@ -31,6 +31,8 @@ internal class ChatElmUiMapper @Inject constructor() :
             sendTopic = sendTopic,
             topics = topics,
             isLoading = isLoading,
+            isTopicChooserVisible = isTopicChooserVisible,
+            isTopicEmptyErrorVisible = isTopicEmptyErrorVisible,
         )
     }
 
@@ -38,9 +40,10 @@ internal class ChatElmUiMapper @Inject constructor() :
         when(this) {
             ChatEffectElm.OpenFileChooser -> ChatEffectUiElm.OpenFileChooser
             is ChatEffectElm.OpenMessageActionsChooser -> ChatEffectUiElm.OpenMessageActionsChooser(messageId = messageId, userId = userId)
-            is ChatEffectElm.OpenReactionChooser -> ChatEffectUiElm.OpenReactionChooser(destMessageId)
+            is ChatEffectElm.OpenReactionChooser -> ChatEffectUiElm.OpenReactionChooser(destMessageId, excludeEmojisNames)
             ChatEffectElm.ShowActionError -> ChatEffectUiElm.ShowActionError
             is ChatEffectElm.ShowActionErrorWithRetry -> ChatEffectUiElm.ShowActionErrorWithRetry(retryEvent)
+            ChatEffectElm.ShowTopicChangedBecauseNewMessageIsUnreachable -> ChatEffectUiElm.ShowTopicChangedBecauseNewMessageIsUnreachabel
         }
     }
 
@@ -58,7 +61,6 @@ internal class ChatElmUiMapper @Inject constructor() :
                 extension = extension,
             )
             ChatEventUiElm.GoBackClicked -> ChatEventElm.Ui.GoBackClicked
-            is ChatEventUiElm.GoToProfileClicked -> ChatEventElm.Ui.GoToProfileClicked(profileId)
             ChatEventUiElm.Init -> ChatEventElm.Ui.Init
             is ChatEventUiElm.MessageFieldChanged -> ChatEventElm.Ui.MessageFieldChanged(text)
             is ChatEventUiElm.MessageLongClicked -> ChatEventElm.Ui.MessageLongClicked(
@@ -74,6 +76,8 @@ internal class ChatElmUiMapper @Inject constructor() :
             ChatEventUiElm.SendMessageAddAttachmentButtonClicked -> ChatEventElm.Ui.SendMessageAddAttachmentButtonClicked
             is ChatEventUiElm.ClickedOnTopic -> ChatEventElm.Ui.ClickedOnTopic(topicName)
             ChatEventUiElm.OnLeaveTopicClicked -> ChatEventElm.Ui.ClickedOnLeaveTopic
+            ChatEventUiElm.ClickedOnExpandOrHideTopicInput -> ChatEventElm.Ui.ClickedOnExpandOrHideTopicInput
+            is ChatEventUiElm.TopicChanged -> ChatEventElm.Ui.TopicChanged(newTopic)
         }
     }
 }

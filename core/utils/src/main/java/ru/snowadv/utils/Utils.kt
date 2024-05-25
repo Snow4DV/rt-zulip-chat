@@ -1,6 +1,5 @@
 package ru.snowadv.utils
 
-import kotlinx.coroutines.CoroutineScope
 import ru.snowadv.model.Resource
 
 fun <T> Result<T>.toResource(cachedData: T? = null): Resource<T> {
@@ -27,7 +26,7 @@ fun <T, E> Result<T>.foldToResource(cachedData: E? = null, mapper: (T) -> E): Re
 
 fun <T> Resource<T>.combineWithCache(cache: T?): Resource<T> {
     return when(this) {
-        is Resource.Error -> Resource.Error(throwable, data ?: cache, errorCode)
+        is Resource.Error -> Resource.Error(throwable, data ?: cache, error)
         is Resource.Loading -> Resource.Loading(data ?: cache)
         is Resource.Success -> Resource.Success(data)
     }

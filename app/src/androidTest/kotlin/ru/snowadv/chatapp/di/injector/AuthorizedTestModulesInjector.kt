@@ -52,11 +52,15 @@ import ru.snowadv.database.dao.TopicsDao
 import ru.snowadv.database.dao.UsersDao
 import ru.snowadv.events_impl.di.dagger.EventsDataModuleComponentHolder
 import ru.snowadv.events_impl.di.holder.EventsDataDependencies
+import ru.snowadv.message_actions_presentation.api.screen_factory.ActionChooserDialogFactory
+import ru.snowadv.message_actions_presentation.api.screen_factory.EmojiChooserDialogFactory
+import ru.snowadv.message_actions_presentation.di.dagger.MessageActionsPresentationComponentHolder
+import ru.snowadv.message_actions_presentation.di.holder.MessageActionsPresentationAPI
 import ru.snowadv.model.DispatcherProvider
 import ru.snowadv.module_injector.dependency_holder.DependencyHolder1
-import ru.snowadv.module_injector.dependency_holder.DependencyHolder4
 import ru.snowadv.model.LoggerToggle
 import ru.snowadv.module_injector.dependency_holder.DependencyHolder5
+import ru.snowadv.module_injector.dependency_holder.DependencyHolder6
 import ru.snowadv.network.api.ZulipApi
 import ru.snowadv.network.di.holder.NetworkLibAPI
 import ru.snowadv.users_data.di.holder.UsersDataComponentHolder
@@ -102,18 +106,21 @@ internal object AuthorizedTestModulesInjector: BaseModulesInjector() {
 
         ChatPresentationComponentHolder.dependencyProvider = {
             class ChatPresentationDependencyHolder(
-                override val block: (BaseDependencyHolder<ChatPresentationDependencies>, AppModuleAPI, ChatDomainAPI, ImageLoaderLibAPI, TestAppModuleAPI, ChannelsDomainAPI) -> ChatPresentationDependencies
-            ) : DependencyHolder5<AppModuleAPI, ChatDomainAPI, ImageLoaderLibAPI, TestAppModuleAPI, ChannelsDomainAPI, ChatPresentationDependencies>(
+                override val block: (BaseDependencyHolder<ChatPresentationDependencies>, AppModuleAPI, ChatDomainAPI, ImageLoaderLibAPI, TestAppModuleAPI, ChannelsDomainAPI, MessageActionsPresentationAPI) -> ChatPresentationDependencies
+            ) : DependencyHolder6<AppModuleAPI, ChatDomainAPI, ImageLoaderLibAPI, TestAppModuleAPI, ChannelsDomainAPI, MessageActionsPresentationAPI, ChatPresentationDependencies>(
                 api1 = AppModuleComponentHolder.get() ,
                 api2 = ChatDomainComponentHolder.get(),
                 api3 = ImageLoaderLibComponentHolder.get(),
                 api4 = TestAppModuleComponentHolder.get(),
                 api5 = ChannelsDomainComponentHolder.get(),
+                api6 = MessageActionsPresentationComponentHolder.get(),
             )
 
-            ChatPresentationDependencyHolder { dependencyHolder, appApi, chatApi, imageLoaderApi, testApi, channelsDomainApi ->
+            ChatPresentationDependencyHolder { dependencyHolder, appApi, chatApi, imageLoaderApi, testApi, channelsDomainApi, msgActionsApi ->
                 object : ChatPresentationDependencies {
                     override val chatRouter: ChatRouter = appApi.chatRouter
+                    override val actionChooserDialogFactory: ActionChooserDialogFactory = msgActionsApi.actionChooserDialogFactory
+                    override val emojiChooserDialogFactory: EmojiChooserDialogFactory = msgActionsApi.emojiChooserDialogFactory
                     override val addReactionUseCase: AddReactionUseCase = chatApi.addReactionUseCase
                     override val removeReactionUseCase: RemoveReactionUseCase = chatApi.removeReactionUseCase
                     override val sendMessageUseCase: SendMessageUseCase = chatApi.sendMessageUseCase

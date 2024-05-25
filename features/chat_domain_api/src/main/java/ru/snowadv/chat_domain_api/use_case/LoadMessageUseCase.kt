@@ -7,6 +7,7 @@ import ru.snowadv.model.Resource
 interface LoadMessageUseCase {
     operator fun invoke(
         messageId: Long,
-        streamName: String,
+        streamName: String?,
+        applyMarkdown: Boolean,
     ): Flow<Resource<ChatMessage>>
 }

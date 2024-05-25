@@ -30,7 +30,8 @@ interface MessageRepository {
 
     fun getMessageByIdFromStream(
         messageId: Long,
-        streamName: String,
+        streamName: String?,
+        applyMarkdown: Boolean,
     ): Flow<Resource<ChatMessage>>
 
     fun sendMessage(
@@ -41,4 +42,6 @@ interface MessageRepository {
     fun addReaction(messageId: Long, reactionName: String): Flow<Resource<Unit>>
     fun removeReaction(messageId: Long, reactionName: String): Flow<Resource<Unit>>
     fun sendFile(streamName: String, topicName: String, inputStreamOpener: InputStreamOpener, mimeType: String?, extension: String?): Flow<Resource<Unit>>
+    fun removeMessage(messageId: Long) : Flow<Resource<Unit>>
+    fun editMessage(messageId: Long, newContent: String?, newSubject: String?) : Flow<Resource<Unit>>
 }

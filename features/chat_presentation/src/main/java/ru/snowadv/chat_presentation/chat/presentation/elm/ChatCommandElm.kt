@@ -13,6 +13,8 @@ sealed interface ChatCommandElm { // commands to actor
         val streamId: Long,
     ) : ChatCommandElm
 
+    data object CancelObservation : ChatCommandElm
+
     data class LoadMoreMessages(
         val streamName: String,
         val topicName: String?,
@@ -36,7 +38,6 @@ sealed interface ChatCommandElm { // commands to actor
         ChatCommandElm
 
     data object GoBack : ChatCommandElm
-    data class GoToProfile(val profileId: Long) : ChatCommandElm
     data class SendMessage(val streamName: String, val topicName: String, val text: String) :
         ChatCommandElm
 

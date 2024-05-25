@@ -2,13 +2,11 @@ package ru.snowadv.chat_presentation.chat.presentation.elm.mock
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import okhttp3.internal.toImmutableList
 import ru.snowadv.chat_domain_api.model.ChatEmoji
 import ru.snowadv.chat_domain_api.model.ChatMessage
 import ru.snowadv.chat_domain_api.model.ChatPaginatedMessages
 import ru.snowadv.chat_domain_api.use_case.AddReactionUseCase
 import ru.snowadv.chat_domain_api.use_case.GetCurrentMessagesUseCase
-import ru.snowadv.chat_domain_api.use_case.GetEmojisUseCase
 import ru.snowadv.chat_domain_api.use_case.ListenToChatEventsUseCase
 import ru.snowadv.chat_domain_api.use_case.LoadMoreMessagesUseCase
 import ru.snowadv.chat_domain_api.use_case.RemoveReactionUseCase

@@ -8,7 +8,6 @@ import ru.snowadv.events_api.helper.StateMachineQueueHelper
 import ru.snowadv.events_api.model.EventQueueProperties
 import ru.snowadv.model.ScreenState
 import ru.snowadv.presentation.util.toScreenState
-import ru.snowadv.presentation.util.toScreenStateListMapper
 import vivid.money.elmslie.core.store.dsl.ScreenDslReducer
 import javax.inject.Inject
 
@@ -59,8 +58,31 @@ internal class ChatReducerElm @Inject constructor() :
                 copy(screenState = ScreenState.Loading())
             }
 
-            ChatEventElm.Internal.MessageSent -> state {
-                copy(sendingMessage = false, messageField = "")
+            is ChatEventElm.Internal.MessageSent -> {
+                if (event.destTopic != state.topic && state.topic != null) {
+                    state {
+                        copy(
+                            sendingMessage = false,
+                            messageField = "",
+                            isTopicChooserVisible = false,
+                            topic = event.destTopic,
+                        )
+                    }
+                    effects {
+                        +ChatEffectElm.ShowTopicChangedBecauseNewMessageIsUnreachable
+                    }
+                    commands {
+                        +ChatCommandElm.LoadInitialMessages(state.stream, event.destTopic)
+                    }
+                } else {
+                    state {
+                        copy(
+                            sendingMessage = false,
+                            messageField = "",
+                            isTopicChooserVisible = false,
+                        )
+                    }
+                }
             }
 
             is ChatEventElm.Internal.MoreMessagesLoaded -> {
@@ -222,18 +244,6 @@ internal class ChatReducerElm @Inject constructor() :
                 )
             }
 
-            ChatEventElm.Ui.ClickedOnLeaveTopic -> {
-                state {
-                    copy(
-                        eventQueueData = null,
-                        topic = null,
-                    )
-                }
-                commands {
-                    +ChatCommandElm.LoadInitialMessages(state.stream, null)
-                }
-            }
-
             is ChatEventElm.Internal.InitialChatLoadedFromCache -> {
                 state {
                     copy(
@@ -268,15 +278,11 @@ internal class ChatReducerElm @Inject constructor() :
             }
 
             is ChatEventElm.Ui.AddReactionClicked -> effects {
-                +ChatEffectElm.OpenReactionChooser(event.messageId)
+                +ChatEffectElm.OpenReactionChooser(event.messageId, state.messages.getReactionNamesByCurrentUserIfMessageExists(event.messageId))
             }
 
             ChatEventElm.Ui.GoBackClicked -> commands {
                 +ChatCommandElm.GoBack
-            }
-
-            is ChatEventElm.Ui.GoToProfileClicked -> commands {
-                +ChatCommandElm.GoToProfile(event.profileId)
             }
 
             is ChatEventElm.Ui.MessageFieldChanged -> state {
@@ -329,7 +335,15 @@ internal class ChatReducerElm @Inject constructor() :
             ChatEventElm.Ui.SendMessageAddAttachmentButtonClicked -> {
                 when (state.actionButtonType) {
                     ChatStateElm.ActionButtonType.SEND_MESSAGE -> {
-                        if (!state.sendingMessage) {
+                        if (state.sendTopic.isBlank()) {
+                            commands {
+                                +ChatCommandElm.LoadTopicsFromCurrentStream(state.streamId)
+                            }
+                            state {
+                                copy(isTopicChooserVisible = true, isTopicEmptyErrorVisible = true)
+                            }
+                        }
+                        else if (!state.sendingMessage) {
                             commands {
                                 +ChatCommandElm.SendMessage(
                                     streamName = state.stream,
@@ -350,8 +364,13 @@ internal class ChatReducerElm @Inject constructor() :
                 +ChatCommandElm.LoadInitialMessages(state.stream, state.topic)
             }
 
-            ChatEventElm.Ui.Paused -> state {
-                copy(resumed = false)
+            ChatEventElm.Ui.Paused -> {
+                state {
+                    copy(resumed = false)
+                }
+                commands {
+                    +ChatCommandElm.CancelObservation
+                }
             }
 
             ChatEventElm.Ui.Resumed -> {
@@ -384,6 +403,32 @@ internal class ChatReducerElm @Inject constructor() :
                 commands {
                     +ChatCommandElm.LoadInitialMessages(state.stream, state.topic)
                 }
+            }
+
+            ChatEventElm.Ui.ClickedOnExpandOrHideTopicInput -> {
+                state {
+                    copy(isTopicChooserVisible = !isTopicChooserVisible)
+                }
+                commands {
+                    if (state.isTopicChooserVisible) {
+                        +ChatCommandElm.LoadTopicsFromCurrentStream(state.streamId)
+                    }
+                }
+            }
+            ChatEventElm.Ui.ClickedOnLeaveTopic -> {
+                state {
+                    copy(
+                        eventQueueData = null,
+                        topic = null,
+                    )
+                }
+                commands {
+                    +ChatCommandElm.LoadInitialMessages(state.stream, null)
+                }
+            }
+
+            is ChatEventElm.Ui.TopicChanged -> state {
+                copy(sendTopic = event.newTopic, isTopicEmptyErrorVisible = false)
             }
         }
     }
@@ -519,6 +564,12 @@ internal class ChatReducerElm @Inject constructor() :
         return updateMessageList(
             messageList = messages.filter { it.id != messageId }, eventId = eventId
         )
+    }
+
+    private fun List<ChatMessage>.getReactionNamesByCurrentUserIfMessageExists(messageId: Long): List<String> {
+        return firstOrNull { it.id == messageId }?.reactions?.mapNotNull {
+            if (it.userReacted) it.name else null
+        } ?: emptyList()
     }
 
     private fun ChatStateElm.updateMessageList(

@@ -10,7 +10,7 @@ import ru.snowadv.chat_domain_api.repository.MessageRepository
 @Module
 internal interface ChatDataModule {
     @Binds
-    fun bindsEmojiRepoImpl(impl: EmojiRepositoryImpl): EmojiRepository
-    @Binds
     fun bindsMessageRepositoryImpl(impl: MessageRepositoryImpl): MessageRepository
+    @Binds
+    fun bindEmojiRepositoryImpl(impl: EmojiRepositoryImpl): EmojiRepository
 }

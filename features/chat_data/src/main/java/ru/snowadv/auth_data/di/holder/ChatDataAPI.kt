@@ -6,5 +6,5 @@ import ru.snowadv.module_injector.module.BaseModuleAPI
 
 interface ChatDataAPI : BaseModuleAPI {
     val messageRepo: MessageRepository
-    val emojiRepo: EmojiRepository
+    val emojisRepo: EmojiRepository
 }

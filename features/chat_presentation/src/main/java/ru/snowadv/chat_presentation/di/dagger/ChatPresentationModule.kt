@@ -24,18 +24,8 @@ import ru.snowadv.chat_presentation.chat.ui.elm.ChatEffectUiElm
 import ru.snowadv.chat_presentation.chat.ui.elm.ChatElmUiMapper
 import ru.snowadv.chat_presentation.chat.ui.elm.ChatEventUiElm
 import ru.snowadv.chat_presentation.chat.ui.elm.ChatStateUiElm
-import ru.snowadv.chat_presentation.emoji_chooser.presentation.elm.EmojiChooserActorElm
-import ru.snowadv.chat_presentation.emoji_chooser.presentation.elm.EmojiChooserCommandElm
-import ru.snowadv.chat_presentation.emoji_chooser.presentation.elm.EmojiChooserEffectElm
-import ru.snowadv.chat_presentation.emoji_chooser.presentation.elm.EmojiChooserEventElm
-import ru.snowadv.chat_presentation.emoji_chooser.presentation.elm.EmojiChooserReducerElm
-import ru.snowadv.chat_presentation.emoji_chooser.presentation.elm.EmojiChooserStateElm
 import ru.snowadv.chat_presentation.chat.ui.feature.ChatScreenFactoryImpl
 import ru.snowadv.chat_presentation.chat.ui.markwon.RelativeUrlMarkwonPlugin
-import ru.snowadv.chat_presentation.emoji_chooser.ui.elm.EmojiChooserEffectUiElm
-import ru.snowadv.chat_presentation.emoji_chooser.ui.elm.EmojiChooserElmUiMapper
-import ru.snowadv.chat_presentation.emoji_chooser.ui.elm.EmojiChooserEventUiElm
-import ru.snowadv.chat_presentation.emoji_chooser.ui.elm.EmojiChooserStateUiElm
 import ru.snowadv.presentation.elm.ElmMapper
 import ru.snowadv.presentation.util.DateFormatter
 import ru.snowadv.presentation.util.DateTimeFormatter
@@ -53,13 +43,7 @@ internal interface ChatPresentationModule {
     @Binds
     fun bindChatScreenFactoryImpl(chatScreenFactoryImpl: ChatScreenFactoryImpl): ChatScreenFactory
     @Binds
-    fun bindEmojiChooserActorElm(emojiChooserActorElm: EmojiChooserActorElm): Actor<EmojiChooserCommandElm, EmojiChooserEventElm>
-    @Binds
-    fun bindEmojiChooserReducer(emojiChooserReducerElm: EmojiChooserReducerElm): ScreenDslReducer<EmojiChooserEventElm, EmojiChooserEventElm.Ui, EmojiChooserEventElm.Internal, EmojiChooserStateElm, EmojiChooserEffectElm, EmojiChooserCommandElm>
-    @Binds
     fun bindChatElmMapperImpl(chatElmUiMapper: ChatElmUiMapper): ElmMapper<ChatStateElm, ChatEffectElm, ChatEventElm, ChatStateUiElm, ChatEffectUiElm, ChatEventUiElm>
-    @Binds
-    fun bindEmojiChooserElmMapperImpl(emojiChooserElmUiMapper: EmojiChooserElmUiMapper): ElmMapper<EmojiChooserStateElm, EmojiChooserEffectElm, EmojiChooserEventElm, EmojiChooserStateUiElm, EmojiChooserEffectUiElm, EmojiChooserEventUiElm>
 
     companion object {
         @Provides

@@ -21,7 +21,6 @@ import ru.snowadv.chat_presentation.chat.ui.elm.ChatEventUiElm
 import ru.snowadv.chat_presentation.chat.ui.elm.ChatStateUiElm
 import ru.snowadv.chat_presentation.databinding.FragmentChatBinding
 import ru.snowadv.chat_presentation.di.holder.ChatPresentationComponentHolder
-import ru.snowadv.chat_presentation.emoji_chooser.ui.EmojiChooserBottomSheetDialog
 import ru.snowadv.chat_presentation.chat.ui.model.ChatAction
 import ru.snowadv.chat_presentation.chat.ui.model.ChatPaginationStatus
 import ru.snowadv.chat_presentation.chat.ui.util.AdapterUtils.submitListAndKeepScrolledToBottom
@@ -36,6 +35,20 @@ import ru.snowadv.presentation.util.DateTimeFormatter
 import ru.snowadv.presentation.fragment.inflateState
 import ru.snowadv.presentation.fragment.setOnRetryClickListener
 import vivid.money.elmslie.core.store.Store
+import android.widget.ArrayAdapter;
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import ru.snowadv.message_actions_presentation.api.model.EmojiChooserResult
+import ru.snowadv.message_actions_presentation.api.screen_factory.EmojiChooserDialogFactory
+import ru.snowadv.presentation.adapter.updateIfChanged
+import ru.snowadv.presentation.fragment.getParcelableTypeSafe
+import ru.snowadv.presentation.view.EditTextUtils.addTextChangedNotNullListener
+import ru.snowadv.presentation.view.EditTextUtils.afterTextChanged
+import ru.snowadv.presentation.view.EditTextUtils.observe
+import ru.snowadv.presentation.view.setTextIfChanged
+import ru.snowadv.presentation.view.setTextIfEmpty
 import javax.inject.Inject
 
 internal class ChatFragmentRenderer :
@@ -49,6 +62,9 @@ internal class ChatFragmentRenderer :
         get() =
             requireNotNull(_messagesRecyclerLinearLayoutManager) { "Linear Layout Manager wasn't initialized for messages recycler" }
 
+    private var _topicsAdapter: ArrayAdapter<String>? = null
+    private val topicsAdapter get() = requireNotNull(_topicsAdapter) { "Topics adapter wasn't initialized" }
+
     @Inject
     internal lateinit var splitterDateFormatter: DateFormatter
 
@@ -60,6 +76,9 @@ internal class ChatFragmentRenderer :
 
     @Inject
     internal lateinit var mapper: ElmMapper<ChatStateElm, ChatEffectElm, ChatEventElm, ChatStateUiElm, ChatEffectUiElm, ChatEventUiElm>
+
+    @Inject
+    internal lateinit var emojiChooserFactory: EmojiChooserDialogFactory
 
     companion object {
         const val EMOJI_CHOOSER_REQUEST_KEY = "emoji_chooser_request"
@@ -80,6 +99,9 @@ internal class ChatFragmentRenderer :
         _messagesRecyclerLinearLayoutManager =
             binding.messagesRecycler.layoutManager as? LinearLayoutManager
                 ?: error("Wrong LinearLayoutManager is set to messages recycler")
+        _topicsAdapter =
+            ArrayAdapter(binding.root.context, android.R.layout.simple_dropdown_item_1line)
+        binding.bottomBar.topicAutoCompleteTextView.setAdapter(topicsAdapter)
         initListeners(binding, store)
     }
 
@@ -89,6 +111,14 @@ internal class ChatFragmentRenderer :
     ) = with(binding) {
         val mappedState = mapper.mapState(state)
 
+        bottomBar.topicAutoCompleteTextView.setTextIfChanged(mappedState.sendTopic)
+        binding.bottomBar.topicInputLayout.error = if (mappedState.isTopicEmptyErrorVisible) {
+            getString(R.string.topic_cant_be_empty)
+        } else {
+            null
+        }
+        bottomBar.showTopicChooserButton.isSelected = mappedState.isTopicChooserVisible
+        bottomBar.topicInputLayout.isVisible = mappedState.isTopicChooserVisible
         topicName.isVisible = mappedState.topic != null
         topicName.text = getString(ru.snowadv.presentation.R.string.topic_title, mappedState.topic)
         chatTopBar.barTitle.text = getString(
@@ -116,9 +146,9 @@ internal class ChatFragmentRenderer :
             )
         }
 
-        if (mappedState.messageField.isEmpty() || bottomBar.messageEditText.text.toString().isEmpty()) {
-            bottomBar.messageEditText.setText(mappedState.messageField)
-        }
+        topicsAdapter.updateIfChanged(state.topics.data ?: emptyList())
+
+        bottomBar.messageEditText.setTextIfChanged(mappedState.messageField)
 
         actionProgressBar.isVisible = mappedState.isLoading
     }
@@ -130,7 +160,7 @@ internal class ChatFragmentRenderer :
     ) = with(mapper.mapEffect(effect)) {
         when (this) {
             is ChatEffectUiElm.OpenReactionChooser -> {
-                openReactionChooser(destMessageId, this@handleEffectByRenderer)
+                openReactionChooser(destMessageId, excludeEmojis, this@handleEffectByRenderer)
             }
 
             is ChatEffectUiElm.OpenMessageActionsChooser -> {
@@ -147,7 +177,7 @@ internal class ChatFragmentRenderer :
                         }
 
                         is ChatAction.OpenProfile -> {
-                            store.accept(ChatEventElm.Ui.GoToProfileClicked(it.userId))
+
                         }
                     }
                 }
@@ -167,11 +197,15 @@ internal class ChatFragmentRenderer :
             }
 
             ChatEffectUiElm.OpenFileChooser -> openFilePicker()
+            ChatEffectUiElm.ShowTopicChangedBecauseNewMessageIsUnreachabel -> {
+                showShortInfo(binding.root, R.string.new_message_is_unreachable)
+            }
         }
     }
 
     override fun ChatFragment.onDestroyRendererView() {
         _adapter = null
+        _topicsAdapter = null
         _messagesRecyclerLinearLayoutManager = null
     }
 
@@ -182,29 +216,37 @@ internal class ChatFragmentRenderer :
         recyclerView.adapter = adapter
     }
 
-    private fun initListeners(
+    private fun Fragment.initListeners(
         binding: FragmentChatBinding,
         store: Store<ChatEventElm, ChatEffectElm, ChatStateElm>,
-    ) {
-        binding.chatTopBar.openAllTopicsButton.setOnClickListener {
+    ) = with(binding) {
+        bottomBar.showTopicChooserButton.setOnClickListener {
+            store.accept(mapper.mapUiEvent(ChatEventUiElm.ClickedOnExpandOrHideTopicInput))
+        }
+        bottomBar.topicAutoCompleteTextView.observe(noDebouncePredicate = { it.length <= 1 })
+            .onEach {
+                store.accept(mapper.mapUiEvent(ChatEventUiElm.TopicChanged(it)))
+            }.flowWithLifecycle(viewLifecycleOwner.lifecycle)
+            .launchIn(viewLifecycleOwner.lifecycleScope)
+
+        chatTopBar.openAllTopicsButton.setOnClickListener {
             store.accept(mapper.mapUiEvent(ChatEventUiElm.OnLeaveTopicClicked))
         }
-        binding.bottomBar.messageEditText.addTextChangedListener {
-            it?.toString()?.let { currentMessage ->
-                store.accept(mapper.mapUiEvent(ChatEventUiElm.MessageFieldChanged(currentMessage)))
-            }
-        }
-        binding.bottomBar.sendOrAddAttachmentButton.setOnClickListener {
+        bottomBar.messageEditText.observe(noDebouncePredicate = { it.length == 1 }).onEach {
+            store.accept(mapper.mapUiEvent(ChatEventUiElm.MessageFieldChanged(it)))
+        }.flowWithLifecycle(viewLifecycleOwner.lifecycle)
+            .launchIn(viewLifecycleOwner.lifecycleScope)
+        bottomBar.sendOrAddAttachmentButton.setOnClickListener {
             store.accept(mapper.mapUiEvent(ChatEventUiElm.SendMessageAddAttachmentButtonClicked))
         }
-        binding.chatTopBar.backButton.setOnClickListener {
+        chatTopBar.backButton.setOnClickListener {
             store.accept(mapper.mapUiEvent(ChatEventUiElm.GoBackClicked))
         }
-        binding.stateBox.setOnRetryClickListener {
+        stateBox.setOnRetryClickListener {
             store.accept(mapper.mapUiEvent(ChatEventUiElm.ReloadClicked))
         }
 
-        binding.messagesRecycler.setOnScrollChangeListener { _, _, scrollY, _, oldScrollY ->
+        messagesRecycler.setOnScrollChangeListener { _, _, scrollY, _, oldScrollY ->
             if (messagesRecyclerLinearLayoutManager.findFirstVisibleItemPosition() < PaginationConfig.TOP_MESSAGES_TO_FETCH_COUNT
                 && scrollY - oldScrollY < 0
             ) {
@@ -298,9 +340,13 @@ internal class ChatFragmentRenderer :
         )
     }
 
-    private fun openReactionChooser(messageId: Long, fragment: Fragment) {
-        val dialog = EmojiChooserBottomSheetDialog.newInstance(EMOJI_CHOOSER_REQUEST_KEY, messageId)
-        dialog.show(fragment.childFragmentManager)
+    private fun openReactionChooser(
+        messageId: Long,
+        excludeEmojis: List<String>,
+        fragment: Fragment,
+    ) {
+        emojiChooserFactory.create(EMOJI_CHOOSER_REQUEST_KEY, messageId, excludeEmojis)
+            .show(fragment.childFragmentManager, EmojiChooserDialogFactory.TAG)
     }
 
     private fun showErrorToast(fragment: Fragment, stringResId: Int) {
@@ -320,20 +366,17 @@ internal class ChatFragmentRenderer :
             EMOJI_CHOOSER_REQUEST_KEY,
             fragment.viewLifecycleOwner
         ) { _, bundle ->
-            val chosenReaction =
-                bundle.getString(EmojiChooserBottomSheetDialog.BUNDLE_CHOSEN_REACTION_NAME)
-            val messageId = bundle.getLong(
-                EmojiChooserBottomSheetDialog.BUNDLE_MESSAGE_ID_KEY,
-                EmojiChooserBottomSheetDialog.DEFAULT_ARG_MESSAGE_ID
-            )
-            if (messageId != EmojiChooserBottomSheetDialog.DEFAULT_ARG_MESSAGE_ID && chosenReaction != null) {
-                store.accept(
-                    ChatEventUiElm.AddChosenReaction(
-                        messageId = messageId,
-                        reactionName = chosenReaction,
-                    ).let { mapper.mapUiEvent(it) }
-                )
-            }
+            bundle.getParcelableTypeSafe<EmojiChooserResult>(EmojiChooserDialogFactory.BUNDLE_RESULT_KEY)
+                ?.let { result ->
+                    when (result) {
+                        is EmojiChooserResult.EmojiWasChosen -> store.accept(
+                            ChatEventUiElm.AddChosenReaction(
+                                messageId = result.messageId,
+                                reactionName = result.emojiName,
+                            ).let { mapper.mapUiEvent(it) }
+                        )
+                    }
+                }
         }
     }
 

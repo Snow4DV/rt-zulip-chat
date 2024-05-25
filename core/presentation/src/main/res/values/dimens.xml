@@ -25,4 +25,8 @@
     <dimen name="outlined_edit_box_stroke_width">5dp</dimen>
     <dimen name="bottom_sheet_title_text_size">32sp</dimen>
     <dimen name="fab_bottom_padding">80dp</dimen>
+    <dimen name="sheet_puller_radius">20dp</dimen>
+    <dimen name="sheet_corner_radius">10dp</dimen>
+    <dimen name="puller_width">60dp</dimen>
+    <dimen name="puller_height">8dp</dimen>
 </resources>

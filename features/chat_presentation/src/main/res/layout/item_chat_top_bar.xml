@@ -9,10 +9,10 @@
 
     <ImageButton
         android:id="@+id/back_button"
-        android:layout_width="@dimen/top_bar_margin_between_button_and_text"
-        android:layout_height="wrap_content"
-
         style="@style/Theme.ZulipChat.ActionBarImageButton"
+        android:layout_width="@dimen/top_bar_margin_between_button_and_text"
+
+        android:layout_height="wrap_content"
         android:contentDescription="@string/back_button_description"
         android:src="@drawable/ic_back_arrow"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -21,23 +21,26 @@
 
     <TextView
         android:id="@+id/bar_title"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/top_bar_margin_between_button_and_text"
+        android:layout_marginHorizontal="@dimen/top_bar_margin_between_button_and_text"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:textColor="@color/white"
         android:textSize="@dimen/top_bar_text_size"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/back_button"
+        app:layout_constraintRight_toLeftOf="@id/open_all_topics_button"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/sample_topic_name" />
 
     <ImageButton
         android:id="@+id/open_all_topics_button"
+        style="@style/Theme.ZulipChat.ActionBarImageButton"
         android:layout_width="@dimen/top_bar_margin_between_button_and_text"
         android:layout_height="0dp"
-        android:scaleType="fitCenter"
-        style="@style/Theme.ZulipChat.ActionBarImageButton"
         android:contentDescription="@string/open_all_topics_button"
+        android:scaleType="fitCenter"
         android:src="@drawable/ic_arrow_up_chat"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"

@@ -1,0 +1,18 @@
+package ru.snowadv.message_actions_presentation.di.holder
+
+import ru.snowadv.channels_domain_api.use_case.GetTopicsUseCase
+import ru.snowadv.chat_domain_api.use_case.EditMessageUseCase
+import ru.snowadv.chat_domain_api.use_case.GetEmojisUseCase
+import ru.snowadv.chat_domain_api.use_case.LoadMessageUseCase
+import ru.snowadv.chat_domain_api.use_case.MoveMessageToOtherTopicUseCase
+import ru.snowadv.chat_domain_api.use_case.RemoveMessageUseCase
+import ru.snowadv.message_actions_presentation.api.screen_factory.ActionChooserDialogFactory
+import ru.snowadv.message_actions_presentation.api.screen_factory.EmojiChooserDialogFactory
+import ru.snowadv.message_actions_presentation.navigation.MessageActionsRouter
+import ru.snowadv.module_injector.module.BaseModuleAPI
+import ru.snowadv.module_injector.module.BaseModuleDependencies
+
+interface MessageActionsPresentationAPI : BaseModuleAPI {
+    val actionChooserDialogFactory: ActionChooserDialogFactory
+    val emojiChooserDialogFactory: EmojiChooserDialogFactory
+}

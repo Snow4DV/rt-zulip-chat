@@ -21,6 +21,7 @@ import ru.snowadv.network.api.ZulipApi
 import ru.snowadv.network.api.uploadFile
 import ru.snowadv.network.model.NarrowListRequestDto
 import ru.snowadv.network.model.NarrowRequestDto
+import ru.snowadv.network.utils.NetworkUtils.toResourceWithErrorMessage
 import ru.snowadv.utils.foldToResource
 import ru.snowadv.utils.toResource
 import javax.inject.Inject
@@ -159,7 +160,8 @@ internal class MessageRepositoryImpl @Inject constructor(
 
     override fun getMessageByIdFromStream(
         messageId: Long,
-        streamName: String,
+        streamName: String?,
+        applyMarkdown: Boolean,
     ): Flow<Resource<ChatMessage>> = flow {
         emit(Resource.Loading())
         api.getMessages(
@@ -167,11 +169,11 @@ internal class MessageRepositoryImpl @Inject constructor(
             narrow = NarrowListRequestDto(
                 emptyList()
             ),
-            applyMarkdown = true,
+            applyMarkdown = applyMarkdown,
         ).fold(
             onSuccess = { messagesDto ->
                 messagesDto.messages.firstOrNull()?.let { message ->
-                    messagesDao.insertMessage(message.toEntityMessage(streamName))
+                    streamName?.let { messagesDao.insertMessage(message.toEntityMessage(it)) }
                     Resource.Success(message.toChatMessage(currentUserId))
                 } ?: Resource.Error(IllegalStateException("Message with id $messageId not found on the server"))
             },
@@ -187,7 +189,7 @@ internal class MessageRepositoryImpl @Inject constructor(
         text: String
     ): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading())
-        emit(api.sendMessage(stream = streamName, topic = topicName, content = text).toResource())
+        emit(api.sendMessage(stream = streamName, topic = topicName, content = text).toResourceWithErrorMessage())
     }.flowOn(dispatcherProvider.io)
 
     override fun sendFile(
@@ -214,10 +216,24 @@ internal class MessageRepositoryImpl @Inject constructor(
         )
     }
 
+    override fun removeMessage(messageId: Long): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        emit(api.deleteMessage(messageId).toResourceWithErrorMessage())
+    }
+
+    override fun editMessage(
+        messageId: Long,
+        newContent: String?,
+        newSubject: String?,
+    ): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        emit(api.editMessage(messageId, newContent, newSubject).toResourceWithErrorMessage())
+    }
+
     override fun addReaction(messageId: Long, reactionName: String): Flow<Resource<Unit>> =
         flow {
             emit(Resource.Loading())
-            emit(api.addReaction(messageId, reactionName).toResource())
+            emit(api.addReaction(messageId, reactionName).toResourceWithErrorMessage())
         }.flowOn(dispatcherProvider.io)
 
     override fun removeReaction(
@@ -225,7 +241,7 @@ internal class MessageRepositoryImpl @Inject constructor(
         reactionName: String
     ): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading())
-        emit(api.removeReaction(messageId, reactionName).toResource())
+        emit(api.removeReaction(messageId, reactionName).toResourceWithErrorMessage())
     }.flowOn(dispatcherProvider.io)
 
 

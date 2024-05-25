@@ -11,4 +11,6 @@ interface PopupHandlingFragment {
     fun Fragment.showActionInternetErrorWithRetry(rootView: View, action: () -> Unit)
     fun Fragment.showInfo(rootView: View, textResId: Int)
     fun Fragment.showInfo(rootView: View, text: String)
+    fun Fragment.showShortInfo(rootView: View, textResId: Int)
+    fun Fragment.showShortInfo(rootView: View, text: String)
 }

@@ -111,6 +111,8 @@ dependencies {
     implementation(projects.features.profilePresentation)
     // Home feature
     implementation(projects.features.homePresentation)
+    // Message actions feature
+    implementation(projects.features.messageActionsPresentation)
 
 
     // Core

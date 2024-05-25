@@ -24,6 +24,8 @@ internal data class ChatStateUiElm(
     val sendTopic: String,
     val topics: Resource<List<String>> = Resource.Loading(),
     val isLoading: Boolean,
+    val isTopicChooserVisible: Boolean,
+    val isTopicEmptyErrorVisible: Boolean,
 ) {
 
     enum class ActionButtonType (val buttonResId: Int, val hintTextResId: Int) {

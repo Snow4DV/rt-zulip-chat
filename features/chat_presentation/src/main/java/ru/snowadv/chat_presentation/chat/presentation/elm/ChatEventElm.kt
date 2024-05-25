@@ -21,7 +21,6 @@ sealed interface ChatEventElm {
         data class AddReactionClicked(val messageId: Long) : Ui
         data class AddChosenReaction(val messageId: Long, val reactionName: String) : Ui
         data class RemoveReaction(val messageId: Long, val reactionName: String) : Ui
-        data class GoToProfileClicked(val profileId: Long) : Ui
         data class MessageFieldChanged(val text: String) : Ui
         data class ClickedOnTopic(val topicName: String) : Ui
         data object GoBackClicked : Ui
@@ -29,9 +28,10 @@ sealed interface ChatEventElm {
         data object PaginationLoadMore : Ui
         data object ScrolledToNTopMessages : Ui
         data object FileChoosingDismissed : Ui
-        data object ClickedOnLeaveTopic : Internal
-        data class FileWasChosen(val mimeType: String?, val inputStreamOpener: InputStreamOpener, val extension: String?) :
-            Ui
+        data object ClickedOnLeaveTopic : Ui
+        data object ClickedOnExpandOrHideTopicInput : Ui
+        data class FileWasChosen(val mimeType: String?, val inputStreamOpener: InputStreamOpener, val extension: String?) : Ui
+        data class TopicChanged(val newTopic: String) : Ui
     }
 
     sealed interface Internal : ChatEventElm {
@@ -58,7 +58,7 @@ sealed interface ChatEventElm {
         data object ChangingReaction : Internal
         data object SendingMessageError: Internal
         data class ChangingReactionError(val retryEvent: ChatEventElm) : Internal
-        data object MessageSent : Internal
+        data class MessageSent(val destTopic: String) : Internal
         data object ReactionChanged : Internal
 
         sealed class ServerEvent : Internal, EventInfoHolder {

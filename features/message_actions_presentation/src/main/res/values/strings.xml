@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="choose_reaction">Choose reaction</string>
+    <string name="actions">Actions</string>
+    <string name="message_action">Message action</string>
+    <string name="edit_message">Edit message</string>
+    <string name="new_content">New content</string>
+    <string name="apply">Apply</string>
+    <string name="move_message">Move message</string>
+    <string name="new_topic">New topic</string>
+    <string name="notify_new_topic">Send automated notice to new topic</string>
+    <string name="notify_old_topic">Send automated notice to old topic</string>
+    <string name="move">Move</string>
+    <string name="add_reaction_action">Add reaction</string>
+    <string name="remove_message_action">Remove message</string>
+    <string name="edit_message_action">Edit message</string>
+    <string name="move_message_action">Move to other topic</string>
+    <string name="copy_message_action">Copy to clipboard</string>
+    <string name="open_profile_action">Open sender\'s profile</string>
+    <string name="message_text_clipboard_label">Copied message from Zulip</string>
+    <string name="error_has_occurred_please_try_again">Error has occurred. Please try again.</string>
+</resources>

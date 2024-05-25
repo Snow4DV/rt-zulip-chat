@@ -1,11 +1,15 @@
 package ru.snowadv.presentation.fragment
 
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.BundleCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import ru.snowadv.model.ScreenState
 import ru.snowadv.presentation.databinding.ItemEmptyBoxBinding
 import ru.snowadv.presentation.databinding.ItemErrorBoxBinding
 import ru.snowadv.presentation.databinding.ItemErrorWithCachedDataBinding
@@ -14,7 +18,6 @@ import ru.snowadv.presentation.databinding.ItemLoadingWithCachedDataBinding
 import ru.snowadv.presentation.databinding.ItemStateBoxBinding
 import ru.snowadv.presentation.databinding.ItemTopBarWithBackBinding
 import ru.snowadv.presentation.databinding.ItemTopStateBoxBinding
-import ru.snowadv.model.ScreenState
 
 fun ItemStateBoxBinding.inflateState(
     screenState: ScreenState<*>,
@@ -107,6 +110,10 @@ fun ItemTopBarWithBackBinding.setColorAndText(colorResId: Int, textResId: Int) {
 fun ItemTopBarWithBackBinding.setColorAndText(colorResId: Int, text: String) {
     setTopBarText(text)
     setTopBarColor(colorResId)
+}
+
+inline fun <reified T> Bundle.getParcelableTypeSafe(key: String): T? {
+    return BundleCompat.getParcelable(this, key, T::class.java)
 }
 
 fun Fragment.setStatusBarColor(colorResId: Int) {

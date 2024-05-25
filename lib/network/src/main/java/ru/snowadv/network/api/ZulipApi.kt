@@ -105,7 +105,9 @@ interface ZulipApi {
         @Path("msg_id")
         messageId: Long,
         @Field("content")
-        content: String,
+        content: String?,
+        @Field("topic")
+        topic: String?,
     ): Result<Unit>
 
     @DELETE("messages/{msg_id}")

@@ -19,7 +19,6 @@ import ru.snowadv.network.utils.NetworkUtils.getHttpExceptionCode
 import ru.snowadv.utils.combineFold
 import ru.snowadv.utils.combineWithCache
 import ru.snowadv.utils.foldToResource
-import ru.snowadv.utils.toResource
 import javax.inject.Inject
 
 @Reusable
@@ -110,7 +109,7 @@ internal class StreamRepositoryImpl @Inject constructor(
                 emit(
                     Resource.Error(
                         throwable = it,
-                        errorCode = it.getHttpExceptionCode(),
+                        error = it.getHttpExceptionCode(),
                     )
                 )
             },
@@ -141,7 +140,7 @@ internal class StreamRepositoryImpl @Inject constructor(
                 emit(
                     Resource.Error(
                         throwable = it,
-                        errorCode = it.getHttpExceptionCode()
+                        error = it.getHttpExceptionCode()
                     )
                 )
             },

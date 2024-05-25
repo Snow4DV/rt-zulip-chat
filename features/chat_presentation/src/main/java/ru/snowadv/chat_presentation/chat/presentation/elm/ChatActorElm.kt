@@ -17,7 +17,7 @@ import ru.snowadv.chat_presentation.chat.ui.util.ChatMappers.toElmEvent
 import ru.snowadv.chat_presentation.navigation.ChatRouter
 import ru.snowadv.model.Resource
 import ru.snowadv.model.map
-import vivid.money.elmslie.core.store.Actor
+import ru.snowadv.presentation.elm.compat.SwitchingActor
 import javax.inject.Inject
 
 @Reusable
@@ -32,7 +32,7 @@ class ChatActorElm @Inject constructor(
     private val sendFileUseCase: SendFileUseCase,
     private val getTopicsUseCase: GetTopicsUseCase,
     private val loadMessageUseCase: LoadMessageUseCase
-) : Actor<ChatCommandElm, ChatEventElm>() {
+) : SwitchingActor<ChatCommandElm, ChatEventElm>() {
     override fun execute(command: ChatCommandElm): Flow<ChatEventElm> = when (command) {
         ChatCommandElm.GoBack -> flow { router.goBack() }
         is ChatCommandElm.LoadInitialMessages -> getMessagesUseCase(
@@ -70,7 +70,11 @@ class ChatActorElm @Inject constructor(
                 eventQueueProps = command.queueProps,
                 streamName = command.streamName,
                 topicName = command.topicName,
-            ).map { it.toElmEvent() }
+            ).map { it.toElmEvent() }.asSwitchFlow(command)
+        }
+
+        is ChatCommandElm.CancelObservation -> {
+            cancelSwitchFlow(ChatCommandElm.ObserveEvents::class)
         }
 
         is ChatCommandElm.AddChosenReaction -> {
@@ -89,7 +93,6 @@ class ChatActorElm @Inject constructor(
             }
         }
 
-        is ChatCommandElm.GoToProfile -> flow { router.openProfile(command.profileId) }
         is ChatCommandElm.RemoveReaction -> {
             removeReactionUseCase(command.messageId, command.reactionName).map { res ->
                 when (res) {
@@ -111,7 +114,7 @@ class ChatActorElm @Inject constructor(
                 when (res) {
                     is Resource.Error -> ChatEventElm.Internal.SendingMessageError
                     is Resource.Loading -> ChatEventElm.Internal.SendingMessage
-                    is Resource.Success -> ChatEventElm.Internal.MessageSent
+                    is Resource.Success -> ChatEventElm.Internal.MessageSent(command.topicName)
                 }
             }
         }
@@ -146,7 +149,11 @@ class ChatActorElm @Inject constructor(
         }
 
         is ChatCommandElm.LoadMovedMessage -> {
-            loadMessageUseCase(command.messageId, command.streamName).mapEvents(
+            loadMessageUseCase(
+                messageId = command.messageId,
+                streamName = command.streamName,
+                applyMarkdown = true,
+            ).mapEvents(
                 eventMapper = { res ->
                     when(res) {
                         is Resource.Error -> ChatEventElm.Internal.ErrorFetchingMovedMessage(res.throwable, command.requestQueueId, command.requestEventId)

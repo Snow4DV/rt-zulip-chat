@@ -14,11 +14,13 @@ internal class LoadMessageUseCaseImpl @Inject constructor(private val messagesRe
     LoadMessageUseCase {
     override operator fun invoke(
         messageId: Long,
-        streamName: String,
+        streamName: String?,
+        applyMarkdown: Boolean,
     ): Flow<Resource<ChatMessage>> {
         return messagesRepository.getMessageByIdFromStream(
             messageId = messageId,
             streamName = streamName,
+            applyMarkdown = applyMarkdown,
         )
     }
 }

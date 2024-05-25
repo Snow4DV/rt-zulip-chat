@@ -5,22 +5,57 @@
     android:layout_height="wrap_content"
     android:background="@color/on_surface_box_color"
     android:paddingHorizontal="@dimen/common_padding"
-    android:paddingVertical="@dimen/small_common_padding">
+    android:paddingVertical="@dimen/small_common_padding"
+    android:theme="@style/Theme.ZulipChat.Chat">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/topic_input_layout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/common_padding"
+        android:visibility="gone"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <AutoCompleteTextView
+            android:id="@+id/topic_auto_complete_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/destination_topic"
+            android:inputType="text"
+            android:maxLines="1" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/show_topic_chooser_button"
+        style="@style/Theme.ZulipChat.Clickable"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:contentDescription="@string/change_subject"
+        android:paddingVertical="@dimen/small_common_padding"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_subject_selector"
+        android:tint="@color/primary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topic_input_layout" />
 
     <EditText
         android:id="@+id/message_edit_text"
         style="@style/Theme.ZulipChat.MessageEditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginRight="@dimen/common_padding"
+        android:layout_marginHorizontal="@dimen/small_common_padding"
         android:hint="@string/message_edit_text_hint"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/show_topic_chooser_button"
         app:layout_constraintRight_toLeftOf="@id/send_or_add_attachment_button"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/topic_input_layout" />
 
     <ImageButton
         android:id="@+id/send_or_add_attachment_button"
-
         style="@style/Theme.ZulipChat.ImageButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -28,5 +63,5 @@
         android:src="@drawable/ic_send"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/topic_input_layout" />
 </androidx.constraintlayout.widget.ConstraintLayout>

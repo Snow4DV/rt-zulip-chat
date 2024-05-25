@@ -43,7 +43,7 @@ internal class ProfileFragmentRenderer :
             store.accept(mapper.mapUiEvent(ProfileEventUiElm.ClickedOnBack))
         }
         binding.stateBox.setOnRetryClickListener {
-            store.accept(mapper.mapUiEvent(ProfileEventUiElm.ClickedOnBack))
+            store.accept(mapper.mapUiEvent(ProfileEventUiElm.ClickedOnRetry))
         }
         binding.buttonLogout.setOnClickListener {
             store.accept(mapper.mapUiEvent(ProfileEventUiElm.ClickedOnLogout))

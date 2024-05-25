@@ -20,6 +20,16 @@
         android:orientation="vertical"
         app:layout_constraintGuide_end="@dimen/common_margin_large" />
 
+    <View
+        android:id="@+id/sheet_puller"
+        android:layout_width="@dimen/puller_width"
+        android:layout_height="@dimen/puller_height"
+        android:layout_marginTop="@dimen/small_common_padding"
+        android:background="@drawable/ic_sheet_puller"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/new_stream_title"
         android:layout_width="wrap_content"
@@ -29,7 +39,8 @@
         android:textSize="@dimen/bottom_sheet_title_text_size"
         android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/sheet_puller"
+        android:layout_marginTop="@dimen/common_margin"/>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/stream_name_input_layout"
@@ -120,9 +131,8 @@
             android:layout_width="@dimen/action_button_width"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:backgroundTint="@color/on_surface"
             android:text="@string/create_stream_button_title"
-            android:textColor="@color/text" />
+            android:textColor="@color/white" />
 
         <ProgressBar
             android:id="@+id/creating_stream_progress_bar"

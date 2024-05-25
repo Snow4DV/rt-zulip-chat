@@ -54,6 +54,9 @@ dependencies {
     implementation(libs.markwon.strikethrough)
     implementation(libs.markwon.html)
 
+    // Presentation dependencies
+    implementation(projects.features.messageActionsPresentation)
+
     // Feature domain api
     implementation(projects.features.chatDomainApi)
     implementation(projects.features.eventsDomainApi)

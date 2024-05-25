@@ -9,8 +9,8 @@ import ru.snowadv.network.api.ZulipApi
 
 interface ChatDataDependencies : BaseModuleDependencies {
     val zulipApi: ZulipApi
-    val emojisDao: EmojisDao
     val messagesDao: MessagesDao
+    val emojisDao: EmojisDao
     val dispatcherProvider: DispatcherProvider
     val authProvider: AuthProvider
 }

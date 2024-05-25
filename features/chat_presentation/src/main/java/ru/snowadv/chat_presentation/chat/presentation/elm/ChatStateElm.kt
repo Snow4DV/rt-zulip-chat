@@ -22,6 +22,8 @@ data class ChatStateElm(
     val resumed: Boolean = false,
     val sendTopic: String,
     val topics: Resource<List<String>> = Resource.Loading(),
+    val isTopicChooserVisible: Boolean = false,
+    val isTopicEmptyErrorVisible: Boolean = false,
 ) {
 
     val firstLoadedMessageId: Long? = messages.firstOrNull()?.id
