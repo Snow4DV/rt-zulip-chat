@@ -3,6 +3,7 @@ package ru.snowadv.chat_presentation.chat.ui.util
 import ru.snowadv.chat_domain_api.model.ChatEmoji
 import ru.snowadv.chat_presentation.chat.presentation.elm.ChatEventElm
 import ru.snowadv.chat_presentation.chat.presentation.elm.ChatStateElm
+import ru.snowadv.chat_presentation.chat.presentation.model.SnackbarText
 import ru.snowadv.chat_presentation.chat.ui.elm.ChatStateUiElm
 import ru.snowadv.chat_domain_api.model.ChatReaction as DomainChatReaction
 import ru.snowadv.chat_domain_api.model.ChatMessage as DomainChatMessage
@@ -11,6 +12,7 @@ import ru.snowadv.chat_presentation.chat.ui.model.ChatMessage
 import ru.snowadv.chat_presentation.chat.ui.model.ChatMessageType
 import ru.snowadv.chat_presentation.chat.ui.model.ChatPaginationStatus
 import ru.snowadv.chat_presentation.chat.ui.model.ChatReaction
+import ru.snowadv.chat_presentation.chat.ui.model.SnackbarUiText
 import ru.snowadv.events_api.model.DomainEvent
 import ru.snowadv.events_api.model.EventMessage
 import ru.snowadv.events_api.model.EventReaction
@@ -154,4 +156,7 @@ internal object ChatMappers {
         }
     }
 
+    fun SnackbarText.toUiModel(): SnackbarUiText {
+        return SnackbarUiText.valueOf(toString())
+    }
 }

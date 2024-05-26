@@ -12,11 +12,15 @@ internal class ActionChooserDialogFactoryImpl @Inject constructor() : ActionChoo
         resultKey: String,
         messageId: Long,
         senderUserId: Long,
+        streamName: String,
+        isOwner: Boolean,
     ): BottomSheetDialogFragment {
         return ActionChooserBottomSheetDialog.newInstance(
             resultKey = resultKey,
             messageId = messageId,
-            userId = senderUserId
+            userId = senderUserId,
+            streamName = streamName,
+            isOwner = isOwner,
         )
     }
 }

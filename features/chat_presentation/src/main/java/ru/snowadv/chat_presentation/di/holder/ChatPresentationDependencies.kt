@@ -15,6 +15,8 @@ import ru.snowadv.chat_domain_api.use_case.SendMessageUseCase
 import ru.snowadv.chat_presentation.navigation.ChatRouter
 import ru.snowadv.message_actions_presentation.api.screen_factory.ActionChooserDialogFactory
 import ru.snowadv.message_actions_presentation.api.screen_factory.EmojiChooserDialogFactory
+import ru.snowadv.message_actions_presentation.api.screen_factory.MessageEditorDialogFactory
+import ru.snowadv.message_actions_presentation.api.screen_factory.MessageTopicChangerDialogFactory
 import ru.snowadv.model.BaseUrlProvider
 import ru.snowadv.module_injector.module.BaseModuleDependencies
 
@@ -22,6 +24,8 @@ interface ChatPresentationDependencies : BaseModuleDependencies {
     val chatRouter: ChatRouter
     val actionChooserDialogFactory: ActionChooserDialogFactory
     val emojiChooserDialogFactory: EmojiChooserDialogFactory
+    val messageEditorDialogFactory: MessageEditorDialogFactory
+    val messageTopicChangerDialogFactory: MessageTopicChangerDialogFactory
 
     val addReactionUseCase: AddReactionUseCase
     val removeReactionUseCase: RemoveReactionUseCase

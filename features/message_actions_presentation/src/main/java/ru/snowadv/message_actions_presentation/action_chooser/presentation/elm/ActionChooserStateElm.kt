@@ -7,5 +7,7 @@ import ru.snowadv.model.ScreenState
 internal data class ActionChooserStateElm(
     val messageId: Long,
     val senderId: Long,
+    val streamName: String,
     val actions: List<MessageAction>,
+    val isOwner: Boolean,
 )

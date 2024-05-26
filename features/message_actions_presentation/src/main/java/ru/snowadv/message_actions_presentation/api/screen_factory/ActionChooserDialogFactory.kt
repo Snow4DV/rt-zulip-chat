@@ -9,5 +9,5 @@ interface ActionChooserDialogFactory {
         const val BUNDLE_RESULT_KEY = "chooser_result"
         const val TAG = "action_chooser_dialog"
     }
-    fun create(resultKey: String, messageId: Long, senderUserId: Long): BottomSheetDialogFragment
+    fun create(resultKey: String, messageId: Long, senderUserId: Long, streamName: String, isOwner: Boolean): BottomSheetDialogFragment
 }

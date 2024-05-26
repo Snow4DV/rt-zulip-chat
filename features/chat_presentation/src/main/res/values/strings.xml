@@ -29,4 +29,5 @@
     <string name="destination_topic">Destination topic</string>
     <string name="new_message_is_unreachable">New message is unreachable from current topic scope: destination topic is displayed</string>
     <string name="topic_cant_be_empty">Topic can\'t be empty. Choose or enter the topic</string>
+    <string name="message_copied">Message was copied to the clipboard</string>
 </resources>

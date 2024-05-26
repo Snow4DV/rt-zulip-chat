@@ -32,6 +32,8 @@ sealed interface ChatEventElm {
         data object ClickedOnExpandOrHideTopicInput : Ui
         data class FileWasChosen(val mimeType: String?, val inputStreamOpener: InputStreamOpener, val extension: String?) : Ui
         data class TopicChanged(val newTopic: String) : Ui
+        data class EditMessageClicked(val messageId: Long) : Ui
+        data class MoveMessageClicked(val messageId: Long) : Ui
     }
 
     sealed interface Internal : ChatEventElm {

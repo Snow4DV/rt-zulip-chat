@@ -19,8 +19,8 @@ internal class MessageActionAdapterDelegate(private val listener: OnActionItemCl
 
     companion object {
         private const val SHIMMER_DURATION = 1000L
-        private const val SHIMMER_BASE_ALPHA = 0.7f
-        private const val SHIMMER_HIGHLIGHT_ALPHA = 0.9f
+        private const val SHIMMER_BASE_ALPHA = 0.2f
+        private const val SHIMMER_HIGHLIGHT_ALPHA = 0.95f
         private const val SHIMMER_DIRECTION = Shimmer.Direction.LEFT_TO_RIGHT
         private const val DEFAULT_SHIMMER_AUTOSTART = true
     }

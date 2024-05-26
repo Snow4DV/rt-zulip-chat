@@ -2,14 +2,8 @@ package ru.snowadv.message_actions_presentation.action_chooser.presentation.elm
 
 import dagger.Reusable
 import ru.snowadv.message_actions_presentation.action_chooser.presentation.model.MessageAction
-import ru.snowadv.message_actions_presentation.emoji_chooser.presentation.elm.EmojiChooserCommandElm
-import ru.snowadv.message_actions_presentation.emoji_chooser.presentation.elm.EmojiChooserEffectElm
-import ru.snowadv.message_actions_presentation.emoji_chooser.presentation.elm.EmojiChooserEventElm
-import ru.snowadv.message_actions_presentation.emoji_chooser.presentation.elm.EmojiChooserStateElm
-import ru.snowadv.model.ScreenState
 import vivid.money.elmslie.core.store.Actor
 import vivid.money.elmslie.core.store.ElmStore
-import vivid.money.elmslie.core.store.Store
 import vivid.money.elmslie.core.store.dsl.ScreenDslReducer
 import javax.inject.Inject
 import javax.inject.Provider
@@ -21,7 +15,7 @@ internal class ActionChooserStoreFactoryElm @Inject constructor(
 ) {
 
     companion object {
-        private val initialActions = listOf(
+        private val initialOwnerActions = listOf(
             MessageAction.AddReaction(),
             MessageAction.RemoveMessage(),
             MessageAction.EditMessage(),
@@ -29,11 +23,27 @@ internal class ActionChooserStoreFactoryElm @Inject constructor(
             MessageAction.CopyMessage(),
             MessageAction.OpenSenderProfile(),
         )
+        private val initialNotOwnerActions = listOf(
+            MessageAction.AddReaction(),
+            MessageAction.CopyMessage(),
+            MessageAction.OpenSenderProfile(),
+        )
     }
 
-    fun create(messageId: Long, senderId: Long): ElmStore<ActionChooserEventElm, ActionChooserStateElm, ActionChooserEffectElm, ActionChooserCommandElm> {
+    fun create(
+        messageId: Long,
+        senderId: Long,
+        streamName: String,
+        isOwner: Boolean
+    ): ElmStore<ActionChooserEventElm, ActionChooserStateElm, ActionChooserEffectElm, ActionChooserCommandElm> {
         return ElmStore(
-            initialState = ActionChooserStateElm(messageId = messageId, senderId = senderId, actions = initialActions),
+            initialState = ActionChooserStateElm(
+                messageId = messageId,
+                senderId = senderId,
+                actions = if (isOwner) initialOwnerActions else initialNotOwnerActions,
+                streamName = streamName,
+                isOwner = isOwner,
+            ),
             actor = actor,
             reducer = reducer.get(),
         )

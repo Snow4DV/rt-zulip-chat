@@ -17,6 +17,7 @@ internal class ActionChooserElmUiMapper @Inject constructor() :
             messageId = state.messageId,
             senderId = state.senderId,
             actions = state.actions.map { it.toUiMessageAction() },
+            streamName = state.streamName,
         )
     }
 
@@ -24,7 +25,7 @@ internal class ActionChooserElmUiMapper @Inject constructor() :
         return when(effect) {
             is ActionChooserEffectElm.CloseWithResult -> ActionChooserEffectUiElm.CloseWithResult(effect.result)
             is ActionChooserEffectElm.CopyMessageToClipboard -> ActionChooserEffectUiElm.CopyMessageToClipboard(effect.content)
-            is ActionChooserEffectElm.ShowError -> ActionChooserEffectUiElm.ShowError(effect.throwable, effect.errorMessage)
+            is ActionChooserEffectElm.FinishWithError -> ActionChooserEffectUiElm.FinishWithError(effect.throwable, effect.errorMessage)
         }
     }
 

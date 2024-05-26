@@ -11,11 +11,18 @@ import javax.inject.Inject
 @Reusable
 internal class MoveMessageToOtherTopicUseCaseImpl @Inject constructor(private val messagesRepository: MessageRepository) :
     MoveMessageToOtherTopicUseCase {
-    override operator fun invoke(messageId: Long, newTopic: String): Flow<Resource<Unit>> {
+    override operator fun invoke(
+        messageId: Long,
+        newTopic: String,
+        notifyNewThread: Boolean,
+        notifyOldThread: Boolean
+    ): Flow<Resource<Unit>> {
         return messagesRepository.editMessage(
             messageId = messageId,
             newContent = null,
             newSubject = newTopic,
+            notifyOldThread = notifyOldThread,
+            notifyNewThread = notifyNewThread,
         )
     }
 }

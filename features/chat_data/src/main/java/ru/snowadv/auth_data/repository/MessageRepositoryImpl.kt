@@ -166,9 +166,7 @@ internal class MessageRepositoryImpl @Inject constructor(
         emit(Resource.Loading())
         api.getMessages(
             anchor = messageId.toString(), numBefore = 0, numAfter = 0,
-            narrow = NarrowListRequestDto(
-                emptyList()
-            ),
+            narrow = NarrowListRequestDto(streamName?.let { NarrowRequestDto.ofStream(it) } ?: emptyList()),
             applyMarkdown = applyMarkdown,
         ).fold(
             onSuccess = { messagesDto ->
@@ -225,9 +223,17 @@ internal class MessageRepositoryImpl @Inject constructor(
         messageId: Long,
         newContent: String?,
         newSubject: String?,
+        notifyOldThread: Boolean,
+        notifyNewThread: Boolean
     ): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading())
-        emit(api.editMessage(messageId, newContent, newSubject).toResourceWithErrorMessage())
+        emit(api.editMessage(
+            messageId = messageId,
+            content = newContent,
+            topic = newSubject,
+            notifyOldThread = notifyOldThread,
+            notifyNewThread = notifyNewThread,
+        ).toResourceWithErrorMessage())
     }
 
     override fun addReaction(messageId: Long, reactionName: String): Flow<Resource<Unit>> =

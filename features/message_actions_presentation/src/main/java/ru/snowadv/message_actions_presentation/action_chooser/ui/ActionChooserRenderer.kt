@@ -12,15 +12,15 @@ import ru.snowadv.message_actions_presentation.action_chooser.ui.elm.ActionChoos
 import ru.snowadv.message_actions_presentation.action_chooser.ui.elm.ActionChooserEventUiElm
 import ru.snowadv.message_actions_presentation.action_chooser.ui.elm.ActionChooserStateUiElm
 import ru.snowadv.message_actions_presentation.action_chooser.ui.model.UiMessageAction
+import ru.snowadv.message_actions_presentation.api.model.ActionChooserResult
 import ru.snowadv.message_actions_presentation.databinding.FragmentActionChooserBinding
 import ru.snowadv.message_actions_presentation.di.dagger.MessageActionsPresentationComponentHolder
-import ru.snowadv.message_actions_presentation.emoji_chooser.ui.adapter.EmojiAdapterDelegate
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.presentation.adapter.impl.AdapterDelegatesManager
 import ru.snowadv.presentation.adapter.impl.DiffDelegationAdapter
 import ru.snowadv.presentation.elm.ElmMapper
 import ru.snowadv.presentation.fragment.ElmFragmentRenderer
-import ru.snowadv.presentation.fragment.inflateState
+import ru.snowadv.presentation.recycler.setupDecorator
 import vivid.money.elmslie.core.store.Store
 import javax.inject.Inject
 
@@ -48,6 +48,7 @@ internal class ActionChooserRenderer :
                 store.accept(mapper.mapUiEvent(ActionChooserEventUiElm.OnActionChosen(action)))
             },
         )
+        binding.actionsRecycler.setupDecorator(horizontalSpacingResId = ru.snowadv.presentation.R.dimen.no_padding)
     }
 
     override fun ActionChooserBottomSheetDialog.renderStateByRenderer(
@@ -65,8 +66,9 @@ internal class ActionChooserRenderer :
         when (val mappedEffect = mapper.mapEffect(effect)) {
             is ActionChooserEffectUiElm.CloseWithResult -> finishWithResult(mappedEffect.result)
             is ActionChooserEffectUiElm.CopyMessageToClipboard -> copyToClipboard(mappedEffect.content)
-            is ActionChooserEffectUiElm.ShowError -> showInfo(binding.root, mappedEffect.errorMessage
-                ?: getString(R.string.error_has_occurred_please_try_again))
+            is ActionChooserEffectUiElm.FinishWithError -> finishWithResult(
+                ActionChooserResult.Error(mappedEffect.errorMessage ?: getString(R.string.error_has_occurred_please_try_again))
+            )
         }
     }
 

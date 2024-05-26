@@ -19,7 +19,7 @@ internal class ActionChooserActorElm @Inject constructor(
 ) : Actor<ActionChooserCommandElm, ActionChooserEventElm>() {
     override fun execute(command: ActionChooserCommandElm): Flow<ActionChooserEventElm> {
         return when(command) {
-            is ActionChooserCommandElm.LoadRawMessageToCopy -> loadMessageUseCase(command.messageId, null, false)
+            is ActionChooserCommandElm.LoadRawMessageToCopy -> loadMessageUseCase(command.messageId, command.streamName, false)
                 .mapEvents(
                     eventMapper = { res ->
                         when(res) {
@@ -32,7 +32,10 @@ internal class ActionChooserActorElm @Inject constructor(
                         ActionChooserEventElm.Internal.LoadingCopyMessageError(error, null)
                     }
                 )
-            is ActionChooserCommandElm.OpenProfile -> flow { messageActionsRouter.openProfile(command.userId) }
+            is ActionChooserCommandElm.OpenProfile -> flow {
+                messageActionsRouter.openProfile(command.userId)
+                emit(ActionChooserEventElm.Internal.OpenedProfile(command.userId))
+            }
             is ActionChooserCommandElm.RemoveMessage -> removeMessageUseCase(command.messageId)
                 .mapEvents(
                     eventMapper = { res ->

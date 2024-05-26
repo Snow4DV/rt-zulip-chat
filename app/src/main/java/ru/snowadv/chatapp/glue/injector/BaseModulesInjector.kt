@@ -105,6 +105,8 @@ import ru.snowadv.home_presentation.di.dagger.HomePresentationComponentHolder
 import ru.snowadv.home_presentation.di.holder.HomePresentationDependencies
 import ru.snowadv.message_actions_presentation.api.screen_factory.ActionChooserDialogFactory
 import ru.snowadv.message_actions_presentation.api.screen_factory.EmojiChooserDialogFactory
+import ru.snowadv.message_actions_presentation.api.screen_factory.MessageEditorDialogFactory
+import ru.snowadv.message_actions_presentation.api.screen_factory.MessageTopicChangerDialogFactory
 import ru.snowadv.message_actions_presentation.di.dagger.MessageActionsPresentationComponentHolder
 import ru.snowadv.message_actions_presentation.di.holder.MessageActionsPresentationAPI
 import ru.snowadv.message_actions_presentation.di.holder.MessageActionsPresentationDependencies
@@ -263,6 +265,8 @@ abstract class BaseModulesInjector {
                     override val chatRouter: ChatRouter = appApi.chatRouter
                     override val actionChooserDialogFactory: ActionChooserDialogFactory = msgActionsApi.actionChooserDialogFactory
                     override val emojiChooserDialogFactory: EmojiChooserDialogFactory = msgActionsApi.emojiChooserDialogFactory
+                    override val messageEditorDialogFactory: MessageEditorDialogFactory = msgActionsApi.messageEditorDialogFactory
+                    override val messageTopicChangerDialogFactory: MessageTopicChangerDialogFactory = msgActionsApi.messageTopicChangerDialogFactory
                     override val addReactionUseCase: AddReactionUseCase = chatApi.addReactionUseCase
                     override val removeReactionUseCase: RemoveReactionUseCase = chatApi.removeReactionUseCase
                     override val sendMessageUseCase: SendMessageUseCase = chatApi.sendMessageUseCase

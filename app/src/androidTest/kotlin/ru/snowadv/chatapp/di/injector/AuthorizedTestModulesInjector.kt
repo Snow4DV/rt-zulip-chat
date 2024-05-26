@@ -54,6 +54,8 @@ import ru.snowadv.events_impl.di.dagger.EventsDataModuleComponentHolder
 import ru.snowadv.events_impl.di.holder.EventsDataDependencies
 import ru.snowadv.message_actions_presentation.api.screen_factory.ActionChooserDialogFactory
 import ru.snowadv.message_actions_presentation.api.screen_factory.EmojiChooserDialogFactory
+import ru.snowadv.message_actions_presentation.api.screen_factory.MessageEditorDialogFactory
+import ru.snowadv.message_actions_presentation.api.screen_factory.MessageTopicChangerDialogFactory
 import ru.snowadv.message_actions_presentation.di.dagger.MessageActionsPresentationComponentHolder
 import ru.snowadv.message_actions_presentation.di.holder.MessageActionsPresentationAPI
 import ru.snowadv.model.DispatcherProvider
@@ -118,9 +120,11 @@ internal object AuthorizedTestModulesInjector: BaseModulesInjector() {
 
             ChatPresentationDependencyHolder { dependencyHolder, appApi, chatApi, imageLoaderApi, testApi, channelsDomainApi, msgActionsApi ->
                 object : ChatPresentationDependencies {
+                    override val messageTopicChangerDialogFactory: MessageTopicChangerDialogFactory = msgActionsApi.messageTopicChangerDialogFactory
                     override val chatRouter: ChatRouter = appApi.chatRouter
                     override val actionChooserDialogFactory: ActionChooserDialogFactory = msgActionsApi.actionChooserDialogFactory
                     override val emojiChooserDialogFactory: EmojiChooserDialogFactory = msgActionsApi.emojiChooserDialogFactory
+                    override val messageEditorDialogFactory: MessageEditorDialogFactory = msgActionsApi.messageEditorDialogFactory
                     override val addReactionUseCase: AddReactionUseCase = chatApi.addReactionUseCase
                     override val removeReactionUseCase: RemoveReactionUseCase = chatApi.removeReactionUseCase
                     override val sendMessageUseCase: SendMessageUseCase = chatApi.sendMessageUseCase

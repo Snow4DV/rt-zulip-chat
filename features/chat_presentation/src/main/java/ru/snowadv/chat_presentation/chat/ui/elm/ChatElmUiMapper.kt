@@ -6,6 +6,7 @@ import ru.snowadv.chat_presentation.chat.presentation.elm.ChatEventElm
 import ru.snowadv.chat_presentation.chat.presentation.elm.ChatStateElm
 import ru.snowadv.chat_presentation.chat.ui.util.AdapterUtils.mapToUiAdapterMessagesAndDates
 import ru.snowadv.chat_presentation.chat.ui.util.ChatMappers.toUiChatMessage
+import ru.snowadv.chat_presentation.chat.ui.util.ChatMappers.toUiModel
 import ru.snowadv.chat_presentation.chat.ui.util.ChatMappers.toUiPaginationStatus
 import ru.snowadv.chat_presentation.chat.ui.util.ChatMappers.toUiType
 import ru.snowadv.presentation.elm.ElmMapper
@@ -39,11 +40,14 @@ internal class ChatElmUiMapper @Inject constructor() :
     override fun mapEffect(effect: ChatEffectElm): ChatEffectUiElm = with(effect) {
         when(this) {
             ChatEffectElm.OpenFileChooser -> ChatEffectUiElm.OpenFileChooser
-            is ChatEffectElm.OpenMessageActionsChooser -> ChatEffectUiElm.OpenMessageActionsChooser(messageId = messageId, userId = userId)
-            is ChatEffectElm.OpenReactionChooser -> ChatEffectUiElm.OpenReactionChooser(destMessageId, excludeEmojisNames)
-            ChatEffectElm.ShowActionError -> ChatEffectUiElm.ShowActionError
+            is ChatEffectElm.OpenMessageActionsChooser -> ChatEffectUiElm.OpenMessageActionsChooser(messageId = messageId, userId = userId, streamName = streamName, isOwner =  isOwner)
+            is ChatEffectElm.OpenReactionChooser -> ChatEffectUiElm.OpenReactionChooser(destMessageId, excludeEmojisCodes)
+            is ChatEffectElm.ShowSnackbarWithText -> ChatEffectUiElm.ShowSnackbarWithText(text.toUiModel())
             is ChatEffectElm.ShowActionErrorWithRetry -> ChatEffectUiElm.ShowActionErrorWithRetry(retryEvent)
-            ChatEffectElm.ShowTopicChangedBecauseNewMessageIsUnreachable -> ChatEffectUiElm.ShowTopicChangedBecauseNewMessageIsUnreachabel
+            ChatEffectElm.ShowTopicChangedBecauseNewMessageIsUnreachable -> ChatEffectUiElm.ShowTopicChangedBecauseNewMessageIsUnreachable
+            ChatEffectElm.ExpandTopicChooser -> ChatEffectUiElm.ExpandTopicChooser
+            is ChatEffectElm.OpenMessageEditor -> ChatEffectUiElm.OpenMessageEditor(messageId, streamName)
+            is ChatEffectElm.OpenMessageTopicChanger -> ChatEffectUiElm.OpenMessageTopicChanger(messageId, streamId, topicName)
         }
     }
 
@@ -78,6 +82,8 @@ internal class ChatElmUiMapper @Inject constructor() :
             ChatEventUiElm.OnLeaveTopicClicked -> ChatEventElm.Ui.ClickedOnLeaveTopic
             ChatEventUiElm.ClickedOnExpandOrHideTopicInput -> ChatEventElm.Ui.ClickedOnExpandOrHideTopicInput
             is ChatEventUiElm.TopicChanged -> ChatEventElm.Ui.TopicChanged(newTopic)
+            is ChatEventUiElm.EditMessageClicked -> ChatEventElm.Ui.EditMessageClicked(messageId)
+            is ChatEventUiElm.MoveMessageClicked -> ChatEventElm.Ui.MoveMessageClicked(messageId)
         }
     }
 }

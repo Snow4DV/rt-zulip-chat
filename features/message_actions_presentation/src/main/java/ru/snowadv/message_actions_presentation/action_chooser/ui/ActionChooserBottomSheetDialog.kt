@@ -30,7 +30,7 @@ import javax.inject.Inject
 
 internal class ActionChooserBottomSheetDialog : BaseBottomSheetDialogFragment<ActionChooserEventElm, ActionChooserEffectElm, ActionChooserStateElm>(),
     ElmFragmentRenderer<ActionChooserBottomSheetDialog, FragmentActionChooserBinding, ActionChooserEventElm, ActionChooserEffectElm, ActionChooserStateElm>
-    by ActionChooserRenderer(), PopupHandlingFragment by SnackbarPopupHandlingFragment() {
+    by ActionChooserRenderer() {
 
     companion object {
         const val DEFAULT_ARG_RESULT_KEY = "action_chooser_result"
@@ -39,13 +39,17 @@ internal class ActionChooserBottomSheetDialog : BaseBottomSheetDialogFragment<Ac
 
         const val ARG_RESULT_KEY = "arg_result_key"
         const val ARG_MESSAGE_ID_KEY = "message_id"
-        const val ARG_USER_ID_KEY = "message_id"
-        fun newInstance(resultKey: String, messageId: Long, userId: Long) =
+        const val ARG_USER_ID_KEY = "user_id"
+        const val ARG_STREAM_NAME_KEY = "stream_name"
+        const val ARG_IS_OWNER_KEY = "is_owner"
+        fun newInstance(resultKey: String, messageId: Long, userId: Long, streamName: String, isOwner: Boolean) =
             ActionChooserBottomSheetDialog().apply {
                 arguments = bundleOf(
                     ARG_RESULT_KEY to resultKey,
                     ARG_MESSAGE_ID_KEY to messageId,
                     ARG_USER_ID_KEY to userId,
+                    ARG_STREAM_NAME_KEY to streamName,
+                    ARG_IS_OWNER_KEY to isOwner,
                 )
             }
     }
@@ -71,12 +75,23 @@ internal class ActionChooserBottomSheetDialog : BaseBottomSheetDialogFragment<Ac
                 if (it == DEFAULT_ARG_USER_ID) error("Missing user id argument")
             }
     }
+    private val streamName: String by lazy {
+        requireNotNull(requireArguments().getString(ARG_STREAM_NAME_KEY, null)) {
+            "Missing stream name argument"
+        }
+    }
+    private val isOwner: Boolean by lazy {
+        if (!requireArguments().containsKey(ARG_IS_OWNER_KEY)) {
+            error("Missing isOwner argument")
+        }
+        requireArguments().getBoolean(ARG_IS_OWNER_KEY, false)
+    }
 
     private var _binding: FragmentActionChooserBinding? = null
     private val binding get() = requireNotNull(_binding) { "Binding wasn't initialized" }
 
     override val store: Store<ActionChooserEventElm, ActionChooserEffectElm, ActionChooserStateElm> by elmStoreWithRenderer(elmRenderer = this) {
-        actionChooserStoreFactoryElm.create(messageId = messageId, senderId = senderUserId)
+        actionChooserStoreFactoryElm.create(messageId = messageId, senderId = senderUserId, streamName = streamName, isOwner = isOwner)
     }
 
     override fun onAttach(context: Context) {

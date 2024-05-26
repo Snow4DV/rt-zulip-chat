@@ -20,16 +20,18 @@ internal class EmojiChooserActorElm @Inject constructor(
                     when(res) {
                         is Resource.Error -> res.data?.let { data ->
                             EmojiChooserEventElm.Internal.LoadedEmojis(
-                                emojis = data
+                                emojis = data.filter { emoji -> emoji.name !in command.excludeEmojisCodes }
                             )
                         } ?: EmojiChooserEventElm.Internal.EmojiLoadError(res.throwable)
                         is Resource.Loading -> res.data?.let { data ->
                             EmojiChooserEventElm.Internal.LoadedEmojis(
-                                emojis = data
+                                emojis = data.filter { emoji ->
+                                    emoji.code !in command.excludeEmojisCodes
+                                }
                             )
                         } ?: EmojiChooserEventElm.Internal.EmojiLoading
                         is Resource.Success -> EmojiChooserEventElm.Internal.LoadedEmojis(
-                            emojis = res.data.filter { emoji -> emoji.name !in command.excludeEmojisNames }
+                            emojis = res.data.filter { emoji -> emoji.name !in command.excludeEmojisCodes }
                         )
                     }
                 }

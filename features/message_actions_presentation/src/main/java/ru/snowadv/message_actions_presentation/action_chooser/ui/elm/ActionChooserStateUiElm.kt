@@ -6,5 +6,6 @@ import ru.snowadv.message_actions_presentation.action_chooser.ui.model.UiMessage
 internal data class ActionChooserStateUiElm(
     val messageId: Long,
     val senderId: Long,
+    val streamName: String,
     val actions: List<UiMessageAction>,
 )

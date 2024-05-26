@@ -15,11 +15,11 @@ internal class EmojiChooserStoreFactoryElm @Inject constructor(
     private val reducer: Provider<ScreenDslReducer<EmojiChooserEventElm, EmojiChooserEventElm.Ui, EmojiChooserEventElm.Internal, EmojiChooserStateElm, EmojiChooserEffectElm, EmojiChooserCommandElm>>,
 ) {
 
-    fun create(excludeEmojisNames: Set<String>): Store<EmojiChooserEventElm, EmojiChooserEffectElm, EmojiChooserStateElm> {
+    fun create(excludeEmojisCodes: Set<String>): Store<EmojiChooserEventElm, EmojiChooserEffectElm, EmojiChooserStateElm> {
         return ElmStore(
             initialState = EmojiChooserStateElm(
                 screenState = ScreenState.Loading(),
-                excludeEmojisNames = excludeEmojisNames,
+                excludeEmojisCodes = excludeEmojisCodes,
             ),
             actor = actor,
             reducer = reducer.get(),

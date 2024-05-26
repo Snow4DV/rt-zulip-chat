@@ -2,11 +2,13 @@
 <resources>
     <dimen name="action_button_width">150dp</dimen>
     <dimen name="small_common_padding">5dp</dimen>
+    <dimen name="no_padding">0dp</dimen>
     <dimen name="common_padding">10dp</dimen>
     <dimen name="common_elevation">5dp</dimen>
     <dimen name="common_margin">5dp</dimen>
     <dimen name="horizontal_progress_bar_height">8dp</dimen>
     <dimen name="common_margin_large">15dp</dimen>
+    <dimen name="common_margin_huge">25dp</dimen>
     <dimen name="common_margin_mid">12dp</dimen>
     <dimen name="input_layout_padding">14dp</dimen>
     <dimen name="common_radius">15dp</dimen>

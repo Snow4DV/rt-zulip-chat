@@ -11,8 +11,8 @@ internal class EmojiChooserDialogFactoryImpl @Inject constructor() : EmojiChoose
     override fun create(
         resultKey: String,
         messageId: Long,
-        excludeEmojis: List<String>,
+        excludeEmojisCodes: List<String>,
     ): BottomSheetDialogFragment {
-        return EmojiChooserBottomSheetDialog.newInstance(resultKey, messageId, excludeEmojis.toTypedArray())
+        return EmojiChooserBottomSheetDialog.newInstance(resultKey, messageId, excludeEmojisCodes.toTypedArray())
     }
 }

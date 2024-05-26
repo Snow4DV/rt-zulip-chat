@@ -5,5 +5,5 @@ import ru.snowadv.model.ScreenState
 
 internal data class EmojiChooserStateElm(
     val screenState: ScreenState<List<ChatEmoji>>,
-    val excludeEmojisNames: Set<String>,
+    val excludeEmojisCodes: Set<String>,
 )

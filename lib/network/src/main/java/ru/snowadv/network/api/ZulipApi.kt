@@ -101,17 +101,21 @@ interface ZulipApi {
 
     @FormUrlEncoded
     @PATCH("messages/{msg_id}")
-    fun editMessage(
+    suspend fun editMessage(
         @Path("msg_id")
         messageId: Long,
         @Field("content")
         content: String?,
         @Field("topic")
         topic: String?,
+        @Field("send_notification_to_old_thread")
+        notifyOldThread: Boolean?,
+        @Field("send_notification_to_new_thread")
+        notifyNewThread: Boolean?,
     ): Result<Unit>
 
     @DELETE("messages/{msg_id}")
-    fun deleteMessage(
+    suspend fun deleteMessage(
         @Path("msg_id")
         messageId: Long
     ): Result<Unit>

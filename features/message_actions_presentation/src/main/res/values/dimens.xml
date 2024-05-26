@@ -3,8 +3,9 @@
     <dimen name="emoji_container_margin_top">30dp</dimen>
     <dimen name="emoji_size_chooser">30sp</dimen>
     <dimen name="emoji_chooser_padding_between_items">3dp</dimen>
-    <dimen name="action_text_size">28sp</dimen>
+    <dimen name="action_text_size">20sp</dimen>
     <dimen name="action_emoji_icon_size">35dp</dimen>
-    <dimen name="edit_message_text_size">12sp</dimen>
+    <dimen name="edit_message_text_size">16sp</dimen>
     <dimen name="edit_text_input_layout_height">150dp</dimen>
+    <dimen name="shimmer_edit_text_height">60dp</dimen>
 </resources>

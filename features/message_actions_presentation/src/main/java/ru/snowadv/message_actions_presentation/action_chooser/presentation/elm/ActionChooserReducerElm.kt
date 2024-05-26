@@ -21,14 +21,24 @@ internal class ActionChooserReducerElm @Inject constructor():
                     +ActionChooserEffectElm.CloseWithResult(ActionChooserResult.CopiedMessage(state.messageId))
                 }
             }
-            is ActionChooserEventElm.Internal.LoadingCopyMessageError -> state {
-                changeActionLoadingState<MessageAction.CopyMessage>(newLoadingState = false)
+            is ActionChooserEventElm.Internal.LoadingCopyMessageError -> {
+                state {
+                    changeActionLoadingState<MessageAction.CopyMessage>(newLoadingState = false)
+                }
+                effects {
+                    +ActionChooserEffectElm.FinishWithError(event.error, event.errorMessage)
+                }
             }
             ActionChooserEventElm.Internal.LoadingMessageToCopy -> state {
                 changeActionLoadingState<MessageAction.CopyMessage>(newLoadingState = true)
             }
-            is ActionChooserEventElm.Internal.MessageRemovalError -> state {
-                changeActionLoadingState<MessageAction.RemoveMessage>(newLoadingState = false)
+            is ActionChooserEventElm.Internal.MessageRemovalError -> {
+                state {
+                    changeActionLoadingState<MessageAction.RemoveMessage>(newLoadingState = false)
+                }
+                effects {
+                    +ActionChooserEffectElm.FinishWithError(event.error, event.errorMessage)
+                }
             }
             ActionChooserEventElm.Internal.MessageRemoved -> {
                 state {
@@ -41,6 +51,10 @@ internal class ActionChooserReducerElm @Inject constructor():
             ActionChooserEventElm.Internal.MessageRemoving -> state {
                 changeActionLoadingState<MessageAction.RemoveMessage>(newLoadingState = true)
             }
+
+            is ActionChooserEventElm.Internal.OpenedProfile -> effects {
+                +ActionChooserEffectElm.CloseWithResult(ActionChooserResult.OpenedProfile(event.userId))
+            }
         }
     }
 
@@ -52,7 +66,7 @@ internal class ActionChooserReducerElm @Inject constructor():
                         +ActionChooserEffectElm.CloseWithResult(ActionChooserResult.AddReaction(state.messageId))
                     }
                     is MessageAction.CopyMessage -> commands {
-                        +ActionChooserCommandElm.LoadRawMessageToCopy(state.messageId)
+                        +ActionChooserCommandElm.LoadRawMessageToCopy(state.messageId, state.streamName)
                     }
                     is MessageAction.EditMessage -> effects {
                         +ActionChooserEffectElm.CloseWithResult(ActionChooserResult.EditMessage(state.messageId))

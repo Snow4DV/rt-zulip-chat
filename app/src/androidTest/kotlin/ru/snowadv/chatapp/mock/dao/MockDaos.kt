@@ -56,6 +56,10 @@ internal class MessagesDaoMockImpl @Inject constructor(): MessagesDao {
         return emptyList()
     }
 
+    override suspend fun getMessagesFromStream(streamName: String?): List<MessageEntity> {
+        return emptyList()
+    }
+
     override suspend fun insertMessages(messages: List<MessageEntity>) {}
 
     override suspend fun insertMessage(message: MessageEntity) {}
@@ -63,6 +67,9 @@ internal class MessagesDaoMockImpl @Inject constructor(): MessagesDao {
     override suspend fun clearMessagesFromTopic(streamName: String?, topicName: String) {}
 
     override suspend fun clearMessagesFromTopic(streamId: Long?, topicName: String) {}
+    override suspend fun clearMessagesFromStream(streamName: String?) {
+
+    }
 
     override suspend fun deleteMessage(messageId: Long) {}
 

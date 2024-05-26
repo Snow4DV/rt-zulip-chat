@@ -34,7 +34,7 @@
 
     <TextView
         android:id="@+id/choose_emoji_title"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/choose_reaction"
         android:textSize="@dimen/bottom_sheet_title_text_size"
@@ -45,17 +45,19 @@
 
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/emojis_recycler"
         android:layout_width="0dp"
         app:layout_constraintLeft_toLeftOf="@id/start_guideline"
         app:layout_constraintRight_toRightOf="@id/end_guideline"
-        android:layout_height="wrap_content"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/choose_emoji_title"
+        android:layout_height="wrap_content"
+        android:id="@+id/emojis_recycler"
+        android:paddingBottom="@dimen/common_padding"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:spanCount="5"
         android:layout_marginVertical="@dimen/common_margin"
-        tools:listitem="@layout/item_emoji" />
+        tools:listitem="@layout/item_emoji" >
+
+    </androidx.recyclerview.widget.RecyclerView>
 
     <include
         android:id="@+id/state_box"
@@ -64,7 +66,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/common_padding"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/sheet_puller"
+        app:layout_constraintTop_toBottomOf="@id/choose_emoji_title"
         tools:visibility="gone" />
 
 

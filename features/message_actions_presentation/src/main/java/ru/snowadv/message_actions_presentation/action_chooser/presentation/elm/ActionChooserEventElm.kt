@@ -17,5 +17,7 @@ internal sealed interface ActionChooserEventElm {
         data object LoadingMessageToCopy : Internal
         data class CopyMessageLoaded(val content: String) : Internal
         data class LoadingCopyMessageError(val error: Throwable, val errorMessage: String?) : Internal
+
+        data class OpenedProfile(val userId: Long) : Internal
     }
 }

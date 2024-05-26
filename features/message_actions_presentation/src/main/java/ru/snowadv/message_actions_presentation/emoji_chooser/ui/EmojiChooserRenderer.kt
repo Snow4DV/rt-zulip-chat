@@ -11,6 +11,7 @@ import ru.snowadv.message_actions_presentation.emoji_chooser.ui.elm.EmojiChooser
 import ru.snowadv.message_actions_presentation.emoji_chooser.ui.elm.EmojiChooserEventUiElm
 import ru.snowadv.message_actions_presentation.emoji_chooser.ui.elm.EmojiChooserStateUiElm
 import ru.snowadv.message_actions_presentation.emoji_chooser.ui.model.ChatEmoji
+import ru.snowadv.model.ScreenState
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.presentation.adapter.impl.AdapterDelegatesManager
 import ru.snowadv.presentation.adapter.impl.DiffDelegationAdapter
@@ -53,8 +54,13 @@ internal class EmojiChooserRenderer :
         binding: FragmentEmojiChooserBinding
     ) {
         val mappedState = mapper.mapState(state)
+
+        // Show loading when initializing for the first time
+        if (adapter.itemCount == 0 && mappedState.screenState.data?.isNotEmpty() == true) {
+            binding.stateBox.inflateState(ScreenState.Loading<Unit>(), R.layout.fragment_emoji_chooser_shimmer)
+        }
         adapter.submitList(mappedState.screenState.getCurrentData()) {
-            binding.stateBox.inflateState(state.screenState, R.layout.fragment_emoji_chooser_shimmer)
+            binding.stateBox.inflateState(mappedState.screenState, R.layout.fragment_emoji_chooser_shimmer)
         }
     }
 

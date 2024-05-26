@@ -12,6 +12,7 @@ import io.noties.markwon.ext.strikethrough.StrikethroughPlugin
 import io.noties.markwon.ext.tables.TablePlugin
 import io.noties.markwon.html.HtmlPlugin
 import io.noties.markwon.image.coil.CoilImagesPlugin
+import io.noties.markwon.movement.MovementMethodPlugin
 import ru.snowadv.chat_presentation.R
 import ru.snowadv.chat_presentation.api.ChatScreenFactory
 import ru.snowadv.chat_presentation.chat.presentation.elm.ChatActorElm
@@ -25,6 +26,7 @@ import ru.snowadv.chat_presentation.chat.ui.elm.ChatElmUiMapper
 import ru.snowadv.chat_presentation.chat.ui.elm.ChatEventUiElm
 import ru.snowadv.chat_presentation.chat.ui.elm.ChatStateUiElm
 import ru.snowadv.chat_presentation.chat.ui.feature.ChatScreenFactoryImpl
+import ru.snowadv.chat_presentation.chat.ui.markwon.NoLongClickLinkMovementMethod
 import ru.snowadv.chat_presentation.chat.ui.markwon.RelativeUrlMarkwonPlugin
 import ru.snowadv.presentation.elm.ElmMapper
 import ru.snowadv.presentation.util.DateFormatter
@@ -64,9 +66,11 @@ internal interface ChatPresentationModule {
             appContext: Context,
             coilImageLoader: ImageLoader,
             relativeUrlMarkwonPlugin: RelativeUrlMarkwonPlugin,
+            linkMovementMethod: NoLongClickLinkMovementMethod,
         ): Markwon {
             return Markwon.builder(appContext)
                 .usePlugin(relativeUrlMarkwonPlugin)
+                .usePlugin(MovementMethodPlugin.create(linkMovementMethod))
                 .usePlugin(JLatexMathPlugin.create(appContext.resources.getDimension(R.dimen.message_box_text_size)))
                 .usePlugin(StrikethroughPlugin.create())
                 .usePlugin(TablePlugin.create(appContext))
