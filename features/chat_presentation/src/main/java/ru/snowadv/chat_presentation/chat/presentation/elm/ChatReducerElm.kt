@@ -67,8 +67,8 @@ internal class ChatReducerElm @Inject constructor() :
                         copy(
                             sendingMessage = false,
                             messageField = "",
-                            isTopicChooserVisible = false,
                             topic = event.destTopic,
+                            sendTopic = event.destTopic,
                         )
                     }
                     effects {
@@ -82,7 +82,6 @@ internal class ChatReducerElm @Inject constructor() :
                         copy(
                             sendingMessage = false,
                             messageField = "",
-                            isTopicChooserVisible = false,
                         )
                     }
                 }
@@ -360,9 +359,6 @@ internal class ChatReducerElm @Inject constructor() :
                     state {
                         copy(isTopicChooserVisible = true, isTopicEmptyErrorVisible = true)
                     }
-                    effects {
-                        +ChatEffectElm.ExpandTopicChooser
-                    }
                     return
                 }
                 when (state.actionButtonType) {
@@ -423,21 +419,11 @@ internal class ChatReducerElm @Inject constructor() :
                         eventQueueData = null,
                         topic = event.topicName,
                         sendTopic = event.topicName,
+                        isTopicChooserVisible = false,
                     )
                 }
                 commands {
                     +ChatCommandElm.LoadInitialMessages(state.stream, state.topic)
-                }
-            }
-
-            ChatEventElm.Ui.ClickedOnExpandOrHideTopicInput -> {
-                state {
-                    copy(isTopicChooserVisible = !isTopicChooserVisible)
-                }
-                commands {
-                    if (state.isTopicChooserVisible) {
-                        +ChatCommandElm.LoadTopicsFromCurrentStream(state.streamId)
-                    }
                 }
             }
 
@@ -446,6 +432,7 @@ internal class ChatReducerElm @Inject constructor() :
                     copy(
                         eventQueueData = null,
                         topic = null,
+                        isTopicChooserVisible = true,
                     )
                 }
                 commands {
@@ -470,6 +457,20 @@ internal class ChatReducerElm @Inject constructor() :
                         streamId = state.streamId,
                         topicName = message.topic,
                     )
+                }
+            }
+
+            is ChatEventElm.Ui.MessageMovedToNewTopic -> {
+                if (event.topicName != state.topic && state.topic != null) {
+                    state {
+                        copy(
+                            topic = event.topicName,
+                            sendTopic = event.topicName,
+                        )
+                    }
+                    commands {
+                        +ChatCommandElm.LoadInitialMessages(state.stream, event.topicName)
+                    }
                 }
             }
         }

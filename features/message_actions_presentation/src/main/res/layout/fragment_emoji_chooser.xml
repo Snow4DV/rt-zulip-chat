@@ -34,6 +34,7 @@
 
     <TextView
         android:id="@+id/choose_emoji_title"
+        android:visibility="gone"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/choose_reaction"

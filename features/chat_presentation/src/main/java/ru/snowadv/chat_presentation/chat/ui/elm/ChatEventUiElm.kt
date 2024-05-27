@@ -18,11 +18,11 @@ sealed interface ChatEventUiElm {
     data object PaginationLoadMore : ChatEventUiElm
     data object ScrolledToNTopMessages : ChatEventUiElm
     data object FileChoosingDismissed : ChatEventUiElm
-    data object ClickedOnExpandOrHideTopicInput : ChatEventUiElm
     data class FileWasChosen(val mimeType: String?, val inputStreamOpener: InputStreamOpener, val extension: String?) : ChatEventUiElm
     data class ClickedOnTopic(val topicName: String) : ChatEventUiElm
     data object OnLeaveTopicClicked : ChatEventUiElm
     data class TopicChanged(val newTopic: String) : ChatEventUiElm
     data class EditMessageClicked(val messageId: Long) : ChatEventUiElm
     data class MoveMessageClicked(val messageId: Long) : ChatEventUiElm
+    data class MessageMovedToNewTopic(val topicName: String) : ChatEventUiElm
 }

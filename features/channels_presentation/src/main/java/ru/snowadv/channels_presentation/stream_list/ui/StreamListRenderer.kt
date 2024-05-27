@@ -90,7 +90,7 @@ internal class StreamListRenderer :
 
     private fun RecyclerView.setupAdapter(store: Store<StreamListEventElm, StreamListEffectElm, StreamListStateElm>): DiffDelegationAdapter {
         setupDecorator(
-            horizontalSpacingResId = ru.snowadv.presentation.R.dimen.small_common_padding,
+            horizontalSpacingResId = ru.snowadv.presentation.R.dimen.no_padding,
             verticalSpacingResId = ru.snowadv.presentation.R.dimen.small_common_padding,
         )
         itemAnimator?.updateAnimationDurations(RECYCLER_ANIMATION_DURATION)

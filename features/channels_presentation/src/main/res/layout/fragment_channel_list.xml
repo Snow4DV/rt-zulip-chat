@@ -15,10 +15,14 @@
         android:id="@+id/tabs_stream_types"
         style="@style/Theme.ZulipChat.StreamTypesTabLayout"
         android:layout_width="match_parent"
+        app:tabIndicator="@drawable/ic_tab_indicator"
+        app:tabIndicatorColor="@color/tab_selector"
+        android:paddingBottom="@dimen/tab_layout_padding_bottom"
+        app:tabSelectedTextColor="@color/text"
         android:layout_height="@dimen/tabs_layout_height"
         android:contentDescription="@string/channels_tabs"
-
         android:textAllCaps="false"
+        app:tabTextColor="@color/white"
         app:layout_constraintTop_toBottomOf="@id/channels_search_bar"
         app:tabTextAppearance="@style/Theme.ZulipChat.StreamTypesTabsTextAppearance" />
 

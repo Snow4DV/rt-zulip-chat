@@ -13,5 +13,6 @@
     <color name="offline">#f44336</color>
     <color name="idle">#FF9800</color>
 
+    <color name="tab_selector">#219653</color>
 
 </resources>

@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import ru.snowadv.events_api.model.DomainEvent
 import ru.snowadv.model.Resource
+import ru.snowadv.presentation.elm.compat.SwitchingActor
 import ru.snowadv.profile_presentation.ui.util.ProfileMappers.toElmEvent
 import ru.snowadv.profile_presentation.ui.util.ProfileMappers.toUpdateQueueDataElmEvent
 import ru.snowadv.profile_presentation.navigation.ProfileRouter
@@ -16,11 +17,10 @@ import javax.inject.Inject
 
 @Reusable
 internal class ProfileActorElm @Inject constructor(
-    // actor that interacts with domain layer
     private val router: ProfileRouter,
     private val getProfileUseCase: GetProfileUseCase,
     private val listenToPresenceEventsUseCase: ListenToProfilePresenceEventsUseCase,
-) : Actor<ProfileCommandElm, ProfileEventElm>() {
+) : SwitchingActor<ProfileCommandElm, ProfileEventElm>() {
     override fun execute(command: ProfileCommandElm): Flow<ProfileEventElm> = when (command) {
         is ProfileCommandElm.LoadData -> {
             getProfileUseCase.invoke(command.profileId).map { res ->
@@ -57,7 +57,11 @@ internal class ProfileActorElm @Inject constructor(
                     is DomainEvent.FailedFetchingQueueEvent -> event.toElmEvent()
                     else -> event.toUpdateQueueDataElmEvent()
                 }
-            }
+            }.asSwitchFlow(command)
+        }
+
+        is ProfileCommandElm.StopObservation -> {
+            cancelSwitchFlow(ProfileCommandElm.ObservePresence::class)
         }
 
         ProfileCommandElm.GoBack -> flow {

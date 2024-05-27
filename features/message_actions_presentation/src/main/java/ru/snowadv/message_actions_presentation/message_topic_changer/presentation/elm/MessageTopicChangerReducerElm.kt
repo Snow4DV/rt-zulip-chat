@@ -19,12 +19,12 @@ internal class MessageTopicChangerReducerElm @Inject constructor() :
             is MessageTopicChangerEventElm.Internal.LoadedTopics -> state {
                 copy(topics = ScreenState.Success(event.topics))
             }
-            MessageTopicChangerEventElm.Internal.MessageMoved -> {
+            is MessageTopicChangerEventElm.Internal.MessageMoved -> {
                 state {
                     copy(movingMessage = false)
                 }
                 effects {
-                    +MessageTopicChangerEffectElm.CloseWithResult(MessageMoveResult.MovedMessage(state.messageId))
+                    +MessageTopicChangerEffectElm.CloseWithResult(MessageMoveResult.MovedMessage(state.messageId, event.newTopicName))
                 }
             }
             is MessageTopicChangerEventElm.Internal.MessageMovingError -> effects {

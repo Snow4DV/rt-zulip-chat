@@ -14,4 +14,5 @@ internal sealed interface StreamListCommandElm {
     ) : StreamListCommandElm
     data class GoToTopic(val streamId: Long, val streamName: String, val topicName: String) : StreamListCommandElm
     data class GoToStream(val streamId: Long, val streamName: String) : StreamListCommandElm
+    data object StopObservation : StreamListCommandElm
 }

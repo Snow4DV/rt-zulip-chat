@@ -45,7 +45,7 @@ internal class MessageTopicChangerActorElm @Inject constructor(
                         when(res) {
                             is Resource.Error -> MessageTopicChangerEventElm.Internal.MessageMovingError(res.throwable, res.error)
                             is Resource.Loading -> MessageTopicChangerEventElm.Internal.MovingMessage
-                            is Resource.Success -> MessageTopicChangerEventElm.Internal.MessageMoved
+                            is Resource.Success -> MessageTopicChangerEventElm.Internal.MessageMoved(command.newTopic)
                         }
                     },
                     errorMapper = { error ->

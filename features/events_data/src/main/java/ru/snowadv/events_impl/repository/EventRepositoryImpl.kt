@@ -27,7 +27,7 @@ class EventRepositoryImpl @Inject constructor(
 ) : EventRepository {
 
     companion object {
-        const val RETRY_DELAY_MILLIS = 10_000L
+        const val RETRY_DELAY_MILLIS = 2_000L
         const val BAD_EVENT_QUEUE_ID_ERROR_CODE = "BAD_EVENT_QUEUE_ID"
         const val BAD_REQUEST_ERROR_CODE = "BAD_REQUEST"
     }

@@ -11,6 +11,7 @@ import ru.snowadv.channels_domain_api.use_case.ChangeStreamSubscriptionStatusUse
 import ru.snowadv.channels_presentation.navigation.ChannelsRouter
 import ru.snowadv.channels_presentation.stream_list.presentation.util.StreamListElmMappers.toElmEvent
 import ru.snowadv.model.Resource
+import ru.snowadv.presentation.elm.compat.SwitchingActor
 import vivid.money.elmslie.core.store.Actor
 import javax.inject.Inject
 
@@ -21,7 +22,7 @@ internal class StreamListActorElm @Inject constructor(
     private val getTopicsUseCase: GetTopicsUseCase,
     private val listenToStreamEventsUseCase: ListenToStreamEventsUseCase,
     private val changeSubscriptionUseCase: ChangeStreamSubscriptionStatusUseCase,
-) : Actor<StreamListCommandElm, StreamListEventElm>() {
+) : SwitchingActor<StreamListCommandElm, StreamListEventElm>() {
     override fun execute(command: StreamListCommandElm): Flow<StreamListEventElm> {
         return when(command) {
             is StreamListCommandElm.GoToTopic -> flow {
@@ -81,8 +82,11 @@ internal class StreamListActorElm @Inject constructor(
             }
             is StreamListCommandElm.ObserveEvents -> {
                 listenToStreamEventsUseCase(command.isRestart, command.queueProps).map { event -> event.toElmEvent() }
+                    .asSwitchFlow(command)
             }
-
+            is StreamListCommandElm.StopObservation -> {
+                cancelSwitchFlow(StreamListCommandElm.ObserveEvents::class)
+            }
             is StreamListCommandElm.ChangeSubscriptionStatusForStream -> {
                 changeSubscriptionUseCase(command.streamName, command.subscribe).mapEvents(
                     eventMapper = { res ->

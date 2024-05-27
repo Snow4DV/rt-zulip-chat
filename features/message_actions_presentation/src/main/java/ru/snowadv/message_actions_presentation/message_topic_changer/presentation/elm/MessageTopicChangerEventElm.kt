@@ -16,7 +16,7 @@ internal sealed interface MessageTopicChangerEventElm {
         data class LoadingTopicsError(val error: Throwable, val errorMessage: String?) : Internal
 
         data object MovingMessage : Internal
-        data object MessageMoved : Internal
+        data class MessageMoved(val newTopicName: String) : Internal
         data class MessageMovingError(val error: Throwable, val errorMessage: String?) : Internal
     }
 }

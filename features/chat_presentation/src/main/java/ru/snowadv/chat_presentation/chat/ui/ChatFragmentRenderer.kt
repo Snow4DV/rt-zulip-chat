@@ -124,14 +124,15 @@ internal class ChatFragmentRenderer :
     ) = with(binding) {
         val mappedState = mapper.mapState(state)
 
-        bottomBar.topicAutoCompleteTextView.setTextIfChanged(mappedState.sendTopic)
-        binding.bottomBar.topicInputLayout.error = if (mappedState.isTopicEmptyErrorVisible) {
+        bottomBar.topicAutoCompleteTextView.setTextIfChanged(text = mappedState.sendTopic, moveCursorToEnd = true)
+        bottomBar.topicInputLayout.error = if (mappedState.isTopicEmptyErrorVisible) {
             getString(R.string.topic_cant_be_empty)
         } else {
             null
         }
-        bottomBar.showTopicChooserButton.isSelected = mappedState.isTopicChooserVisible
+        bottomBar.topicInputLayout.isErrorEnabled = mappedState.isTopicEmptyErrorVisible
         bottomBar.topicInputLayout.isVisible = mappedState.isTopicChooserVisible
+        if (!mappedState.isTopicChooserVisible) bottomBar.topicInputLayout.clearFocus()
         topicName.isVisible = mappedState.topic != null
         topicName.text = getString(ru.snowadv.presentation.R.string.topic_title, mappedState.topic)
         chatTopBar.barTitle.text = getString(
@@ -147,7 +148,7 @@ internal class ChatFragmentRenderer :
             getString(mappedState.actionButtonType.hintTextResId)
 
         adapter.submitListAndKeepScrolledToBottom(
-            recycler = binding.messagesRecycler,
+            recycler = messagesRecycler,
             list = listOf(mappedState.paginationStatus) + (mappedState.screenState.getCurrentData()
                 ?: emptyList()),
         ) {
@@ -237,9 +238,6 @@ internal class ChatFragmentRenderer :
         binding: FragmentChatBinding,
         store: Store<ChatEventElm, ChatEffectElm, ChatStateElm>,
     ) = with(binding) {
-        bottomBar.showTopicChooserButton.setOnClickListener {
-            store.accept(mapper.mapUiEvent(ChatEventUiElm.ClickedOnExpandOrHideTopicInput))
-        }
         bottomBar.topicAutoCompleteTextView.observe(noDebouncePredicate = { it.length <= 1 })
             .onEach {
                 store.accept(mapper.mapUiEvent(ChatEventUiElm.TopicChanged(it)))
@@ -436,7 +434,7 @@ internal class ChatFragmentRenderer :
                 ?.let { result ->
                     when(result) {
                         is MessageMoveResult.Error -> showInfo(binding.root, result.errorMessage)
-                        is MessageMoveResult.MovedMessage -> Unit
+                        is MessageMoveResult.MovedMessage -> store.accept(mapper.mapUiEvent(ChatEventUiElm.MessageMovedToNewTopic(result.newTopic)))
                     }
                 }
 

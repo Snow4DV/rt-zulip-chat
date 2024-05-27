@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 sealed interface MessageMoveResult : Parcelable {
     @Parcelize
-    data class MovedMessage(val messageId: Long): MessageMoveResult
+    data class MovedMessage(val messageId: Long, val newTopic: String): MessageMoveResult
     @Parcelize
     data class Error(val errorMessage: String): MessageMoveResult
 }

@@ -26,6 +26,7 @@ internal class ChatStoreFactoryElm @Inject constructor(
                 eventQueueData = null,
                 sendTopic = topicName ?: "",
                 streamId = streamId,
+                isTopicChooserVisible = topicName == null,
             ),
             actor = actor,
             reducer = reducer.get(),

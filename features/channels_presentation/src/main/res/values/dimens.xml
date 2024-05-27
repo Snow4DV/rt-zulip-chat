@@ -18,4 +18,6 @@
     <dimen name="new_stream_edit_text_size">16sp</dimen>
     <dimen name="stream_action_button_size">28dp</dimen>
     <dimen name="messages_counter_text_size">18sp</dimen>
+    <dimen name="tab_indicator_radius">20dp</dimen>
+    <dimen name="tab_layout_padding_bottom">20dp</dimen>
 </resources>

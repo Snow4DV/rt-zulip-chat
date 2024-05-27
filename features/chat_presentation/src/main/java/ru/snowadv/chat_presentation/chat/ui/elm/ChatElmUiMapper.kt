@@ -45,7 +45,6 @@ internal class ChatElmUiMapper @Inject constructor() :
             is ChatEffectElm.ShowSnackbarWithText -> ChatEffectUiElm.ShowSnackbarWithText(text.toUiModel())
             is ChatEffectElm.ShowActionErrorWithRetry -> ChatEffectUiElm.ShowActionErrorWithRetry(retryEvent)
             ChatEffectElm.ShowTopicChangedBecauseNewMessageIsUnreachable -> ChatEffectUiElm.ShowTopicChangedBecauseNewMessageIsUnreachable
-            ChatEffectElm.ExpandTopicChooser -> ChatEffectUiElm.ExpandTopicChooser
             is ChatEffectElm.OpenMessageEditor -> ChatEffectUiElm.OpenMessageEditor(messageId, streamName)
             is ChatEffectElm.OpenMessageTopicChanger -> ChatEffectUiElm.OpenMessageTopicChanger(messageId, streamId, topicName)
         }
@@ -80,10 +79,10 @@ internal class ChatElmUiMapper @Inject constructor() :
             ChatEventUiElm.SendMessageAddAttachmentButtonClicked -> ChatEventElm.Ui.SendMessageAddAttachmentButtonClicked
             is ChatEventUiElm.ClickedOnTopic -> ChatEventElm.Ui.ClickedOnTopic(topicName)
             ChatEventUiElm.OnLeaveTopicClicked -> ChatEventElm.Ui.ClickedOnLeaveTopic
-            ChatEventUiElm.ClickedOnExpandOrHideTopicInput -> ChatEventElm.Ui.ClickedOnExpandOrHideTopicInput
             is ChatEventUiElm.TopicChanged -> ChatEventElm.Ui.TopicChanged(newTopic)
             is ChatEventUiElm.EditMessageClicked -> ChatEventElm.Ui.EditMessageClicked(messageId)
             is ChatEventUiElm.MoveMessageClicked -> ChatEventElm.Ui.MoveMessageClicked(messageId)
+            is ChatEventUiElm.MessageMovedToNewTopic -> ChatEventElm.Ui.MessageMovedToNewTopic(topicName)
         }
     }
 }

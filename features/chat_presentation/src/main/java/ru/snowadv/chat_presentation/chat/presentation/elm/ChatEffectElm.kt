@@ -10,7 +10,6 @@ sealed interface ChatEffectElm {
     data class OpenMessageActionsChooser(val messageId: Long, val userId: Long, val streamName: String, val isOwner: Boolean): ChatEffectElm
     data object OpenFileChooser : ChatEffectElm
     data object ShowTopicChangedBecauseNewMessageIsUnreachable : ChatEffectElm
-    data object ExpandTopicChooser : ChatEffectElm
     data class OpenMessageEditor(val messageId: Long, val streamName: String) : ChatEffectElm
     data class OpenMessageTopicChanger(val messageId: Long, val streamId: Long, val topicName: String) : ChatEffectElm
 }

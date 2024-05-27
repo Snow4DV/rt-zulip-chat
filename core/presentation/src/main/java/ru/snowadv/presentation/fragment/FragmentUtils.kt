@@ -85,7 +85,7 @@ fun ItemStateBoxBinding.setOnRetryClickListener(listener: ((View) -> Unit)?) {
 }
 
 fun ViewGroup.removeChildViewsAndSetVisibility(visibility: Boolean) {
-    removeAllViews()
+    if (childCount > 0) removeAllViews()
     isVisible = visibility
 }
 

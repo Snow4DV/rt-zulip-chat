@@ -63,7 +63,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="top"
-            android:inputType="text"
+            android:inputType="textMultiLine"
             android:padding="@dimen/input_layout_padding"
             android:textColor="@color/text"
             android:textSize="@dimen/edit_message_text_size" />
@@ -103,7 +103,7 @@
         android:id="@+id/state_box"
         layout="@layout/item_state_box"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="gone" />

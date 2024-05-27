@@ -25,9 +25,12 @@ fun View.setVisibility(isVisible: Boolean) {
     visibility = if (isVisible) View.VISIBLE else View.GONE
 }
 
-fun EditText.setTextIfChanged(text: String) {
+fun EditText.setTextIfChanged(text: String, moveCursorToEnd: Boolean = false) {
     if (this.text.toString() != text) {
         this.setText(text)
+        if (moveCursorToEnd) {
+            setSelection(text.length)
+        }
     }
 }
 
