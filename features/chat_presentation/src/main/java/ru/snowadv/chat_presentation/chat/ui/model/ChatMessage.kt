@@ -13,24 +13,45 @@ internal data class ChatMessage(
     val reactions: List<ChatReaction>,
     val messageType: ChatMessageType,
     val topic: String,
+    val isRead: Boolean,
 ) : DelegateItem {
     override fun getPayload(oldItem: DelegateItem): Any? {
-        return if (oldItem is ChatMessage && checkIfOnlyReactionsChanged(oldItem)) {
-            Payload.ReactionsChanged(reactions)
-        } else {
-            null
+        if (oldItem !is ChatMessage) return null
+
+        return when {
+            checkIfOnlyReactionsHaveChanged(oldItem) ->  Payload.ReactionsHaveChanged(reactions)
+            checkIfOnlyReadHasChanged(oldItem) -> Payload.ReadStatusHasChanged(isRead, sentAt)
+            checkIfOnlyContentHasChanged(oldItem) -> Payload.ContentHasChanged(text)
+            else -> null
         }
+
     }
 
-    sealed class Payload {
-        class ReactionsChanged(val reactions: List<ChatReaction>) : Payload()
+    sealed interface Payload {
+        class ReactionsHaveChanged(val reactions: List<ChatReaction>) : Payload
+        class ContentHasChanged(val newContent: String) : Payload
+        class ReadStatusHasChanged(val newIsRead: Boolean, val sentAt: LocalDateTime) : Payload
     }
 
-    private fun checkIfOnlyReactionsChanged(other: ChatMessage): Boolean {
+    private fun checkIfOnlyReactionsHaveChanged(other: ChatMessage): Boolean {
         return this.id == other.id && this.text == other.text && this.sentAt == other.sentAt
                 && this.senderId == other.senderId && this.senderName == other.senderName
                 && this.senderAvatarUrl == other.senderAvatarUrl && this.messageType == other.messageType
-                && this.reactions != other.reactions
+                && this.reactions != other.reactions && this.topic == other.topic && this.isRead == other.isRead
+    }
+
+    private fun checkIfOnlyReadHasChanged(other: ChatMessage): Boolean {
+        return this.id == other.id && this.text == other.text && this.sentAt == other.sentAt
+                && this.senderId == other.senderId && this.senderName == other.senderName
+                && this.senderAvatarUrl == other.senderAvatarUrl && this.messageType == other.messageType
+                && this.reactions == other.reactions && this.topic == other.topic && this.isRead != other.isRead
+    }
+
+    private fun checkIfOnlyContentHasChanged(other: ChatMessage): Boolean {
+        return this.id == other.id && this.text != other.text && this.sentAt == other.sentAt
+                && this.senderId == other.senderId && this.senderName == other.senderName
+                && this.senderAvatarUrl == other.senderAvatarUrl && this.messageType == other.messageType
+                && this.reactions == other.reactions && this.topic == other.topic && this.isRead == other.isRead
     }
 
 }

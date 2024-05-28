@@ -1,5 +1,6 @@
 package ru.snowadv.chat_presentation.chat.ui.util
 
+import android.content.Context
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -51,5 +52,13 @@ internal object AdapterUtils {
             }
             commitCallback.run()
         }
+    }
+
+    fun ChatMessage.getReadStatus(): String {
+        return if (isRead) " ✓" else ""
+    }
+
+    fun getReadString(isRead: Boolean): String {
+        return if (isRead) " ✓" else ""
     }
 }

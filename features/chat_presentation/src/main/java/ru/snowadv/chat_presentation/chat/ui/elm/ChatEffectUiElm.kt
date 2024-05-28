@@ -15,5 +15,6 @@ internal sealed interface ChatEffectUiElm {
     data object ExpandTopicChooser : ChatEffectUiElm
     data class OpenMessageEditor(val messageId: Long, val streamName: String) : ChatEffectUiElm
     data class OpenMessageTopicChanger(val messageId: Long, val streamId: Long, val topicName: String) : ChatEffectUiElm
+    data class RefreshMessageWithId(val messageId: Long) : ChatEffectUiElm
 }
 

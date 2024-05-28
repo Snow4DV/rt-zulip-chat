@@ -28,14 +28,17 @@ object EditTextUtils {
         }
     }
 
-    fun TextView.afterTextChanged(callback: (text: String) -> Unit) {
-        this.addTextChangedListener(object : TextWatcher {
+    fun TextView.afterTextChanged(callback: (text: String) -> Unit): TextWatcher {
+        object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
             override fun afterTextChanged(s: Editable?) {
                 callback(s?.toString() ?: "")
             }
-        })
+        }.let { textWatcher ->
+            this.addTextChangedListener(textWatcher)
+            return textWatcher
+        }
     }
     fun TextView.observe(debounce: Long = DEFAULT_INPUT_DEBOUNCE): Flow<String> {
         return callbackFlow {

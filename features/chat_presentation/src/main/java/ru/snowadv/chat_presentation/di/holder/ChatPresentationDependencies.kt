@@ -9,6 +9,7 @@ import ru.snowadv.chat_domain_api.use_case.GetEmojisUseCase
 import ru.snowadv.chat_domain_api.use_case.ListenToChatEventsUseCase
 import ru.snowadv.chat_domain_api.use_case.LoadMessageUseCase
 import ru.snowadv.chat_domain_api.use_case.LoadMoreMessagesUseCase
+import ru.snowadv.chat_domain_api.use_case.ChangeMessageReadStateUseCase
 import ru.snowadv.chat_domain_api.use_case.RemoveReactionUseCase
 import ru.snowadv.chat_domain_api.use_case.SendFileUseCase
 import ru.snowadv.chat_domain_api.use_case.SendMessageUseCase
@@ -36,6 +37,7 @@ interface ChatPresentationDependencies : BaseModuleDependencies {
     val sendFileUseCase: SendFileUseCase
     val getEmojisUseCase: GetEmojisUseCase
     val loadMessageUseCase: LoadMessageUseCase
+    val markMessagesAsReadUseCase: ChangeMessageReadStateUseCase
 
     val getTopicsUseCase: GetTopicsUseCase
 

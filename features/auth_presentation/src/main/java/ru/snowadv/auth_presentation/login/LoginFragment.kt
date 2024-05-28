@@ -51,4 +51,9 @@ class LoginFragment : BaseFragment<LoginEventElm, LoginEffectElm, LoginStateElm>
     override fun handleEffect(effect: LoginEffectElm) {
         handleEffectByRenderer(effect, binding, store)
     }
+
+    override fun onDestroyView() {
+        onDestroyRendererView()
+        super.onDestroyView()
+    }
 }

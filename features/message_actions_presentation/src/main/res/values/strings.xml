@@ -17,6 +17,7 @@
     <string name="move_message_action">Move to other topic</string>
     <string name="copy_message_action">Copy to clipboard</string>
     <string name="open_profile_action">Open sender\'s profile</string>
+    <string name="reload_message">Reload message</string>
     <string name="message_text_clipboard_label">Copied message from Zulip</string>
     <string name="error_has_occurred_please_try_again">Error has occurred. Please try again.</string>
 </resources>

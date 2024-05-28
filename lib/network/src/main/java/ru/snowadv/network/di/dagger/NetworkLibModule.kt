@@ -8,6 +8,7 @@ import dagger.Reusable
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Converter
 import retrofit2.Retrofit
@@ -63,6 +64,7 @@ internal class NetworkLibModule {
         return OkHttpClient.Builder()
             .addInterceptor(headerBasicAuthInterceptor)
             .addInterceptor(timeoutSetterInterceptor)
+            .protocols(listOf(Protocol.HTTP_1_1))
             .addInterceptor(badAuthResponseInterceptor)
             .let {
                 if (loggerToggle.isLoggingEnabled) {

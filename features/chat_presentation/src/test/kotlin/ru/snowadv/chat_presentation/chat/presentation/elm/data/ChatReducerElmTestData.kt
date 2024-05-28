@@ -15,6 +15,7 @@ import java.time.ZonedDateTime
 
 internal class ChatReducerElmTestData {
     val streamName = "TestStream"
+    val streamId = 1L
     val topicName = "TestTopic"
 
     val allMessagesCount = 100
@@ -25,7 +26,14 @@ internal class ChatReducerElmTestData {
     val maxReactionsCount = reactions.size
 
     val initialResumedState =
-        ChatStateElm(stream = streamName, topic = topicName, eventQueueData = null, resumed = true)
+        ChatStateElm(
+            stream = streamName,
+            topic = topicName,
+            eventQueueData = null,
+            resumed = true,
+            sendTopic = topicName,
+            streamId = streamId,
+        )
 
     val internetErrorException = HttpException("HTTP 500", IOException())
 
@@ -39,6 +47,8 @@ internal class ChatReducerElmTestData {
             senderAvatarUrl = "http://img.nonexistant/$it",
             reactions = generateReactions(it),
             owner = it % 2 == 0,
+            topic = "topic",
+            isRead = true,
         )
     }
 
@@ -73,6 +83,10 @@ internal class ChatReducerElmTestData {
         eventQueueData = null,
         paginationStatus = ChatPaginationStatus.HasMore,
         resumed = true,
+        streamId = streamId,
+        isTopicEmptyErrorVisible = false,
+        isTopicChooserVisible = false,
+        sendTopic = topicName,
     )
 
     val initialEventQueuePropsAfterRegister = EventQueueProperties(
@@ -91,8 +105,11 @@ internal class ChatReducerElmTestData {
         eventQueueData = initialEventQueuePropsAfterRegister,
         paginationStatus = ChatPaginationStatus.HasMore,
         resumed = true,
+        isTopicEmptyErrorVisible = false,
+        isTopicChooserVisible = false,
+        sendTopic = topicName,
+        streamId = streamId,
     )
-
 
 
     val sampleMessage = firstPageMessages[0]
@@ -103,18 +120,48 @@ internal class ChatReducerElmTestData {
         )
     }
 
+    val newSubject = "newSubject"
+
+    val queueId = "0"
+
     val lastMessageInFirstPage = firstPageMessages.last()
 
     val sampleEmoji = ChatEmoji(sampleEmojiName, "1f600")
     val otherSampleText = "Test2"
 
     val testServerEvents = listOf(
-        ChatEventElm.Internal.ServerEvent.EventQueueUpdated(queueId = "0", eventId = 0),
-        ChatEventElm.Internal.ServerEvent.NewMessage(queueId = "0", eventId = 0, message = chunkedMessages[0][0]),
-        ChatEventElm.Internal.ServerEvent.MessageDeleted(queueId = "0", eventId = 0, messageId = 0),
-        ChatEventElm.Internal.ServerEvent.MessageUpdated(queueId = "0", eventId = 0, messageId = 0, newContent = otherSampleText),
-        ChatEventElm.Internal.ServerEvent.ReactionAdded(queueId = "0", eventId = 0, messageId = 0, emoji = sampleEmoji, currentUserReaction = true),
-        ChatEventElm.Internal.ServerEvent.ReactionRemoved(queueId = "0", eventId = 0, messageId = 0, emoji = sampleEmoji, currentUserReaction = true),
+        ChatEventElm.Internal.ServerEvent.EventQueueUpdated(queueId = queueId, eventId = 0),
+        ChatEventElm.Internal.ServerEvent.NewMessage(
+            queueId = queueId,
+            eventId = 0,
+            message = chunkedMessages[0][0]
+        ),
+        ChatEventElm.Internal.ServerEvent.MessageDeleted(
+            queueId = queueId,
+            eventId = 0,
+            messageId = 0
+        ),
+        ChatEventElm.Internal.ServerEvent.MessageUpdated(
+            queueId = queueId,
+            eventId = 0,
+            messageId = 0,
+            newContent = otherSampleText,
+            newSubject = newSubject
+        ),
+        ChatEventElm.Internal.ServerEvent.ReactionAdded(
+            queueId = queueId,
+            eventId = 0,
+            messageId = 0,
+            emoji = sampleEmoji,
+            currentUserReaction = true
+        ),
+        ChatEventElm.Internal.ServerEvent.ReactionRemoved(
+            queueId = queueId,
+            eventId = 0,
+            messageId = 0,
+            emoji = sampleEmoji,
+            currentUserReaction = true
+        ),
     )
 
     private fun generateReactions(count: Int): List<ChatReaction> {

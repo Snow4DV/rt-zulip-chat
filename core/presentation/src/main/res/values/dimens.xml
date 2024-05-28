@@ -31,4 +31,7 @@
     <dimen name="sheet_corner_radius">10dp</dimen>
     <dimen name="puller_width">60dp</dimen>
     <dimen name="puller_height">8dp</dimen>
+    <dimen name="surface_edit_text_horizontal_padding">20dp</dimen>
+    <dimen name="surface_edit_text_vertical_padding">15dp</dimen>
+    <dimen name="surface_edit_text_text_size">16sp</dimen>
 </resources>

@@ -22,4 +22,7 @@ internal sealed interface MessageAction {
     data class OpenSenderProfile(override val loading: Boolean = false) : MessageAction {
         override fun with(loading: Boolean): MessageAction = copy(loading = loading)
     }
+    data class ReloadMessage(override val loading: Boolean = false) : MessageAction {
+        override fun with(loading: Boolean): MessageAction = copy(loading = loading)
+    }
 }

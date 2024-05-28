@@ -37,4 +37,9 @@ internal sealed interface UiMessageAction : DelegateItem {
         override val iconResId: Int = R.drawable.ic_open_profie_action
         override val id: Any = 6
     }
+    data class ReloadMessage(override val loading: Boolean) : UiMessageAction {
+        override val nameResId: Int = R.string.reload_message
+        override val iconResId: Int = R.drawable.ic_reload_message
+        override val id: Any = 7
+    }
 }

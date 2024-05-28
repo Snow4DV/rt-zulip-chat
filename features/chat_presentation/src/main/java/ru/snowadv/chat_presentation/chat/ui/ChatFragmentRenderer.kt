@@ -1,6 +1,6 @@
 package ru.snowadv.chat_presentation.chat.ui
 
-import android.widget.Toast
+import android.text.TextWatcher
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,7 +20,6 @@ import ru.snowadv.chat_presentation.chat.ui.elm.ChatEventUiElm
 import ru.snowadv.chat_presentation.chat.ui.elm.ChatStateUiElm
 import ru.snowadv.chat_presentation.databinding.FragmentChatBinding
 import ru.snowadv.chat_presentation.di.holder.ChatPresentationComponentHolder
-import ru.snowadv.chat_presentation.chat.ui.model.ChatAction
 import ru.snowadv.chat_presentation.chat.ui.model.ChatPaginationStatus
 import ru.snowadv.chat_presentation.chat.ui.util.AdapterUtils.submitListAndKeepScrolledToBottom
 import ru.snowadv.chat_presentation.chat.ui.util.PaginationConfig
@@ -35,10 +34,7 @@ import ru.snowadv.presentation.fragment.inflateState
 import ru.snowadv.presentation.fragment.setOnRetryClickListener
 import vivid.money.elmslie.core.store.Store
 import android.widget.ArrayAdapter;
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import ru.snowadv.chat_presentation.chat.ui.model.ChatMessage
 import ru.snowadv.message_actions_presentation.api.model.ActionChooserResult
 import ru.snowadv.message_actions_presentation.api.model.EmojiChooserResult
 import ru.snowadv.message_actions_presentation.api.model.MessageEditorResult
@@ -49,8 +45,8 @@ import ru.snowadv.message_actions_presentation.api.screen_factory.MessageEditorD
 import ru.snowadv.message_actions_presentation.api.screen_factory.MessageTopicChangerDialogFactory
 import ru.snowadv.presentation.adapter.updateIfChanged
 import ru.snowadv.presentation.fragment.getParcelableTypeSafe
-import ru.snowadv.presentation.view.EditTextUtils.observe
-import ru.snowadv.presentation.view.setTextIfChanged
+import ru.snowadv.presentation.view.EditTextUtils.afterTextChanged
+import ru.snowadv.presentation.view.setTextRemovingTextWatcherIfChanged
 import javax.inject.Inject
 
 internal class ChatFragmentRenderer :
@@ -66,6 +62,11 @@ internal class ChatFragmentRenderer :
 
     private var _topicsAdapter: ArrayAdapter<String>? = null
     private val topicsAdapter get() = requireNotNull(_topicsAdapter) { "Topics adapter wasn't initialized" }
+
+    private var _topicsTextWatcher: TextWatcher? = null
+    private val topicsTextWatcher get() = requireNotNull(_topicsTextWatcher) { "Topics text watcher wasn't initialized" }
+    private var _messageFieldTextWatcher: TextWatcher? = null
+    private val messageFieldTextWatcher get() = requireNotNull(_messageFieldTextWatcher) { "Message field text watcher wasn't initialized" }
 
     @Inject
     internal lateinit var splitterDateFormatter: DateFormatter
@@ -124,7 +125,7 @@ internal class ChatFragmentRenderer :
     ) = with(binding) {
         val mappedState = mapper.mapState(state)
 
-        bottomBar.topicAutoCompleteTextView.setTextIfChanged(text = mappedState.sendTopic, moveCursorToEnd = true)
+        bottomBar.topicAutoCompleteTextView.setTextRemovingTextWatcherIfChanged(text = mappedState.sendTopic, textWatcher = topicsTextWatcher)
         bottomBar.topicInputLayout.error = if (mappedState.isTopicEmptyErrorVisible) {
             getString(R.string.topic_cant_be_empty)
         } else {
@@ -162,7 +163,7 @@ internal class ChatFragmentRenderer :
 
         topicsAdapter.updateIfChanged(state.topics.data ?: emptyList())
 
-        bottomBar.messageEditText.setTextIfChanged(mappedState.messageField)
+        bottomBar.messageEditText.setTextRemovingTextWatcherIfChanged(text = mappedState.messageField, textWatcher = messageFieldTextWatcher)
 
         actionProgressBar.isVisible = mappedState.isLoading
     }
@@ -219,12 +220,22 @@ internal class ChatFragmentRenderer :
                 fragment = this,
             )
         }
+
+        is ChatEffectUiElm.RefreshMessageWithId -> {
+            adapter.currentList.forEachIndexed { index, item ->
+                if (item is ChatMessage && item.id == mappedEffect.messageId) {
+                    adapter.notifyItemChanged(index)
+                }
+            }
+        }
     }
 
     override fun ChatFragment.onDestroyRendererView() {
         _adapter = null
         _topicsAdapter = null
         _messagesRecyclerLinearLayoutManager = null
+        _topicsTextWatcher = null
+        _messageFieldTextWatcher = null
     }
 
     private fun setAdapterToRecyclerView(
@@ -238,19 +249,15 @@ internal class ChatFragmentRenderer :
         binding: FragmentChatBinding,
         store: Store<ChatEventElm, ChatEffectElm, ChatStateElm>,
     ) = with(binding) {
-        bottomBar.topicAutoCompleteTextView.observe(noDebouncePredicate = { it.length <= 1 })
-            .onEach {
-                store.accept(mapper.mapUiEvent(ChatEventUiElm.TopicChanged(it)))
-            }.flowWithLifecycle(viewLifecycleOwner.lifecycle)
-            .launchIn(viewLifecycleOwner.lifecycleScope)
-
+        bottomBar.topicAutoCompleteTextView.afterTextChanged {
+            store.accept(mapper.mapUiEvent(ChatEventUiElm.TopicChanged(it)))
+        }.also { _topicsTextWatcher = it }
+        bottomBar.messageEditText.afterTextChanged {
+            store.accept(mapper.mapUiEvent(ChatEventUiElm.MessageFieldChanged(it)))
+        }.also { _messageFieldTextWatcher = it }
         chatTopBar.openAllTopicsButton.setOnClickListener {
             store.accept(mapper.mapUiEvent(ChatEventUiElm.OnLeaveTopicClicked))
         }
-        bottomBar.messageEditText.observe(noDebouncePredicate = { it.length == 1 }).onEach {
-            store.accept(mapper.mapUiEvent(ChatEventUiElm.MessageFieldChanged(it)))
-        }.flowWithLifecycle(viewLifecycleOwner.lifecycle)
-            .launchIn(viewLifecycleOwner.lifecycleScope)
         bottomBar.sendOrAddAttachmentButton.setOnClickListener {
             store.accept(mapper.mapUiEvent(ChatEventUiElm.SendMessageAddAttachmentButtonClicked))
         }
@@ -476,6 +483,7 @@ internal class ChatFragmentRenderer :
                         is ActionChooserResult.RemovedMessage -> Unit
                         is ActionChooserResult.OpenedProfile -> Unit
                         is ActionChooserResult.Error -> showInfo(binding.root, result.errorMessage)
+                        is ActionChooserResult.ReloadMessage -> store.accept(mapper.mapUiEvent(ChatEventUiElm.ReloadMessageClicked(result.messageId)))
                     }
                 }
 

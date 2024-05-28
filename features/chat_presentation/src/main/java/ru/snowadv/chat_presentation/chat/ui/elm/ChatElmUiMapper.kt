@@ -47,6 +47,7 @@ internal class ChatElmUiMapper @Inject constructor() :
             ChatEffectElm.ShowTopicChangedBecauseNewMessageIsUnreachable -> ChatEffectUiElm.ShowTopicChangedBecauseNewMessageIsUnreachable
             is ChatEffectElm.OpenMessageEditor -> ChatEffectUiElm.OpenMessageEditor(messageId, streamName)
             is ChatEffectElm.OpenMessageTopicChanger -> ChatEffectUiElm.OpenMessageTopicChanger(messageId, streamId, topicName)
+            is ChatEffectElm.RefreshMessageWithId -> ChatEffectUiElm.RefreshMessageWithId(messageId)
         }
     }
 
@@ -83,6 +84,7 @@ internal class ChatElmUiMapper @Inject constructor() :
             is ChatEventUiElm.EditMessageClicked -> ChatEventElm.Ui.EditMessageClicked(messageId)
             is ChatEventUiElm.MoveMessageClicked -> ChatEventElm.Ui.MoveMessageClicked(messageId)
             is ChatEventUiElm.MessageMovedToNewTopic -> ChatEventElm.Ui.MessageMovedToNewTopic(topicName)
+            is ChatEventUiElm.ReloadMessageClicked -> ChatEventElm.Ui.ReloadMessageClicked(messageId)
         }
     }
 }

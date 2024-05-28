@@ -27,19 +27,6 @@
     </style>
 
 
-    <style name="Theme.ZulipChat.MessageEditText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="android:background">@drawable/bg_message_edit_text</item>
-        <item name="android:paddingLeft">@dimen/message_edit_text_horizontal_padding</item>
-        <item name="android:paddingRight">@dimen/message_edit_text_horizontal_padding</item>
-        <item name="android:paddingTop">@dimen/message_edit_text_vertical_padding</item>
-        <item name="android:paddingBottom">@dimen/message_edit_text_vertical_padding</item>
-        <item name="android:textSize">@dimen/message_edit_text_text_size</item>
-        <item name="android:textColor">@color/message_edit_text_text_color</item>
-        <item name="android:textColorHint">@color/message_edit_text_hint_color</item>
-        <item name="android:inputType">textAutoComplete|textMultiLine</item>
-        <item name="android:maxLines">2</item>
-    </style>
-
 
     <style name="Theme.ZulipChat.TopicTextView" parent="Widget.MaterialComponents.TextView">
         <item name="android:background">@color/on_surface_box_color</item>

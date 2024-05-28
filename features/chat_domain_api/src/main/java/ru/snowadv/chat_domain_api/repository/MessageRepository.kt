@@ -58,4 +58,8 @@ interface MessageRepository {
         notifyOldThread: Boolean = false,
         notifyNewThread: Boolean = false,
     ): Flow<Resource<Unit>>
+    fun changeMessagesReadState(
+        messagesIds: List<Long>,
+        newState: Boolean,
+    ): Flow<Resource<Unit>>
 }

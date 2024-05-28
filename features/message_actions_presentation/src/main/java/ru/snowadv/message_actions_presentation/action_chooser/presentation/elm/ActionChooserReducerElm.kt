@@ -80,6 +80,10 @@ internal class ActionChooserReducerElm @Inject constructor():
                     is MessageAction.RemoveMessage -> commands {
                         +ActionChooserCommandElm.RemoveMessage(state.messageId)
                     }
+
+                    is MessageAction.ReloadMessage -> effects {
+                        +ActionChooserEffectElm.CloseWithResult(ActionChooserResult.ReloadMessage(state.messageId))
+                    }
                 }
             }
         }

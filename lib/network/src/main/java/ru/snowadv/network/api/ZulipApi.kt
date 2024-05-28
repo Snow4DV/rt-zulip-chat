@@ -18,6 +18,7 @@ import ru.snowadv.network.interceptor.TimeoutSetterInterceptor.Companion.READ_TI
 import ru.snowadv.network.model.AllStreamsResponseDto
 import ru.snowadv.network.model.AllUsersResponseDto
 import ru.snowadv.network.model.AllUsersPresenceDto
+import ru.snowadv.network.model.ChangeFlagsMessagesIdsListRequestDto
 import ru.snowadv.network.model.EmojisResponseDto
 import ru.snowadv.network.model.EventQueueResponseDto
 import ru.snowadv.network.model.EventTypesRequestDto
@@ -174,6 +175,13 @@ interface ZulipApi {
     @DELETE("users/me/subscriptions")
     suspend fun unsubscribeFromStreams(
         @Query("subscriptions") subscriptions: UnsubscribeStreamsListRequestDto,
+    ): Result<Unit>
+
+    @POST("messages/flags")
+    suspend fun updateFlags(
+        @Query("messages") messages: ChangeFlagsMessagesIdsListRequestDto,
+        @Query("op") op: String,
+        @Query("flag") flag: String,
     ): Result<Unit>
 }
 

@@ -2,12 +2,16 @@ package ru.snowadv.chat_presentation.chat.presentation.elm.mock
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import ru.snowadv.channels_domain_api.model.Topic
+import ru.snowadv.channels_domain_api.use_case.GetTopicsUseCase
 import ru.snowadv.chat_domain_api.model.ChatEmoji
 import ru.snowadv.chat_domain_api.model.ChatMessage
 import ru.snowadv.chat_domain_api.model.ChatPaginatedMessages
 import ru.snowadv.chat_domain_api.use_case.AddReactionUseCase
 import ru.snowadv.chat_domain_api.use_case.GetCurrentMessagesUseCase
+import ru.snowadv.chat_domain_api.use_case.GetEmojisUseCase
 import ru.snowadv.chat_domain_api.use_case.ListenToChatEventsUseCase
+import ru.snowadv.chat_domain_api.use_case.LoadMessageUseCase
 import ru.snowadv.chat_domain_api.use_case.LoadMoreMessagesUseCase
 import ru.snowadv.chat_domain_api.use_case.RemoveReactionUseCase
 import ru.snowadv.chat_domain_api.use_case.SendFileUseCase
@@ -34,7 +38,7 @@ internal class GetCurrentMessagesUseCaseMock(
 
     override fun invoke(
         streamName: String,
-        topicName: String,
+        topicName: String?
     ): Flow<Resource<ChatPaginatedMessages>> = flow {
         emit(Resource.Loading())
         emit(Resource.Loading(data.cachedMessages.toTestPaginatedMessages()))
@@ -60,7 +64,7 @@ internal class ListenToChatEventsUseCaseMock(
         isRestart: Boolean,
         eventQueueProps: EventQueueProperties?,
         streamName: String,
-        topicName: String,
+        topicName: String?
     ): Flow<DomainEvent> = flow {
         data.events.forEach { emit(it) }
     }
@@ -71,9 +75,9 @@ internal class LoadMoreMessagesUseCaseMock(
 ) : LoadMoreMessagesUseCase {
     override fun invoke(
         streamName: String,
-        topicName: String,
+        topicName: String?,
         firstLoadedMessageId: Long?,
-        includeAnchor: Boolean,
+        includeAnchor: Boolean
     ): Flow<Resource<ChatPaginatedMessages>> = flow {
         emit(Resource.Loading())
         emit(Resource.Success(data.secondPageMessages.toTestPaginatedMessages()))
@@ -103,6 +107,32 @@ internal class SendFileUseCaseMock() : SendFileUseCase {
     }
 }
 
+internal class LoadMessageUseCaseMock(
+    private val data: ChatActorElmTestData,
+) : LoadMessageUseCase {
+    override fun invoke(
+        messageId: Long,
+        streamName: String?,
+        applyMarkdown: Boolean
+    ): Flow<Resource<ChatMessage>> = flow {
+        emit(Resource.Loading())
+        emit(Resource.Success(data.messageAddedAfterCaching))
+        emit(Resource.Error(DataException(), data.initialCachedMessage))
+    }
+
+}
+
+internal class GetTopicsUseCaseMock(
+    private val data: ChatActorElmTestData,
+) : GetTopicsUseCase {
+    override fun invoke(streamId: Long): Flow<Resource<List<Topic>>> = flow {
+        emit(Resource.Loading())
+        emit(Resource.Success(data.topics))
+        emit(Resource.Error(DataException(), data.topics))
+    }
+
+}
+
 internal class SendMessageUseCaseMock () : SendMessageUseCase {
     override fun invoke(
         streamName: String,
@@ -120,10 +150,6 @@ internal class ChatRouterMock : ChatRouter {
     val commands: List<String> = _commands
     override fun goBack() {
         _commands.add("goBack()")
-    }
-
-    override fun openProfile(profileId: Long) {
-        _commands.add("openProfile($profileId)")
     }
 }
 

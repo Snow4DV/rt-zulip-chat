@@ -8,7 +8,6 @@ import dagger.Provides
 import dagger.Reusable
 import okhttp3.OkHttpClient
 import ru.snowadv.image_loader.R
-import javax.inject.Provider
 
 
 @Module
@@ -22,7 +21,6 @@ internal class ImageLoaderLibModule {
                     MemoryCache.Builder(appContext).maxSizePercent(0.5).build()
                 }
                 crossfade(true)
-
                 error(R.drawable.bg_image_error)
                 placeholder(R.drawable.bg_image_placeholder)
             }

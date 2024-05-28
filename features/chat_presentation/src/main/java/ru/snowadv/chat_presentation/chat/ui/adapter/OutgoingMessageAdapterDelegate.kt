@@ -7,10 +7,13 @@ import io.noties.markwon.Markwon
 import ru.snowadv.chat_presentation.chat.ui.model.ChatMessage
 import ru.snowadv.chat_presentation.chat.ui.model.ChatMessageType
 import ru.snowadv.chat_presentation.chat.ui.model.ChatReaction
+import ru.snowadv.chat_presentation.chat.ui.util.AdapterUtils
+import ru.snowadv.chat_presentation.chat.ui.util.AdapterUtils.getReadStatus
 import ru.snowadv.chat_presentation.chat.ui.view.OutgoingMessageLayout
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.presentation.adapter.DelegationItemAdapterDelegate
 import ru.snowadv.presentation.util.DateTimeFormatter
+import java.time.LocalDateTime
 
 internal class OutgoingMessageAdapterDelegate(
     private val onAddReactionClickListener: ((ChatMessage) -> Unit)? = null,
@@ -51,21 +54,36 @@ internal class OutgoingMessageAdapterDelegate(
         }
 
         fun bind(message: ChatMessage) = with(messageLayout) {
-            setMarkdown(message.text, markwon)
-            timestampText = timestampFormatter.format(message.sentAt)
+            bindContent(message.text)
+            bindIsReadAndTimestamp(message.sentAt, message.isRead)
             bindReactions(message.reactions)
         }
 
         fun handlePayload(payload: ChatMessage.Payload) {
             when (payload) {
-                is ChatMessage.Payload.ReactionsChanged -> {
+                is ChatMessage.Payload.ReactionsHaveChanged -> {
                     bindReactions(payload.reactions)
+                }
+
+                is ChatMessage.Payload.ContentHasChanged -> {
+                    bindContent(payload.newContent)
+                }
+                is ChatMessage.Payload.ReadStatusHasChanged -> {
+                    bindIsReadAndTimestamp(payload.sentAt, payload.newIsRead)
                 }
             }
         }
 
         fun bindReactions(reactions: List<ChatReaction>?) = with(messageLayout) {
             updateReactionsWithAsyncDiffUtil(reactions)
+        }
+
+        fun bindContent(content: String) = with(messageLayout) {
+            setMarkdown(content, markwon)
+        }
+
+        fun bindIsReadAndTimestamp(sentAt: LocalDateTime, readStatus: Boolean) = with(messageLayout) {
+            timestampText = "${timestampFormatter.format(sentAt)} ${AdapterUtils.getReadString(readStatus)}"
         }
     }
 

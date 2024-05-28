@@ -5,8 +5,10 @@ import ru.snowadv.chat_domain_api.model.ChatEmoji
 import ru.snowadv.chat_domain_api.model.ChatMessage
 import ru.snowadv.chat_domain_api.model.ChatPaginatedMessages
 import ru.snowadv.chat_presentation.chat.ui.elm.ChatEventUiElm
+import ru.snowadv.events_api.model.DomainEvent
 import ru.snowadv.events_api.model.EventInfoHolder
 import ru.snowadv.events_api.model.EventSenderType
+import ru.snowadv.events_api.model.EventStreamUpdateFlagsMessages
 import ru.snowadv.model.InputStreamOpener
 import ru.snowadv.model.Resource
 
@@ -34,6 +36,7 @@ sealed interface ChatEventElm {
         data class EditMessageClicked(val messageId: Long) : Ui
         data class MoveMessageClicked(val messageId: Long) : Ui
         data class MessageMovedToNewTopic(val topicName: String) : Ui
+        data class ReloadMessageClicked(val messageId: Long) : Ui
     }
 
     sealed interface Internal : ChatEventElm {
@@ -123,6 +126,18 @@ sealed interface ChatEventElm {
                 val messageId: Long,
                 val emoji: ChatEmoji,
                 val currentUserReaction: Boolean,
+            ) : ServerEvent()
+
+            data class MessagesRead(
+                override val queueId: String?,
+                override val eventId: Long,
+                val addFlagMessagesIds: List<Long>,
+            ) : ServerEvent()
+
+            data class MessagesUnread(
+                override val queueId: String?,
+                override val eventId: Long,
+                val removeFlagMessagesIds: List<Long>,
             ) : ServerEvent()
         }
     }

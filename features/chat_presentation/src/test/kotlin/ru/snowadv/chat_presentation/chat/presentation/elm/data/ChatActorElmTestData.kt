@@ -1,5 +1,6 @@
 package ru.snowadv.chat_presentation.chat.presentation.elm.data
 
+import ru.snowadv.channels_domain_api.model.Topic
 import ru.snowadv.chat_domain_api.model.ChatEmoji
 import ru.snowadv.chat_domain_api.model.ChatMessage
 import ru.snowadv.chat_domain_api.model.ChatReaction
@@ -8,6 +9,7 @@ import ru.snowadv.events_api.model.DomainEvent
 import ru.snowadv.events_api.model.EventMessage
 import ru.snowadv.events_api.model.EventPresence
 import ru.snowadv.events_api.model.EventReaction
+import ru.snowadv.test_utils.exception.DataException
 import java.io.IOException
 import java.time.ZonedDateTime
 
@@ -27,7 +29,16 @@ internal class ChatActorElmTestData {
         reactions = emptyList(),
         owner = true,
         topic = "sometopic",
+        isRead = true,
     )
+
+    val topics = listOf(
+        Topic(uniqueId = "1_Topic1", name = "Topic1", streamId = 1, unreadMessagesCount = 0),
+        Topic(uniqueId = "1_Test", name = "Test", streamId = 1, unreadMessagesCount = 1),
+        Topic(uniqueId = "2_Topic2", name = "Topic2", streamId = 2, unreadMessagesCount = 2),
+    )
+
+    val topic get() = topics.first()
 
     val sampleZonedDateTime = ZonedDateTime.now()
     val sampleZonedDateTimes = List(5) {
@@ -44,6 +55,7 @@ internal class ChatActorElmTestData {
         reactions = emptyList(),
         owner = false,
         topic = "sometopic",
+        isRead = true,
     )
 
     val remoteMessages = listOf(
@@ -79,6 +91,7 @@ internal class ChatActorElmTestData {
         reactions = listOf(ChatReaction(sampleEmoji.name, sampleEmoji.code, 1, false)),
         owner = false,
         topic = "sometopic",
+        isRead = true,
     )
 
     val secondPageMessages = listOf(secondPageMessage)
@@ -88,7 +101,7 @@ internal class ChatActorElmTestData {
             id = -1,
             queueId = null,
             isQueueBad = true,
-            reason = IOException()
+            reason = DataException()
         ),
         DomainEvent.RegisteredNewQueueEvent(
             queueId = "new_queue",
@@ -104,11 +117,20 @@ internal class ChatActorElmTestData {
                 senderId = 123,
                 senderFullName = "John Doe",
                 avatarUrl = "http://example.com/1.png",
-                reactions = listOf(EventReaction(sampleEmoji.name, sampleEmoji.code, 1, false, reactionType)),
+                reactions = listOf(
+                    EventReaction(
+                        sampleEmoji.name,
+                        sampleEmoji.code,
+                        1,
+                        false,
+                        reactionType
+                    )
+                ),
                 owner = false,
                 type = "stream",
                 streamId = 1,
                 subject = topicName,
+                flags = listOf("read"),
             ),
             queueId = "example_queue",
             flags = setOf("read"),
@@ -126,7 +148,7 @@ internal class ChatActorElmTestData {
             messageId = 1,
             content = "Updated content",
             queueId = "example_queue",
-            subject = "test",
+            subject = topicName,
         ),
         DomainEvent.RealmDomainEvent(
             id = 4,
@@ -230,7 +252,7 @@ internal class ChatActorElmTestData {
             queueId = null,
             eventId = -1,
             recreateQueue = true,
-            reason = IOException(),
+            reason = DataException(),
         ),
         ChatEventElm.Internal.ServerEvent.EventQueueRegistered(
             queueId = "new_queue",
@@ -249,7 +271,8 @@ internal class ChatActorElmTestData {
                 senderAvatarUrl = "http://example.com/1.png",
                 reactions = listOf(ChatReaction(sampleEmoji.name, sampleEmoji.code, 1, false)),
                 owner = false,
-                topic = "sometopic",
+                topic = "topic",
+                isRead = true,
             )
         ),
         ChatEventElm.Internal.ServerEvent.MessageDeleted(
@@ -262,7 +285,7 @@ internal class ChatActorElmTestData {
             eventId = 3,
             messageId = 1,
             newContent = "Updated content",
-            newSubject = "othertopic",
+            newSubject = topicName,
         ),
         ChatEventElm.Internal.ServerEvent.EventQueueUpdated(
             queueId = "example_queue",

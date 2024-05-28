@@ -10,9 +10,7 @@
     <color name="message_text_color_outgoing">#FFFFFF</color>
     <color name="message_timestamp_color">#747474</color>
     <color name="message_timestamp_color_outgoing">#CECECE</color>
-    <color name="message_edit_text_color">#C3C1C5</color>
-    <color name="message_edit_text_text_color">@color/black</color>
-    <color name="message_edit_text_hint_color">#3C3C3C</color>
+    <color name="surface_edit_text_color">#C3C1C5</color>
     <color name="date_splitter_bg_color">#ECE9ED</color>
     <color name="date_splitter_text_color">#9F9E9E</color>
 </resources>

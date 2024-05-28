@@ -17,7 +17,8 @@ internal class ListenToChatEventsUseCaseImpl @Inject constructor(private val eve
         internal val eventTypes =
             setOf(
                 EventType.REALM, EventType.HEARTBEAT, EventType.PRESENCE, EventType.MESSAGE,
-                EventType.DELETE_MESSAGE, EventType.UPDATE_MESSAGE, EventType.REACTION
+                EventType.DELETE_MESSAGE, EventType.UPDATE_MESSAGE, EventType.REACTION,
+                EventType.UPDATE_MESSAGE_FLAGS,
             )
     }
 

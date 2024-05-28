@@ -16,6 +16,7 @@ internal object ActionChooserMappers {
             is MessageAction.MoveMessage -> UiMessageAction.MoveMessage(loading)
             is MessageAction.OpenSenderProfile -> UiMessageAction.OpenSenderProfile(loading)
             is MessageAction.RemoveMessage -> UiMessageAction.RemoveMessage(loading)
+            is MessageAction.ReloadMessage -> UiMessageAction.ReloadMessage(loading)
         }
     }
 
@@ -27,6 +28,7 @@ internal object ActionChooserMappers {
             is UiMessageAction.MoveMessage -> MessageAction.MoveMessage(loading)
             is UiMessageAction.OpenSenderProfile -> MessageAction.OpenSenderProfile(loading)
             is UiMessageAction.RemoveMessage -> MessageAction.RemoveMessage(loading)
+            is UiMessageAction.ReloadMessage -> MessageAction.ReloadMessage(loading)
         }
     }
 }

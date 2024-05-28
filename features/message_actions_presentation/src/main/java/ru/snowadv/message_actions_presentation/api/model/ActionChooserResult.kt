@@ -17,5 +17,7 @@ sealed interface ActionChooserResult : Parcelable {
     @Parcelize
     data class OpenedProfile(val profileId: Long): ActionChooserResult
     @Parcelize
+    data class ReloadMessage(val messageId: Long): ActionChooserResult
+    @Parcelize
     data class Error(val errorMessage: String): ActionChooserResult
 }

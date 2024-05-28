@@ -257,8 +257,13 @@ internal class StreamListReducerElm @Inject constructor() :
                 }
             }
 
-            StreamListEventElm.Ui.Paused -> state {
-                copy(resumed = false)
+            StreamListEventElm.Ui.Paused -> {
+                state {
+                    copy(resumed = false)
+                }
+                commands {
+                    +StreamListCommandElm.StopObservation
+                }
             }
 
             StreamListEventElm.Ui.Resumed -> {

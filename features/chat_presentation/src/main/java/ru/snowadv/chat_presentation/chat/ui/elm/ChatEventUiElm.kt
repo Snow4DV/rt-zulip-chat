@@ -25,4 +25,5 @@ sealed interface ChatEventUiElm {
     data class EditMessageClicked(val messageId: Long) : ChatEventUiElm
     data class MoveMessageClicked(val messageId: Long) : ChatEventUiElm
     data class MessageMovedToNewTopic(val topicName: String) : ChatEventUiElm
+    data class ReloadMessageClicked(val messageId: Long) : ChatEventUiElm
 }

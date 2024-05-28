@@ -24,6 +24,7 @@ internal object MessagesMapper {
             reactions = reactions.fromDtotoChatReactions(currentUserId),
             owner = currentUserId == senderId,
             topic = subject,
+            isRead = "read" in flags,
         )
     }
 
@@ -78,6 +79,7 @@ internal object MessagesMapper {
             reactions = reactions.fromEntitytoChatReactions(currentUserId),
             owner = currentUserId == senderId,
             topic = subject,
+            isRead = "read" in flags,
         )
     }
 

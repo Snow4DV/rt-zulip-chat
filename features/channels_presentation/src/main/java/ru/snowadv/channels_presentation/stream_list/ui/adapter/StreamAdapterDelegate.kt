@@ -65,7 +65,6 @@ internal class StreamAdapterDelegate(
 
         private fun bindSubscribeStatus(status: UiStream.SubscribeStatus) = with(binding) {
             subscribeStreamButton.isSelected = status.subscribed
-
             subscribeStreamButton.isVisible = !status.loading
             subscribeLoadingProgressBar.isVisible = status.loading
         }

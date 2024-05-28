@@ -22,6 +22,7 @@ import ru.snowadv.chat_domain_api.use_case.GetEmojisUseCase
 import ru.snowadv.chat_domain_api.use_case.ListenToChatEventsUseCase
 import ru.snowadv.chat_domain_api.use_case.LoadMessageUseCase
 import ru.snowadv.chat_domain_api.use_case.LoadMoreMessagesUseCase
+import ru.snowadv.chat_domain_api.use_case.ChangeMessageReadStateUseCase
 import ru.snowadv.chat_domain_api.use_case.RemoveReactionUseCase
 import ru.snowadv.chat_domain_api.use_case.SendFileUseCase
 import ru.snowadv.chat_domain_api.use_case.SendMessageUseCase
@@ -61,7 +62,6 @@ import ru.snowadv.message_actions_presentation.di.holder.MessageActionsPresentat
 import ru.snowadv.model.DispatcherProvider
 import ru.snowadv.module_injector.dependency_holder.DependencyHolder1
 import ru.snowadv.model.LoggerToggle
-import ru.snowadv.module_injector.dependency_holder.DependencyHolder5
 import ru.snowadv.module_injector.dependency_holder.DependencyHolder6
 import ru.snowadv.network.api.ZulipApi
 import ru.snowadv.network.di.holder.NetworkLibAPI
@@ -134,6 +134,7 @@ internal object AuthorizedTestModulesInjector: BaseModulesInjector() {
                     override val sendFileUseCase: SendFileUseCase = chatApi.sendFileUseCase
                     override val getEmojisUseCase: GetEmojisUseCase = chatApi.getEmojisUseCase
                     override val loadMessageUseCase: LoadMessageUseCase = chatApi.loadMessageUseCase
+                    override val markMessagesAsReadUseCase: ChangeMessageReadStateUseCase = chatApi.markMessagesAsReadUseCase
                     override val getTopicsUseCase: GetTopicsUseCase = channelsDomainApi.getTopicsUseCase
                     override val appContext: Context = appContext
                     override val imageLoader: ImageLoader = imageLoaderApi.coilImageLoader

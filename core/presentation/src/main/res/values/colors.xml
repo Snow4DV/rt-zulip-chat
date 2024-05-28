@@ -56,4 +56,7 @@
 
     <color name="listener_error">#cf6679</color>
     <color name="ripple">@color/ripple_material_light</color>
+
+    <color name="surface_edit_text_hint_color">#3C3C3C</color>
+    <color name="surface_edit_text_color">#C3C1C5</color>
 </resources>

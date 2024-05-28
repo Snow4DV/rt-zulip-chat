@@ -262,6 +262,7 @@ internal class ChatServerResponseTransformer @Inject constructor(
         return EventResponseDto.MessageEventDto(
             id = eventId,
             message = message,
+            flags = emptyList(),
         )
     }
 

@@ -11,6 +11,7 @@ import ru.snowadv.chat_domain_api.model.ChatPaginationStatus
 import ru.snowadv.chat_presentation.chat.presentation.elm.data.ChatReducerElmTestData
 import ru.snowadv.events_api.model.EventQueueProperties
 import ru.snowadv.model.ScreenState
+import ru.snowadv.test_utils.exception.DataException
 
 @RunWith(JUnit4::class)
 class ChatReducerElmTest : BehaviorSpec({
@@ -22,7 +23,7 @@ class ChatReducerElmTest : BehaviorSpec({
                     // Internal events
                     And("event is Internal.InitialChatLoaded with page 0 and cached false") {
                         val event =
-                            ChatEventElm.Internal.InitialChatLoaded(paginatedMessages[0], false)
+                            ChatEventElm.Internal.InitialChatLoaded(paginatedMessages[0])
                         val expectedCommand = ChatCommandElm.ObserveEvents(
                             streamName = streamName,
                             topicName = topicName,
@@ -43,16 +44,16 @@ class ChatReducerElmTest : BehaviorSpec({
                         }
                     }
 
-                    And("event is Internal.InitialChatLoaded with cached is true") {
+                    And("event is Internal.InitialChatLoadedFromCache") {
                         val event =
-                            ChatEventElm.Internal.InitialChatLoaded(paginatedMessages[0], true)
+                            ChatEventElm.Internal.InitialChatLoadedFromCache(paginatedMessages[0])
                         val actual = reducer.reduce(event, initialResumedState)
 
                         Then(
                             "screenState should be success, messages should be expectedMessages, pagination status" +
-                                    " should be HasMore and eventQueueData should be null"
+                                    " should be None and eventQueueData should be null"
                         ) {
-                            actual.state.screenState shouldBe ScreenState.Success(chunkedMessages[0])
+                            actual.state.screenState shouldBe ScreenState.Loading(chunkedMessages[0])
                             actual.state.messages shouldBe chunkedMessages[0]
                             actual.state.paginationStatus shouldBe ChatPaginationStatus.None
                             actual.state.eventQueueData shouldBe null
@@ -247,7 +248,9 @@ class ChatReducerElmTest : BehaviorSpec({
                         val event = ChatEventElm.Ui.AddReactionClicked(messageId = sampleMessageId)
                         val actual = reducer.reduce(event, initialResumedState)
                         val expectedEffect = ChatEffectElm.OpenReactionChooser(
-                            destMessageId = sampleMessageId
+                            destMessageId = sampleMessageId,
+                            excludeEmojisCodes = allMessages.first { it.id == sampleMessageId }
+                                .reactions.filter { it.userReacted }.map { it.emojiCode }
                         )
 
                         Then("effects should contain $expectedEffect") {
@@ -261,17 +264,6 @@ class ChatReducerElmTest : BehaviorSpec({
 
                         Then("commands should contain GoBack") {
                             actual.commands shouldContain ChatCommandElm.GoBack
-                        }
-                    }
-
-                    And("event is Ui.GoToProfileClicked") {
-                        val event = ChatEventElm.Ui.GoToProfileClicked(profileId = sampleUserId)
-                        val actual = reducer.reduce(event, initialResumedState)
-
-                        val expectedCommand = ChatCommandElm.GoToProfile(profileId = sampleUserId)
-
-                        Then("commands should contain $expectedCommand") {
-                            actual.commands shouldContain expectedCommand
                         }
                     }
 
@@ -304,6 +296,8 @@ class ChatReducerElmTest : BehaviorSpec({
                         val expectedEffect = ChatEffectElm.OpenMessageActionsChooser(
                             messageId = sampleMessageId,
                             userId = sampleUserId,
+                            streamName = streamName,
+                            isOwner = allMessages.first { it.id == sampleMessageId }.owner,
                         )
 
                         Then("effects should contain $expectedEffect") {
@@ -530,6 +524,7 @@ class ChatReducerElmTest : BehaviorSpec({
                             queueId = expectedQueueId,
                             eventId = expectedEventId,
                             recreateQueue = true,
+                            reason = DataException(),
                         )
 
                         val actual = reducer.reduce(event, firstPageStateNullEventQueueData)
@@ -560,6 +555,7 @@ class ChatReducerElmTest : BehaviorSpec({
                                 queueId = initialEventQueuePropsAfterRegister.queueId,
                                 eventId = -1,
                                 recreateQueue = true,
+                                reason = DataException(),
                             )
 
                             val expectedCommand = ChatCommandElm.LoadInitialMessages(
@@ -579,6 +575,7 @@ class ChatReducerElmTest : BehaviorSpec({
                                 queueId = initialEventQueuePropsAfterRegister.queueId,
                                 eventId = -1,
                                 recreateQueue = false,
+                                reason = DataException(),
                             )
 
                             val expectedCommand = ChatCommandElm.ObserveEvents(
@@ -678,6 +675,7 @@ class ChatReducerElmTest : BehaviorSpec({
                             eventId = initialEventQueuePropsAfterRegister.lastEventId + 1,
                             messageId = firstPageMessages.last().id,
                             newContent = expectedNewContent,
+                            newSubject = newSubject,
                         )
 
                         val expectedUpdatedMessage = firstPageMessages.last().copy(

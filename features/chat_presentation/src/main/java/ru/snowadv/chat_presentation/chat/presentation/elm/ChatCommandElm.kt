@@ -29,6 +29,10 @@ sealed interface ChatCommandElm { // commands to actor
         val requestEventId: Long,
     ) : ChatCommandElm
 
+    data class MarkMessagesAsRead(
+        val messagesIds: List<Long>,
+    ) : ChatCommandElm
+
     data class ObserveEvents(
         val streamName: String,
         val topicName: String?,

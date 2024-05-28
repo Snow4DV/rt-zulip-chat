@@ -23,7 +23,7 @@ import ru.snowadv.utils.DateUtils
 
 
 internal object EventMapper {
-    private fun MessageResponseDto.toEventMessage(currentUserId: Long): EventMessage {
+    private fun MessageResponseDto.toEventMessage(currentUserId: Long, flags: List<String>): EventMessage {
         return EventMessage(
             id = id,
             content = content,
@@ -36,6 +36,7 @@ internal object EventMapper {
             type = type,
             streamId = streamId,
             subject = subject,
+            flags = flags,
         )
     }
 
@@ -51,7 +52,7 @@ internal object EventMapper {
         return when (this) {
             is EventResponseDto.MessageEventDto -> DomainEvent.MessageDomainEvent(
                 id = id,
-                eventMessage = message.toEventMessage(currentUserId),
+                eventMessage = message.toEventMessage(currentUserId, flags),
                 queueId = queueId,
                 flags = flags.toSet(),
             )

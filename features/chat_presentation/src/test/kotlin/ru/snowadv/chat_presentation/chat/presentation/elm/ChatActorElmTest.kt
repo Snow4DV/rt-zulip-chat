@@ -5,6 +5,7 @@ import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.toList
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import ru.snowadv.chat_domain_api.model.ChatMessage
@@ -13,7 +14,9 @@ import ru.snowadv.chat_presentation.chat.presentation.elm.data.ChatActorElmTestD
 import ru.snowadv.chat_presentation.chat.presentation.elm.mock.AddReactionUseCaseMock
 import ru.snowadv.chat_presentation.chat.presentation.elm.mock.ChatRouterMock
 import ru.snowadv.chat_presentation.chat.presentation.elm.mock.GetCurrentMessagesUseCaseMock
+import ru.snowadv.chat_presentation.chat.presentation.elm.mock.GetTopicsUseCaseMock
 import ru.snowadv.chat_presentation.chat.presentation.elm.mock.ListenToChatEventsUseCaseMock
+import ru.snowadv.chat_presentation.chat.presentation.elm.mock.LoadMessageUseCaseMock
 import ru.snowadv.chat_presentation.chat.presentation.elm.mock.LoadMoreMessagesUseCaseMock
 import ru.snowadv.chat_presentation.chat.presentation.elm.mock.RemoveReactionUseCaseMock
 import ru.snowadv.chat_presentation.chat.presentation.elm.mock.SendFileUseCaseMock
@@ -37,6 +40,8 @@ class ChatActorElmTest : BehaviorSpec({
                 listenToChatEventsUseCase = ListenToChatEventsUseCaseMock(this@with),
                 loadMoreMessagesUseCase = LoadMoreMessagesUseCaseMock(this@with),
                 sendFileUseCase = SendFileUseCaseMock(),
+                getTopicsUseCase = GetTopicsUseCaseMock(this@with),
+                loadMessageUseCase = LoadMessageUseCaseMock(this@with),
             )
             When("execute") {
                 And("command is LoadInitialMessages") {
@@ -46,12 +51,12 @@ class ChatActorElmTest : BehaviorSpec({
                     )
 
                     val expectedLoading = ChatEventElm.Internal.Loading
-                    val expectedLoadingWithCache = ChatEventElm.Internal.InitialChatLoaded(cachedMessages.toTestPaginatedMessages(), true)
-                    val expectedSuccess = ChatEventElm.Internal.InitialChatLoaded(remoteMessages.toTestPaginatedMessages(), false)
+                    val expectedLoadingWithCache = ChatEventElm.Internal.InitialChatLoadedFromCache(cachedMessages.toTestPaginatedMessages())
+                    val expectedSuccess = ChatEventElm.Internal.InitialChatLoaded(remoteMessages.toTestPaginatedMessages())
                     val expectedError = ChatEventElm.Internal.Error(DataException(), cachedMessages.toTestPaginatedMessages())
 
                     Then("should emit expectedLoading, expectedLoadingWithCache, expectedSuccess, expectedError") {
-                        actor.execute(command).runBlockingToList() shouldBe listOf(expectedLoading, expectedLoadingWithCache, expectedSuccess, expectedError)
+                        actor.execute(command).toList() shouldBe listOf(expectedLoading, expectedLoadingWithCache, expectedSuccess, expectedError)
                     }
                 }
 
@@ -68,7 +73,7 @@ class ChatActorElmTest : BehaviorSpec({
                     val expectedError = ChatEventElm.Internal.PaginationError
 
                     Then("should emit expectedLoading, expectedSuccess, expectedError") {
-                        actor.execute(command).runBlockingToList() shouldBe listOf(expectedLoading, expectedSuccess, expectedError)
+                        actor.execute(command).toList() shouldBe listOf(expectedLoading, expectedSuccess, expectedError)
                     }
                 }
 
@@ -81,7 +86,7 @@ class ChatActorElmTest : BehaviorSpec({
                     )
 
                     Then("should emit all elmServerEvents") {
-                        actor.execute(command).runBlockingToList() shouldBe elmServerEvents
+                        actor.execute(command).toList() shouldBe elmServerEvents
                     }
                 }
 
@@ -101,7 +106,7 @@ class ChatActorElmTest : BehaviorSpec({
                     val expectedError = ChatEventElm.Internal.ReactionChanged
 
                     Then("should emit expectedLoading, expectedError, expectedSuccess") {
-                        actor.execute(command).runBlockingToList() shouldBe listOf(expectedLoading, expectedError, expectedSuccess)
+                        actor.execute(command).toList() shouldBe listOf(expectedLoading, expectedError, expectedSuccess)
                     }
                 }
 
@@ -121,18 +126,7 @@ class ChatActorElmTest : BehaviorSpec({
                     val expectedError = ChatEventElm.Internal.ReactionChanged
 
                     Then("should emit expectedLoading, expectedError, expectedSuccess") {
-                        actor.execute(command).runBlockingToList() shouldBe listOf(expectedLoading, expectedError, expectedSuccess)
-                    }
-                }
-
-                And("command is GoToProfile") {
-                    val command = ChatCommandElm.GoToProfile(
-                        profileId = 1,
-                    )
-
-                    Then("router commands shouldContain openProfile(1)") {
-                        actor.execute(command).runBlocking()
-                        router.commands shouldContain "openProfile(1)"
+                        actor.execute(command).toList() shouldBe listOf(expectedLoading, expectedError, expectedSuccess)
                     }
                 }
 
@@ -153,11 +147,11 @@ class ChatActorElmTest : BehaviorSpec({
                     )
 
                     val expectedLoading = ChatEventElm.Internal.SendingMessage
-                    val expectedSuccess = ChatEventElm.Internal.MessageSent
+                    val expectedSuccess = ChatEventElm.Internal.MessageSent(topicName)
                     val expectedError = ChatEventElm.Internal.SendingMessageError
 
                     Then("should emit expectedLoading, expectedSuccess, expectedError") {
-                        actor.execute(command).runBlockingToList() shouldBe listOf(expectedLoading, expectedSuccess, expectedError)
+                        actor.execute(command).toList() shouldBe listOf(expectedLoading, expectedSuccess, expectedError)
                     }
                 }
 
@@ -181,7 +175,7 @@ class ChatActorElmTest : BehaviorSpec({
                     val expectedError = ChatEventElm.Internal.UploadingFileError(retryEvent)
 
                     Then("should emit expectedLoading, expectedSuccess, expectedError") {
-                        actor.execute(command).runBlockingToList() shouldBe listOf(expectedLoading, expectedSuccess, expectedError)
+                        actor.execute(command).toList() shouldBe listOf(expectedLoading, expectedSuccess, expectedError)
                     }
                 }
             }

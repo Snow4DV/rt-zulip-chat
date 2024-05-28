@@ -10,6 +10,7 @@ import ru.snowadv.chat_domain_api.use_case.GetCurrentMessagesUseCase
 import ru.snowadv.chat_domain_api.use_case.ListenToChatEventsUseCase
 import ru.snowadv.chat_domain_api.use_case.LoadMessageUseCase
 import ru.snowadv.chat_domain_api.use_case.LoadMoreMessagesUseCase
+import ru.snowadv.chat_domain_api.use_case.ChangeMessageReadStateUseCase
 import ru.snowadv.chat_domain_api.use_case.RemoveReactionUseCase
 import ru.snowadv.chat_domain_api.use_case.SendFileUseCase
 import ru.snowadv.chat_domain_api.use_case.SendMessageUseCase
@@ -31,7 +32,8 @@ class ChatActorElm @Inject constructor(
     private val loadMoreMessagesUseCase: LoadMoreMessagesUseCase,
     private val sendFileUseCase: SendFileUseCase,
     private val getTopicsUseCase: GetTopicsUseCase,
-    private val loadMessageUseCase: LoadMessageUseCase
+    private val loadMessageUseCase: LoadMessageUseCase,
+    private val markMessagesAsReadUseCase: ChangeMessageReadStateUseCase,
 ) : SwitchingActor<ChatCommandElm, ChatEventElm>() {
     override fun execute(command: ChatCommandElm): Flow<ChatEventElm> = when (command) {
         ChatCommandElm.GoBack -> flow { router.goBack() }
@@ -165,6 +167,12 @@ class ChatActorElm @Inject constructor(
                     ChatEventElm.Internal.ErrorFetchingMovedMessage(error, command.requestQueueId, command.requestEventId)
                 },
             )
+        }
+
+        is ChatCommandElm.MarkMessagesAsRead -> {
+            // Marking messages as read happens in background and will retry on next data fetch
+            // if internet is not present at the moment / other error has occurred
+            markMessagesAsReadUseCase(command.messagesIds, true).mapEvents { null }
         }
     }
 

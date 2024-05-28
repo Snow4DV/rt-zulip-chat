@@ -1,5 +1,6 @@
 package ru.snowadv.presentation.view
 
+import android.text.TextWatcher
 import android.util.TypedValue
 import android.view.View
 import android.widget.EditText
@@ -32,6 +33,15 @@ fun EditText.setTextIfChanged(text: String, moveCursorToEnd: Boolean = false) {
             setSelection(text.length)
         }
     }
+}
+
+fun EditText.setTextRemovingTextWatcherIfChanged(text: String, textWatcher: TextWatcher) {
+    removeTextChangedListener(textWatcher)
+    if (this.text.toString() != text) {
+        this.setText(text)
+        setSelection(text.length)
+    }
+    addTextChangedListener(textWatcher)
 }
 
 fun EditText.setTextIfEmpty(text: String) {

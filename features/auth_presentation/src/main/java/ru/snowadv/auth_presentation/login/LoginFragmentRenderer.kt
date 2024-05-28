@@ -1,6 +1,7 @@
 package ru.snowadv.auth_presentation.login
 
 import android.content.Context
+import android.text.TextWatcher
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.textfield.TextInputEditText
@@ -11,11 +12,20 @@ import ru.snowadv.auth_presentation.login.elm.LoginEffectElm
 import ru.snowadv.auth_presentation.login.elm.LoginEventElm
 import ru.snowadv.auth_presentation.login.elm.LoginStateElm
 import ru.snowadv.presentation.fragment.ElmFragmentRenderer
+import ru.snowadv.presentation.view.EditTextUtils.afterTextChanged
 import ru.snowadv.presentation.view.setTextIfChanged
+import ru.snowadv.presentation.view.setTextIfEmpty
+import ru.snowadv.presentation.view.setTextRemovingTextWatcherIfChanged
 import vivid.money.elmslie.core.store.Store
 
 internal class LoginFragmentRenderer :
     ElmFragmentRenderer<LoginFragment, FragmentLoginBinding, LoginEventElm, LoginEffectElm, LoginStateElm> {
+
+    private var _emailTextWatcher: TextWatcher? = null
+    private val emailTextWatcher get() = requireNotNull(_emailTextWatcher) { "Email text watcher wasn't initialized" }
+    private var _passwordTextWatcher: TextWatcher? = null
+    private val passwordTextWatcher get() = requireNotNull(_passwordTextWatcher) { "Password text watcher wasn't initialized" }
+
 
 
     override fun LoginFragment.onRendererViewCreated(
@@ -29,8 +39,8 @@ internal class LoginFragmentRenderer :
         state: LoginStateElm,
         binding: FragmentLoginBinding
     ) {
-        binding.email.setTextIfChanged(state.email)
-        binding.password.setTextIfChanged(state.password)
+        binding.email.setTextRemovingTextWatcherIfChanged(state.email, emailTextWatcher)
+        binding.password.setTextRemovingTextWatcherIfChanged(state.password, passwordTextWatcher)
 
         binding.buttonLogin.isEnabled = !state.loading
 
@@ -82,16 +92,12 @@ internal class LoginFragmentRenderer :
         binding.buttonLogin.setOnClickListener {
             store.accept(LoginEventElm.Ui.OnLoginButtonClicked)
         }
-        binding.email.addTextChangedListener {
-            it?.toString()?.let { email ->
-                store.accept(LoginEventElm.Ui.ChangedEmailField(email))
-            }
-        }
-        binding.password.addTextChangedListener {
-            it?.toString()?.let { password ->
-                store.accept(LoginEventElm.Ui.ChangedPasswordField(password))
-            }
-        }
+        binding.email.afterTextChanged { email ->
+            store.accept(LoginEventElm.Ui.ChangedEmailField(email))
+        }.also { _emailTextWatcher = it }
+        binding.password.afterTextChanged { password ->
+            store.accept(LoginEventElm.Ui.ChangedPasswordField(password))
+        }.also { _passwordTextWatcher = it }
     }
 
     private fun showErrorInTextInput(
@@ -102,5 +108,10 @@ internal class LoginFragmentRenderer :
     ) {
         textInputLayout.isErrorEnabled = true
         textInputEditText.error = context.getString(errorResId)
+    }
+
+    override fun LoginFragment.onDestroyRendererView() {
+        _emailTextWatcher = null
+        _passwordTextWatcher = null
     }
 }

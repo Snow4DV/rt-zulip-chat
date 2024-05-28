@@ -53,4 +53,6 @@ internal interface ChatDomainModule {
     fun bindMoveMessageToOtherTopicUseCaseImpl(impl: MoveMessageToOtherTopicUseCaseImpl): MoveMessageToOtherTopicUseCase
     @Binds
     fun bindRemoveMessageUseCaseImpl(impl: RemoveMessageUseCaseImpl): RemoveMessageUseCase
+    @Binds
+    fun bindMarkMessagesAsReadUseCaseImpl(impl: ru.snowadv.chat_domain_impl.use_case.ChangeMessageReadStateUseCaseImpl): ru.snowadv.chat_domain_api.use_case.ChangeMessageReadStateUseCase
 }

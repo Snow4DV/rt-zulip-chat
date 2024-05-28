@@ -14,4 +14,5 @@ data class EventMessage(
     val type: String,
     val streamId: Long? = null, // will not be present if it is DM message
     val subject: String, // will be ""/empty string for DMs
+    val flags: List<String>,
 )

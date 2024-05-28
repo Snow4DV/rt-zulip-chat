@@ -4,7 +4,6 @@ import ru.snowadv.chat_domain_api.model.ChatMessage
 import ru.snowadv.chat_domain_api.model.ChatEmoji
 import ru.snowadv.chat_domain_api.model.ChatPaginationStatus
 import ru.snowadv.chat_domain_api.model.ChatReaction
-import ru.snowadv.chat_presentation.chat.presentation.model.SnackbarText
 import ru.snowadv.events_api.helper.StateMachineQueueHelper
 import ru.snowadv.events_api.model.EventQueueProperties
 import ru.snowadv.model.ScreenState
@@ -105,6 +104,7 @@ internal class ChatReducerElm @Inject constructor() :
                         )
                     }
                 }
+                markMessagesInStateAsReadCommand()
             }
 
             ChatEventElm.Internal.ReactionChanged -> state {
@@ -139,6 +139,7 @@ internal class ChatReducerElm @Inject constructor() :
                     )
                 }
                 commandObserve()
+                markMessagesInStateAsReadCommand()
             }
 
             is ChatEventElm.Internal.ServerEvent.EventQueueUpdated -> {
@@ -180,6 +181,7 @@ internal class ChatReducerElm @Inject constructor() :
                     addMessage(newMessage = event.message, eventId = event.eventId)
                 }
                 commandObserve()
+                markMessageAsReadCommand(event.message.id)
             }
 
             is ChatEventElm.Internal.ServerEvent.ReactionAdded -> {
@@ -256,10 +258,7 @@ internal class ChatReducerElm @Inject constructor() :
                     copy(
                         screenState = event.messages.messages.toScreenState(loading = true),
                         messages = event.messages.messages,
-                        paginationStatus = when {
-                            event.messages.foundOldest -> ChatPaginationStatus.LoadedAll
-                            else -> ChatPaginationStatus.HasMore
-                        },
+                        paginationStatus = ChatPaginationStatus.None,
                         eventQueueData = null,
                     )
                 }
@@ -271,8 +270,32 @@ internal class ChatReducerElm @Inject constructor() :
                 }
             }
 
-            is ChatEventElm.Internal.LoadedMovedMessage -> state {
-                addMessage(event.message, event.eventId)
+            is ChatEventElm.Internal.LoadedMovedMessage -> {
+                state {
+                    addMessage(event.message, event.eventId)
+                }
+                markMessageAsReadCommand(event.message.id)
+            }
+
+            is ChatEventElm.Internal.ServerEvent.MessagesRead -> {
+                state {
+                    changeIfMessagesAreRead(
+                        messagesIds = event.addFlagMessagesIds.toSet(),
+                        eventId = event.eventId,
+                        newState = true,
+                    )
+                }
+                commandObserve()
+            }
+            is ChatEventElm.Internal.ServerEvent.MessagesUnread -> {
+                state {
+                    changeIfMessagesAreRead(
+                        messagesIds = event.removeFlagMessagesIds.toSet(),
+                        eventId = event.eventId,
+                        newState = false,
+                    )
+                }
+                commandObserve()
             }
         }
     }
@@ -473,6 +496,10 @@ internal class ChatReducerElm @Inject constructor() :
                     }
                 }
             }
+
+            is ChatEventElm.Ui.ReloadMessageClicked -> effects {
+                +ChatEffectElm.RefreshMessageWithId(event.messageId)
+            }
         }
     }
 
@@ -495,7 +522,6 @@ internal class ChatReducerElm @Inject constructor() :
             )
         }
     }
-
 
     private fun ChatStateElm.addReaction(
         emoji: ChatEmoji,
@@ -618,6 +644,19 @@ internal class ChatReducerElm @Inject constructor() :
         } ?: emptyList()
     }
 
+    private fun ChatStateElm.changeIfMessagesAreRead(messagesIds: Set<Long>, eventId: Long, newState: Boolean): ChatStateElm {
+        return updateMessageList(
+            messageList = messages.map {
+                if (it.id in messagesIds) {
+                    it.copy(isRead = newState)
+                } else {
+                    it
+                }
+            },
+            eventId = eventId,
+        )
+    }
+
     private fun ChatStateElm.updateMessageList(
         messageList: List<ChatMessage>, eventId: Long
     ): ChatStateElm {
@@ -632,4 +671,23 @@ internal class ChatReducerElm @Inject constructor() :
     }
 
 
+
+    private fun Result.markMessagesInStateAsReadCommand() {
+        commands {
+            state.messages.map { it.id }.let { unreadMessages ->
+                if (unreadMessages.isNotEmpty()) {
+                    +ChatCommandElm.MarkMessagesAsRead(unreadMessages)
+                }
+            }
+
+        }
+    }
+
+    private fun Result.markMessageAsReadCommand(messageId: Long) {
+        commands {
+            +ChatCommandElm.MarkMessagesAsRead(
+                messagesIds = listOf(messageId),
+            )
+        }
+    }
 }

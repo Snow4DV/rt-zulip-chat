@@ -35,16 +35,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/common_margin_large"
+        android:layout_marginTop="@dimen/common_margin"
         android:text="@string/new_stream_title"
         android:textSize="@dimen/bottom_sheet_title_text_size"
         android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/sheet_puller"
-        android:layout_marginTop="@dimen/common_margin"/>
+        app:layout_constraintTop_toBottomOf="@id/sheet_puller" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/stream_name_input_layout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        style="@style/Theme.ZulipChat.SurfaceEditText.NoPadding"
+        app:hintEnabled="false"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/common_margin_large"
@@ -60,6 +61,7 @@
             android:id="@+id/stream_name_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#00000000"
             android:hint="@string/stream_name"
             android:inputType="text"
             android:maxLines="1"
@@ -71,50 +73,55 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/description_input_layout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        style="@style/Theme.ZulipChat.SurfaceEditText.NoPadding"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="@string/stream_description"
+        android:layout_marginTop="@dimen/common_margin_large"
+        android:padding="0dp"
         android:paddingTop="@dimen/common_margin_large"
         android:textSize="@dimen/new_stream_edit_text_size"
+        app:hintEnabled="false"
         app:layout_constraintBottom_toTopOf="@id/announce_checkbox"
         app:layout_constraintEnd_toEndOf="@id/end_guideline"
         app:layout_constraintStart_toStartOf="@id/start_guideline"
-        app:layout_constraintTop_toBottomOf="@id/description_input_layout"
+        app:layout_constraintTop_toBottomOf="@id/stream_name_input_layout"
         app:layout_constraintVertical_chainStyle="packed">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/stream_description_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#00000000"
             android:gravity="top"
+            android:hint="@string/stream_description"
             android:inputType="text"
             android:maxLines="1"
             android:padding="@dimen/input_layout_padding"
             android:textColor="@color/text"
-            android:textSize="@dimen/new_stream_edit_text_size" />
+            android:textSize="@dimen/new_stream_edit_text_size"
+            app:hintEnabled="false" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/announce_checkbox"
-        android:text="@string/announce_checkbox_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/start_guideline"
+        android:text="@string/announce_checkbox_title"
+        app:layout_constraintBottom_toTopOf="@id/show_history_to_new_subs_checkbox"
         app:layout_constraintEnd_toEndOf="@id/end_guideline"
-        app:layout_constraintTop_toBottomOf="@id/description_input_layout"
-        app:layout_constraintBottom_toTopOf="@id/show_history_to_new_subs_checkbox"/>
+        app:layout_constraintStart_toStartOf="@id/start_guideline"
+        app:layout_constraintTop_toBottomOf="@id/description_input_layout" />
 
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/show_history_to_new_subs_checkbox"
-        android:text="@string/history_available_checkbox_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/start_guideline"
+        android:text="@string/history_available_checkbox_title"
+        app:layout_constraintBottom_toTopOf="@id/action_container"
         app:layout_constraintEnd_toEndOf="@id/end_guideline"
-        app:layout_constraintTop_toBottomOf="@id/announce_checkbox"
-        app:layout_constraintBottom_toTopOf="@id/action_container"/>
+        app:layout_constraintStart_toStartOf="@id/start_guideline"
+        app:layout_constraintTop_toBottomOf="@id/announce_checkbox" />
 
     <FrameLayout
         android:id="@+id/action_container"

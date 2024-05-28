@@ -55,6 +55,7 @@ import ru.snowadv.chat_domain_api.use_case.GetEmojisUseCase
 import ru.snowadv.chat_domain_api.use_case.ListenToChatEventsUseCase
 import ru.snowadv.chat_domain_api.use_case.LoadMessageUseCase
 import ru.snowadv.chat_domain_api.use_case.LoadMoreMessagesUseCase
+import ru.snowadv.chat_domain_api.use_case.ChangeMessageReadStateUseCase
 import ru.snowadv.chat_domain_api.use_case.MoveMessageToOtherTopicUseCase
 import ru.snowadv.chat_domain_api.use_case.RemoveMessageUseCase
 import ru.snowadv.chat_domain_api.use_case.RemoveReactionUseCase
@@ -262,6 +263,7 @@ abstract class BaseModulesInjector {
 
             ChatPresentationDependencyHolder { dependencyHolder, appApi, chatApi, imageLoaderApi, channelsApi, msgActionsApi ->
                 object : ChatPresentationDependencies {
+                    override val markMessagesAsReadUseCase: ChangeMessageReadStateUseCase = chatApi.markMessagesAsReadUseCase
                     override val chatRouter: ChatRouter = appApi.chatRouter
                     override val actionChooserDialogFactory: ActionChooserDialogFactory = msgActionsApi.actionChooserDialogFactory
                     override val emojiChooserDialogFactory: EmojiChooserDialogFactory = msgActionsApi.emojiChooserDialogFactory

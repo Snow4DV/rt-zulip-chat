@@ -37,6 +37,7 @@ internal object ChatMappers {
                 .sortedWith(compareBy({ -it.count }, { it.name })),
             messageType = if (owner) ChatMessageType.OUTGOING else ChatMessageType.INCOMING,
             topic = topic,
+            isRead = isRead,
         )
     }
 
@@ -115,6 +116,18 @@ internal object ChatMappers {
                 newSubject = subject,
             )
 
+            is DomainEvent.AddReadMessageFlagEvent -> ChatEventElm.Internal.ServerEvent.MessagesRead(
+                queueId = queueId,
+                eventId = id,
+                addFlagMessagesIds = addFlagMessagesIds,
+            )
+
+            is DomainEvent.RemoveReadMessageFlagEvent -> ChatEventElm.Internal.ServerEvent.MessagesUnread(
+                queueId = queueId,
+                eventId = id,
+                removeFlagMessagesIds = removeFlagMessagesIds,
+            )
+
             else -> ChatEventElm.Internal.ServerEvent.EventQueueUpdated(
                 queueId = queueId,
                 eventId = id,
@@ -133,6 +146,7 @@ internal object ChatMappers {
             reactions = reactions.map { it.toChatReaction() },
             owner = this.owner,
             topic = subject,
+            isRead = "read" in flags,
         )
     }
 

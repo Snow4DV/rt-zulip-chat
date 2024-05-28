@@ -19,6 +19,7 @@ import ru.snowadv.model.Resource
 import ru.snowadv.model.map
 import ru.snowadv.network.api.ZulipApi
 import ru.snowadv.network.api.uploadFile
+import ru.snowadv.network.model.ChangeFlagsMessagesIdsListRequestDto
 import ru.snowadv.network.model.NarrowListRequestDto
 import ru.snowadv.network.model.NarrowRequestDto
 import ru.snowadv.network.utils.NetworkUtils.toResourceWithErrorMessage
@@ -190,6 +191,8 @@ internal class MessageRepositoryImpl @Inject constructor(
         emit(api.sendMessage(stream = streamName, topic = topicName, content = text).toResourceWithErrorMessage())
     }.flowOn(dispatcherProvider.io)
 
+
+
     override fun sendFile(
         streamName: String,
         topicName: String,
@@ -233,6 +236,18 @@ internal class MessageRepositoryImpl @Inject constructor(
             topic = newSubject,
             notifyOldThread = notifyOldThread,
             notifyNewThread = notifyNewThread,
+        ).toResourceWithErrorMessage())
+    }
+
+    override fun changeMessagesReadState(
+        messagesIds: List<Long>,
+        newState: Boolean
+    ): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        emit(api.updateFlags(
+            messages = ChangeFlagsMessagesIdsListRequestDto(messagesIds),
+            op = if (newState) "add" else "remove",
+            flag = "read",
         ).toResourceWithErrorMessage())
     }
 

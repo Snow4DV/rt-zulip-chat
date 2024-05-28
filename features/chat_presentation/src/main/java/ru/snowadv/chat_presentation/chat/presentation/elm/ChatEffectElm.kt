@@ -12,5 +12,6 @@ sealed interface ChatEffectElm {
     data object ShowTopicChangedBecauseNewMessageIsUnreachable : ChatEffectElm
     data class OpenMessageEditor(val messageId: Long, val streamName: String) : ChatEffectElm
     data class OpenMessageTopicChanger(val messageId: Long, val streamId: Long, val topicName: String) : ChatEffectElm
+    data class RefreshMessageWithId(val messageId: Long) : ChatEffectElm
 }
 

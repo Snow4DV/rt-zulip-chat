@@ -15,19 +15,25 @@ internal class ActionChooserStoreFactoryElm @Inject constructor(
 ) {
 
     companion object {
-        private val initialOwnerActions = listOf(
-            MessageAction.AddReaction(),
-            MessageAction.RemoveMessage(),
-            MessageAction.EditMessage(),
-            MessageAction.MoveMessage(),
-            MessageAction.CopyMessage(),
-            MessageAction.OpenSenderProfile(),
-        )
-        private val initialNotOwnerActions = listOf(
-            MessageAction.AddReaction(),
-            MessageAction.CopyMessage(),
-            MessageAction.OpenSenderProfile(),
-        )
+        private val initialOwnerActions by lazy {
+            listOf(
+                MessageAction.AddReaction(),
+                MessageAction.RemoveMessage(),
+                MessageAction.EditMessage(),
+                MessageAction.MoveMessage(),
+                MessageAction.CopyMessage(),
+                MessageAction.OpenSenderProfile(),
+                MessageAction.ReloadMessage(),
+            )
+        }
+        private val initialNotOwnerActions by lazy {
+            listOf(
+                MessageAction.AddReaction(),
+                MessageAction.CopyMessage(),
+                MessageAction.OpenSenderProfile(),
+                MessageAction.ReloadMessage(),
+            )
+        }
     }
 
     fun create(
