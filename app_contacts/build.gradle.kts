@@ -41,7 +41,10 @@ android {
 }
 
 dependencies {
-
+    // Lib dependencies
+    implementation(projects.lib.contactsProvider)
+    
+    // Basic presentation deps
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -49,13 +52,16 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
-    implementation(projects.core.contactsProvider)
+
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.fragment.ktx)
+
+    // Test deps
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    // Desugaring
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 }
