@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="RoundedImageView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="DefaultReactionButtonStyle">
+        <item name="android:state_selected">false</item>
+        <item name="android:background">@drawable/bg_emoji</item>
+        <item name="android:paddingLeft">13.5dp</item>
+        <item name="android:paddingRight">13.5dp</item>
+        <item name="android:paddingTop">7.5dp</item>
+        <item name="android:paddingBottom">7.5dp</item>
+        <item name="android:textColor">@color/reaction_text</item>
+        <item name="android:textSize">@dimen/emoji_button_text_size</item>
+
+    </style>
+
+    <style name="GlobalReactionButtonStyle" parent="DefaultReactionButtonStyle">
+        <item name="android:textColor">@color/card_text</item>
+        <item name="android:textSize">@dimen/emoji_button_text_size</item>
+        <item name="android:paddingLeft">@dimen/reaction_horizontal_padding</item>
+        <item name="android:paddingRight">@dimen/reaction_horizontal_padding</item>
+        <item name="android:paddingTop">@dimen/reaction_vertical_padding</item>
+        <item name="android:paddingBottom">@dimen/reaction_vertical_padding</item>
+    </style>
+
+
+    <style name="Theme.ZulipChat.MessageEditText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:background">@drawable/bg_message_edit_text</item>
+        <item name="android:paddingLeft">@dimen/message_edit_text_horizontal_padding</item>
+        <item name="android:paddingRight">@dimen/message_edit_text_horizontal_padding</item>
+        <item name="android:paddingTop">@dimen/message_edit_text_vertical_padding</item>
+        <item name="android:paddingBottom">@dimen/message_edit_text_vertical_padding</item>
+        <item name="android:textSize">@dimen/message_edit_text_text_size</item>
+        <item name="android:textColor">@color/message_edit_text_text_color</item>
+        <item name="android:textColorHint">@color/message_edit_text_hint_color</item>
+        <item name="android:inputType">textAutoComplete|textMultiLine</item>
+        <item name="android:maxLines">2</item>
+    </style>
+
+
+    <style name="Theme.ZulipChat.TopicTextView" parent="Widget.MaterialComponents.TextView">
+        <item name="android:background">@color/on_surface_box_color</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/topic_name_text_size</item>
+        <item name="android:textColor">@color/on_surface_box_text_color</item>
+        <item name="android:padding">@dimen/topic_name_padding</item>
+    </style>
+
+    <style name="Theme.ZulipChat.IndeterminateProgressBar" parent="Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:indeterminate">true</item>
+        <item name="android:indeterminateTint">@color/primary</item>
+        <item name="android:indeterminateTintMode">src_in</item>
+    </style>
+
+
+    <style name="Theme.ZulipChat.DateSplitterTextView" parent="Widget.MaterialComponents.TextView">
+        <item name="android:background">@drawable/bg_date_splitter</item>
+        <item name="android:textColor">@color/date_splitter_text_color</item>
+        <item name="android:textSize">@dimen/date_splitter_text_size</item>
+        <item name="android:paddingLeft">@dimen/date_splitter_horizontal_padding</item>
+        <item name="android:paddingRight">@dimen/date_splitter_horizontal_padding</item>
+        <item name="android:paddingTop">@dimen/date_splitter_vertical_padding</item>
+        <item name="android:paddingBottom">@dimen/date_splitter_vertical_padding</item>
+    </style>
+
+
+</resources>

@@ -27,11 +27,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     room {
         schemaDirectory("$projectDir/schemas")
@@ -44,9 +44,9 @@ dependencies {
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)
 
-    implementation(libs.androidX.room.runtime)
-    kapt(libs.androidX.room.compiler)
-    implementation(libs.androidX.room.ktx)
+    implementation(libs.androidx.room.runtime)
+    kapt(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.core)

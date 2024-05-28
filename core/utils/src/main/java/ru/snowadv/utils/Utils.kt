@@ -9,7 +9,7 @@ fun <T> Result<T>.toResource(cachedData: T? = null): Resource<T> {
             Resource.Success(it)
         },
         onFailure = {
-            Resource.Error(it)
+            Resource.Error(it, cachedData)
         },
     )
 }

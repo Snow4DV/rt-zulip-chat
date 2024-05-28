@@ -2,6 +2,7 @@ package ru.snowadv.image_loader.di.holder
 
 import android.content.Context
 import okhttp3.OkHttpClient
+import ru.snowadv.model.BaseUrlProvider
 import ru.snowadv.module_injector.module.BaseModuleDependencies
 
 interface ImageLoaderLibDependencies : BaseModuleDependencies {

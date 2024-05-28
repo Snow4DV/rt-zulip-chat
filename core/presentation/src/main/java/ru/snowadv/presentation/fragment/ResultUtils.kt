@@ -19,7 +19,7 @@ object ResultUtils {
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
             val uri = result.data?.data
-            val appCtx = context?.applicationContext // Use application context to prevent leaks!
+            val appCtx = context?.applicationContext
             if (result.resultCode == Activity.RESULT_OK && uri != null && appCtx != null) {
                 val mimeType = appCtx.contentResolver.getType(uri)
                 val extension = MimeTypeMap.getSingleton()?.getExtensionFromMimeType(mimeType)

@@ -1,0 +1,33 @@
+{
+  "result": "success",
+  "msg": "",
+  "presences": {
+    "user709225@tinkoff-android-spring-2024.zulipchat.com": {
+      "aggregated": {
+        "client": "website",
+        "status": "active",
+        "timestamp": 1714756634
+      },
+      "website": {
+        "client": "website",
+        "status": "active",
+        "timestamp": 1714756634,
+        "pushable": false
+      }
+    },
+    "user709379@tinkoff-android-spring-2024.zulipchat.com": {
+      "aggregated": {
+        "client": "website",
+        "status": "idle",
+        "timestamp": 1715368783
+      },
+      "website": {
+        "client": "website",
+        "status": "idle",
+        "timestamp": 1715368783,
+        "pushable": false
+      }
+    }
+  },
+  "server_timestamp": 1715715807.9160063
+}

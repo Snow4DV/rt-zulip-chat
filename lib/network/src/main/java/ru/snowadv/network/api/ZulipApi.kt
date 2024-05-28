@@ -164,7 +164,6 @@ interface ZulipApi {
     ): Result<EventsResponseDto>
 
     companion object {
-        const val BASE_URL = "https://tinkoff-android-spring-2024.zulipchat.com/api/v1/"
         const val DEFAULT_MESSAGE_TYPE = "stream"
         const val DEFAULT_MESSAGE_ANCHOR = "newest"
     }

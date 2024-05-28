@@ -1,0 +1,40 @@
+{
+  "result": "success",
+  "msg": "",
+  "members": [
+    {
+      "email": "user709379@tinkoff-android-spring-2024.zulipchat.com",
+      "user_id": 709379,
+      "avatar_version": 2,
+      "is_admin": false,
+      "is_owner": false,
+      "is_guest": false,
+      "is_billing_admin": false,
+      "role": 400,
+      "is_bot": false,
+      "full_name": "Lev",
+      "timezone": "Asia/Baku",
+      "is_active": true,
+      "date_joined": "2024-04-11T14:35:18.712235+00:00",
+      "delivery_email": null,
+      "avatar_url": "https://zulip-avatars.s3.amazonaws.com/63414/d41455c5ba1ff839cf3336040fee19331742bc52?version=2"
+    },
+    {
+      "email": "user709225@tinkoff-android-spring-2024.zulipchat.com",
+      "user_id": 709225,
+      "avatar_version": 3,
+      "is_admin": false,
+      "is_owner": false,
+      "is_guest": false,
+      "is_billing_admin": false,
+      "role": 400,
+      "is_bot": false,
+      "full_name": "Богдан 2",
+      "timezone": "Europe/Moscow",
+      "is_active": true,
+      "date_joined": "2024-04-11T00:04:04.075339+00:00",
+      "delivery_email": null,
+      "avatar_url": "https://zulip-avatars.s3.amazonaws.com/63414/8aadc016699fe519a2791907ce1a4e2e575fc946?version=3"
+    }
+  ]
+}

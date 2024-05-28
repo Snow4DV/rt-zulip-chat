@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "ru.snowadv.voiceapp"
+    namespace = "ru.snowadv.chatapp"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "ru.snowadv.voiceapp"
+        applicationId = "ru.snowadv.chatapp"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
@@ -28,54 +28,102 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-        isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+        
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 
     buildFeatures {
         viewBinding = true
     }
+
+    testOptions {
+        animationsDisabled = true
+    }
 }
 
 dependencies {
-    implementation(projects.data.channelsData.api)
-    implementation(projects.data.channelsData.impl)
-    implementation(projects.features.events.api)
-    implementation(projects.features.events.impl)
-    implementation(projects.data.messagesData.api)
-    implementation(projects.data.messagesData.impl)
-    implementation(projects.data.usersData.api)
-    implementation(projects.data.usersData.impl)
-    implementation(projects.data.emojisData.api)
-    implementation(projects.data.emojisData.impl)
-    implementation(projects.data.authData.api)
-    implementation(projects.data.authData.impl)
+    // Andriod Test Rules
+    androidTestImplementation(libs.androidx.test.rules)
+    // JUnit
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
 
-    implementation(projects.features.channels.api)
-    implementation(projects.features.channels.impl)
-    implementation(projects.features.chat.api)
-    implementation(projects.features.chat.impl)
-    implementation(projects.features.home.api)
-    implementation(projects.features.home.impl)
-    implementation(projects.features.people.api)
-    implementation(projects.features.people.impl)
-    implementation(projects.features.profile.api)
-    implementation(projects.features.profile.impl)
-    implementation(projects.features.auth.api)
-    implementation(projects.features.auth.impl)
+    // Kotest
+    testImplementation(libs.kotest.junit)
+    testImplementation(libs.kotest.assertions)
+    testImplementation(libs.kotest.property)
 
+    // Hamcrest Matchers
+    androidTestImplementation(libs.hamcrest)
+
+    // Kaspresso
+    androidTestImplementation(libs.kaspresso)
+
+    // Espresso Intents
+    androidTestImplementation(libs.androidx.espresso.intents)
+
+    // Wiremock
+    debugImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.httpclient.android)
+    androidTestImplementation(libs.wiremock) {
+        exclude(group = "org.apache.httpcomponents", module = "httpclient")
+    }
+
+    // Test utils
+    testImplementation(projects.core.testUtils)
+
+    // Instrument tests
+    implementation(libs.androidx.fragment.testing)
+
+    // New multi-layer features
+
+    // Auth feature
+    implementation(projects.features.authData)
+    implementation(projects.features.authDomainApi)
+    implementation(projects.features.authDomainImpl)
+    implementation(projects.features.authPresentation)
+    // Chat feature
+    implementation(projects.features.chatData)
+    implementation(projects.features.chatDomainApi)
+    implementation(projects.features.chatDomainImpl)
+    implementation(projects.features.chatPresentation)
+    // Events feature
+    implementation(projects.features.eventsData)
+    implementation(projects.features.eventsDomainApi)
+    // Channels feature
+    implementation(projects.features.channelsData)
+    implementation(projects.features.channelsDomainApi)
+    implementation(projects.features.channelsDomainImpl)
+    implementation(projects.features.channelsPresentation)
+    // Users feature
+    implementation(projects.features.usersData)
+    implementation(projects.features.usersDomainApi)
+    implementation(projects.features.usersDomainImpl)
+    // People feature
+    implementation(projects.features.peoplePresentation)
+    // Profile feature
+    implementation(projects.features.profilePresentation)
+    // Home feature
+    implementation(projects.features.homePresentation)
+
+
+    // Core
     implementation(projects.core.utils)
+    implementation(projects.core.moduleInjector)
+    implementation(projects.core.presentation)
 
+    // Libs
     implementation(projects.lib.network)
     implementation(projects.lib.networkAuthorizer)
     implementation(projects.lib.database)
     implementation(projects.lib.imageLoader)
+    implementation(projects.lib.authStorage)
 
-    implementation(projects.core.moduleInjector)
+
 
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)
@@ -92,5 +140,5 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
+    
 }

@@ -1,0 +1,190 @@
+{
+  "result": "success",
+  "msg": "",
+  "messages": [
+    {
+      "id": 438171058,
+      "sender_id": 709036,
+      "content": "Message 1",
+      "recipient_id": 1252628,
+      "timestamp": 1715505322,
+      "client": "okhttp",
+      "subject": "testing",
+      "topic_links": [],
+      "is_me_message": false,
+      "reactions": [
+        {
+          "emoji_name": "stuck_out_tongue",
+          "emoji_code": "1f61b",
+          "reaction_type": "unicode_emoji",
+          "user": {
+            "email": "user710247@tinkoff-android-spring-2024.zulipchat.com",
+            "id": 710247,
+            "full_name": "Viktor"
+          },
+          "user_id": 710247
+        }
+      ],
+      "submessages": [],
+      "flags": [],
+      "sender_full_name": "Nurattin",
+      "sender_email": "user709036@tinkoff-android-spring-2024.zulipchat.com",
+      "sender_realm_str": "tinkoff-android-spring-2024",
+      "display_recipient": "general",
+      "type": "stream",
+      "stream_id": 432915,
+      "avatar_url": "https://secure.gravatar.com/avatar/a9a498453cf1186bff8c95e12d516ae2?d=identicon&version=1",
+      "content_type": "text/x-markdown"
+    },
+    {
+      "id": 438171140,
+      "sender_id": 709036,
+      "content": "Message 2",
+      "recipient_id": 1252628,
+      "timestamp": 1715505390,
+      "client": "okhttp",
+      "subject": "testing",
+      "topic_links": [],
+      "is_me_message": false,
+      "reactions": [],
+      "submessages": [],
+      "flags": [],
+      "sender_full_name": "Nurattin",
+      "sender_email": "user709036@tinkoff-android-spring-2024.zulipchat.com",
+      "sender_realm_str": "tinkoff-android-spring-2024",
+      "display_recipient": "general",
+      "type": "stream",
+      "stream_id": 432915,
+      "avatar_url": "https://secure.gravatar.com/avatar/a9a498453cf1186bff8c95e12d516ae2?d=identicon&version=1",
+      "content_type": "text/x-markdown"
+    },
+    {
+      "id": 438171159,
+      "sender_id": 709036,
+      "content": "Message 3",
+      "recipient_id": 1252628,
+      "timestamp": 1715505420,
+      "client": "okhttp",
+      "subject": "testing",
+      "topic_links": [],
+      "is_me_message": false,
+      "reactions": [],
+      "submessages": [],
+      "flags": [],
+      "sender_full_name": "Nurattin",
+      "sender_email": "user709036@tinkoff-android-spring-2024.zulipchat.com",
+      "sender_realm_str": "tinkoff-android-spring-2024",
+      "display_recipient": "general",
+      "type": "stream",
+      "stream_id": 432915,
+      "avatar_url": "https://secure.gravatar.com/avatar/a9a498453cf1186bff8c95e12d516ae2?d=identicon&version=1",
+      "content_type": "text/x-markdown"
+    },
+    {
+      "id": 438191199,
+      "sender_id": 708825,
+      "content": "Message 4",
+      "recipient_id": 1252628,
+      "timestamp": 1715526723,
+      "client": "okhttp",
+      "subject": "testing",
+      "topic_links": [],
+      "is_me_message": false,
+      "reactions": [
+        {
+          "emoji_name": "hug",
+          "emoji_code": "1f917",
+          "reaction_type": "unicode_emoji",
+          "user": {
+            "email": "gleb.gafeev@mail.ru",
+            "id": 708825,
+            "full_name": "Gleb Gafeev"
+          },
+          "user_id": 708825
+        },
+        {
+          "emoji_name": "rolling_eyes",
+          "emoji_code": "1f644",
+          "reaction_type": "unicode_emoji",
+          "user": {
+            "email": "gleb.gafeev@mail.ru",
+            "id": 708825,
+            "full_name": "Gleb Gafeev"
+          },
+          "user_id": 708825
+        },
+        {
+          "emoji_name": "rolling_eyes",
+          "emoji_code": "1f644",
+          "reaction_type": "unicode_emoji",
+          "user": {
+            "email": "user710247@tinkoff-android-spring-2024.zulipchat.com",
+            "id": 710247,
+            "full_name": "Viktor"
+          },
+          "user_id": 710247
+        },
+        {
+          "emoji_name": "rolling_eyes",
+          "emoji_code": "1f644",
+          "reaction_type": "unicode_emoji",
+          "user": {
+            "email": "user709699@tinkoff-android-spring-2024.zulipchat.com",
+            "id": 709699,
+            "full_name": "Dmitry Kucherenko"
+          },
+          "user_id": 709699
+        }
+      ],
+      "submessages": [],
+      "flags": [],
+      "sender_full_name": "Gleb Gafeev",
+      "sender_email": "gleb.gafeev@mail.ru",
+      "sender_realm_str": "tinkoff-android-spring-2024",
+      "display_recipient": "general",
+      "type": "stream",
+      "stream_id": 432915,
+      "avatar_url": "https://zulip-avatars.s3.amazonaws.com/63414/725f32d9ce3fcd9fc1743c3c7ffe6567ee2cb3cf?version=2",
+      "content_type": "text/x-markdown"
+    },
+    {
+      "id": 438532545,
+      "sender_id": 708827,
+      "content": "Message 5",
+      "recipient_id": 1252628,
+      "timestamp": 1715677546,
+      "client": "website",
+      "subject": "testing",
+      "topic_links": [],
+      "is_me_message": false,
+      "reactions": [
+        {
+          "emoji_name": "hug",
+          "emoji_code": "1f917",
+          "reaction_type": "unicode_emoji",
+          "user": {
+            "email": "gleb.gafeev@mail.ru",
+            "id": 708825,
+            "full_name": "Gleb Gafeev"
+          },
+          "user_id": 708825
+        }
+      ],
+      "submessages": [],
+      "flags": [],
+      "sender_full_name": "Ruslan Gafarov",
+      "sender_email": "user708827@tinkoff-android-spring-2024.zulipchat.com",
+      "sender_realm_str": "tinkoff-android-spring-2024",
+      "display_recipient": "general",
+      "type": "stream",
+      "stream_id": 432915,
+      "avatar_url": "https://zulip-avatars.s3.amazonaws.com/63414/20b32c9eca65e043109638e03f72ceff22574188?version=4",
+      "content_type": "text/x-markdown"
+    }
+  ],
+  "found_anchor": true,
+  "found_oldest": true,
+  "found_newest": true,
+  "history_limited": false,
+  "anchor": 10000000000000000
+}

@@ -7,4 +7,5 @@ plugins {
     alias(libs.plugins.kotlinParcelize) apply false
     alias(libs.plugins.kotlin.kapt) apply false
     alias(libs.plugins.androidX.room) apply false
+    alias(libs.plugins.androidTest) apply false
 }

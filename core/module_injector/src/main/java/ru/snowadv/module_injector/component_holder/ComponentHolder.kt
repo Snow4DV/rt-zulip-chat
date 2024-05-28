@@ -13,4 +13,6 @@ import ru.snowadv.module_injector.module.BaseModuleDependencies
 interface ComponentHolder<A : BaseModuleAPI, D : BaseModuleDependencies> {
     var dependencyProvider: (() -> D)?
     fun get(): A
+
+    val isInitialized get() = dependencyProvider != null
 }
