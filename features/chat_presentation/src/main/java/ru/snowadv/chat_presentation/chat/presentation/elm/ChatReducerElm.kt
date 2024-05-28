@@ -174,6 +174,7 @@ internal class ChatReducerElm @Inject constructor() :
                     }
                 }
                 commandObserve()
+                markMessageAsReadCommand(event.messageId)
             }
 
             is ChatEventElm.Internal.ServerEvent.NewMessage -> {

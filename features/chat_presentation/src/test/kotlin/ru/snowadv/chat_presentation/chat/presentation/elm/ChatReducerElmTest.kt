@@ -675,11 +675,12 @@ class ChatReducerElmTest : BehaviorSpec({
                             eventId = initialEventQueuePropsAfterRegister.lastEventId + 1,
                             messageId = firstPageMessages.last().id,
                             newContent = expectedNewContent,
-                            newSubject = newSubject,
+                            newSubject = topicName,
                         )
 
                         val expectedUpdatedMessage = firstPageMessages.last().copy(
                             content = expectedNewContent,
+                            topic = topicName
                         )
 
                         val expectedMessages = firstPageMessages - firstPageMessages.last() + expectedUpdatedMessage

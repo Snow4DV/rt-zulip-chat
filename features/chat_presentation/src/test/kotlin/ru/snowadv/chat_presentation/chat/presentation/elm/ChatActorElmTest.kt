@@ -12,6 +12,7 @@ import ru.snowadv.chat_domain_api.model.ChatMessage
 import ru.snowadv.chat_domain_api.model.ChatPaginatedMessages
 import ru.snowadv.chat_presentation.chat.presentation.elm.data.ChatActorElmTestData
 import ru.snowadv.chat_presentation.chat.presentation.elm.mock.AddReactionUseCaseMock
+import ru.snowadv.chat_presentation.chat.presentation.elm.mock.ChangeMessageReadStateUseCaseMock
 import ru.snowadv.chat_presentation.chat.presentation.elm.mock.ChatRouterMock
 import ru.snowadv.chat_presentation.chat.presentation.elm.mock.GetCurrentMessagesUseCaseMock
 import ru.snowadv.chat_presentation.chat.presentation.elm.mock.GetTopicsUseCaseMock
@@ -42,6 +43,7 @@ class ChatActorElmTest : BehaviorSpec({
                 sendFileUseCase = SendFileUseCaseMock(),
                 getTopicsUseCase = GetTopicsUseCaseMock(this@with),
                 loadMessageUseCase = LoadMessageUseCaseMock(this@with),
+                markMessagesAsReadUseCase = ChangeMessageReadStateUseCaseMock(),
             )
             When("execute") {
                 And("command is LoadInitialMessages") {

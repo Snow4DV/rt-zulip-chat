@@ -337,14 +337,16 @@ internal class ChatActorElmTestData {
             queueId = "example_queue",
             eventId = 14
         ),
-        ChatEventElm.Internal.ServerEvent.EventQueueUpdated(
+        ChatEventElm.Internal.ServerEvent.MessagesRead(
+            eventId = 15,
             queueId = "example_queue",
-            eventId = 15
+            addFlagMessagesIds = listOf(1, 2, 3),
         ),
-        ChatEventElm.Internal.ServerEvent.EventQueueUpdated(
+        ChatEventElm.Internal.ServerEvent.MessagesUnread(
+            eventId = 16,
             queueId = "example_queue",
-            eventId = 16
-        )
+            removeFlagMessagesIds = listOf(1, 2, 3),
+        ),
     )
 
 }

@@ -8,6 +8,7 @@ import ru.snowadv.chat_domain_api.model.ChatEmoji
 import ru.snowadv.chat_domain_api.model.ChatMessage
 import ru.snowadv.chat_domain_api.model.ChatPaginatedMessages
 import ru.snowadv.chat_domain_api.use_case.AddReactionUseCase
+import ru.snowadv.chat_domain_api.use_case.ChangeMessageReadStateUseCase
 import ru.snowadv.chat_domain_api.use_case.GetCurrentMessagesUseCase
 import ru.snowadv.chat_domain_api.use_case.GetEmojisUseCase
 import ru.snowadv.chat_domain_api.use_case.ListenToChatEventsUseCase
@@ -139,6 +140,14 @@ internal class SendMessageUseCaseMock () : SendMessageUseCase {
         topicName: String,
         text: String,
     ): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        emit(Resource.Success(Unit))
+        emit(Resource.Error(DataException(), Unit))
+    }
+}
+
+internal class ChangeMessageReadStateUseCaseMock : ChangeMessageReadStateUseCase {
+    override fun invoke(messagesIds: List<Long>, newState: Boolean): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading())
         emit(Resource.Success(Unit))
         emit(Resource.Error(DataException(), Unit))
