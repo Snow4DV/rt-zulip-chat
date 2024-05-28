@@ -1,5 +1,6 @@
 package ru.snowadv.chatapp.fragment.channels
 
+import androidx.core.os.bundleOf
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.core.app.ApplicationProvider
@@ -9,6 +10,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import ru.snowadv.channels_presentation.channel_list.ChannelListFragment
+import ru.snowadv.chat_presentation.R
+import ru.snowadv.chat_presentation.chat.ui.ChatFragment
 import ru.snowadv.chatapp.di.injector.AuthorizedTestModulesInjector
 import ru.snowadv.chatapp.fragment.channels.screen.ChannelsFragmentScreen
 import ru.snowadv.chatapp.rule.FragmentTestRule
@@ -18,12 +21,13 @@ internal class ChannelsFragmentTest : TestCase() {
 
 
     @get:Rule
-    val fragmentRule = FragmentTestRule<ChannelListFragment>()
+    val fragmentRule = FragmentTestRule(
+        fragmentClass = ChannelListFragment::class.java,
+        themeResId = ru.snowadv.channels_presentation.R.style.Theme_ZulipChat_Channels,
+    )
 
     @Test
     fun streamsShowUp() = run {
-        val scenario = launchChannelsFragment()
-
         ChannelsFragmentScreen {
             step("Проверяем, что стрим с подпиской отображается") {
                 flakySafely(intervalMs = 200) {
@@ -56,8 +60,6 @@ internal class ChannelsFragmentTest : TestCase() {
 
     @Test
     fun loadTopics() = run {
-        val scenario = launchChannelsFragment()
-
         ChannelsFragmentScreen {
             step("Проверяем, что стрим отображается") {
                 flakySafely(intervalMs = 200) {
@@ -72,7 +74,7 @@ internal class ChannelsFragmentTest : TestCase() {
                 flakySafely(intervalMs = 200) {
                     channelsPager.childAt<ChannelsFragmentScreen.KStreamsRecyclerItem>(0) {
                         streamsRecycler.firstChild<ChannelsFragmentScreen.KStreamItem> {
-                            streamNameText.click()
+                            expandButton.click()
                         }
                     }
                 }

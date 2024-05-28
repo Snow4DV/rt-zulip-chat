@@ -1,0 +1,22 @@
+{
+  "result": "success",
+  "msg": "",
+  "events": [
+    {
+      "type": "reaction",
+      "op": "add",
+      "user_id": 708835,
+      "user": {
+        "user_id": 708835,
+        "email": "user708835@tinkoff-android-spring-2024.zulipchat.com",
+        "full_name": "Mikhail Loginov"
+      },
+      "message_id": 441059461,
+      "emoji_name": "happy",
+      "emoji_code": "1f917",
+      "reaction_type": "unicode_emoji",
+      "id": 1
+    }
+  ],
+  "queue_id": "fb67bf8a-c031-47cc-84cf-ed80accacda8"
+}

@@ -65,6 +65,10 @@ internal object ChatFragmentScreen : KScreen<ChatFragmentScreen>() {
             withParent { withId(R.id.reactions_container)  }
             withMatcher(WithReactionCountMatcher(`is`(1)))
         }
+        val twoVotesReaction = KReactionView(parent) {
+            withParent { withId(R.id.reactions_container)  }
+            withMatcher(WithReactionCountMatcher(`is`(2)))
+        }
         val selectedReaction = KReactionView(parent) {
             withParent { withId(R.id.reactions_container)  }
             withMatcher(ViewMatchers.isSelected())

@@ -11,7 +11,7 @@ import ru.snowadv.chatapp.util.AssetsUtils.fromAssets
 internal data class AssetStubMatcher(val urlRegex: String, val assetsPath: String, val method: RequestMethod) :
     WireMockStub {
     override fun applyToWiremock(rule: WireMockRule) {
-        val pattern = WireMock.urlPathMatching(urlRegex)
+        val pattern = WireMock.urlMatching(urlRegex)
         val matcher = matcherForPatternAndMethod(pattern, method)
         rule.stubFor(matcher.willReturn(WireMock.ok().withBody(fromAssets(assetsPath))))
     }

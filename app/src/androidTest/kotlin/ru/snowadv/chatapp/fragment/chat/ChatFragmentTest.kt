@@ -5,6 +5,7 @@ import androidx.core.os.bundleOf
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.client.WireMock.urlMatching
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
@@ -24,6 +25,7 @@ internal class ChatFragmentTest : TestCase() {
         themeResId = R.style.Theme_ZulipChat_Chat,
         fragmentArgs = bundleOf(
             ChatFragment.ARG_STREAM_NAME_KEY to "general",
+            ChatFragment.ARG_STREAM_ID_KEY to 1L,
             ChatFragment.ARG_TOPIC_NAME_KEY to "testing",
         ),
     )
@@ -91,15 +93,16 @@ internal class ChatFragmentTest : TestCase() {
     fun sendMessage() = run {
         val appContext = ApplicationProvider.getApplicationContext<Context>()
         ChatFragmentScreen {
-            flakySafely(intervalMs = 200) {
-                step("Проверяем, что загрузка завершилась") {
+            step("Проверяем, что загрузка завершилась") {
+                flakySafely(intervalMs = 200) {
+
                     progressBar {
                         isGone()
                     }
                 }
             }
-            flakySafely(intervalMs = 200) {
-                step("Проверяем, что не отображаются сообщения об ошибке/о загрузке из кэша") {
+            step("Проверяем, что не отображаются сообщения об ошибке/о загрузке из кэша") {
+                flakySafely(intervalMs = 200) {
                     states.forEach {
                         it.doesNotExist()
                     }
@@ -119,17 +122,24 @@ internal class ChatFragmentTest : TestCase() {
                     sendOrAddAttachmentButton.perform { click() }
                 }
             }
-            step("Проверяем, что был вызов метода отправки сообщения") {
+            step("Проверяем, что был вызов метода отправки сообщения с текстом `123`") {
                 flakySafely(intervalMs = 200) {
 
                     fragmentTestRule.wiremockRule.wiremock.verify(
                         WireMock.postRequestedFor(
-                            urlPathMatching("/api/v1/messages.*")
+                            urlMatching("/api/v1/messages.*content=123.*")
                         )
                     )
                 }
             }
-            step("Проверяем, что последнее сообщение содержит текст `123`") {
+        }
+    }
+
+    @Test
+    fun checkIfEventMessageAppeared() = run {
+        val appContext = ApplicationProvider.getApplicationContext<Context>()
+        ChatFragmentScreen {
+            step("Проверяем, что новое сообщение содержит текст `123`") {
                 flakySafely(intervalMs = 200) {
                     messagesRecycler.childAt<ChatFragmentScreen.KOutgoingMessageItem>(
                         messagesRecycler.getSize() - 1
@@ -146,16 +156,16 @@ internal class ChatFragmentTest : TestCase() {
     @Test
     fun addReaction() = run {
         ChatFragmentScreen {
-            flakySafely(intervalMs = 200) {
-                step("Проверяем, что загрузка завершилась") {
+            step("Проверяем, что загрузка завершилась") {
+                flakySafely(intervalMs = 200) {
                     progressBar {
                         isGone()
                     }
                 }
             }
 
-            flakySafely(intervalMs = 200) {
-                step("Проверяем, что не отображаются сообщения об ошибке/о загрузке из кэша") {
+            step("Проверяем, что не отображаются сообщения об ошибке/о загрузке из кэша") {
+                flakySafely(intervalMs = 200) {
                     states.forEach {
                         it.doesNotExist()
                     }
@@ -163,12 +173,11 @@ internal class ChatFragmentTest : TestCase() {
 
             }
 
-            flakySafely(intervalMs = 200) {
-                step("Проверяем, что у последнего сообщения отображается реакция") {
+            step("Проверяем, что у последнего сообщения отображается реакция") {
+                flakySafely(intervalMs = 200) {
                     messagesRecycler.lastChild<ChatFragmentScreen.KIncomingMessageItem>() {
-                        oneVoteReaction {
-                            hasCount(1)
-                            hasEmojiCode("1f917")
+                        twoVotesReaction {
+                            hasEmojiCode("1f641")
                         }
                     }
 
@@ -178,29 +187,8 @@ internal class ChatFragmentTest : TestCase() {
             flakySafely(intervalMs = 200) {
                 step("Добавляем реакцию") {
                     messagesRecycler.lastChild<ChatFragmentScreen.KIncomingMessageItem>() {
-                        oneVoteReaction {
+                        twoVotesReaction {
                             perform { click() }
-                        }
-                    }
-
-                }
-            }
-
-            flakySafely(intervalMs = 200) {
-                step("Проверяем, что был вызов метода получения сообщений") {
-                    fragmentTestRule.wiremockRule.wiremock.verify(
-                        WireMock.postRequestedFor(
-                            urlPathMatching("/api/v1/messages/[0-9]+/reactions.*")
-                        )
-                    )
-                }
-            }
-
-            flakySafely(intervalMs = 200) {
-                step("Проверяем, что реакция появилась") {
-                    messagesRecycler.lastChild<ChatFragmentScreen.KIncomingMessageItem>() {
-                        selectedReaction {
-                            isDisplayed()
                         }
                     }
 
@@ -212,6 +200,98 @@ internal class ChatFragmentTest : TestCase() {
                     progressBar {
                         isGone()
                     }
+                }
+            }
+
+            step("Проверяем, что был вызов метода добавления реакции") {
+                flakySafely(intervalMs = 200) {
+                    fragmentTestRule.wiremockRule.wiremock.verify(
+                        WireMock.postRequestedFor(
+                            urlMatching(".*/api/v1/messages.*/reactions.*")
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+
+    @Test
+    fun checkIfEventReactionsAreShown() = run {
+        ChatFragmentScreen {
+            step("Проверяем, что у последнего сообщения отображается реакция с двумя голосами") {
+                flakySafely(intervalMs = 200) {
+                    messagesRecycler.lastChild<ChatFragmentScreen.KIncomingMessageItem>() {
+                        twoVotesReaction {
+                            hasEmojiCode("1f641")
+                        }
+                    }
+                }
+            }
+
+            step("Проверяем, что у последнего сообщения отображается реакция с одним голосом, добавленная текущим пользователем") {
+                flakySafely(intervalMs = 200) {
+                    messagesRecycler.lastChild<ChatFragmentScreen.KIncomingMessageItem>() {
+                        oneVoteReaction {
+                            hasEmojiCode("1f917")
+                            isSelected()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    @Test
+    fun removeReaction() = run {
+        ChatFragmentScreen {
+            step("Проверяем, что загрузка завершилась") {
+                flakySafely(intervalMs = 200) {
+                    progressBar {
+                        isGone()
+                    }
+                }
+            }
+
+            step("Проверяем, что не отображаются сообщения об ошибке/о загрузке из кэша") {
+                flakySafely(intervalMs = 200) {
+                    states.forEach {
+                        it.doesNotExist()
+                    }
+                }
+
+            }
+
+            step("Проверяем, что у последнего сообщения отображается реакция") {
+                flakySafely(intervalMs = 200) {
+                    messagesRecycler.lastChild<ChatFragmentScreen.KIncomingMessageItem>() {
+                        selectedReaction {
+                            hasEmojiCode("1f917")
+                        }
+                    }
+
+                }
+            }
+
+            step("Удаляем реакцию") {
+                flakySafely(intervalMs = 200) {
+                    messagesRecycler.lastChild<ChatFragmentScreen.KIncomingMessageItem>() {
+                        selectedReaction {
+                            perform { click() }
+                        }
+                    }
+
+                }
+            }
+
+            step("Проверяем, что был вызов метода удаления реакции") {
+                flakySafely(intervalMs = 200) {
+                    fragmentTestRule.wiremockRule.wiremock.verify(
+                        WireMock.deleteRequestedFor(
+                            urlMatching(".*/api/v1/messages.*/reactions.*")
+                        )
+                    )
                 }
             }
         }

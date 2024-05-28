@@ -18,7 +18,6 @@ import ru.snowadv.chatapp.mock.dao.MessagesDaoMockImpl
 import ru.snowadv.chatapp.mock.dao.StreamsDaoMockImpl
 import ru.snowadv.chatapp.mock.dao.TopicsDaoMockImpl
 import ru.snowadv.chatapp.mock.dao.UsersDaoMockImpl
-import ru.snowadv.chatapp.server.ChatServerResponseTransformer
 import ru.snowadv.chatapp.server.wiremock.StaticStubsProvider
 import ru.snowadv.chatapp.server.wiremock.api.WireMockStubsProvider
 import ru.snowadv.database.dao.AuthDao
@@ -69,9 +68,10 @@ internal interface TestAppModule {
 
     companion object {
         @Provides
-        fun provideWireMockRule(transformer: ChatServerResponseTransformer): WireMockRule {
+        fun provideWireMockRule(): WireMockRule {
             return WireMockRule(
-                WireMockConfiguration.wireMockConfig().extensions(transformer)
+                WireMockConfiguration.wireMockConfig()
+                    //.extensions(transformer)
                     .asynchronousResponseEnabled(true)
                     .threadPoolFactory { ExecutorThreadPool(Executors.newFixedThreadPool(30)) }
                     .containerThreads(10)
