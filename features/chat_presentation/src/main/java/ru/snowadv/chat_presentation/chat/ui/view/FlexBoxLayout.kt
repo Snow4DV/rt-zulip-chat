@@ -105,7 +105,7 @@ class FlexBoxLayout @JvmOverloads constructor(
                 destLayoutResult = layoutResult
             )
 
-            if(layoutResult.viewsCount == 0) { // Unable to draw any more views
+            if (layoutResult.viewsCount == 0) { // Unable to draw any more views
                 break
             }
 
@@ -246,7 +246,7 @@ class FlexBoxLayout @JvmOverloads constructor(
 
             val paddingBeforeView = if (viewsCount != 0) paddingBetweenPx else 0
 
-            if(accumulatedWidth + paddingBeforeView + viewWidth > right - left) { // Do not place views out of bounds
+            if (accumulatedWidth + paddingBeforeView + viewWidth > right - left) { // Do not place views out of bounds
                 destLayoutResult.rowHeight = curRowHeight
                 destLayoutResult.rowWidth = accumulatedWidth
                 destLayoutResult.viewsCount = viewsCount
@@ -323,5 +323,9 @@ class FlexBoxLayout @JvmOverloads constructor(
     /**
      * This class describes the result of placing views in single row
      */
-    private class MutableRowLayoutResult(var viewsCount: Int = 0, var rowHeight: Int = 0, var rowWidth: Int = 0)
+    private class MutableRowLayoutResult(
+        var viewsCount: Int = 0,
+        var rowHeight: Int = 0,
+        var rowWidth: Int = 0
+    )
 }

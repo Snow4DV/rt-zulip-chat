@@ -10,5 +10,7 @@ data class ChatMessage(
     val senderName: String,
     val senderAvatarUrl: String?,
     val reactions: List<ChatReaction>,
-    val owner: Boolean
+    val owner: Boolean,
+    val topic: String,
+    val isRead: Boolean,
 )

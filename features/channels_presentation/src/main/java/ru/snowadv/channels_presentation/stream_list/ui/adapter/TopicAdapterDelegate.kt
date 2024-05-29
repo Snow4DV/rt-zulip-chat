@@ -32,15 +32,17 @@ internal class TopicAdapterDelegate(
             }
         }
 
-        fun bind(UiTopic: UiTopic) = with(binding) {
-            topicNameText.text = UiTopic.name
-            bindMsgCounter(UiTopic.unreadMessagesCount)
-            bindColor(UiTopic.name)
+        fun bind(uiTopic: UiTopic) = with(binding) {
+            topicNameText.text = uiTopic.name
+            bindMsgCounter(uiTopic.unreadMessagesCount)
+            bindColor(uiTopic.name)
+            bindSeparator(uiTopic.isLast)
         }
 
         fun handlePayload(payload: UiTopic.Payload) {
             when(payload) {
                 is UiTopic.Payload.MsgCounterChanged -> bindMsgCounter(payload.newCounter)
+                is UiTopic.Payload.SeparatorChanged -> bindSeparator(payload.isLast)
             }
         }
 
@@ -51,6 +53,10 @@ internal class TopicAdapterDelegate(
 
         private fun bindColor(name: String) = with(binding) {
             topicBackgroundView.setBackgroundColor(colors[abs(name.hashCode()) % colors.size])
+        }
+
+        private fun bindSeparator(isLast: Boolean) = with(binding) {
+            topicSeparator.isSelected = isLast
         }
     }
 
@@ -67,7 +73,7 @@ internal class TopicAdapterDelegate(
             parent,
             false
         )
-        val colors = binding.root.context.resources.getIntArray(R.array.topics_colors)
+        val colors = binding.root.context.resources.getIntArray(ru.snowadv.presentation.R.array.topics_colors)
 
         return UiTopicViewHolder(binding, colors).also { streamViewHolder ->
             streamViewHolder.initClickListeners(getCurrentList)

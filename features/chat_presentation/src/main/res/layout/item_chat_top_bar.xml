@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/primary"
+    android:padding="@dimen/top_bar_padding_horizontal">
+
+    <ImageButton
+        android:id="@+id/back_button"
+        style="@style/Theme.ZulipChat.ActionBarImageButton"
+        android:layout_width="@dimen/top_bar_margin_between_button_and_text"
+
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/back_button_description"
+        android:src="@drawable/ic_back_arrow"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/bar_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/top_bar_margin_between_button_and_text"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/white"
+        android:textSize="@dimen/top_bar_text_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/back_button"
+        app:layout_constraintRight_toLeftOf="@id/open_all_topics_button"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/sample_topic_name" />
+
+    <ImageButton
+        android:id="@+id/open_all_topics_button"
+        style="@style/Theme.ZulipChat.ActionBarImageButton"
+        android:layout_width="@dimen/top_bar_margin_between_button_and_text"
+        android:layout_height="0dp"
+        android:contentDescription="@string/open_all_topics_button"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_arrow_up_chat"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,7 +2,6 @@
 <resources>
     <color name="emoji_reacted_bg_color">#F2EFF4</color>
     <color name="emoji_bg_color">#D8D4DA</color>
-    <color name="ripple">@color/ripple_material_light</color>
     <color name="reaction_text">#1C1C1C</color>
     <color name="card_text">#D8D4DA</color>
     <color name="received_message_color">#CFCBD1</color>
@@ -11,12 +10,7 @@
     <color name="message_text_color_outgoing">#FFFFFF</color>
     <color name="message_timestamp_color">#747474</color>
     <color name="message_timestamp_color_outgoing">#CECECE</color>
-    <color name="message_edit_text_color">#C3C1C5</color>
-    <color name="on_surface_box_color">#D8D4DA</color>
-    <color name="message_edit_text_text_color">@color/black</color>
-    <color name="message_edit_text_hint_color">#3C3C3C</color>
-    <color name="on_surface_box_text_color">#2F2F2F</color>
+    <color name="surface_edit_text_color">#C3C1C5</color>
     <color name="date_splitter_bg_color">#ECE9ED</color>
     <color name="date_splitter_text_color">#9F9E9E</color>
-    <color name="sheet_puller_color">#A9A7AA</color>
 </resources>

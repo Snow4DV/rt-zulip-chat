@@ -48,6 +48,8 @@ sealed class EventResponseDto {
         override val id: Long,
         @SerialName("message")
         val message: MessageResponseDto,
+        @SerialName("flags")
+        val flags: List<String>,
     ): EventResponseDto()
     @Serializable
     @SerialName(DELETE_MESSAGE_EVENT_TYPE)
@@ -56,7 +58,21 @@ sealed class EventResponseDto {
         override val id: Long,
         @SerialName("message_id")
         val messageId: Long,
-    ): EventResponseDto()
+        @SerialName("stream_id")
+        val streamId: Long? = null, // can be absent if type is "private"
+        @SerialName("topic")
+        val topic: String? = null, // can be absent if type is "private"
+        @SerialName("message_type")
+        val messageType: MessageType, // "stream" or "private"
+    ): EventResponseDto() {
+        @Serializable
+        enum class MessageType(val value: String) {
+            @SerialName("stream")
+            STREAM("stream"),
+            @SerialName("private")
+            PRIVATE("private"),
+        }
+    }
 
     @Serializable
     @SerialName(UPDATE_MESSAGE_EVENT_TYPE)
@@ -66,7 +82,9 @@ sealed class EventResponseDto {
         @SerialName("message_id")
         val messageId: Long,
         @SerialName("rendered_content")
-        val content: String? // Will only present if message content has changed.
+        val content: String? = null, // Will only present if message content has changed.
+        @SerialName("subject")
+        val subject: String? = null, // Will only present if message subject has changed
     ): EventResponseDto()
 
 

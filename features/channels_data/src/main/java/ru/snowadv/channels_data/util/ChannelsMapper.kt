@@ -8,12 +8,16 @@ import ru.snowadv.network.model.StreamResponseDto
 import ru.snowadv.network.model.TopicResponseDto
 
 internal object ChannelsMapper {
-    fun StreamResponseDto.toDomainStream(): Stream {
-        return Stream(id = id, name = name)
+    fun StreamResponseDto.toDomainStream(subscribed: Boolean): Stream {
+        return Stream(id = id, name = name, subscribed = subscribed, subscribing = false, color = color)
     }
 
     fun StreamResponseDto.toStreamEntity(subscribed: Boolean): StreamEntity {
-        return StreamEntity(id = id, name = name, subscribed = subscribed)
+        return StreamEntity(id = id, name = name, subscribed = subscribed, color = color)
+    }
+
+    fun Stream.toStreamEntity(): StreamEntity {
+        return StreamEntity(id = id, name = name, subscribed = subscribed, color = color)
     }
 
     fun TopicResponseDto.toDomainTopic(streamId: Long): Topic {
@@ -33,7 +37,7 @@ internal object ChannelsMapper {
     }
 
     fun StreamEntity.toDomainStream(): Stream {
-        return Stream(id = id, name = name)
+        return Stream(id = id, name = name, subscribed = subscribed, subscribing = false, color = color)
     }
 
     fun TopicEntity.toDomainTopic(): Topic {

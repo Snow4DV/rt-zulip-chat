@@ -142,11 +142,14 @@ class OutgoingMessageLayout @JvmOverloads constructor(
             }
     }
 
-
-
     private fun initLongClickListener() {
-        messageBackgroundView.setOnClickListener {
+        messageBackgroundView.setOnLongClickListener {
             onMessageLongClickListener?.invoke()
+            true
+        }
+        messageTextView.setOnLongClickListener {
+            onMessageLongClickListener?.invoke()
+            true
         }
     }
 }

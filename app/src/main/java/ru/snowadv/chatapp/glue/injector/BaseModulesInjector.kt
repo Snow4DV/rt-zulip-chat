@@ -33,9 +33,11 @@ import ru.snowadv.channels_domain_api.di.ChannelsDomainAPI
 import ru.snowadv.channels_domain_api.di.ChannelsDomainDependencies
 import ru.snowadv.channels_domain_api.repository.StreamRepository
 import ru.snowadv.channels_domain_api.repository.TopicRepository
+import ru.snowadv.channels_domain_api.use_case.CreateStreamUseCase
 import ru.snowadv.channels_domain_api.use_case.GetStreamsUseCase
 import ru.snowadv.channels_domain_api.use_case.GetTopicsUseCase
 import ru.snowadv.channels_domain_api.use_case.ListenToStreamEventsUseCase
+import ru.snowadv.channels_domain_api.use_case.ChangeStreamSubscriptionStatusUseCase
 import ru.snowadv.channels_domain_impl.di.ChannelsDomainComponentHolder
 import ru.snowadv.channels_presentation.navigation.ChannelsRouter
 import ru.snowadv.channels_presentation.api.ChannelsScreenFactory
@@ -47,10 +49,15 @@ import ru.snowadv.chat_domain_api.di.ChatDomainDependencies
 import ru.snowadv.chat_domain_api.repository.EmojiRepository
 import ru.snowadv.chat_domain_api.repository.MessageRepository
 import ru.snowadv.chat_domain_api.use_case.AddReactionUseCase
+import ru.snowadv.chat_domain_api.use_case.EditMessageUseCase
 import ru.snowadv.chat_domain_api.use_case.GetCurrentMessagesUseCase
 import ru.snowadv.chat_domain_api.use_case.GetEmojisUseCase
 import ru.snowadv.chat_domain_api.use_case.ListenToChatEventsUseCase
+import ru.snowadv.chat_domain_api.use_case.LoadMessageUseCase
 import ru.snowadv.chat_domain_api.use_case.LoadMoreMessagesUseCase
+import ru.snowadv.chat_domain_api.use_case.ChangeMessageReadStateUseCase
+import ru.snowadv.chat_domain_api.use_case.MoveMessageToOtherTopicUseCase
+import ru.snowadv.chat_domain_api.use_case.RemoveMessageUseCase
 import ru.snowadv.chat_domain_api.use_case.RemoveReactionUseCase
 import ru.snowadv.chat_domain_api.use_case.SendFileUseCase
 import ru.snowadv.chat_domain_api.use_case.SendMessageUseCase
@@ -97,7 +104,16 @@ import ru.snowadv.chatapp.di.holder.AppModuleComponentHolder
 import ru.snowadv.chatapp.di.holder.AppModuleDependencies
 import ru.snowadv.home_presentation.di.dagger.HomePresentationComponentHolder
 import ru.snowadv.home_presentation.di.holder.HomePresentationDependencies
-import ru.snowadv.network.api.LoggerToggle
+import ru.snowadv.message_actions_presentation.api.screen_factory.ActionChooserDialogFactory
+import ru.snowadv.message_actions_presentation.api.screen_factory.EmojiChooserDialogFactory
+import ru.snowadv.message_actions_presentation.api.screen_factory.MessageEditorDialogFactory
+import ru.snowadv.message_actions_presentation.api.screen_factory.MessageTopicChangerDialogFactory
+import ru.snowadv.message_actions_presentation.di.dagger.MessageActionsPresentationComponentHolder
+import ru.snowadv.message_actions_presentation.di.holder.MessageActionsPresentationAPI
+import ru.snowadv.message_actions_presentation.di.holder.MessageActionsPresentationDependencies
+import ru.snowadv.message_actions_presentation.navigation.MessageActionsRouter
+import ru.snowadv.model.LoggerToggle
+import ru.snowadv.module_injector.dependency_holder.DependencyHolder5
 import ru.snowadv.people_presentation.api.PeopleScreenFactory
 import ru.snowadv.people_presentation.di.holder.PeoplePresentationAPI
 import ru.snowadv.people_presentation.di.holder.PeoplePresentationComponentHolder
@@ -226,7 +242,7 @@ abstract class BaseModulesInjector {
 
             ChatDomainDependencyHolder { dependencyHolder, chatDataApi, eventsDataApi ->
                 object : ChatDomainDependencies {
-                    override val emojiRepository: EmojiRepository = chatDataApi.emojiRepo
+                    override val emojiRepository: EmojiRepository = chatDataApi.emojisRepo
                     override val messageRepository: MessageRepository = chatDataApi.messageRepo
                     override val eventRepository: EventRepository = eventsDataApi.eventRepo
                     override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
@@ -236,16 +252,23 @@ abstract class BaseModulesInjector {
 
         ChatPresentationComponentHolder.dependencyProvider = {
             class ChatPresentationDependencyHolder(
-                override val block: (BaseDependencyHolder<ChatPresentationDependencies>, AppModuleAPI, ChatDomainAPI, ImageLoaderLibAPI) -> ChatPresentationDependencies
-            ) : DependencyHolder3<AppModuleAPI, ChatDomainAPI, ImageLoaderLibAPI, ChatPresentationDependencies>(
+                override val block: (BaseDependencyHolder<ChatPresentationDependencies>, AppModuleAPI, ChatDomainAPI, ImageLoaderLibAPI, ChannelsDomainAPI, MessageActionsPresentationAPI) -> ChatPresentationDependencies
+            ) : DependencyHolder5<AppModuleAPI, ChatDomainAPI, ImageLoaderLibAPI, ChannelsDomainAPI, MessageActionsPresentationAPI, ChatPresentationDependencies>(
                 api1 = AppModuleComponentHolder.get() ,
                 api2 = ChatDomainComponentHolder.get(),
                 api3 = ImageLoaderLibComponentHolder.get(),
+                api4 = ChannelsDomainComponentHolder.get(),
+                api5 = MessageActionsPresentationComponentHolder.get(),
             )
 
-            ChatPresentationDependencyHolder { dependencyHolder, appApi, chatApi, imageLoaderApi ->
+            ChatPresentationDependencyHolder { dependencyHolder, appApi, chatApi, imageLoaderApi, channelsApi, msgActionsApi ->
                 object : ChatPresentationDependencies {
+                    override val markMessagesAsReadUseCase: ChangeMessageReadStateUseCase = chatApi.markMessagesAsReadUseCase
                     override val chatRouter: ChatRouter = appApi.chatRouter
+                    override val actionChooserDialogFactory: ActionChooserDialogFactory = msgActionsApi.actionChooserDialogFactory
+                    override val emojiChooserDialogFactory: EmojiChooserDialogFactory = msgActionsApi.emojiChooserDialogFactory
+                    override val messageEditorDialogFactory: MessageEditorDialogFactory = msgActionsApi.messageEditorDialogFactory
+                    override val messageTopicChangerDialogFactory: MessageTopicChangerDialogFactory = msgActionsApi.messageTopicChangerDialogFactory
                     override val addReactionUseCase: AddReactionUseCase = chatApi.addReactionUseCase
                     override val removeReactionUseCase: RemoveReactionUseCase = chatApi.removeReactionUseCase
                     override val sendMessageUseCase: SendMessageUseCase = chatApi.sendMessageUseCase
@@ -254,6 +277,8 @@ abstract class BaseModulesInjector {
                     override val loadMoreMessagesUseCase: LoadMoreMessagesUseCase = chatApi.loadMoreMessagesUseCase
                     override val sendFileUseCase: SendFileUseCase = chatApi.sendFileUseCase
                     override val getEmojisUseCase: GetEmojisUseCase = chatApi.getEmojisUseCase
+                    override val loadMessageUseCase: LoadMessageUseCase = chatApi.loadMessageUseCase
+                    override val getTopicsUseCase: GetTopicsUseCase = channelsApi.getTopicsUseCase
                     override val appContext: Context = appContext
                     override val imageLoader: ImageLoader = imageLoaderApi.coilImageLoader
                     override val baseUrlProvider: BaseUrlProvider = appApi.baseUrlProvider
@@ -340,6 +365,8 @@ abstract class BaseModulesInjector {
                     override val getStreamsUseCase: GetStreamsUseCase = channelsDomainAPi.getStreamsUseCase
                     override val getTopicsUseCase: GetTopicsUseCase = channelsDomainAPi.getTopicsUseCase
                     override val listenToStreamEventsUseCase: ListenToStreamEventsUseCase = channelsDomainAPi.listenToStreamEventsUseCase
+                    override val createStreamUseCase: CreateStreamUseCase = channelsDomainAPi.createStreamUseCase
+                    override val subscribeToStreamUseCase: ChangeStreamSubscriptionStatusUseCase = channelsDomainAPi.subscribeToStreamUseCase
                     override val appContext: Context = appContext
                     override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
                 }
@@ -451,6 +478,31 @@ abstract class BaseModulesInjector {
             }.dependencies
         }
 
+        // Message actions
+        MessageActionsPresentationComponentHolder.dependencyProvider = {
+            class MessageActionsPresentationDependencyHolder(
+                override val block: (BaseDependencyHolder<MessageActionsPresentationDependencies>, ChannelsDomainAPI, ChatDomainAPI, AppModuleAPI) -> MessageActionsPresentationDependencies
+            ) : DependencyHolder3<ChannelsDomainAPI, ChatDomainAPI, AppModuleAPI, MessageActionsPresentationDependencies>(
+                api1 = ChannelsDomainComponentHolder.get(),
+                api2 = ChatDomainComponentHolder.get(),
+                api3 = AppModuleComponentHolder.get(),
+            )
+
+            MessageActionsPresentationDependencyHolder { dependencyHolder, channelsApi, chatApi, appApi ->
+                object : MessageActionsPresentationDependencies {
+                    override val getEmojisUseCase: GetEmojisUseCase = chatApi.getEmojisUseCase
+                    override val getTopicsUseCase: GetTopicsUseCase = channelsApi.getTopicsUseCase
+                    override val loadMessageUseCase: LoadMessageUseCase = chatApi.loadMessageUseCase
+                    override val messageActionsRouter: MessageActionsRouter = appApi.messageActionsRouter
+                    override val removeMessageUseCase: RemoveMessageUseCase = chatApi.removeMessageUseCase
+                    override val editMessageUseCase: EditMessageUseCase = chatApi.editMessageUseCase
+                    override val moveMessageToOtherTopicUseCase: MoveMessageToOtherTopicUseCase = chatApi.moveMessageToOtherTopicUseCase
+                    override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> = dependencyHolder
+
+                }
+            }.dependencies
+        }
+
 
 
         // Lib
@@ -486,6 +538,8 @@ abstract class BaseModulesInjector {
             NetworkAuthorizerLibDependencyHolder { dependencyHolder, appApi ->
                 object : NetworkAuthorizerLibDependencies {
                     override val json: Json = appApi.json
+                    override val baseUrlProvider: BaseUrlProvider = appApi.baseUrlProvider
+                    override val loggerToggle: LoggerToggle = appApi.networkLoggerToggle
                     override val dependencyHolder: BaseDependencyHolder<out BaseModuleDependencies> =
                         dependencyHolder
 

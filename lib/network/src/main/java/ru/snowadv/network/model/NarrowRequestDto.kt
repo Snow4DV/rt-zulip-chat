@@ -18,6 +18,9 @@ data class NarrowRequestDto(
         fun ofStreamAndTopic(streamName: String, topicName: String): List<NarrowRequestDto> {
             return listOf(NarrowRequestDto("stream", streamName), NarrowRequestDto("topic", topicName))
         }
+        fun ofStream(streamName: String): List<NarrowRequestDto> {
+            return listOf(NarrowRequestDto("stream", streamName))
+        }
     }
 
 

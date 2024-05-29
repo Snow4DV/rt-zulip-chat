@@ -12,5 +12,7 @@ data class StreamEntity(
     @ColumnInfo(name = "stream_name")
     val name: String,
     @ColumnInfo(name = "subscribed")
-    val subscribed: Boolean
+    val subscribed: Boolean,
+    @ColumnInfo(name = "color")
+    val color: String?,
 )

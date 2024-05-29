@@ -4,17 +4,21 @@ import dagger.Reusable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import ru.snowadv.channels_domain_api.use_case.GetTopicsUseCase
 import ru.snowadv.chat_domain_api.use_case.AddReactionUseCase
 import ru.snowadv.chat_domain_api.use_case.GetCurrentMessagesUseCase
 import ru.snowadv.chat_domain_api.use_case.ListenToChatEventsUseCase
+import ru.snowadv.chat_domain_api.use_case.LoadMessageUseCase
 import ru.snowadv.chat_domain_api.use_case.LoadMoreMessagesUseCase
+import ru.snowadv.chat_domain_api.use_case.ChangeMessageReadStateUseCase
 import ru.snowadv.chat_domain_api.use_case.RemoveReactionUseCase
 import ru.snowadv.chat_domain_api.use_case.SendFileUseCase
 import ru.snowadv.chat_domain_api.use_case.SendMessageUseCase
 import ru.snowadv.chat_presentation.chat.ui.util.ChatMappers.toElmEvent
 import ru.snowadv.chat_presentation.navigation.ChatRouter
 import ru.snowadv.model.Resource
-import vivid.money.elmslie.core.store.Actor
+import ru.snowadv.model.map
+import ru.snowadv.presentation.elm.compat.SwitchingActor
 import javax.inject.Inject
 
 @Reusable
@@ -27,7 +31,10 @@ class ChatActorElm @Inject constructor(
     private val listenToChatEventsUseCase: ListenToChatEventsUseCase,
     private val loadMoreMessagesUseCase: LoadMoreMessagesUseCase,
     private val sendFileUseCase: SendFileUseCase,
-) : Actor<ChatCommandElm, ChatEventElm>() {
+    private val getTopicsUseCase: GetTopicsUseCase,
+    private val loadMessageUseCase: LoadMessageUseCase,
+    private val markMessagesAsReadUseCase: ChangeMessageReadStateUseCase,
+) : SwitchingActor<ChatCommandElm, ChatEventElm>() {
     override fun execute(command: ChatCommandElm): Flow<ChatEventElm> = when (command) {
         ChatCommandElm.GoBack -> flow { router.goBack() }
         is ChatCommandElm.LoadInitialMessages -> getMessagesUseCase(
@@ -37,10 +44,10 @@ class ChatActorElm @Inject constructor(
             when (res) {
                 is Resource.Error -> ChatEventElm.Internal.Error(res.throwable, res.data)
                 is Resource.Loading -> res.getDataOrNull()
-                    ?.let { ChatEventElm.Internal.InitialChatLoaded(it, true) }
+                    ?.let { ChatEventElm.Internal.InitialChatLoadedFromCache(it) }
                     ?: ChatEventElm.Internal.Loading
 
-                is Resource.Success -> ChatEventElm.Internal.InitialChatLoaded(res.data, false)
+                is Resource.Success -> ChatEventElm.Internal.InitialChatLoaded(res.data)
             }
         }
 
@@ -65,7 +72,11 @@ class ChatActorElm @Inject constructor(
                 eventQueueProps = command.queueProps,
                 streamName = command.streamName,
                 topicName = command.topicName,
-            ).map { it.toElmEvent() }
+            ).map { it.toElmEvent() }.asSwitchFlow(command)
+        }
+
+        is ChatCommandElm.CancelObservation -> {
+            cancelSwitchFlow(ChatCommandElm.ObserveEvents::class)
         }
 
         is ChatCommandElm.AddChosenReaction -> {
@@ -84,7 +95,6 @@ class ChatActorElm @Inject constructor(
             }
         }
 
-        is ChatCommandElm.GoToProfile -> flow { router.openProfile(command.profileId) }
         is ChatCommandElm.RemoveReaction -> {
             removeReactionUseCase(command.messageId, command.reactionName).map { res ->
                 when (res) {
@@ -106,7 +116,7 @@ class ChatActorElm @Inject constructor(
                 when (res) {
                     is Resource.Error -> ChatEventElm.Internal.SendingMessageError
                     is Resource.Loading -> ChatEventElm.Internal.SendingMessage
-                    is Resource.Success -> ChatEventElm.Internal.MessageSent
+                    is Resource.Success -> ChatEventElm.Internal.MessageSent(command.topicName)
                 }
             }
         }
@@ -132,6 +142,37 @@ class ChatActorElm @Inject constructor(
                     is Resource.Success -> ChatEventElm.Internal.FileUploaded
                 }
             }
+        }
+
+        is ChatCommandElm.LoadTopicsFromCurrentStream -> {
+            getTopicsUseCase(command.streamId).map{ res ->
+                ChatEventElm.Internal.TopicsResourceChanged(res.map { topics -> topics.map { it.name } })
+            }
+        }
+
+        is ChatCommandElm.LoadMovedMessage -> {
+            loadMessageUseCase(
+                messageId = command.messageId,
+                streamName = command.streamName,
+                applyMarkdown = true,
+            ).mapEvents(
+                eventMapper = { res ->
+                    when(res) {
+                        is Resource.Error -> ChatEventElm.Internal.ErrorFetchingMovedMessage(res.throwable, command.requestQueueId, command.requestEventId)
+                        is Resource.Loading -> null
+                        is Resource.Success -> ChatEventElm.Internal.LoadedMovedMessage(res.data, command.requestQueueId, command.requestEventId)
+                    }
+                },
+                errorMapper = { error ->
+                    ChatEventElm.Internal.ErrorFetchingMovedMessage(error, command.requestQueueId, command.requestEventId)
+                },
+            )
+        }
+
+        is ChatCommandElm.MarkMessagesAsRead -> {
+            // Marking messages as read happens in background and will retry on next data fetch
+            // if internet is not present at the moment / other error has occurred
+            markMessagesAsReadUseCase(command.messagesIds, true).mapEvents { null }
         }
     }
 

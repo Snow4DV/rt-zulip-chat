@@ -67,8 +67,8 @@ class PeopleFragment : BaseFragment<PeopleListEventElm, PeopleListEffectElm, Peo
     }
 
     fun focusOnSearchFieldAndOpenKeyboard() {
-        binding.searchBar.searchEditText.requestFocus()
-        activity?.showKeyboard(binding.searchBar.searchEditText)
+        binding.peopleSearchBar.searchEditText.requestFocus()
+        activity?.showKeyboard(binding.peopleSearchBar.searchEditText)
     }
 
     override fun onDestroyView() {

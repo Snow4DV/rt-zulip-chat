@@ -65,6 +65,10 @@ internal object ChatFragmentScreen : KScreen<ChatFragmentScreen>() {
             withParent { withId(R.id.reactions_container)  }
             withMatcher(WithReactionCountMatcher(`is`(1)))
         }
+        val twoVotesReaction = KReactionView(parent) {
+            withParent { withId(R.id.reactions_container)  }
+            withMatcher(WithReactionCountMatcher(`is`(2)))
+        }
         val selectedReaction = KReactionView(parent) {
             withParent { withId(R.id.reactions_container)  }
             withMatcher(ViewMatchers.isSelected())
@@ -101,4 +105,8 @@ internal object ChatFragmentScreen : KScreen<ChatFragmentScreen>() {
 
     val messageEditText = KEditText { withId(R.id.message_edit_text) }
     val sendOrAddAttachmentButton = KImageView { withId(R.id.send_or_add_attachment_button) }
+
+    fun isVisible() {
+
+    }
 }

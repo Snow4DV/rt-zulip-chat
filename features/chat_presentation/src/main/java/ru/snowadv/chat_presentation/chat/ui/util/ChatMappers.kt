@@ -1,19 +1,18 @@
 package ru.snowadv.chat_presentation.chat.ui.util
 
+import ru.snowadv.chat_domain_api.model.ChatEmoji
 import ru.snowadv.chat_presentation.chat.presentation.elm.ChatEventElm
 import ru.snowadv.chat_presentation.chat.presentation.elm.ChatStateElm
+import ru.snowadv.chat_presentation.chat.presentation.model.SnackbarText
 import ru.snowadv.chat_presentation.chat.ui.elm.ChatStateUiElm
-import ru.snowadv.chat_presentation.chat.ui.model.ChatAction
-import ru.snowadv.chat_domain_api.model.ChatEmoji as DomainChatEmoji
 import ru.snowadv.chat_domain_api.model.ChatReaction as DomainChatReaction
-import ru.snowadv.chat_presentation.common.ui.model.ChatEmoji as UiChatEmoji
 import ru.snowadv.chat_domain_api.model.ChatMessage as DomainChatMessage
 import ru.snowadv.chat_domain_api.model.ChatPaginationStatus as DomainPaginationStatus
 import ru.snowadv.chat_presentation.chat.ui.model.ChatMessage
 import ru.snowadv.chat_presentation.chat.ui.model.ChatMessageType
 import ru.snowadv.chat_presentation.chat.ui.model.ChatPaginationStatus
 import ru.snowadv.chat_presentation.chat.ui.model.ChatReaction
-import ru.snowadv.chat_presentation.common.ui.util.EmojiMappers.toDomainChatEmoji
+import ru.snowadv.chat_presentation.chat.ui.model.SnackbarUiText
 import ru.snowadv.events_api.model.DomainEvent
 import ru.snowadv.events_api.model.EventMessage
 import ru.snowadv.events_api.model.EventReaction
@@ -36,7 +35,9 @@ internal object ChatMappers {
             senderAvatarUrl = senderAvatarUrl,
             reactions = reactions.map { it.toUiChatReaction() }
                 .sortedWith(compareBy({ -it.count }, { it.name })),
-            messageType = if (owner) ChatMessageType.OUTGOING else ChatMessageType.INCOMING
+            messageType = if (owner) ChatMessageType.OUTGOING else ChatMessageType.INCOMING,
+            topic = topic,
+            isRead = isRead,
         )
     }
 
@@ -51,6 +52,12 @@ internal object ChatMappers {
     }
 
 
+    private fun DomainEvent.ReactionDomainEvent.toDomainChatEmoji(): ChatEmoji {
+        return ChatEmoji(
+            name = emojiName,
+            code = emojiCode,
+        )
+    }
 
     private fun EventReaction.toChatReaction(): DomainChatReaction {
         return DomainChatReaction(
@@ -85,6 +92,7 @@ internal object ChatMappers {
                 queueId = queueId,
                 eventId = id,
                 recreateQueue = isQueueBad,
+                reason = reason,
             )
 
             is DomainEvent.MessageDomainEvent -> ChatEventElm.Internal.ServerEvent.NewMessage(
@@ -105,6 +113,19 @@ internal object ChatMappers {
                 eventId = id,
                 messageId = messageId,
                 newContent = content,
+                newSubject = subject,
+            )
+
+            is DomainEvent.AddReadMessageFlagEvent -> ChatEventElm.Internal.ServerEvent.MessagesRead(
+                queueId = queueId,
+                eventId = id,
+                addFlagMessagesIds = addFlagMessagesIds,
+            )
+
+            is DomainEvent.RemoveReadMessageFlagEvent -> ChatEventElm.Internal.ServerEvent.MessagesUnread(
+                queueId = queueId,
+                eventId = id,
+                removeFlagMessagesIds = removeFlagMessagesIds,
             )
 
             else -> ChatEventElm.Internal.ServerEvent.EventQueueUpdated(
@@ -124,6 +145,8 @@ internal object ChatMappers {
             senderAvatarUrl = avatarUrl,
             reactions = reactions.map { it.toChatReaction() },
             owner = this.owner,
+            topic = subject,
+            isRead = "read" in flags,
         )
     }
 
@@ -147,4 +170,7 @@ internal object ChatMappers {
         }
     }
 
+    fun SnackbarText.toUiModel(): SnackbarUiText {
+        return SnackbarUiText.valueOf(toString())
+    }
 }

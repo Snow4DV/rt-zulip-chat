@@ -7,6 +7,6 @@ import ru.snowadv.model.Resource
 interface GetCurrentMessagesUseCase {
     operator fun invoke(
         streamName: String,
-        topicName: String,
+        topicName: String?,
     ): Flow<Resource<ChatPaginatedMessages>>
 }

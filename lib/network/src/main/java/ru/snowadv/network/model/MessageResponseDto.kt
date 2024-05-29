@@ -38,5 +38,5 @@ data class MessageResponseDto(
     @SerialName("stream_id")
     val streamId: Long? = null, // will be null if it is DM message
     @SerialName("flags")
-    val flags: List<String> = emptyList(),
+    val flags: List<String> = emptyList(), // will not present for event messages
 )

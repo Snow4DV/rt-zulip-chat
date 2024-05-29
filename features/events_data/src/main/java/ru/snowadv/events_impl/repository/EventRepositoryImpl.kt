@@ -27,7 +27,7 @@ class EventRepositoryImpl @Inject constructor(
 ) : EventRepository {
 
     companion object {
-        const val RETRY_DELAY_MILLIS = 10_000L
+        const val RETRY_DELAY_MILLIS = 2_000L
         const val BAD_EVENT_QUEUE_ID_ERROR_CODE = "BAD_EVENT_QUEUE_ID"
         const val BAD_REQUEST_ERROR_CODE = "BAD_REQUEST"
     }
@@ -86,6 +86,7 @@ class EventRepositoryImpl @Inject constructor(
             api.registerEventQueue(
                 eventTypes = (types + EventType.HEARTBEAT + EventType.REALM).toEventTypesDto(),
                 narrow = narrows.toNarrow2DArrayDto(),
+                applyMarkdown = true,
             ).getOrElse {
                 emit(DomainEvent.FailedFetchingQueueEvent(-1, null, it, true))
                 return@flow

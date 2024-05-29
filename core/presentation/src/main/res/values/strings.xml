@@ -8,6 +8,7 @@
     <string name="retry">Retry</string>
     <string name="try_again_error_button">Try again</string>
     <string name="empty_here">Nothing here</string>
+    <string name="empty_hint"> </string>
     <string name="idk_emoji">🤷</string>
     <string name="stream_title">#%1$s</string>
     <string name="topic_title">Topic: #%1$s</string>

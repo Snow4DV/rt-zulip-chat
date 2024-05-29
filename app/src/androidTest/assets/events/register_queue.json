@@ -1,0 +1,10 @@
+{
+  "last_event_id": -1,
+  "msg": "",
+  "queue_id": "fb67bf8a-c031-47cc-84cf-ed80accacda8",
+  "result": "success",
+  "zulip_feature_level": 2,
+  "zulip_merge_base": "5.0-dev-1646-gea6b21cd8c",
+  "zulip_version": "5.0-dev-1650-gc3fd37755f",
+  "event_queue_longpoll_timeout_seconds": 90
+}

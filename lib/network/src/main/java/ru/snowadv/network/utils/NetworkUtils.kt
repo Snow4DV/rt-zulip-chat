@@ -2,6 +2,7 @@ package ru.snowadv.network.utils
 
 import kotlinx.serialization.json.Json
 import retrofit2.HttpException
+import ru.snowadv.model.Resource
 import ru.snowadv.network.model.ErrorResponseDto
 
 object NetworkUtils {
@@ -36,10 +37,32 @@ object NetworkUtils {
         (this as? HttpException)?.response()?.errorBody()?.string()?.let {
             return try {
                 json.decodeFromString<ErrorResponseDto>(it).code
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 null
             }
         }
         return null
+    }
+
+    fun Throwable.getHttpExceptionMessage(): String? {
+        (this as? HttpException)?.response()?.errorBody()?.string()?.let {
+            return try {
+                json.decodeFromString<ErrorResponseDto>(it).msg
+            } catch (e: Throwable) {
+                null
+            }
+        }
+        return null
+    }
+
+    fun <T> Result<T>.toResourceWithErrorMessage(cachedData: T? = null): Resource<T> {
+        return this.fold(
+            onSuccess = {
+                Resource.Success(it)
+            },
+            onFailure = {
+                Resource.Error(it, cachedData, it.getHttpExceptionMessage())
+            },
+        )
     }
 }

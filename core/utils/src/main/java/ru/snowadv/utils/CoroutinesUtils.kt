@@ -4,14 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-
-fun CoroutineScope.hasAnyCoroutinesRunning(): Boolean {
-    return coroutineContext[Job]?.children?.any { it.isActive } ?: false
-}
-
-fun CoroutineScope.hasMoreThanOneCoroutineRunning(): Boolean {
-    return (coroutineContext[Job]?.children?.count { it.isActive } ?: 0) > 1
-}
+import kotlin.coroutines.cancellation.CancellationException
 
 suspend fun <T1, T2, R> asyncAwait(
     s1: suspend CoroutineScope.() -> T1,
@@ -26,5 +19,15 @@ suspend fun <T1, T2, R> asyncAwait(
             result1.await(),
             result2.await()
         )
+    }
+}
+
+public inline fun <T, R> T.runSuspendCatching(block: T.() -> R): Result<R> {
+    return try {
+        Result.success(block())
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Throwable) {
+        Result.failure(e)
     }
 }

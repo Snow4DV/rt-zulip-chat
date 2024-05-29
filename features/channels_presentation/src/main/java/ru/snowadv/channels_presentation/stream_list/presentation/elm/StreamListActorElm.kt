@@ -7,9 +7,11 @@ import kotlinx.coroutines.flow.map
 import ru.snowadv.channels_domain_api.use_case.GetStreamsUseCase
 import ru.snowadv.channels_domain_api.use_case.GetTopicsUseCase
 import ru.snowadv.channels_domain_api.use_case.ListenToStreamEventsUseCase
+import ru.snowadv.channels_domain_api.use_case.ChangeStreamSubscriptionStatusUseCase
 import ru.snowadv.channels_presentation.navigation.ChannelsRouter
 import ru.snowadv.channels_presentation.stream_list.presentation.util.StreamListElmMappers.toElmEvent
 import ru.snowadv.model.Resource
+import ru.snowadv.presentation.elm.compat.SwitchingActor
 import vivid.money.elmslie.core.store.Actor
 import javax.inject.Inject
 
@@ -19,12 +21,18 @@ internal class StreamListActorElm @Inject constructor(
     private val getStreamsUseCase: GetStreamsUseCase,
     private val getTopicsUseCase: GetTopicsUseCase,
     private val listenToStreamEventsUseCase: ListenToStreamEventsUseCase,
-) : Actor<StreamListCommandElm, StreamListEventElm>() {
+    private val changeSubscriptionUseCase: ChangeStreamSubscriptionStatusUseCase,
+) : SwitchingActor<StreamListCommandElm, StreamListEventElm>() {
     override fun execute(command: StreamListCommandElm): Flow<StreamListEventElm> {
         return when(command) {
-            is StreamListCommandElm.GoToChat -> flow {
-                router.openTopic(command.streamName, command.topicName)
+            is StreamListCommandElm.GoToTopic -> flow {
+                router.openTopic(command.streamId, command.streamName, command.topicName)
             }
+
+            is StreamListCommandElm.GoToStream -> flow {
+                router.openStream(command.streamId, command.streamName)
+            }
+
             is StreamListCommandElm.LoadStreams -> {
                 getStreamsUseCase(command.type).map { res ->
                     when(res) {
@@ -74,6 +82,24 @@ internal class StreamListActorElm @Inject constructor(
             }
             is StreamListCommandElm.ObserveEvents -> {
                 listenToStreamEventsUseCase(command.isRestart, command.queueProps).map { event -> event.toElmEvent() }
+                    .asSwitchFlow(command)
+            }
+            is StreamListCommandElm.StopObservation -> {
+                cancelSwitchFlow(StreamListCommandElm.ObserveEvents::class)
+            }
+            is StreamListCommandElm.ChangeSubscriptionStatusForStream -> {
+                changeSubscriptionUseCase(command.streamName, command.subscribe).mapEvents(
+                    eventMapper = { res ->
+                        when(res) {
+                            is Resource.Error -> StreamListEventElm.Internal.ErrorWhileSubscribingToStream(command.streamId, res.throwable)
+                            is Resource.Loading -> StreamListEventElm.Internal.SubscribingToStream(command.streamId)
+                            is Resource.Success -> StreamListEventElm.Internal.ChangedSubscriptionToStream(command.streamId, command.subscribe)
+                        }
+                    },
+                    errorMapper = { error ->
+                        StreamListEventElm.Internal.ErrorWhileSubscribingToStream(command.streamId, error)
+                    }
+                )
             }
         }
     }

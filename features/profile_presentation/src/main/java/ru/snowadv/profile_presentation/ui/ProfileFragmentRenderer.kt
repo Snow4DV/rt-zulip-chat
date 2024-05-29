@@ -39,11 +39,11 @@ internal class ProfileFragmentRenderer :
         binding: FragmentProfileBinding,
         store: Store<ProfileEventElm, ProfileEffectElm, ProfileStateElm>
     ) {
-        binding.topBar.backButton.setOnClickListener {
+        binding.profileTopBar.backButton.setOnClickListener {
             store.accept(mapper.mapUiEvent(ProfileEventUiElm.ClickedOnBack))
         }
         binding.stateBox.setOnRetryClickListener {
-            store.accept(mapper.mapUiEvent(ProfileEventUiElm.ClickedOnBack))
+            store.accept(mapper.mapUiEvent(ProfileEventUiElm.ClickedOnRetry))
         }
         binding.buttonLogout.setOnClickListener {
             store.accept(mapper.mapUiEvent(ProfileEventUiElm.ClickedOnLogout))
@@ -57,19 +57,20 @@ internal class ProfileFragmentRenderer :
         val mappedState = mapper.mapState(state)
 
         stateBox.inflateState(mappedState.screenState, R.layout.fragment_profile_shimmer, topStateBox)
-        topBar.root.isVisible = !mappedState.isOwner
-        userAvatar.isVisible = mappedState.screenState.getCurrentData() != null
+        profileTopBar.root.isVisible = !mappedState.isOwner
+        profileUserAvatar.isVisible = mappedState.screenState.getCurrentData() != null
         mappedState.screenState.getCurrentData()?.let {  person ->
-            userStatus.text = getString(person.status.displayNameResId)
-            userStatus.setTextColor(resources.getColor(person.status.colorResId, context?.theme))
+            profileUserStatus.text = getString(person.status.displayNameResId)
+            profileUserStatus.setTextColor(resources.getColor(person.status.colorResId, context?.theme))
             person.avatarUrl?.let { url ->
-                userAvatar.load(url) {
+                profileUserAvatar.load(url) {
                     placeholder(ru.snowadv.presentation.R.drawable.ic_user_avatar)
+                    error(ru.snowadv.presentation.R.drawable.ic_user_avatar)
                     crossfade(true)
                 }
             }
-            userName.text = person.fullName
-            userEmail.text = person.email
+            profileUserName.text = person.fullName
+            profileUserEmail.text = person.email
         }
         buttonLogout.isVisible = mappedState.isOwner
     }

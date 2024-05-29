@@ -7,7 +7,7 @@ import ru.snowadv.model.Resource
 interface LoadMoreMessagesUseCase {
     operator fun invoke(
         streamName: String,
-        topicName: String,
+        topicName: String?,
         firstLoadedMessageId: Long?,
         includeAnchor: Boolean,
     ): Flow<Resource<ChatPaginatedMessages>>

@@ -8,6 +8,7 @@ import ru.snowadv.channels_presentation.stream_list.presentation.elm.StreamListE
 import ru.snowadv.channels_presentation.stream_list.presentation.elm.StreamListEventElm
 import ru.snowadv.channels_presentation.stream_list.presentation.elm.StreamListStateElm
 import ru.snowadv.channels_presentation.stream_list.ui.model.UiShimmerTopic
+import ru.snowadv.channels_presentation.stream_list.ui.util.StreamsMapper.toDomainModel
 import ru.snowadv.channels_presentation.stream_list.ui.util.StreamsMapper.toUiModel
 import ru.snowadv.model.Resource
 import ru.snowadv.model.ScreenState
@@ -37,12 +38,18 @@ internal class StreamListElmMapper @Inject constructor() :
 
     override fun mapUiEvent(uiEvent: StreamListEventUiElm): StreamListEventElm = when (uiEvent) {
         is StreamListEventUiElm.ChangedQuery -> StreamListEventElm.Ui.ChangedQuery(uiEvent.query)
-        is StreamListEventUiElm.ClickedOnStream -> StreamListEventElm.Ui.ClickedOnStream(uiEvent.streamId)
+        is StreamListEventUiElm.ClickedOnExpandStream -> StreamListEventElm.Ui.ClickedOnExpandStream(uiEvent.streamId)
         is StreamListEventUiElm.ClickedOnTopic -> StreamListEventElm.Ui.ClickedOnTopic(uiEvent.topicName)
         StreamListEventUiElm.Init -> StreamListEventElm.Ui.Init
         StreamListEventUiElm.Paused -> StreamListEventElm.Ui.Paused
         StreamListEventUiElm.ReloadClicked -> StreamListEventElm.Ui.ReloadClicked
         StreamListEventUiElm.Resumed -> StreamListEventElm.Ui.Resumed
+        is StreamListEventUiElm.ClickedOnChangeStreamSubscriptionStatus -> {
+            StreamListEventElm.Ui.ClickedOnChangeStreamSubscriptionStatus(uiEvent.uiStream.toDomainModel())
+        }
+        is StreamListEventUiElm.ClickedOnOpenStream -> {
+            StreamListEventElm.Ui.ClickedOnOpenStream(streamName = uiEvent.streamName, streamId = uiEvent.streamId)
+        }
     }
 
     private fun combineStreamsAndTopics(
@@ -56,13 +63,14 @@ internal class StreamListElmMapper @Inject constructor() :
                     val expanded = topics?.streamId == stream.id
                     add(stream.toUiModel(expanded))
                     if (topics != null && expanded) {
-                        topics.topics.data?.map { topic ->
+                        topics.topics.data?.mapIndexed { index, topic ->
                             topic.toUiModel(
                                 unreadMsgsCount = streamUnreadMessages
                                     .firstOrNull { it.streamId == stream.id }
                                     ?.topicsUnreadMessages
                                     ?.firstOrNull { it.topicName == topic.name }
                                     ?.unreadMessagesIds?.size ?: 0,
+                                isLast = index == topics.topics.data?.size?.minus(1),
                             )
                         }?.let { addAll(it) } ?: run {
                             if (topics.topics is Resource.Loading) {

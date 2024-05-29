@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="@dimen/common_padding"
+    android:theme="@style/Theme.ZulipChat.Channels">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/start_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="@dimen/common_margin_large" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/end_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="@dimen/common_margin_large" />
+
+    <View
+        android:id="@+id/sheet_puller"
+        android:layout_width="@dimen/puller_width"
+        android:layout_height="@dimen/puller_height"
+        android:layout_marginTop="@dimen/small_common_padding"
+        android:background="@drawable/ic_sheet_puller"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/new_stream_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/common_margin_large"
+        android:layout_marginTop="@dimen/common_margin"
+        android:text="@string/new_stream_title"
+        android:textSize="@dimen/bottom_sheet_title_text_size"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sheet_puller" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/stream_name_input_layout"
+        style="@style/Theme.ZulipChat.SurfaceEditText.NoPadding"
+        app:hintEnabled="false"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/common_margin_large"
+        android:focusableInTouchMode="true"
+        android:textSize="@dimen/new_stream_edit_text_size"
+        app:layout_constraintBottom_toTopOf="@id/description_input_layout"
+        app:layout_constraintEnd_toEndOf="@id/end_guideline"
+        app:layout_constraintStart_toStartOf="@id/start_guideline"
+        app:layout_constraintTop_toBottomOf="@id/new_stream_title"
+        app:layout_constraintVertical_chainStyle="packed">
+
+        <AutoCompleteTextView
+            android:id="@+id/stream_name_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#00000000"
+            android:hint="@string/stream_name"
+            android:inputType="text"
+            android:maxLines="1"
+            android:padding="@dimen/input_layout_padding"
+            android:textColor="@color/text"
+            android:textSize="@dimen/new_stream_edit_text_size" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/description_input_layout"
+        style="@style/Theme.ZulipChat.SurfaceEditText.NoPadding"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/common_margin_large"
+        android:padding="0dp"
+        android:paddingTop="@dimen/common_margin_large"
+        android:textSize="@dimen/new_stream_edit_text_size"
+        app:hintEnabled="false"
+        app:layout_constraintBottom_toTopOf="@id/announce_checkbox"
+        app:layout_constraintEnd_toEndOf="@id/end_guideline"
+        app:layout_constraintStart_toStartOf="@id/start_guideline"
+        app:layout_constraintTop_toBottomOf="@id/stream_name_input_layout"
+        app:layout_constraintVertical_chainStyle="packed">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/stream_description_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#00000000"
+            android:gravity="top"
+            android:hint="@string/stream_description"
+            android:inputType="text"
+            android:maxLines="1"
+            android:padding="@dimen/input_layout_padding"
+            android:textColor="@color/text"
+            android:textSize="@dimen/new_stream_edit_text_size"
+            app:hintEnabled="false" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/announce_checkbox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/announce_checkbox_title"
+        app:layout_constraintBottom_toTopOf="@id/show_history_to_new_subs_checkbox"
+        app:layout_constraintEnd_toEndOf="@id/end_guideline"
+        app:layout_constraintStart_toStartOf="@id/start_guideline"
+        app:layout_constraintTop_toBottomOf="@id/description_input_layout" />
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/show_history_to_new_subs_checkbox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/history_available_checkbox_title"
+        app:layout_constraintBottom_toTopOf="@id/action_container"
+        app:layout_constraintEnd_toEndOf="@id/end_guideline"
+        app:layout_constraintStart_toStartOf="@id/start_guideline"
+        app:layout_constraintTop_toBottomOf="@id/announce_checkbox" />
+
+    <FrameLayout
+        android:id="@+id/action_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/show_history_to_new_subs_checkbox">
+
+        <Button
+            android:id="@+id/create_stream_button"
+            style="@style/Theme.ZulipChat.Button"
+            android:layout_width="@dimen/action_button_width"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/create_stream_button_title"
+            android:textColor="@color/white" />
+
+        <ProgressBar
+            android:id="@+id/creating_stream_progress_bar"
+            style="@style/Theme.ZulipChat.CircularProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+    </FrameLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,7 +1,7 @@
 package ru.snowadv.chatapp.mock.config
 
 import dagger.Reusable
-import ru.snowadv.network.api.LoggerToggle
+import ru.snowadv.model.LoggerToggle
 import javax.inject.Inject
 
 @Reusable

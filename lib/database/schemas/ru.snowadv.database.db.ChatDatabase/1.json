@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "b8848ecc52fa3ee56fb624c171cc9f5b",
+    "identityHash": "ebd32ac949edfef85158b178b0b7fb0d",
     "entities": [
       {
         "tableName": "emojis",
@@ -118,7 +118,7 @@
       },
       {
         "tableName": "streams",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`stream_id` INTEGER NOT NULL, `stream_name` TEXT NOT NULL, `subscribed` INTEGER NOT NULL, PRIMARY KEY(`stream_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`stream_id` INTEGER NOT NULL, `stream_name` TEXT NOT NULL, `subscribed` INTEGER NOT NULL, `color` TEXT, PRIMARY KEY(`stream_id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -137,6 +137,12 @@
             "columnName": "subscribed",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "color",
+            "columnName": "color",
+            "affinity": "TEXT",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -254,7 +260,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b8848ecc52fa3ee56fb624c171cc9f5b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ebd32ac949edfef85158b178b0b7fb0d')"
     ]
   }
 }

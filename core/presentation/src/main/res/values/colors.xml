@@ -24,6 +24,10 @@
 
     <color name="text">@color/black_0</color>
     <color name="secondary_text">@color/light_gray_1</color>
+    <color name="sheet_puller_color">#A9A7AA</color>
+
+    <color name="on_surface_box_color">#D8D4DA</color>
+    <color name="on_surface_box_text_color">#2F2F2F</color>
 
 
     <color name="dusty_rose">#B5838D</color>
@@ -51,7 +55,10 @@
     <color name="info">@color/light_gray_3</color>
 
     <color name="listener_error">#cf6679</color>
+    <color name="ripple">@color/ripple_material_light</color>
 
-
-
+    <color name="surface_edit_text_hint_color">#3C3C3C</color>
+    <color name="surface_edit_text_color">#C3C1C5</color>
+    
+    <color name="separator">@color/on_surface</color>
 </resources>

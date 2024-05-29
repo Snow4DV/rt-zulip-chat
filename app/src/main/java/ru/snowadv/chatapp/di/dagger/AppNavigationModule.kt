@@ -14,9 +14,11 @@ import ru.snowadv.chatapp.glue.navigation.ChatRouterImpl
 import ru.snowadv.model.BaseUrlProvider
 import ru.snowadv.chatapp.glue.configuration.BaseUrlProviderImpl
 import ru.snowadv.chatapp.glue.navigation.AuthRouterImpl
+import ru.snowadv.chatapp.glue.navigation.MessageActionsRouterImpl
 import ru.snowadv.chatapp.glue.navigation.PeopleRouterImpl
 import ru.snowadv.chatapp.glue.navigation.ProfileRouterImpl
 import ru.snowadv.home_presentation.local_navigation.impl.InnerHomeScreenFactoryImpl
+import ru.snowadv.message_actions_presentation.navigation.MessageActionsRouter
 import ru.snowadv.people_presentation.navigation.PeopleRouter
 import ru.snowadv.profile_presentation.navigation.ProfileRouter
 import javax.inject.Singleton
@@ -34,7 +36,7 @@ internal interface AppNavigationModule {
     @Binds
     fun bindAuthRouterImpl(authRouterImpl: AuthRouterImpl): AuthRouter
     @Binds
-    fun bindBaseUrlProviderImpl(impl: BaseUrlProviderImpl): BaseUrlProvider
+    fun bindMessageActionsRouterImpl(impl: MessageActionsRouterImpl): MessageActionsRouter
 
     companion object {
         @Singleton

@@ -14,16 +14,20 @@ import ru.snowadv.chat_presentation.chat.presentation.elm.ChatEffectElm
 import ru.snowadv.chat_presentation.chat.presentation.elm.ChatEventElm
 import ru.snowadv.chat_presentation.chat.presentation.elm.ChatStateElm
 import ru.snowadv.chat_presentation.chat.presentation.elm.ChatStoreFactoryElm
+import ru.snowadv.chat_presentation.chat.ui.elm.ChatEffectUiElm
+import ru.snowadv.chat_presentation.chat.ui.elm.ChatEventUiElm
+import ru.snowadv.chat_presentation.chat.ui.elm.ChatStateUiElm
 import ru.snowadv.chat_presentation.databinding.FragmentChatBinding
 import ru.snowadv.chat_presentation.di.holder.ChatPresentationComponentHolder
 import ru.snowadv.chat_presentation.chat.ui.model.ChatAction
 import ru.snowadv.presentation.R
 import ru.snowadv.presentation.adapter.util.PaddingItemDecorator
 import ru.snowadv.presentation.elm.BaseFragment
+import ru.snowadv.presentation.elm.ElmMapper
 import ru.snowadv.presentation.fragment.ElmFragmentRenderer
-import ru.snowadv.presentation.fragment.ErrorHandlingFragment
+import ru.snowadv.presentation.fragment.PopupHandlingFragment
 import ru.snowadv.presentation.fragment.ResultUtils
-import ru.snowadv.presentation.fragment.impl.SnackbarErrorHandlingFragment
+import ru.snowadv.presentation.fragment.impl.SnackbarPopupHandlingFragment
 import ru.snowadv.presentation.fragment.setStatusBarColor
 import ru.snowadv.presentation.fragment.setTopBarColor
 import vivid.money.elmslie.android.renderer.elmStoreWithRenderer
@@ -32,31 +36,37 @@ import javax.inject.Inject
 
 class ChatFragment : BaseFragment<ChatEventElm, ChatEffectElm, ChatStateElm>(),
     ElmFragmentRenderer<ChatFragment, FragmentChatBinding, ChatEventElm, ChatEffectElm, ChatStateElm>
-    by ChatFragmentRenderer(),
-    ErrorHandlingFragment by SnackbarErrorHandlingFragment() {
+    by ChatFragmentRenderer(), PopupHandlingFragment by SnackbarPopupHandlingFragment() {
 
     private val fileChooser = ResultUtils.registerChooserUriLauncher(
         fragment = this,
         onSuccess = { mimeType, opener, extension ->
-            store.accept(ChatEventElm.Ui.FileWasChosen(mimeType, opener, extension))
+            store.accept(mapper.mapUiEvent(ChatEventUiElm.FileWasChosen(mimeType, opener, extension)))
         },
         onFailure = {
-            store.accept(ChatEventElm.Ui.FileChoosingDismissed)
+            store.accept(mapper.mapUiEvent(ChatEventUiElm.FileChoosingDismissed))
         },
     )
 
     companion object {
         const val ATTACHMENT_MIME_TYPE = "*/*"
+
+        const val ARG_STREAM_ID_KEY = "stream_id"
         const val ARG_STREAM_NAME_KEY = "stream_name"
         const val ARG_TOPIC_NAME_KEY = "topic_name"
-        fun newInstance(streamName: String, topicName: String): Fragment = ChatFragment().apply {
+
+        const val DEFAULT_STREAM_ID = -1L
+        fun newInstance(streamId: Long, streamName: String, topicName: String?): Fragment = ChatFragment().apply {
             arguments = bundleOf(
+                ARG_STREAM_ID_KEY to streamId,
                 ARG_STREAM_NAME_KEY to streamName,
                 ARG_TOPIC_NAME_KEY to topicName,
             )
         }
     }
 
+    @Inject
+    internal lateinit var mapper: ElmMapper<ChatStateElm, ChatEffectElm, ChatEventElm, ChatStateUiElm, ChatEffectUiElm, ChatEventUiElm>
     @Inject
     internal lateinit var chatStoreFactory: ChatStoreFactoryElm
 
@@ -65,14 +75,20 @@ class ChatFragment : BaseFragment<ChatEventElm, ChatEffectElm, ChatStateElm>(),
     private val streamName: String by lazy {
         requireArguments().getString(ARG_STREAM_NAME_KEY) ?: error("Missing stream name argument")
     }
-    private val topicName: String by lazy {
-        requireArguments().getString(ARG_TOPIC_NAME_KEY) ?: error("Missing topic name argument")
+    private val streamId: Long by lazy {
+        requireArguments().getLong(ARG_STREAM_ID_KEY, DEFAULT_STREAM_ID).also {
+            if (it == DEFAULT_STREAM_ID) error("Missing stream id argument")
+        }
+    }
+    private val topicName: String? by lazy {
+        requireArguments().getString(ARG_TOPIC_NAME_KEY)
     }
 
     override val store: Store<ChatEventElm, ChatEffectElm, ChatStateElm> by elmStoreWithRenderer(elmRenderer = this) {
         chatStoreFactory.create(
             streamName = streamName,
             topicName = topicName,
+            streamId = streamId,
         )
     }
     override val resumeUiEvent: ChatEventElm = ChatEventElm.Ui.Resumed
@@ -98,7 +114,6 @@ class ChatFragment : BaseFragment<ChatEventElm, ChatEffectElm, ChatStateElm>(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setStatusBarColor(R.color.primary)
         onRendererViewCreated(binding, store)
-        binding.topBackButtonBar.setTopBarColor(R.color.primary)
     }
 
     override fun onDestroyView() {

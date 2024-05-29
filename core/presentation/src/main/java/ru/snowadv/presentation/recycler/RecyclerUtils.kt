@@ -17,7 +17,7 @@ fun RecyclerView.setupDecorator(
         PaddingItemDecorator(
             context,
             horizontalSpacingResId ?: R.dimen.small_common_padding,
-            verticalSpacingResId ?: R.dimen.small_common_padding
+            verticalSpacingResId ?: R.dimen.small_common_padding,
         )
     )
 }

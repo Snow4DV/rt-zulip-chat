@@ -67,7 +67,7 @@ internal class PeopleRenderer :
         val mappedState = mapper.mapState(state)
         stateBox.inflateState(mappedState.screenState, R.layout.fragment_people_shimmer, topStateBox)
         adapter.submitList(mappedState.screenState.getCurrentData())
-        searchBar.searchEditText.setTextIfChanged(mappedState.searchQuery)
+        peopleSearchBar.searchEditText.setTextIfChanged(mappedState.searchQuery)
     }
 
     override fun PeopleFragment.handleEffectByRenderer(
@@ -89,7 +89,7 @@ internal class PeopleRenderer :
         binding: FragmentPeopleBinding,
         store: Store<PeopleListEventElm, PeopleListEffectElm, PeopleListStateElm>,
     ) {
-        binding.searchBar.searchEditText.addTextChangedListener { editable ->
+        binding.peopleSearchBar.searchEditText.addTextChangedListener { editable ->
             editable?.toString()?.let { text ->
                 searchQueryPublisher.tryEmit(text)
             }
@@ -97,7 +97,7 @@ internal class PeopleRenderer :
         binding.stateBox.setOnRetryClickListener {
             store.accept(mapper.mapUiEvent(PeopleListEventUiElm.ClickedOnRetry))
         }
-        binding.searchBar.searchIcon.setOnClickListener {
+        binding.peopleSearchBar.searchIcon.setOnClickListener {
             store.accept(mapper.mapUiEvent(PeopleListEventUiElm.ClickedOnSearchIcon))
         }
         searchQueryPublisher.debounce(SEARCH_DEBOUNCE_RATE_MS).onEach {

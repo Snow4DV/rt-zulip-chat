@@ -26,6 +26,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "17"
@@ -33,8 +34,13 @@ android {
 }
 
 dependencies {
+    // Api deps
     implementation(projects.core.moduleInjector)
-    implementation(libs.kotlinx.coroutines.core)
     implementation(projects.core.utils)
-    implementation(projects.lib.network)
+
+    // Kotlinx coroutines
+    implementation(libs.kotlinx.coroutines.core)
+
+    // Desugaring
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 }

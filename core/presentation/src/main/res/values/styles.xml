@@ -4,6 +4,14 @@
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
     </style>
 
+    <style name="Theme.ZulipChat.Clickable">
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+    </style>
+
+    <style name="Theme.ZulipChat.ClickableWithLimitedBorders">
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
     <style name="Theme.ZulipChat.ActionBarImageButton" parent="Widget.AppCompat.ImageButton">
         <item name="android:background">?attr/actionBarItemBackground</item>
     </style>
@@ -18,5 +26,41 @@
         <item name="android:indeterminateTint">@color/primary</item>
         <item name="android:indeterminateTintMode">src_in</item>
     </style>
+
+    <style name="Theme.ZulipChat.CircularProgressBar" parent="Widget.AppCompat.ProgressBar">
+        <item name="android:indeterminate">true</item>
+        <item name="android:indeterminateTint">@color/primary</item>
+        <item name="android:indeterminateTintMode">src_in</item>
+    </style>
+
+    <style name="Theme.ZulipChat.SurfaceEditText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:background">@drawable/bg_surface_edit_text</item>
+        <item name="android:paddingLeft">@dimen/surface_edit_text_horizontal_padding</item>
+        <item name="android:paddingRight">@dimen/surface_edit_text_horizontal_padding</item>
+        <item name="android:paddingTop">@dimen/surface_edit_text_vertical_padding</item>
+        <item name="android:paddingBottom">@dimen/surface_edit_text_vertical_padding</item>
+        <item name="android:textSize">@dimen/surface_edit_text_text_size</item>
+        <item name="android:textColor">@color/text</item>
+        <item name="android:textColorHint">@color/surface_edit_text_hint_color</item>
+    </style>
+
+    <style name="Theme.ZulipChat.SurfaceEditText.NoPadding" parent="Theme.ZulipChat.SurfaceEditText">
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+    </style>
+
+    <style name="Theme.ZulipChat.SurfaceEditText.Tall" parent="Theme.ZulipChat.SurfaceEditText">
+        <item name="android:background">@drawable/bg_tall_surface_edit_text</item>
+    </style>
+
+    <style name="Theme.ZulipChat.SurfaceEditText.Tall.NoPadding" parent="Theme.ZulipChat.SurfaceEditText.Tall">
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+    </style>
+
 
 </resources>

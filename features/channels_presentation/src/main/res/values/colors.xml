@@ -3,6 +3,9 @@
     <color name="stream_selected_arrow_color">@color/gray</color>
     <color name="stream_not_selected_arrow_color">@color/black</color>
 
+    <color name="stream_subscribed_action_color">@color/gray</color>
+    <color name="stream_not_subscribed_action_color">@color/black</color>
+
 
     <color name="search_line_color">@color/black_2</color>
 
@@ -10,5 +13,6 @@
     <color name="offline">#f44336</color>
     <color name="idle">#FF9800</color>
 
-
+    <color name="tab_selector">#219653</color>
+    <color name="topic_separator">@color/light_gray_4</color>
 </resources>

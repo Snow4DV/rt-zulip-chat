@@ -14,7 +14,7 @@ import javax.inject.Inject
 internal class GetTopicsUseCaseImpl @Inject constructor(
     private val topicRepository: TopicRepository,
 ): GetTopicsUseCase {
-    override operator fun invoke(streamId: Long): Flow<Resource<List<ru.snowadv.channels_domain_api.model.Topic>>> {
+    override operator fun invoke(streamId: Long): Flow<Resource<List<Topic>>> {
         return topicRepository.getTopics(streamId).map { res -> res.map { list -> list.sortedBy { it.name } } }
     }
 }
