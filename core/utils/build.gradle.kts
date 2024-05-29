@@ -1,5 +1,5 @@
 plugins {
-    id("java-library")
+    id(libs.plugins.java.library.get().pluginId)
     alias(libs.plugins.jetbrainsKotlinJvm)
 }
 
@@ -10,5 +10,4 @@ java {
 
 dependencies {
     implementation(libs.kotlinx.coroutines.core)
-    testImplementation(libs.junit)
 }

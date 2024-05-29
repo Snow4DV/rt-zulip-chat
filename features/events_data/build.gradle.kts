@@ -6,10 +6,10 @@ plugins {
 
 android {
     namespace = "ru.snowadv.events_impl"
-    compileSdk = 34
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        minSdk = 24
+        minSdk = libs.versions.minSdk.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -41,6 +41,7 @@ dependencies {
 
     // Core
     implementation(projects.core.moduleInjector)
+    implementation(projects.core.utils)
 
     // Libs
     implementation(projects.lib.network)
@@ -49,9 +50,9 @@ dependencies {
     // Domain api
     implementation(projects.features.eventsDomainApi)
 
-
+    // Coroutines
     implementation(libs.kotlinx.coroutines.core)
-    implementation(projects.core.utils)
 
+    // Network
     implementation(projects.lib.network)
 }

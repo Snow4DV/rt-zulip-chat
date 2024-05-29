@@ -5,10 +5,10 @@ plugins {
 
 android {
     namespace = "ru.snowadv.chat_domain_api"
-    compileSdk = 34
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        minSdk = 24
+        minSdk = libs.versions.minSdk.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -44,5 +44,4 @@ dependencies {
     implementation(projects.core.moduleInjector)
 
     implementation(libs.androidx.core.ktx)
-    
 }
