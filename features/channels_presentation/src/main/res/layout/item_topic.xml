@@ -37,7 +37,6 @@
         android:paddingRight="@dimen/topic_msg_counter_padding"
         android:textColor="@color/white"
         android:maxLines="1"
-        android:ellipsize="end"
         android:textSize="@dimen/stream_topic_name_text_size"
         app:layout_constraintBottom_toTopOf="@id/topic_separator"
         app:layout_constraintLeft_toLeftOf="@id/start_guideline_topic"

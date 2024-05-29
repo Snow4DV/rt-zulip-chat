@@ -29,7 +29,7 @@
         android:layout_marginRight="@dimen/common_margin"
         android:layout_marginBottom="@dimen/stream_vertical_padding"
         android:ellipsize="end"
-        android:maxLines="1"
+        android:maxLines="2"
         android:textColor="@color/text"
         android:textSize="@dimen/stream_topic_name_text_size"
         app:layout_constraintBottom_toTopOf="@id/stream_separator"
