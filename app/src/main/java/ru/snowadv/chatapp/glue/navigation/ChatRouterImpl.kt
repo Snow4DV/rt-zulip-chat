@@ -12,10 +12,4 @@ internal class ChatRouterImpl @Inject constructor(private val ciceroneRouter: Ro
     override fun goBack() {
         ciceroneRouter.exit()
     }
-
-    override fun openProfile(profileId: Long) {
-        ciceroneRouter.navigateTo(screens.Profile(profileId))
-    }
-
-
 }

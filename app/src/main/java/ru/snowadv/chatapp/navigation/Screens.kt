@@ -13,9 +13,10 @@ import javax.inject.Inject
 @Reusable
 class Screens @Inject constructor(){
     fun Channels() = FragmentScreen { ChannelsPresentationComponentHolder.get().screenFactory.create() }
-    fun Chat(streamName: String, topicName: String) = FragmentScreen { ChatPresentationComponentHolder.get().screenFactory.create(
+    fun Chat(streamId: Long, streamName: String, topicName: String?) = FragmentScreen { ChatPresentationComponentHolder.get().screenFactory.create(
         streamName = streamName,
         topicName = topicName,
+        streamId = streamId,
     ) }
     fun People() = FragmentScreen { PeoplePresentationComponentHolder.get().screenFactory.create() }
     fun Profile(userId: Long?) = FragmentScreen { ProfilePresentationComponentHolder.get().screenFactory.create(profileId = userId) }

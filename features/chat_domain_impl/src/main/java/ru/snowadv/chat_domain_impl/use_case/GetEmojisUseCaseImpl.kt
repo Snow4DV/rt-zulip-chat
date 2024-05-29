@@ -21,7 +21,7 @@ internal class GetEmojisUseCaseImpl @Inject constructor(private val emojiReposit
 
     override operator fun invoke(): Flow<Resource<List<ChatEmoji>>> {
         return emojiRepository.getAvailableEmojis()
-            .map { it.map { it.startWithPopularEmoji(POPULAR_START_EMOJI) } }
+            .map { it.map { emojis ->  emojis.startWithPopularEmoji(POPULAR_START_EMOJI) } }
     }
 
 

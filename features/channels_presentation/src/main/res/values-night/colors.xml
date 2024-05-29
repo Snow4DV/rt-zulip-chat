@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="stream_selected_arrow_color">#ffffff</color>
+    <color name="stream_selected_arrow_color">@color/white</color>
     <color name="stream_not_selected_arrow_color">#919191</color>
 
-    <color name="search_line_color">@color/black_5</color>
+    <color name="stream_subscribed_action_color">@color/white</color>
+    <color name="stream_not_subscribed_action_color">#919191</color>
 
+    <color name="search_line_color">@color/black_5</color>
+    <color name="topic_separator">#1C1C1C</color>
 </resources>

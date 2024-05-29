@@ -16,5 +16,11 @@
 
     <style name="Theme.ZulipChat" parent="Base.Theme.ZulipChat" />
 
+    <style name="Theme.ZulipChat.BottomSheet.Modal" parent="@style/Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/bg_bottom_sheet</item>
+    </style>
 
+    <style name="Theme.ZulipChat.BottomSheet" parent="@style/Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Theme.ZulipChat.BottomSheet.Modal</item>
+    </style>
 </resources>

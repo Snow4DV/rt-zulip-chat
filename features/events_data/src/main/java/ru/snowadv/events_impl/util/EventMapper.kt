@@ -23,7 +23,7 @@ import ru.snowadv.utils.DateUtils
 
 
 internal object EventMapper {
-    private fun MessageResponseDto.toEventMessage(currentUserId: Long): EventMessage {
+    private fun MessageResponseDto.toEventMessage(currentUserId: Long, flags: List<String>): EventMessage {
         return EventMessage(
             id = id,
             content = content,
@@ -36,7 +36,7 @@ internal object EventMapper {
             type = type,
             streamId = streamId,
             subject = subject,
-            flags = flags.toSet(),
+            flags = flags,
         )
     }
 
@@ -45,15 +45,16 @@ internal object EventMapper {
     }
 
     private fun StreamResponseDto.toEventStream(): EventStream {
-        return EventStream(id, name)
+        return EventStream(id, name, color)
     }
 
     fun EventResponseDto.toDomainEvent(currentUserId: Long, queueId: String): DomainEvent {
         return when (this) {
             is EventResponseDto.MessageEventDto -> DomainEvent.MessageDomainEvent(
                 id = id,
-                eventMessage = message.toEventMessage(currentUserId),
+                eventMessage = message.toEventMessage(currentUserId, flags),
                 queueId = queueId,
+                flags = flags.toSet(),
             )
             is EventResponseDto.HeartbeatEventDto -> DomainEvent.HeartbeatDomainEvent(
                 id = id,
@@ -68,6 +69,9 @@ internal object EventMapper {
                 id = id,
                 messageId = messageId,
                 queueId = queueId,
+                streamId = streamId,
+                topic = topic,
+                messageType = DomainEvent.DeleteMessageDomainEvent.MessageType.valueOf(messageType.toString()),
             )
             is EventResponseDto.PresenceEventDto -> DomainEvent.PresenceDomainEvent(
                 id = id,
@@ -111,6 +115,7 @@ internal object EventMapper {
                 messageId = messageId,
                 content = content,
                 queueId = queueId,
+                subject = subject,
             )
             is EventResponseDto.UserStatusEventDto -> DomainEvent.UserStatusDomainEvent(
                 id = id,

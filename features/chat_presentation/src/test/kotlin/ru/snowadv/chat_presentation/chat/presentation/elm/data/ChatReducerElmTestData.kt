@@ -8,6 +8,7 @@ import ru.snowadv.chat_domain_api.model.ChatPaginationStatus
 import ru.snowadv.chat_domain_api.model.ChatReaction
 import ru.snowadv.chat_presentation.chat.presentation.elm.ChatEventElm
 import ru.snowadv.chat_presentation.chat.presentation.elm.ChatStateElm
+import ru.snowadv.chat_presentation.chat.presentation.elm.util.EmojiUtils.generateReactions
 import ru.snowadv.events_api.model.EventQueueProperties
 import ru.snowadv.model.ScreenState
 import java.io.IOException
@@ -15,6 +16,7 @@ import java.time.ZonedDateTime
 
 internal class ChatReducerElmTestData {
     val streamName = "TestStream"
+    val streamId = 1L
     val topicName = "TestTopic"
 
     val allMessagesCount = 100
@@ -25,7 +27,14 @@ internal class ChatReducerElmTestData {
     val maxReactionsCount = reactions.size
 
     val initialResumedState =
-        ChatStateElm(stream = streamName, topic = topicName, eventQueueData = null, resumed = true)
+        ChatStateElm(
+            stream = streamName,
+            topic = topicName,
+            eventQueueData = null,
+            resumed = true,
+            sendTopic = topicName,
+            streamId = streamId,
+        )
 
     val internetErrorException = HttpException("HTTP 500", IOException())
 
@@ -37,8 +46,10 @@ internal class ChatReducerElmTestData {
             senderId = it.toLong(),
             senderName = "User $it",
             senderAvatarUrl = "http://img.nonexistant/$it",
-            reactions = generateReactions(it),
+            reactions = generateReactions(it, maxReactionsCount, reactions),
             owner = it % 2 == 0,
+            topic = "topic",
+            isRead = it % 5 != 0,
         )
     }
 
@@ -73,6 +84,10 @@ internal class ChatReducerElmTestData {
         eventQueueData = null,
         paginationStatus = ChatPaginationStatus.HasMore,
         resumed = true,
+        streamId = streamId,
+        isTopicEmptyErrorVisible = false,
+        isTopicChooserVisible = false,
+        sendTopic = topicName,
     )
 
     val initialEventQueuePropsAfterRegister = EventQueueProperties(
@@ -91,17 +106,25 @@ internal class ChatReducerElmTestData {
         eventQueueData = initialEventQueuePropsAfterRegister,
         paginationStatus = ChatPaginationStatus.HasMore,
         resumed = true,
+        isTopicEmptyErrorVisible = false,
+        isTopicChooserVisible = false,
+        sendTopic = topicName,
+        streamId = streamId,
     )
-
 
 
     val sampleMessage = firstPageMessages[0]
     val sampleNewMessage = allMessages.last().let { lastMessage ->
         lastMessage.copy(
             id = lastMessage.id + 1,
-            content = "hello!"
+            content = "hello!",
+            isRead = false,
         )
     }
+
+    val newSubject = "newSubject"
+
+    val queueId = "0"
 
     val lastMessageInFirstPage = firstPageMessages.last()
 
@@ -109,17 +132,47 @@ internal class ChatReducerElmTestData {
     val otherSampleText = "Test2"
 
     val testServerEvents = listOf(
-        ChatEventElm.Internal.ServerEvent.EventQueueUpdated(queueId = "0", eventId = 0),
-        ChatEventElm.Internal.ServerEvent.NewMessage(queueId = "0", eventId = 0, message = chunkedMessages[0][0]),
-        ChatEventElm.Internal.ServerEvent.MessageDeleted(queueId = "0", eventId = 0, messageId = 0),
-        ChatEventElm.Internal.ServerEvent.MessageUpdated(queueId = "0", eventId = 0, messageId = 0, newContent = otherSampleText),
-        ChatEventElm.Internal.ServerEvent.ReactionAdded(queueId = "0", eventId = 0, messageId = 0, emoji = sampleEmoji, currentUserReaction = true),
-        ChatEventElm.Internal.ServerEvent.ReactionRemoved(queueId = "0", eventId = 0, messageId = 0, emoji = sampleEmoji, currentUserReaction = true),
+        ChatEventElm.Internal.ServerEvent.EventQueueUpdated(queueId = queueId, eventId = 0),
+        ChatEventElm.Internal.ServerEvent.NewMessage(
+            queueId = queueId,
+            eventId = 0,
+            message = chunkedMessages[0][0]
+        ),
+        ChatEventElm.Internal.ServerEvent.MessageDeleted(
+            queueId = queueId,
+            eventId = 0,
+            messageId = 0
+        ),
+        ChatEventElm.Internal.ServerEvent.MessageUpdated(
+            queueId = queueId,
+            eventId = 0,
+            messageId = 0,
+            newContent = otherSampleText,
+            newSubject = newSubject
+        ),
+        ChatEventElm.Internal.ServerEvent.ReactionAdded(
+            queueId = queueId,
+            eventId = 0,
+            messageId = 0,
+            emoji = sampleEmoji,
+            currentUserReaction = true
+        ),
+        ChatEventElm.Internal.ServerEvent.ReactionRemoved(
+            queueId = queueId,
+            eventId = 0,
+            messageId = 0,
+            emoji = sampleEmoji,
+            currentUserReaction = true
+        ),
+        ChatEventElm.Internal.ServerEvent.MessagesRead(
+            queueId = queueId,
+            eventId = 0,
+            addFlagMessagesIds = listOf(1,2),
+        ),
+        ChatEventElm.Internal.ServerEvent.MessagesUnread(
+            queueId = queueId,
+            eventId = 0,
+            removeFlagMessagesIds = listOf(1,2),
+        ),
     )
-
-    private fun generateReactions(count: Int): List<ChatReaction> {
-        return List(count % maxReactionsCount) {
-            ChatReaction(reactions[it].first, reactions[it].second, it + 2, false)
-        }
-    }
 }

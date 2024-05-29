@@ -4,17 +4,16 @@
     android:id="@+id/loading_box"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/common_padding"
     android:background="?android:colorBackground"
     android:elevation="@dimen/state_box_elevation"
+    android:padding="@dimen/common_padding"
     android:theme="@style/Theme.ZulipChat">
 
     <ProgressBar
         android:id="@+id/loading_bar"
+        style="@style/Theme.ZulipChat.CircularProgressBar"
         android:layout_width="@dimen/progress_bar_size"
         android:layout_height="@dimen/progress_bar_size"
-        android:indeterminateTint="@color/primary"
-        android:indeterminateTintMode="src_in"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

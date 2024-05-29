@@ -8,8 +8,9 @@ import javax.inject.Inject
 
 @Reusable
 internal class ChatScreenFactoryImpl @Inject constructor(): ChatScreenFactory {
-    override fun create(streamName: String, topicName: String): Fragment = ChatFragment.newInstance(
+    override fun create(streamId: Long, streamName: String, topicName: String?): Fragment = ChatFragment.newInstance(
         streamName = streamName,
         topicName = topicName,
+        streamId = streamId,
     )
 }

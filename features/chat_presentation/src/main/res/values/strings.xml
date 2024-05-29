@@ -24,4 +24,10 @@
     <string name="chat_beginning">Beginning of discussion</string>
     <string name="send_message_hint">Send message</string>
     <string name="add_attachment_hint">Add attachment</string>
+    <string name="open_all_topics_button">Open all topics button</string>
+    <string name="change_subject">Change subject</string>
+    <string name="destination_topic">Destination topic</string>
+    <string name="new_message_is_unreachable">New message is unreachable from current topic scope: destination topic is displayed</string>
+    <string name="topic_cant_be_empty">Topic can\'t be empty. Choose or enter the topic</string>
+    <string name="message_copied">Message was copied to the clipboard</string>
 </resources>

@@ -10,6 +10,7 @@ import ru.snowadv.events_api.model.EventStreamUpdateFlagsMessages
 import ru.snowadv.events_api.model.EventTopicUpdateFlagsMessages
 
 internal object StreamListElmMappers {
+    const val READ_FLAG = "read"
     fun EventTopicUpdateFlagsMessages.toDomainModel(): TopicUnreadMessages {
         return TopicUnreadMessages(topicName = topicName, unreadMessagesIds = unreadMessagesIds)
     }
@@ -18,8 +19,8 @@ internal object StreamListElmMappers {
         return StreamUnreadMessages(streamId, topicsUnreadMessages.map { it.toDomainModel() })
     }
 
-    fun EventStream.toDomainModel(expanded: Boolean = false): Stream {
-        return Stream(id, name)
+    fun EventStream.toDomainModel(subscribed: Boolean): Stream {
+        return Stream(id = id, name = name, subscribing = false, subscribed = subscribed, color = color)
     }
 
     private fun DomainEvent.toEventQueueUpdateElmEvent(): StreamListEventElm.Internal.ServerEvent.EventQueueUpdated {
@@ -36,11 +37,7 @@ internal object StreamListElmMappers {
                 )
             }
             is DomainEvent.DeleteMessageDomainEvent -> {
-                StreamListEventElm.Internal.ServerEvent.MessageDeleted(
-                    queueId = queueId,
-                    eventId = id,
-                    messageId = messageId,
-                )
+                this.toElmEvent()
             }
             is DomainEvent.FailedFetchingQueueEvent -> StreamListEventElm.Internal.ServerEvent.EventQueueFailed(
                 queueId = queueId,
@@ -49,14 +46,7 @@ internal object StreamListElmMappers {
                 reason = reason,
             )
             is DomainEvent.MessageDomainEvent -> {
-                StreamListEventElm.Internal.ServerEvent.NewMessage(
-                    queueId = queueId,
-                    eventId = id,
-                    messageId = eventMessage.id,
-                    streamId = eventMessage.streamId,
-                    topicName = eventMessage.subject,
-                    flags = eventMessage.flags,
-                )
+                toElmEvent()
             }
             is DomainEvent.RegisteredNewQueueEvent -> StreamListEventElm.Internal.ServerEvent.EventQueueRegistered(
                 queueId = queueId,
@@ -81,20 +71,53 @@ internal object StreamListElmMappers {
         }
     }
 
+    fun DomainEvent.MessageDomainEvent.toElmEvent(): StreamListEventElm.Internal.ServerEvent {
+        val streamId = eventMessage.streamId
+        return if (streamId != null) {
+            StreamListEventElm.Internal.ServerEvent.NewMessage(
+                queueId = queueId,
+                eventId = id,
+                messageId = eventMessage.id,
+                streamId = streamId,
+                topicName = eventMessage.subject,
+                flags = flags,
+                isRead = READ_FLAG in flags,
+            )
+        } else {
+            toEventQueueUpdateElmEvent()
+        }
+    }
+
+    fun DomainEvent.DeleteMessageDomainEvent.toElmEvent(): StreamListEventElm.Internal.ServerEvent {
+        val streamId = streamId
+        val topic = topic
+        return if (streamId != null && topic != null && messageType == DomainEvent.DeleteMessageDomainEvent.MessageType.STREAM) {
+            StreamListEventElm.Internal.ServerEvent.MessageDeleted(
+                queueId = queueId,
+                eventId = id,
+                messageId = messageId,
+                streamId = streamId,
+                topic = topic,
+            )
+        } else {
+            toEventQueueUpdateElmEvent()
+        }
+    }
+
     fun DomainEvent.StreamDomainEvent.toElmEvent(): StreamListEventElm.Internal.ServerEvent {
         return when(op) {
             DomainEvent.StreamDomainEvent.OperationType.CREATE-> {
                 StreamListEventElm.Internal.ServerEvent.StreamsAddedEvent(
                     queueId = queueId,
                     eventId = id,
-                    streams = streams?.map { it.toDomainModel() } ?: emptyList(),
+                    streams = streams?.map { it.toDomainModel(subscribed = false) } ?: emptyList(),
                 )
             }
             DomainEvent.StreamDomainEvent.OperationType.DELETE -> {
                 StreamListEventElm.Internal.ServerEvent.StreamsAddedEvent(
                     queueId = queueId,
                     eventId = id,
-                    streams = streams?.map { it.toDomainModel() } ?: emptyList(),
+                    streams = streams?.map { it.toDomainModel(subscribed = false) } ?: emptyList(),
                 )
             }
             DomainEvent.StreamDomainEvent.OperationType.UPDATE -> {
@@ -114,14 +137,14 @@ internal object StreamListElmMappers {
                 StreamListEventElm.Internal.ServerEvent.UserSubscriptionsAddedEvent(
                     queueId = queueId,
                     eventId = id,
-                    changedStreams = subscriptions?.map { eventStream -> eventStream.toDomainModel() } ?: emptyList(),
+                    changedStreams = subscriptions?.map { eventStream -> eventStream.toDomainModel(subscribed = true) } ?: emptyList(),
                 )
             }
             DomainEvent.UserSubscriptionDomainEvent.OperationType.REMOVE -> {
                 StreamListEventElm.Internal.ServerEvent.UserSubscriptionsRemovedEvent(
                     queueId = queueId,
                     eventId = id,
-                    changedStreams = subscriptions?.map { eventStream -> eventStream.toDomainModel() } ?: emptyList(),
+                    changedStreams = subscriptions?.map { eventStream -> eventStream.toDomainModel(subscribed = false) } ?: emptyList(),
                 )
             }
             else -> this.toEventQueueUpdateElmEvent()

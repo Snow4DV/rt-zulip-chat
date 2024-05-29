@@ -1,0 +1,56 @@
+{
+  "result": "success",
+  "msg": "",
+  "events": [
+    {
+      "type": "message",
+      "message": {
+        "id": 441059461,
+        "sender_id": 708835,
+        "content": "123",
+        "recipient_id": 1289351,
+        "timestamp": 1716908496,
+        "client": "okhttp",
+        "subject": "события канала",
+        "topic_links": [],
+        "is_me_message": false,
+        "reactions": [
+          {
+            "emoji_name": "sad",
+            "emoji_code": "1f641",
+            "reaction_type": "unicode_emoji",
+            "user": {
+              "email": "user710247@tinkoff-android-spring-2024.zulipchat.com",
+              "id": 710247,
+              "full_name": "Viktor"
+            },
+            "user_id": 710247
+          },
+          {
+            "emoji_name": "sad",
+            "emoji_code": "1f641",
+            "reaction_type": "unicode_emoji",
+            "user": {
+              "email": "user710247@tinkoff-android-spring-2024.zulipchat.com",
+              "id": 710247,
+              "full_name": "Viktor"
+            },
+            "user_id": 708836
+          }
+        ],
+        "submessages": [],
+        "sender_full_name": "Mikhail Loginov",
+        "sender_email": "user708835@tinkoff-android-spring-2024.zulipchat.com",
+        "sender_realm_str": "tinkoff-android-spring-2024",
+        "display_recipient": "( ＾ω＾ )",
+        "type": "stream",
+        "stream_id": 439357,
+        "avatar_url": "https://secure.gravatar.com/avatar/5a6f33b04b8f6d352dd5e1d09873809f?d=identicon&version=1",
+        "content_type": "text/html"
+      },
+      "flags": [],
+      "id": 0
+    }
+  ],
+  "queue_id": "fb67bf8a-c031-47cc-84cf-ed80accacda8"
+}

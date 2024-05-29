@@ -18,6 +18,14 @@ internal class ChannelListReducerElm @Inject constructor():
             ChannelListEventElm.Ui.SearchIconClicked -> effects {
                 +ChannelListEffectElm.ShowKeyboardAndFocusOnTextField
             }
+
+            is ChannelListEventElm.Ui.NewStreamCreated -> effects {
+                +ChannelListEffectElm.ShowNewStreamCreated(event.name)
+            }
+
+            ChannelListEventElm.Ui.CreateNewStreamClicked -> effects {
+                +ChannelListEffectElm.OpenStreamCreator
+            }
         }
     }
 }

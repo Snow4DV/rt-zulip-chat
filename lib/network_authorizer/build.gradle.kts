@@ -12,6 +12,7 @@ java {
 
 dependencies {
     implementation(projects.core.moduleInjector)
+    implementation(projects.core.utils)
 
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)

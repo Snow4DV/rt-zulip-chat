@@ -4,16 +4,16 @@
     <item
         android:id="@+id/action_channels"
         android:checked="false"
-        android:icon="@drawable/ic_channels"
+        android:icon="@drawable/ic_home_channels"
         android:title="@string/channels"/>
     <item
         android:id="@+id/action_people"
         android:checked="false"
-        android:icon="@drawable/ic_people"
+        android:icon="@drawable/ic_home_people"
         android:title="@string/people"/>
     <item
         android:id="@+id/action_profile"
         android:checked="false"
-        android:icon="@drawable/ic_profile"
+        android:icon="@drawable/ic_home_profile"
         android:title="@string/profile"/>
 </menu>

@@ -7,18 +7,24 @@ internal data class UiTopic(
     val name: String,
     override val streamId: Long,
     val unreadMessagesCount: Int,
+    val isLast: Boolean,
 ) : DelegateItem, StreamIdContainer {
     override val id: Any get() = uniqueId
 
     override fun getPayload(oldItem: DelegateItem): Any? {
-        if (oldItem is UiTopic && oldItem.uniqueId == uniqueId && oldItem.name == name
+        if (oldItem is UiTopic && oldItem.uniqueId == uniqueId && oldItem.name == name && oldItem.isLast == isLast
             && oldItem.streamId == streamId && oldItem.unreadMessagesCount != unreadMessagesCount) {
             return Payload.MsgCounterChanged(unreadMessagesCount)
+        }
+        if (oldItem is UiTopic && oldItem.uniqueId == uniqueId && oldItem.name == name && oldItem.isLast != isLast
+            && oldItem.streamId == streamId && oldItem.unreadMessagesCount == unreadMessagesCount) {
+            return Payload.SeparatorChanged(isLast)
         }
         return null
     }
 
     sealed class Payload {
         class MsgCounterChanged(val newCounter: Int): Payload()
+        class SeparatorChanged(val isLast: Boolean): Payload()
     }
 }

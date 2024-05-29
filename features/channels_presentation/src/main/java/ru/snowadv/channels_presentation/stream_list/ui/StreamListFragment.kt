@@ -16,14 +16,14 @@ import ru.snowadv.channels_presentation.stream_list.presentation.elm.StreamListS
 import ru.snowadv.channels_presentation.stream_list.presentation.elm.StreamListStoreFactoryElm
 import ru.snowadv.presentation.elm.BaseFragment
 import ru.snowadv.presentation.fragment.ElmFragmentRenderer
-import ru.snowadv.presentation.fragment.ErrorHandlingFragment
-import ru.snowadv.presentation.fragment.impl.SnackbarErrorHandlingFragment
+import ru.snowadv.presentation.fragment.PopupHandlingFragment
+import ru.snowadv.presentation.fragment.impl.SnackbarPopupHandlingFragment
 import vivid.money.elmslie.android.renderer.elmStoreWithRenderer
 import vivid.money.elmslie.core.store.Store
 import javax.inject.Inject
 
 internal class StreamListFragment : BaseFragment<StreamListEventElm, StreamListEffectElm, StreamListStateElm>(),
-    ErrorHandlingFragment by SnackbarErrorHandlingFragment(),
+    PopupHandlingFragment by SnackbarPopupHandlingFragment(),
     ElmFragmentRenderer<StreamListFragment, FragmentStreamListBinding, StreamListEventElm, StreamListEffectElm, StreamListStateElm>
     by StreamListRenderer() {
 

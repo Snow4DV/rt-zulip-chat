@@ -9,6 +9,7 @@ import ru.snowadv.network.model.MessagesResponseDto
 import ru.snowadv.network.model.SingleUserResponseDto
 import ru.snowadv.network.model.SubscribedStreamsResponseDto
 import ru.snowadv.network.model.TopicsResponseDto
+import ru.snowadv.network_authorizer.model.AuthResponseDto
 import javax.inject.Inject
 
 internal class MockData @Inject constructor(private val json: Json){
@@ -18,10 +19,12 @@ internal class MockData @Inject constructor(private val json: Json){
     val messagesDto: MessagesResponseDto by lazy { json.decodeFromString(fromAssets("chat/messages.json")) }
     val peopleDto: AllUsersResponseDto by lazy { json.decodeFromString(fromAssets("people/people.json")) }
     val profile: SingleUserResponseDto by lazy { json.decodeFromString(fromAssets("profile/profile.json")) }
+    val auth: AuthResponseDto by lazy { json.decodeFromString(fromAssets("auth/api_key.json")) }
     val user = StorageAuthUser(
-        id = 1,
-        email = "email@example.com",
-        apiKey = "123",
+        id = auth.userId,
+        email = auth.email,
+        apiKey = auth.apiKey,
     )
-    val userName = "User 1"
+    val userName = "Mikhail Loginov"
+    val testPassword = "testpassword"
 }

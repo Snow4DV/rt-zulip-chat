@@ -50,11 +50,12 @@ fun <T, E> List<T>.toScreenStateListMapper(mapper: (List<T>) -> List<E>): Screen
     }
 }
 
-fun <T> List<T>.toScreenState() : ScreenState<List<T>> {
-    return if (this.isEmpty()) {
-        ScreenState.Empty
-    } else {
-        ScreenState.Success(this)
+fun <T> List<T>.toScreenState(loading: Boolean = false) : ScreenState<List<T>> {
+    return when {
+        loading && isEmpty() -> ScreenState.Loading()
+        loading -> ScreenState.Loading(this)
+        isNotEmpty() -> ScreenState.Success(this)
+        else -> ScreenState.Empty
     }
 }
 

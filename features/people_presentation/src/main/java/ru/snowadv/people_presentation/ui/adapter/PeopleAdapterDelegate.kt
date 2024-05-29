@@ -46,6 +46,7 @@ internal class PeopleAdapterDelegate(
             avatarUrl?.let { url ->
                 userAvatar.load(url) {
                     placeholder(ru.snowadv.presentation.R.drawable.ic_user_avatar)
+                    error(ru.snowadv.presentation.R.drawable.ic_user_avatar)
                     crossfade(true)
                 }
             }

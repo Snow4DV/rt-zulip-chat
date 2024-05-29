@@ -105,7 +105,7 @@ class IncomingMessageLayout @JvmOverloads constructor(
                 messageUserName.measuredWidth,
                 messageText.measuredWidth,
                 messageTimestamp.measuredWidth,
-                reactionsContainer.measuredWidth
+                reactionsContainer.measuredWidth,
             ) + paddingBetweenAvatarAndMessageBoxPx + paddingLeft + paddingRight
         }.toInt()
         val heightPx = with(binding) {
@@ -255,9 +255,13 @@ class IncomingMessageLayout @JvmOverloads constructor(
     }
 
     private fun initLongClickListener() {
-        messageBackgroundView.setOnClickListener {
+        messageBackgroundView.setOnLongClickListener {
             onMessageLongClickListener?.invoke()
+            true
+        }
+        messageTextView.setOnLongClickListener {
+            onMessageLongClickListener?.invoke()
+            true
         }
     }
-
 }

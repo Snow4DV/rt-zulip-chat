@@ -1,20 +1,22 @@
 package ru.snowadv.chat_presentation.chat.ui.util
 
+import android.content.Context
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.snowadv.chat_presentation.chat.ui.model.ChatDate
 import ru.snowadv.chat_presentation.chat.ui.model.ChatMessage
+import ru.snowadv.chat_presentation.chat.ui.model.ChatTopic
 import ru.snowadv.chat_presentation.chat.ui.util.ChatMappers.toUiChatMessage
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.chat_domain_api.model.ChatMessage as DomainChatMessage
 
 internal object AdapterUtils {
-    fun List<DomainChatMessage>.mapToUiAdapterMessagesAndDates(): List<DelegateItem> {
-        return this.map { it.toUiChatMessage() }.mapToAdapterMessagesAndDates()
+    fun List<DomainChatMessage>.mapToUiAdapterMessagesAndDates(showTopics: Boolean): List<DelegateItem> {
+        return this.map { it.toUiChatMessage() }.mapToAdapterMessagesAndDates(showTopics)
     }
 
-    fun List<ChatMessage>.mapToAdapterMessagesAndDates(): List<DelegateItem> {
+    private fun List<ChatMessage>.mapToAdapterMessagesAndDates(showTopics: Boolean): List<DelegateItem> {
         val messagesMap = this
             .groupBy { it.sentAt.toLocalDate() }
             .mapValues {
@@ -23,10 +25,18 @@ internal object AdapterUtils {
             }
             .toSortedMap()
 
+        var lastTopic: String? = null
+
         return buildList {
-            messagesMap.forEach {
-                add(ChatDate(it.value?.firstOrNull()?.sentAt ?: it.key.atStartOfDay()))
-                addAll(it.value)
+            messagesMap.forEach { entry ->
+                add(ChatDate(entry.value?.firstOrNull()?.sentAt ?: entry.key.atStartOfDay()))
+                entry.value.forEach { chatMessage ->
+                    if (lastTopic != chatMessage.topic && showTopics) {
+                        add(ChatTopic(name = chatMessage.topic, firstMessageId = chatMessage.id))
+                        lastTopic = chatMessage.topic
+                    }
+                    add(chatMessage)
+                }
             }
         }
     }
@@ -42,5 +52,13 @@ internal object AdapterUtils {
             }
             commitCallback.run()
         }
+    }
+
+    fun ChatMessage.getReadStatus(): String {
+        return if (isRead) " ✓" else ""
+    }
+
+    fun getReadString(isRead: Boolean): String {
+        return if (isRead) " ✓" else ""
     }
 }

@@ -1,5 +1,6 @@
 package ru.snowadv.chat_presentation.chat.ui.elm
 
+import ru.snowadv.chat_presentation.chat.presentation.elm.ChatEventElm
 import ru.snowadv.model.InputStreamOpener
 
 sealed interface ChatEventUiElm {
@@ -11,7 +12,6 @@ sealed interface ChatEventUiElm {
     data class AddReactionClicked(val messageId: Long) : ChatEventUiElm
     data class AddChosenReaction(val messageId: Long, val reactionName: String) : ChatEventUiElm
     data class RemoveReaction(val messageId: Long, val reactionName: String) : ChatEventUiElm
-    data class GoToProfileClicked(val profileId: Long) : ChatEventUiElm
     data class MessageFieldChanged(val text: String) : ChatEventUiElm
     data object GoBackClicked : ChatEventUiElm
     data object ReloadClicked : ChatEventUiElm
@@ -19,4 +19,11 @@ sealed interface ChatEventUiElm {
     data object ScrolledToNTopMessages : ChatEventUiElm
     data object FileChoosingDismissed : ChatEventUiElm
     data class FileWasChosen(val mimeType: String?, val inputStreamOpener: InputStreamOpener, val extension: String?) : ChatEventUiElm
+    data class ClickedOnTopic(val topicName: String) : ChatEventUiElm
+    data object OnLeaveTopicClicked : ChatEventUiElm
+    data class TopicChanged(val newTopic: String) : ChatEventUiElm
+    data class EditMessageClicked(val messageId: Long) : ChatEventUiElm
+    data class MoveMessageClicked(val messageId: Long) : ChatEventUiElm
+    data class MessageMovedToNewTopic(val topicName: String) : ChatEventUiElm
+    data class ReloadMessageClicked(val messageId: Long) : ChatEventUiElm
 }

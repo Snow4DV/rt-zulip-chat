@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+<item
+    android:bottom="@dimen/shimmer_text_bg_padding_bottom"
+    android:width="@dimen/emoji_size_chooser"
+    android:height="@dimen/emoji_size_chooser"
+    android:top="@dimen/shimmer_text_bg_padding_top"
+    android:left="2dp"
+    android:right="2dp">
+
+    <shape android:shape="oval">
+        <solid android:color="@color/light_gray_1" />
+        <size
+            />
+    </shape>
+</item>
+</layer-list>

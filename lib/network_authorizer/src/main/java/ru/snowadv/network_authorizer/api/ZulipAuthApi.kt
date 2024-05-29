@@ -18,35 +18,4 @@ interface ZulipAuthApi {
         @Query(value = "password")
         password: String,
     ): Result<AuthResponseDto>
-
-
-    companion object {
-        const val BASE_URL = "https://tinkoff-android-spring-2024.zulipchat.com/api/v1/"
-    }
-}
-
-
-internal fun ZulipAuthApi (
-    converterFactory: Converter.Factory,
-    resultCallAdapterFactory: ResultCallAdapterFactory,
-): ZulipAuthApi {
-    return retrofit(
-        converterFactory = converterFactory,
-        resultCallAdapterFactory = resultCallAdapterFactory,
-    ).create()
-}
-
-private fun retrofit(
-    baseUrl: String = ZulipAuthApi.BASE_URL,
-    okHttpClient: OkHttpClient = OkHttpClient.Builder().build(),
-    converterFactory: Converter.Factory,
-    resultCallAdapterFactory: ResultCallAdapterFactory,
-): Retrofit {
-
-    return Retrofit.Builder()
-        .baseUrl(baseUrl)
-        .addConverterFactory(converterFactory)
-        .addCallAdapterFactory(resultCallAdapterFactory)
-        .client(okHttpClient)
-        .build()
 }

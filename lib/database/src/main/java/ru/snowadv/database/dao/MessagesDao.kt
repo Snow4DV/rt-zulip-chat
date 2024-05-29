@@ -21,6 +21,9 @@ interface MessagesDao {
     @Query("SELECT * FROM messages WHERE stream_name = :streamName AND subject = :topicName")
     suspend fun getMessagesFromTopic(streamName: String?, topicName: String): List<MessageEntity>
 
+    @Query("SELECT * FROM messages WHERE stream_name = :streamName")
+    suspend fun getMessagesFromStream(streamName: String?): List<MessageEntity>
+
     @Query("SELECT * FROM messages WHERE stream_id = :streamId AND subject = :topicName")
     suspend fun getMessagesFromTopic(streamId: Long?, topicName: String): List<MessageEntity>
 
@@ -32,6 +35,9 @@ interface MessagesDao {
 
     @Query("DELETE FROM messages  WHERE stream_name = :streamName AND subject = :topicName")
     suspend fun clearMessagesFromTopic(streamName: String?, topicName: String)
+
+    @Query("DELETE FROM messages  WHERE stream_name = :streamName")
+    suspend fun clearMessagesFromStream(streamName: String?)
 
     @Query("DELETE FROM messages  WHERE stream_id = :streamId AND subject = :topicName")
     suspend fun clearMessagesFromTopic(streamId: Long?, topicName: String)
@@ -45,6 +51,20 @@ interface MessagesDao {
         if (getMessagesFromTopic(streamName, topicName) != messages) {
             clearMessagesFromTopic(streamName, topicName)
             insertMessages(messages.takeLast(CacheConfiguration.CACHED_MESSAGES_COUNT_PER_TOPIC))
+        }
+    }
+
+    @Transaction
+    suspend fun updateMessagesForStreamIfChanged(
+        streamName: String?,
+        messages: List<MessageEntity>
+    ) {
+        if (getMessagesFromStream(streamName) != messages) {
+            clearMessagesFromStream(streamName)
+            val messagesLimitedByTopic = messages.groupBy { it.subject }
+                .mapValues { it.value.takeLast(CacheConfiguration.CACHED_MESSAGES_COUNT_PER_TOPIC) }
+                .entries.flatMap { it.value }
+            insertMessages(messagesLimitedByTopic)
         }
     }
 

@@ -30,7 +30,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-        
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "17"
@@ -46,41 +46,6 @@ android {
 }
 
 dependencies {
-    // Andriod Test Rules
-    androidTestImplementation(libs.androidx.test.rules)
-    // JUnit
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-
-    // Kotest
-    testImplementation(libs.kotest.junit)
-    testImplementation(libs.kotest.assertions)
-    testImplementation(libs.kotest.property)
-
-    // Hamcrest Matchers
-    androidTestImplementation(libs.hamcrest)
-
-    // Kaspresso
-    androidTestImplementation(libs.kaspresso)
-
-    // Espresso Intents
-    androidTestImplementation(libs.androidx.espresso.intents)
-
-    // Wiremock
-    debugImplementation(libs.androidx.test.core)
-    androidTestImplementation(libs.httpclient.android)
-    androidTestImplementation(libs.wiremock) {
-        exclude(group = "org.apache.httpcomponents", module = "httpclient")
-    }
-
-    // Test utils
-    testImplementation(projects.core.testUtils)
-
-    // Instrument tests
-    implementation(libs.androidx.fragment.testing)
-
-    // New multi-layer features
-
     // Auth feature
     implementation(projects.features.authData)
     implementation(projects.features.authDomainApi)
@@ -109,6 +74,8 @@ dependencies {
     implementation(projects.features.profilePresentation)
     // Home feature
     implementation(projects.features.homePresentation)
+    // Message actions feature
+    implementation(projects.features.messageActionsPresentation)
 
 
     // Core
@@ -123,11 +90,11 @@ dependencies {
     implementation(projects.lib.imageLoader)
     implementation(projects.lib.authStorage)
 
-
-
+    // Dagger
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)
 
+    // Basic presentation deps
     implementation(libs.kotlinSerialization.json)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -138,7 +105,40 @@ dependencies {
     implementation(libs.retrofit.core)
     implementation(libs.coil)
     testImplementation(libs.junit)
+
+    // Andriod Test Rules
+    androidTestImplementation(libs.androidx.test.rules)
+    // JUnit
+    testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+
+    // Kotest
+    testImplementation(libs.kotest.junit)
+    testImplementation(libs.kotest.assertions)
+    testImplementation(libs.kotest.property)
     
+    // Hamcrest Matchers
+    androidTestImplementation(libs.hamcrest)
+
+    // Kaspresso
+    androidTestImplementation(libs.kaspresso)
+
+    // Espresso Intents
+    androidTestImplementation(libs.androidx.espresso.intents)
+
+    // Wiremock
+    debugImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.httpclient.android)
+    androidTestImplementation(libs.wiremock) {
+        exclude(group = "org.apache.httpcomponents", module = "httpclient")
+    }
+
+    // Test utils
+    testImplementation(projects.core.testUtils)
+
+    // Instrument tests
+    implementation(libs.androidx.fragment.testing)
+
+    // Desugaring
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 }

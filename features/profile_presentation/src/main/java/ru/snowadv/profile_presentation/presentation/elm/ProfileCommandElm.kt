@@ -8,5 +8,5 @@ internal sealed interface ProfileCommandElm { // commands to actor
         ProfileCommandElm
     data object GoBack : ProfileCommandElm
     data object Logout : ProfileCommandElm
-
+    data object StopObservation : ProfileCommandElm
 }

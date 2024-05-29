@@ -27,7 +27,7 @@
             android:id="@+id/topic_background_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/topic_separator_shimmered"
             app:layout_constraintTop_toTopOf="parent"
             android:background="@color/light_gray_3" />
 
@@ -39,10 +39,19 @@
             android:layout_marginRight="@dimen/topic_msg_counter_padding"
             android:textColor="@color/white"
             android:textSize="@dimen/stream_topic_name_text_size"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/topic_separator_shimmered"
             app:layout_constraintLeft_toLeftOf="@id/start_guideline"
             app:layout_constraintTop_toTopOf="parent"/>
 
-
+        <ImageView
+            android:id="@+id/topic_separator_shimmered"
+            android:layout_width="0dp"
+            android:importantForAccessibility="no"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_height="wrap_content"
+            android:scaleType="fitXY"
+            android:src="@drawable/topic_separator_selector"
+            app:layout_constraintBottom_toBottomOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.facebook.shimmer.ShimmerFrameLayout>

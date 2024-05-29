@@ -14,10 +14,10 @@ internal class ListenToStreamEventsUseCaseImpl @Inject constructor(
     private val eventRepository: EventRepository,
 ): ListenToStreamEventsUseCase {
     companion object {
-        internal val eventTypes =
+        private val eventTypes =
             setOf(
                 EventType.REALM, EventType.HEARTBEAT, EventType.MESSAGE, EventType.UPDATE_MESSAGE_FLAGS,
-                EventType.SUBSCRIPTION, EventType.STREAM,
+                EventType.SUBSCRIPTION, EventType.STREAM, EventType.DELETE_MESSAGE,
             )
     }
 

@@ -1,6 +1,6 @@
 package ru.snowadv.auth_presentation.login.elm
 
-internal sealed interface LoginEventElm {
+sealed interface LoginEventElm {
 
     sealed interface Ui : LoginEventElm {
         data object Init : Ui

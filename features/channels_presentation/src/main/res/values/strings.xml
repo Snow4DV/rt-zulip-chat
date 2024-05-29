@@ -8,4 +8,13 @@
     <string name="subscribed">Subscribed</string>
     <string name="all_streams">All streams</string>
     <string name="msg_counter">%1$d mes</string>
+    <string name="stream_name">Stream name</string>
+    <string name="stream_description">Stream description</string>
+    <string name="history_available_checkbox_title">Is history available to new subscribers</string>
+    <string name="announce_checkbox_title">Announce newly created stream</string>
+    <string name="create_stream_button_title">Create stream</string>
+    <string name="new_stream_title">New stream</string>
+    <string name="create_stream">Create stream</string>
+    <string name="new_stream_created">New stream \"%1$s\" was created successfully!</string>
+    <string name="subscribe_to_stream">Subscribe to stream</string>
 </resources>

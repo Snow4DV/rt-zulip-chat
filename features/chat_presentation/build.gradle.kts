@@ -28,7 +28,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "17"
@@ -54,9 +54,13 @@ dependencies {
     implementation(libs.markwon.strikethrough)
     implementation(libs.markwon.html)
 
+    // Presentation dependencies
+    implementation(projects.features.messageActionsPresentation)
+
     // Feature domain api
     implementation(projects.features.chatDomainApi)
     implementation(projects.features.eventsDomainApi)
+    implementation(projects.features.channelsDomainApi) // To get topics in chat screen
 
     // Feature basic core deps
     implementation(projects.core.utils)
@@ -111,4 +115,7 @@ dependencies {
 
     // Instrument tests
     androidTestImplementation(libs.androidx.fragment.testing)
+
+    // Desugaring
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 }

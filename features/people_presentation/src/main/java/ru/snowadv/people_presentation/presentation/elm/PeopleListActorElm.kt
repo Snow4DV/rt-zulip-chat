@@ -10,6 +10,7 @@ import ru.snowadv.people_presentation.navigation.PeopleRouter
 import ru.snowadv.people_presentation.ui.util.PeopleMappers.toElmEvent
 import ru.snowadv.people_presentation.ui.util.PeopleMappers.toUiModel
 import ru.snowadv.people_presentation.ui.util.PeopleMappers.toUpdateQueueDataElmEvent
+import ru.snowadv.presentation.elm.compat.SwitchingActor
 import ru.snowadv.users_domain_api.use_case.GetPeopleUseCase
 import ru.snowadv.users_domain_api.use_case.ListenToPeoplePresenceEventsUseCase
 import vivid.money.elmslie.core.store.Actor
@@ -20,7 +21,7 @@ internal class PeopleListActorElm @Inject constructor(
     private val getPeopleUseCase: GetPeopleUseCase,
     private val listenToPresenceEventsUseCase: ListenToPeoplePresenceEventsUseCase,
     private val router: PeopleRouter,
-) : Actor<PeopleListCommandElm, PeopleListEventElm>() {
+) : SwitchingActor<PeopleListCommandElm, PeopleListEventElm>() {
     override fun execute(command: PeopleListCommandElm): Flow<PeopleListEventElm> {
         return when (command) {
             PeopleListCommandElm.LoadData -> {
@@ -54,7 +55,11 @@ internal class PeopleListActorElm @Inject constructor(
                         is DomainEvent.FailedFetchingQueueEvent -> it.toElmEvent()
                         else -> it.toUpdateQueueDataElmEvent()
                     }
-                }
+                }.asSwitchFlow(command)
+            }
+
+            is PeopleListCommandElm.StopObservation -> {
+                cancelSwitchFlow(PeopleListCommandElm.ObservePresence::class)
             }
 
             is PeopleListCommandElm.OpenProfile -> flow { router.openProfile(command.userId) }

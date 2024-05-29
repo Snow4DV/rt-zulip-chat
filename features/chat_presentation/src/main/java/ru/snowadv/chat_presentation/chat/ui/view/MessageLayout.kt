@@ -92,6 +92,8 @@ abstract class MessageLayout @JvmOverloads constructor(
     }
 
     override fun onInserted(position: Int, count: Int) {
+        val reactions = reactions.toList()
+
         if (!isAttachedToWindow) return
 
         for (i in position until position + count) {
@@ -105,6 +107,8 @@ abstract class MessageLayout @JvmOverloads constructor(
     }
 
     override fun onRemoved(position: Int, count: Int) {
+        val reactions = reactions.toList()
+
         if (!isAttachedToWindow) return
 
         for (i in position until position + count) {
@@ -126,6 +130,8 @@ abstract class MessageLayout @JvmOverloads constructor(
     }
 
     private fun onChangedWithoutRequestLayout(position: Int, count: Int, payload: Any?) {
+        val reactions = reactions.toList()
+
         (payload as? ChatReaction.Payload)?.let {
             for (i in position until position + count) {
                 handlePayload(i, it)
@@ -157,6 +163,8 @@ abstract class MessageLayout @JvmOverloads constructor(
          */
         onChangedWithoutRequestLayout(fromPosition, 1, null)
         onChangedWithoutRequestLayout(toPosition, 1, null)
+
+        requestLayout()
     }
 
     override fun onAttachedToWindow() {

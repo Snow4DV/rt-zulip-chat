@@ -13,7 +13,7 @@ import ru.snowadv.utils.DateUtils
 internal object MessagesMapper {
     private const val UNICODE_REACTION_TYPE = "unicode_emoji"
 
-    private fun MessageResponseDto.toChatMessage(currentUserId: Long): ChatMessage {
+    fun MessageResponseDto.toChatMessage(currentUserId: Long): ChatMessage {
         return ChatMessage(
             id = id,
             content = content,
@@ -23,6 +23,8 @@ internal object MessagesMapper {
             senderAvatarUrl = avatarUrl,
             reactions = reactions.fromDtotoChatReactions(currentUserId),
             owner = currentUserId == senderId,
+            topic = subject,
+            isRead = "read" in flags,
         )
     }
 
@@ -44,7 +46,7 @@ internal object MessagesMapper {
         )
     }
 
-    private fun MessageResponseDto.toEntityMessage(streamName: String): MessageEntity {
+    fun MessageResponseDto.toEntityMessage(streamName: String): MessageEntity {
         return MessageEntity(
             id = id,
             content = content,
@@ -66,7 +68,7 @@ internal object MessagesMapper {
     }
 
 
-    private fun MessageEntity.toChatMessage(currentUserId: Long): ChatMessage {
+    fun MessageEntity.toChatMessage(currentUserId: Long): ChatMessage {
         return ChatMessage(
             id = id,
             content = content,
@@ -76,6 +78,8 @@ internal object MessagesMapper {
             senderAvatarUrl = avatarUrl,
             reactions = reactions.fromEntitytoChatReactions(currentUserId),
             owner = currentUserId == senderId,
+            topic = subject,
+            isRead = "read" in flags,
         )
     }
 

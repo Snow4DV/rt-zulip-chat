@@ -10,6 +10,12 @@ import ru.snowadv.channels_presentation.channel_list.elm.ChannelListEventElm
 import ru.snowadv.channels_presentation.channel_list.elm.ChannelListReducerElm
 import ru.snowadv.channels_presentation.channel_list.elm.ChannelListStateElm
 import ru.snowadv.channels_presentation.feature.ChannelsScreenFactoryImpl
+import ru.snowadv.channels_presentation.stream_creator.elm.StreamCreatorActorElm
+import ru.snowadv.channels_presentation.stream_creator.elm.StreamCreatorCommandElm
+import ru.snowadv.channels_presentation.stream_creator.elm.StreamCreatorEffectElm
+import ru.snowadv.channels_presentation.stream_creator.elm.StreamCreatorEventElm
+import ru.snowadv.channels_presentation.stream_creator.elm.StreamCreatorReducerElm
+import ru.snowadv.channels_presentation.stream_creator.elm.StreamCreatorStateElm
 import ru.snowadv.channels_presentation.stream_list.presentation.elm.StreamListActorElm
 import ru.snowadv.channels_presentation.stream_list.presentation.elm.StreamListCommandElm
 import ru.snowadv.channels_presentation.stream_list.presentation.elm.StreamListEffectElm
@@ -36,6 +42,10 @@ internal interface ChannelsPresentationModule {
     fun bindStreamListReducerElm(streamListReducerElm: StreamListReducerElm): ScreenDslReducer<StreamListEventElm, StreamListEventElm.Ui, StreamListEventElm.Internal, StreamListStateElm, StreamListEffectElm, StreamListCommandElm>
     @Binds
     fun bindStreamListElmMapper(streamListElmMapper: StreamListElmMapper): ElmMapper<StreamListStateElm, StreamListEffectElm, StreamListEventElm, StreamListStateUiElm, StreamListEffectUiElm, StreamListEventUiElm>
+    @Binds
+    fun bindStreamCreatorActorElm(streamCreatorActorElm: StreamCreatorActorElm): Actor<StreamCreatorCommandElm, StreamCreatorEventElm>
+    @Binds
+    fun bindStreamCreatorReducerElm(streamCreatorReducerElm: StreamCreatorReducerElm): ScreenDslReducer<StreamCreatorEventElm, StreamCreatorEventElm.Ui, StreamCreatorEventElm.Internal, StreamCreatorStateElm, StreamCreatorEffectElm, StreamCreatorCommandElm>
     @Binds
     fun bindChannelScreenFactoryImpl(channelsScreenFactoryImpl: ChannelsScreenFactoryImpl): ChannelsScreenFactory
 }

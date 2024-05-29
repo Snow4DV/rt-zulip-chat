@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/bg_bottom_sheet"
+    android:id="@+id/fragment_message_editor_shimmer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:background="@drawable/bg_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/small_common_padding"
+            android:theme="@style/Theme.ZulipChat.MessageActions">
+
+            <View
+                android:id="@+id/sheet_puller"
+                android:layout_width="@dimen/puller_width"
+                android:layout_height="@dimen/puller_height"
+                android:layout_marginTop="@dimen/small_common_padding"
+                android:background="@drawable/ic_sheet_puller"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/start_guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="@dimen/common_margin_large" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/end_guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_end="@dimen/common_margin_large" />
+
+            <TextView
+                android:id="@+id/edit_message_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/common_margin"
+                android:text="@string/edit_message"
+                android:textSize="@dimen/bottom_sheet_title_text_size"
+                android:textStyle="bold"
+                app:layout_constraintLeft_toLeftOf="@id/start_guideline"
+                app:layout_constraintRight_toRightOf="@id/end_guideline"
+                app:layout_constraintTop_toBottomOf="@id/sheet_puller" />
+
+            <TextView
+                android:id="@+id/text_content_shimmer"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/edit_text_input_layout_height"
+                android:layout_marginTop="@dimen/common_margin_mid"
+                android:background="@drawable/bg_loading_text"
+                android:textColor="@color/text"
+                android:textSize="@dimen/edit_message_text_size"
+                app:layout_constraintLeft_toLeftOf="@id/start_guideline"
+                app:layout_constraintRight_toRightOf="@id/end_guideline"
+                app:layout_constraintTop_toBottomOf="@id/edit_message_title" />
+
+            <Button
+                android:id="@+id/edit_message_button"
+                style="@style/Theme.ZulipChat.Button"
+                android:layout_width="@dimen/action_button_width"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/common_margin_mid"
+                android:enabled="false"
+                android:text="@string/apply"
+                android:textColor="@color/white"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/text_content_shimmer" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
+</FrameLayout>

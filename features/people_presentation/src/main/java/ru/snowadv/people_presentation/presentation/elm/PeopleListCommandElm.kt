@@ -7,4 +7,5 @@ internal sealed interface PeopleListCommandElm {
     data class ObservePresence(val isRestart: Boolean, val queueProps: EventQueueProperties?) :
         PeopleListCommandElm
     data class OpenProfile(val userId: Long) : PeopleListCommandElm
+    data object StopObservation : PeopleListCommandElm
 }
