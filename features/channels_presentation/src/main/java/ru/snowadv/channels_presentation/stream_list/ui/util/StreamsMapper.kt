@@ -28,12 +28,13 @@ internal object StreamsMapper {
         }
     }
 
-    fun DomainTopic.toUiModel(unreadMsgsCount: Int = 0): UiTopic {
+    fun DomainTopic.toUiModel(unreadMsgsCount: Int = 0, isLast: Boolean): UiTopic {
         return UiTopic(
             uniqueId = uniqueId,
             name = name,
             streamId = streamId,
             unreadMessagesCount = unreadMsgsCount,
+            isLast = isLast,
         )
     }
 

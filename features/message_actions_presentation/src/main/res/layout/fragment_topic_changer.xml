@@ -47,22 +47,21 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/new_topic_input_layout"
-        style="@style/Theme.ZulipChat.SurfaceEditText"
-        app:hintEnabled="false"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="0dp"
+        app:hintEnabled="false"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/common_margin_mid"
         android:textSize="@dimen/edit_message_text_size"
         app:layout_constraintLeft_toLeftOf="@id/start_guideline"
         app:layout_constraintRight_toRightOf="@id/end_guideline"
-        app:layout_constraintTop_toBottomOf="@id/move_message_title"
-        app:layout_constraintVertical_chainStyle="packed">
+        app:layout_constraintTop_toBottomOf="@id/move_message_title">
 
         <AutoCompleteTextView
+            style="@style/Theme.ZulipChat.SurfaceEditText"
             android:id="@+id/new_topic_autocomplete_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#00000000"
             android:hint="@string/new_topic"
             android:inputType="text"
             android:maxLines="1" />

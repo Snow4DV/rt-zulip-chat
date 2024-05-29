@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <size
+        android:width="@dimen/topic_separator_height_last"
+        android:height="@dimen/topic_separator_height_last" />
+    <solid android:color="@color/topic_separator" />
+</shape>

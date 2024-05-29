@@ -7,5 +7,5 @@
     <color name="stream_not_subscribed_action_color">#919191</color>
 
     <color name="search_line_color">@color/black_5</color>
-
+    <color name="topic_separator">#1C1C1C</color>
 </resources>

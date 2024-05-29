@@ -14,5 +14,5 @@
     <color name="idle">#FF9800</color>
 
     <color name="tab_selector">#219653</color>
-
+    <color name="topic_separator">@color/light_gray_4</color>
 </resources>

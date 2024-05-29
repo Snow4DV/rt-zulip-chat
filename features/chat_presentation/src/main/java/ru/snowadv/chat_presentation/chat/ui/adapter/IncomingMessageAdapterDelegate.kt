@@ -8,7 +8,6 @@ import io.noties.markwon.Markwon
 import ru.snowadv.chat_presentation.chat.ui.model.ChatMessage
 import ru.snowadv.chat_presentation.chat.ui.model.ChatMessageType
 import ru.snowadv.chat_presentation.chat.ui.model.ChatReaction
-import ru.snowadv.chat_presentation.chat.ui.util.AdapterUtils.getReadStatus
 import ru.snowadv.chat_presentation.chat.ui.util.AdapterUtils.getReadString
 import ru.snowadv.chat_presentation.chat.ui.view.IncomingMessageLayout
 import ru.snowadv.presentation.adapter.DelegateItem
@@ -78,7 +77,7 @@ internal class IncomingMessageAdapterDelegate(
                 is ChatMessage.Payload.ContentHasChanged -> {
                     bindContent(payload.newContent)
                 }
-                is ChatMessage.Payload.ReadStatusHasChanged -> {
+                is ChatMessage.Payload.ReadStatusOrTimestampHaveChanged -> {
                     bindIsReadAndTimestamp(payload.sentAt, payload.newIsRead)
                 }
             }
@@ -122,6 +121,11 @@ internal class IncomingMessageAdapterDelegate(
         }
     }
 
+    /*
+       This is important because there's an edgecase when async differ is trying to dispatch updates
+       after view is detached.
+        */
+
     override fun genericOnViewAttachedToWindow(
         holder: IncomingMessageViewHolder,
         getCurrentList: () -> List<DelegateItem>
@@ -130,6 +134,7 @@ internal class IncomingMessageAdapterDelegate(
         if (holder.adapterPosition != RecyclerView.NO_POSITION) {
             getItemAtPosition(getCurrentList(), holder.adapterPosition)?.let { message ->
                 holder.bindReactions(message.reactions)
+                holder.bindContent(message.text) // Markwon/Coil can't fetch images when detached
             }
         }
     }

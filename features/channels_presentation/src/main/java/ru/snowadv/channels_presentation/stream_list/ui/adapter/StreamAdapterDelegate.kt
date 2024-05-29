@@ -61,6 +61,7 @@ internal class StreamAdapterDelegate(
 
         private fun bindExpanded(expanded: Boolean) = with(binding) {
             expandStreamButton.isSelected = expanded
+            streamSeparator.isVisible = !expanded
         }
 
         private fun bindSubscribeStatus(status: UiStream.SubscribeStatus) = with(binding) {

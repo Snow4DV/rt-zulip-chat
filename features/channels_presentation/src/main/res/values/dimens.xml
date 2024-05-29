@@ -2,7 +2,7 @@
 <resources>
     <dimen name="stream_left_padding">20dp</dimen>
     <dimen name="stream_right_padding">15dp</dimen>
-    <dimen name="stream_vertical_padding">15dp</dimen>
+    <dimen name="stream_vertical_padding">16dp</dimen>
     <dimen name="topic_horizontal_padding">30dp</dimen>
     <dimen name="topic_vertical_padding">8dp</dimen>
     <dimen name="topic_msg_counter_padding">20dp</dimen>
@@ -20,4 +20,7 @@
     <dimen name="messages_counter_text_size">18sp</dimen>
     <dimen name="tab_indicator_radius">20dp</dimen>
     <dimen name="tab_layout_padding_bottom">20dp</dimen>
+    <dimen name="stream_separator_height">2dp</dimen>
+    <dimen name="topic_separator_height_last">6dp</dimen>
+    <dimen name="topic_separator_height_not_last">4dp</dimen>
 </resources>

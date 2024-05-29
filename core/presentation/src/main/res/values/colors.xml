@@ -59,4 +59,6 @@
 
     <color name="surface_edit_text_hint_color">#3C3C3C</color>
     <color name="surface_edit_text_color">#C3C1C5</color>
+    
+    <color name="separator">@color/on_surface</color>
 </resources>

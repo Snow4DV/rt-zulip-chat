@@ -63,13 +63,14 @@ internal class StreamListElmMapper @Inject constructor() :
                     val expanded = topics?.streamId == stream.id
                     add(stream.toUiModel(expanded))
                     if (topics != null && expanded) {
-                        topics.topics.data?.map { topic ->
+                        topics.topics.data?.mapIndexed { index, topic ->
                             topic.toUiModel(
                                 unreadMsgsCount = streamUnreadMessages
                                     .firstOrNull { it.streamId == stream.id }
                                     ?.topicsUnreadMessages
                                     ?.firstOrNull { it.topicName == topic.name }
                                     ?.unreadMessagesIds?.size ?: 0,
+                                isLast = index == topics.topics.data?.size?.minus(1),
                             )
                         }?.let { addAll(it) } ?: run {
                             if (topics.topics is Resource.Loading) {

@@ -11,9 +11,12 @@ import ru.snowadv.presentation.adapter.DelegationItemAdapterDelegate
 internal class ShimmerTopicAdapterDelegate :
     DelegationItemAdapterDelegate<UiShimmerTopic, ShimmerTopicAdapterDelegate.TopicViewHolder, Nothing>() {
     internal inner class TopicViewHolder(
-        binding: ItemTopicShimmerBinding,
-    ) :
-        ViewHolder(binding.root)
+        private val binding: ItemTopicShimmerBinding,
+    ) : ViewHolder(binding.root) {
+        fun bind(shimmerTopic: UiShimmerTopic) = with(binding) {
+            topicSeparatorShimmered.isSelected = shimmerTopic.isLast
+        }
+    }
 
     override fun isForViewType(item: DelegateItem): Boolean {
         return item is UiShimmerTopic
@@ -37,6 +40,6 @@ internal class ShimmerTopicAdapterDelegate :
         holder: TopicViewHolder,
         payloads: List<Nothing>
     ) {
-
+        holder.bind(item)
     }
 }

@@ -8,7 +8,6 @@ import ru.snowadv.chat_presentation.chat.ui.model.ChatMessage
 import ru.snowadv.chat_presentation.chat.ui.model.ChatMessageType
 import ru.snowadv.chat_presentation.chat.ui.model.ChatReaction
 import ru.snowadv.chat_presentation.chat.ui.util.AdapterUtils
-import ru.snowadv.chat_presentation.chat.ui.util.AdapterUtils.getReadStatus
 import ru.snowadv.chat_presentation.chat.ui.view.OutgoingMessageLayout
 import ru.snowadv.presentation.adapter.DelegateItem
 import ru.snowadv.presentation.adapter.DelegationItemAdapterDelegate
@@ -68,7 +67,7 @@ internal class OutgoingMessageAdapterDelegate(
                 is ChatMessage.Payload.ContentHasChanged -> {
                     bindContent(payload.newContent)
                 }
-                is ChatMessage.Payload.ReadStatusHasChanged -> {
+                is ChatMessage.Payload.ReadStatusOrTimestampHaveChanged -> {
                     bindIsReadAndTimestamp(payload.sentAt, payload.newIsRead)
                 }
             }
@@ -124,6 +123,8 @@ internal class OutgoingMessageAdapterDelegate(
         if (holder.adapterPosition != RecyclerView.NO_POSITION) {
             getItemAtPosition(getCurrentList(), holder.adapterPosition)?.let { message ->
                 holder.bindReactions(message.reactions)
+                // This is required for markwon's coil plugin - otherwise fetching would be cancelled
+                holder.bindContent(message.text)
             }
         }
     }

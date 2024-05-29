@@ -15,7 +15,7 @@ import java.time.ZonedDateTime
 
 internal class ChatActorElmTestData {
     val streamName = "stream"
-    val streamId = 1
+    val streamId = 1L
     val topicName = "topic"
     val reactionType = "unicode_reaction"
 

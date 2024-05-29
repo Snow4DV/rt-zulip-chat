@@ -92,7 +92,7 @@ class ChannelListFragment : BaseFragment<ChannelListEventElm, ChannelListEffectE
     }
 
     private fun setupPagerAdapter() {
-        binding.streamTypesPager.adapter = StreamsAdapter(childFragmentManager, lifecycle)
+        binding.streamTypesPager.adapter = StreamsAdapter(childFragmentManager, viewLifecycleOwner.lifecycle)
     }
 
     private fun setupPagerTabLayoutMediator() {

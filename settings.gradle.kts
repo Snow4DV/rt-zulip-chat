@@ -22,10 +22,8 @@ dependencyResolutionManagement {
 
 rootProject.name = "ChatApp"
 include(":app")
-include(":app_contacts")
 include(":core")
 include(":libraries:contacts-provider")
-include(":lib:contacts_provider")
 include(":features")
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(":core:presentation")

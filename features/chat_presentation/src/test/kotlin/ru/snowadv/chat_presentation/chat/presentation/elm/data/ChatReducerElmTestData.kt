@@ -8,6 +8,7 @@ import ru.snowadv.chat_domain_api.model.ChatPaginationStatus
 import ru.snowadv.chat_domain_api.model.ChatReaction
 import ru.snowadv.chat_presentation.chat.presentation.elm.ChatEventElm
 import ru.snowadv.chat_presentation.chat.presentation.elm.ChatStateElm
+import ru.snowadv.chat_presentation.chat.presentation.elm.util.EmojiUtils.generateReactions
 import ru.snowadv.events_api.model.EventQueueProperties
 import ru.snowadv.model.ScreenState
 import java.io.IOException
@@ -45,10 +46,10 @@ internal class ChatReducerElmTestData {
             senderId = it.toLong(),
             senderName = "User $it",
             senderAvatarUrl = "http://img.nonexistant/$it",
-            reactions = generateReactions(it),
+            reactions = generateReactions(it, maxReactionsCount, reactions),
             owner = it % 2 == 0,
             topic = "topic",
-            isRead = true,
+            isRead = it % 5 != 0,
         )
     }
 
@@ -116,7 +117,8 @@ internal class ChatReducerElmTestData {
     val sampleNewMessage = allMessages.last().let { lastMessage ->
         lastMessage.copy(
             id = lastMessage.id + 1,
-            content = "hello!"
+            content = "hello!",
+            isRead = false,
         )
     }
 
@@ -162,11 +164,15 @@ internal class ChatReducerElmTestData {
             emoji = sampleEmoji,
             currentUserReaction = true
         ),
+        ChatEventElm.Internal.ServerEvent.MessagesRead(
+            queueId = queueId,
+            eventId = 0,
+            addFlagMessagesIds = listOf(1,2),
+        ),
+        ChatEventElm.Internal.ServerEvent.MessagesUnread(
+            queueId = queueId,
+            eventId = 0,
+            removeFlagMessagesIds = listOf(1,2),
+        ),
     )
-
-    private fun generateReactions(count: Int): List<ChatReaction> {
-        return List(count % maxReactionsCount) {
-            ChatReaction(reactions[it].first, reactions[it].second, it + 2, false)
-        }
-    }
 }

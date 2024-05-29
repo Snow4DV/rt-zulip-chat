@@ -3,6 +3,7 @@ package ru.snowadv.chat_presentation.chat.presentation.elm
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldBeEmpty
 import org.junit.runner.RunWith
@@ -10,6 +11,7 @@ import org.junit.runners.JUnit4
 import ru.snowadv.chat_domain_api.model.ChatPaginationStatus
 import ru.snowadv.chat_presentation.chat.presentation.elm.data.ChatReducerElmTestData
 import ru.snowadv.events_api.model.EventQueueProperties
+import ru.snowadv.model.Resource
 import ru.snowadv.model.ScreenState
 import ru.snowadv.test_utils.exception.DataException
 
@@ -24,23 +26,27 @@ class ChatReducerElmTest : BehaviorSpec({
                     And("event is Internal.InitialChatLoaded with page 0 and cached false") {
                         val event =
                             ChatEventElm.Internal.InitialChatLoaded(paginatedMessages[0])
-                        val expectedCommand = ChatCommandElm.ObserveEvents(
+                        val expectedObserveCommand = ChatCommandElm.ObserveEvents(
                             streamName = streamName,
                             topicName = topicName,
                             isRestart = false,
                             queueProps = null,
                         )
+
                         val actual = reducer.reduce(event, initialResumedState)
+
 
                         Then(
                             "screenState should be success, messages should be expectedMessages, pagination status" +
-                                    " should be HasMore, eventQueueData should be null and commands should contain observe"
+                                    " should be HasMore, eventQueueData should be null"
                         ) {
                             actual.state.screenState shouldBe ScreenState.Success(chunkedMessages[0])
                             actual.state.messages shouldBe chunkedMessages[0]
                             actual.state.paginationStatus shouldBe ChatPaginationStatus.HasMore
                             actual.state.eventQueueData shouldBe null
-                            actual.commands shouldContain expectedCommand
+                        }
+                        Then("commands should contain observe") {
+                            actual.commands shouldContain expectedObserveCommand
                         }
                     }
 
@@ -57,6 +63,8 @@ class ChatReducerElmTest : BehaviorSpec({
                             actual.state.messages shouldBe chunkedMessages[0]
                             actual.state.paginationStatus shouldBe ChatPaginationStatus.None
                             actual.state.eventQueueData shouldBe null
+                        }
+                        Then("commands should be empty") {
                             actual.commands.shouldBeEmpty()
                         }
                     }
@@ -105,6 +113,7 @@ class ChatReducerElmTest : BehaviorSpec({
                         Then("sendingMessage should be false and messageField should be empty") {
                             actual.state.sendingMessage shouldBe false
                             actual.state.messageField.shouldBeEmpty()
+                            actual.state.actionButtonType shouldBe ChatStateElm.ActionButtonType.ADD_ATTACHMENT
                         }
                     }
 
@@ -117,6 +126,9 @@ class ChatReducerElmTest : BehaviorSpec({
                             actual.state.screenState shouldBe ScreenState.Loading()
                             actual.state.messages.shouldBeEmpty()
                             actual.state.paginationStatus shouldBe ChatPaginationStatus.None
+                        }
+                        Then("commands should be empty") {
+                            actual.commands.shouldBeEmpty()
                         }
                     }
 
@@ -135,6 +147,24 @@ class ChatReducerElmTest : BehaviorSpec({
 
                         Then("sendingMessage should be true") {
                             actual.state.sendingMessage shouldBe true
+                        }
+                    }
+
+                    And("event is Internal.FileUploaded") {
+                        val event = ChatEventElm.Internal.FileUploaded
+                        val actual = reducer.reduce(event, initialResumedState)
+
+                        Then("uploadingFile should be false") {
+                            actual.state.uploadingFile shouldBe false
+                        }
+                    }
+
+                    And("event is Internal.UploadingFile") {
+                        val event = ChatEventElm.Internal.UploadingFile
+                        val actual = reducer.reduce(event, initialResumedState)
+
+                        Then("uploadingFile should be true") {
+                            actual.state.uploadingFile shouldBe true
                         }
                     }
 
@@ -183,6 +213,31 @@ class ChatReducerElmTest : BehaviorSpec({
                         }
                     }
 
+                    And("event is Internal.UploadingFileError") {
+                        val retryEvent = ChatEventElm.Ui.SendMessageAddAttachmentButtonClicked
+                        val event = ChatEventElm.Internal.UploadingFileError(retryEvent)
+                        val actual = reducer.reduce(event, initialResumedState)
+
+                        Then("effects contains ShowActionErrorWithRetry and uploadingFile should be false") {
+                            actual.effects shouldContain ChatEffectElm.ShowActionErrorWithRetry(
+                                retryEvent
+                            )
+                            actual.state.uploadingFile shouldBe false
+                        }
+                    }
+
+                    And("event is Internal.TopicsResourceChanged with data") {
+                        val expectedResource = Resource.Success(listOf("topic1", "topic2"))
+                        val event = ChatEventElm.Internal.TopicsResourceChanged(
+                            expectedResource
+                        )
+                        val actual = reducer.reduce(event, initialResumedState)
+
+                        Then("topics should be $expectedResource") {
+                            actual.state.topics shouldBe expectedResource
+                        }
+                    }
+
                     And("event is Internal.FileUploaded") {
                         val event = ChatEventElm.Internal.FileUploaded
                         val actual = reducer.reduce(event, initialResumedState)
@@ -217,6 +272,26 @@ class ChatReducerElmTest : BehaviorSpec({
                             actual.state.uploadingFile shouldBe false
                         }
                     }
+
+                    And("event is Internal.ErrorFetchingMovedMessage") {
+                        val event = ChatEventElm.Internal.ErrorFetchingMovedMessage(DataException(), "0", 0)
+                        val actual = reducer.reduce(event, initialResumedState)
+
+                        Then("commands should be empty") {
+                            actual.commands.shouldBeEmpty()
+                        }
+                    }
+
+                    And("event is Internal.LoadedMovedMessage") {
+                        val event = ChatEventElm.Internal.LoadedMovedMessage(sampleMessage, "0", 0)
+                        val actual = reducer.reduce(event, initialResumedState)
+
+                        Then("commands should be empty") {
+                            actual.commands.shouldBeEmpty()
+                        }
+                    }
+
+
 
                     // Ui events
                     And("event is Ui.AddChosenReaction") {
@@ -508,11 +583,19 @@ class ChatReducerElmTest : BehaviorSpec({
                             queueProps = expectedQueueProps,
                         )
 
+                        val expectedMarkMessagesAsReadCommand = ChatCommandElm.MarkMessagesAsRead(
+                            messagesIds = paginatedMessages[0].messages.filter { !it.isRead }
+                                .map { it.id }
+                        )
+
                         val actual = reducer.reduce(event, firstPageStateNullEventQueueData)
 
                         Then("state eventQueueProps is $expectedQueueProps and commands contains $expectedCommand") {
                             actual.state.eventQueueData shouldBe expectedQueueProps
                             actual.commands shouldContain expectedCommand
+                        }
+                        Then("commands should contain MarkMessagesAsRead") {
+                            actual.commands shouldContain expectedMarkMessagesAsReadCommand
                         }
                     }
 
@@ -683,7 +766,8 @@ class ChatReducerElmTest : BehaviorSpec({
                             topic = topicName
                         )
 
-                        val expectedMessages = firstPageMessages - firstPageMessages.last() + expectedUpdatedMessage
+                        val expectedMessages =
+                            firstPageMessages - firstPageMessages.last() + expectedUpdatedMessage
                         val expectedScreenState = ScreenState.Success(expectedMessages)
 
                         val actual = reducer.reduce(event, firstPageStateObserveStarted)
@@ -720,16 +804,19 @@ class ChatReducerElmTest : BehaviorSpec({
                             currentUserReaction = false,
                         )
 
-                        val existingReaction = lastMessageInFirstPage.reactions.first { it.emojiCode == sampleEmoji.code }
+                        val existingReaction =
+                            lastMessageInFirstPage.reactions.first { it.emojiCode == sampleEmoji.code }
 
-                        val updatedReaction = existingReaction.copy(count = existingReaction.count + 1)
+                        val updatedReaction =
+                            existingReaction.copy(count = existingReaction.count + 1)
 
                         val newLastMessage = lastMessageInFirstPage.copy(
                             reactions = (lastMessageInFirstPage.reactions - existingReaction + updatedReaction)
-                                .sortedWith(compareBy({-it.count}, {it.name}))
+                                .sortedWith(compareBy({ -it.count }, { it.name }))
                         )
 
-                        val expectedMessages = firstPageMessages - lastMessageInFirstPage + newLastMessage
+                        val expectedMessages =
+                            firstPageMessages - lastMessageInFirstPage + newLastMessage
                         val expectedScreenState = ScreenState.Success(expectedMessages)
 
                         val actual = reducer.reduce(event, firstPageStateObserveStarted)
@@ -748,16 +835,21 @@ class ChatReducerElmTest : BehaviorSpec({
                             currentUserReaction = true,
                         )
 
-                        val existingReaction = lastMessageInFirstPage.reactions.first { it.emojiCode == sampleEmoji.code }
+                        val existingReaction =
+                            lastMessageInFirstPage.reactions.first { it.emojiCode == sampleEmoji.code }
 
-                        val updatedReaction = existingReaction.copy(count = existingReaction.count + 1, userReacted = true)
+                        val updatedReaction = existingReaction.copy(
+                            count = existingReaction.count + 1,
+                            userReacted = true
+                        )
 
                         val newLastMessage = lastMessageInFirstPage.copy(
                             reactions = (lastMessageInFirstPage.reactions - existingReaction + updatedReaction)
-                                .sortedWith(compareBy({-it.count}, {it.name}))
+                                .sortedWith(compareBy({ -it.count }, { it.name }))
                         )
 
-                        val expectedMessages = firstPageMessages - lastMessageInFirstPage + newLastMessage
+                        val expectedMessages =
+                            firstPageMessages - lastMessageInFirstPage + newLastMessage
                         val expectedScreenState = ScreenState.Success(expectedMessages)
 
                         val actual = reducer.reduce(event, firstPageStateObserveStarted)
@@ -776,16 +868,19 @@ class ChatReducerElmTest : BehaviorSpec({
                             currentUserReaction = false,
                         )
 
-                        val existingReaction = lastMessageInFirstPage.reactions.first { it.emojiCode == sampleEmoji.code }
+                        val existingReaction =
+                            lastMessageInFirstPage.reactions.first { it.emojiCode == sampleEmoji.code }
 
-                        val updatedReaction = existingReaction.copy(count = existingReaction.count - 1)
+                        val updatedReaction =
+                            existingReaction.copy(count = existingReaction.count - 1)
 
                         val newLastMessage = lastMessageInFirstPage.copy(
                             reactions = (lastMessageInFirstPage.reactions - existingReaction + updatedReaction)
-                                .sortedWith(compareBy({-it.count}, {it.name}))
+                                .sortedWith(compareBy({ -it.count }, { it.name }))
                         )
 
-                        val expectedMessages = firstPageMessages - lastMessageInFirstPage + newLastMessage
+                        val expectedMessages =
+                            firstPageMessages - lastMessageInFirstPage + newLastMessage
                         val expectedScreenState = ScreenState.Success(expectedMessages)
 
                         val actual = reducer.reduce(event, firstPageStateObserveStarted)
@@ -804,22 +899,55 @@ class ChatReducerElmTest : BehaviorSpec({
                             currentUserReaction = false,
                         )
 
-                        val existingReaction = lastMessageInFirstPage.reactions.first { it.emojiCode == sampleEmoji.code }
+                        val existingReaction =
+                            lastMessageInFirstPage.reactions.first { it.emojiCode == sampleEmoji.code }
 
-                        val updatedReaction = existingReaction.copy(count = existingReaction.count - 1)
+                        val updatedReaction =
+                            existingReaction.copy(count = existingReaction.count - 1)
 
                         val newLastMessage = lastMessageInFirstPage.copy(
                             reactions = (lastMessageInFirstPage.reactions - existingReaction + updatedReaction)
-                                .sortedWith(compareBy({-it.count}, {it.name}))
+                                .sortedWith(compareBy({ -it.count }, { it.name }))
                         )
 
-                        val expectedMessages = firstPageMessages - lastMessageInFirstPage + newLastMessage
+                        val expectedMessages =
+                            firstPageMessages - lastMessageInFirstPage + newLastMessage
                         val expectedScreenState = ScreenState.Success(expectedMessages)
 
                         val actual = reducer.reduce(event, firstPageStateObserveStarted)
                         Then("reaction should be added to message in screen state and messages and userReacted should be false") {
                             actual.state.messages.last() shouldBe expectedMessages.last()
                             actual.state.screenState shouldBe expectedScreenState
+                        }
+                    }
+
+                    And("event is Internal.ErrorFetchingMovedMessage") {
+                        val event = ChatEventElm.Internal.ErrorFetchingMovedMessage(DataException(), firstPageStateObserveStarted.eventQueueData!!.queueId, firstPageStateObserveStarted.eventQueueData!!.lastEventId + 1)
+                        val actual = reducer.reduce(event, firstPageStateObserveStarted)
+
+                        val expectedCommand = ChatCommandElm.LoadInitialMessages(firstPageStateObserveStarted.stream, initialResumedState.topic)
+
+                        Then("commands should contain $expectedCommand") {
+                            actual.commands shouldContain expectedCommand
+                        }
+                    }
+
+                    And("event is Internal.LoadedMovedMessage") {
+                        val event = ChatEventElm.Internal.LoadedMovedMessage(sampleNewMessage, "0", 0)
+                        val actual = reducer.reduce(event, firstPageStateObserveStarted)
+
+                        Then("ScreenState.data and messages should contain $sampleNewMessage") {
+                            actual.state.screenState.data.shouldNotBeNull()
+                            actual.state.screenState.data!! shouldContain sampleNewMessage
+                            actual.state.messages shouldContain sampleNewMessage
+                        }
+
+                        val expectedCommand = ChatCommandElm.MarkMessagesAsRead(
+                            messagesIds = listOf(sampleNewMessage.id),
+                        )
+
+                        Then("commands should contain MarkMessagesAsRead for $sampleNewMessage") {
+                            actual.commands shouldContain expectedCommand
                         }
                     }
                 }

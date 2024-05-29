@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
-    android:paddingVertical="@dimen/stream_vertical_padding">
+    android:paddingTop="@dimen/stream_vertical_padding">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/start_guideline"
@@ -27,9 +27,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginRight="@dimen/common_margin"
+        android:layout_marginBottom="@dimen/stream_vertical_padding"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:textColor="@color/text"
         android:textSize="@dimen/stream_topic_name_text_size"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/stream_separator"
         app:layout_constraintLeft_toLeftOf="@id/start_guideline"
         app:layout_constraintRight_toLeftOf="@id/messages_count_text"
         app:layout_constraintTop_toTopOf="parent"
@@ -42,9 +45,9 @@
         android:layout_marginRight="@dimen/common_margin_mid"
         android:textColor="@color/text"
         android:textSize="@dimen/messages_counter_text_size"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/stream_name_text"
         app:layout_constraintRight_toLeftOf="@id/subscribe_action_container"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@id/stream_name_text"
         tools:text="45" />
 
     <FrameLayout
@@ -52,9 +55,9 @@
         android:layout_width="@dimen/stream_action_button_size"
         android:layout_height="@dimen/stream_action_button_size"
         android:layout_marginRight="@dimen/common_margin_mid"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/stream_name_text"
         app:layout_constraintRight_toLeftOf="@id/expand_stream_button"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="@id/stream_name_text">
 
         <ImageView
             android:id="@+id/subscribe_stream_button"
@@ -79,8 +82,17 @@
         android:layout_height="@dimen/stream_action_button_size"
         android:contentDescription="@string/expand_topic"
         android:src="@drawable/ic_arrow_selector"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/stream_name_text"
         app:layout_constraintRight_toRightOf="@id/end_guideline"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/stream_name_text" />
+
+    <View
+        android:id="@+id/stream_separator"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/stream_separator_height"
+        android:background="@color/separator"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

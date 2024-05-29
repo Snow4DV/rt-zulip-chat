@@ -68,6 +68,7 @@ internal class ChatReducerElm @Inject constructor() :
                             messageField = "",
                             topic = event.destTopic,
                             sendTopic = event.destTopic,
+                            actionButtonType = ChatStateElm.ActionButtonType.ADD_ATTACHMENT,
                         )
                     }
                     effects {
@@ -81,6 +82,7 @@ internal class ChatReducerElm @Inject constructor() :
                         copy(
                             sendingMessage = false,
                             messageField = "",
+                            actionButtonType = ChatStateElm.ActionButtonType.ADD_ATTACHMENT,
                         )
                     }
                 }
@@ -272,10 +274,12 @@ internal class ChatReducerElm @Inject constructor() :
             }
 
             is ChatEventElm.Internal.LoadedMovedMessage -> {
-                state {
-                    addMessage(event.message, event.eventId)
+                if (event.queueId == state.eventQueueData?.queueId) {
+                    state {
+                        addMessage(event.message, event.eventId)
+                    }
+                    markMessageAsReadCommand(event.message.id)
                 }
-                markMessageAsReadCommand(event.message.id)
             }
 
             is ChatEventElm.Internal.ServerEvent.MessagesRead -> {
@@ -675,7 +679,7 @@ internal class ChatReducerElm @Inject constructor() :
 
     private fun Result.markMessagesInStateAsReadCommand() {
         commands {
-            state.messages.map { it.id }.let { unreadMessages ->
+            state.messages.filter { !it.isRead }.map { it.id }.let { unreadMessages ->
                 if (unreadMessages.isNotEmpty()) {
                     +ChatCommandElm.MarkMessagesAsRead(unreadMessages)
                 }
